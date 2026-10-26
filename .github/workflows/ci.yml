@@ -1,0 +1,28 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out ptf-spec (tools and schemas)
+        uses: actions/checkout@v4
+        with:
+          repository: KaProblem/ptf-spec
+          path: .ptf-spec
+          # Needed while ptf-spec is private: a fine-grained token with read access to it.
+          token: ${{ secrets.PTF_SPEC_TOKEN || github.token }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --prefix .ptf-spec
+      - name: Validate library
+        run: node .ptf-spec/tools/ptf-check.mjs .
+      - name: Simulator self-tests
+        run: |
+          npm install --no-save --prefix .ptf-spec playwright
+          npx --prefix .ptf-spec playwright install --with-deps chromium
+          node .ptf-spec/tools/ptf-selftest.mjs sims/*/*/

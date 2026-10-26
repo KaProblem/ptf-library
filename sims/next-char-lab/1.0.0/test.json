@@ -1,0 +1,33 @@
+{
+  "steps": [
+    {
+      "init": {
+        "level": "highschool"
+      }
+    },
+    {
+      "expectText": "Der Tokenizer"
+    },
+    {
+      "click": "[data-level='2']"
+    },
+    {
+      "expectEvent": "level_changed"
+    },
+    {
+      "expectText": "Der Loss"
+    },
+    {
+      "setLevel": "expert"
+    },
+    {
+      "expectText": "V×V-Tabelle"
+    },
+    {
+      "snapshot": true
+    },
+    {
+      "expectNoError": true
+    }
+  ]
+}

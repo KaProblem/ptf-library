@@ -1,0 +1,109 @@
+{
+  "ptf_sim": "0.1",
+  "lang": [
+    "de"
+  ],
+  "entry": "index.html",
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "integrity": "sha256-RPmwxsI4xKlgP6tXUwP8SGbF7STPYjPqkZl7mLZC90c=",
+  "id": "ptf:sim/next-char-lab",
+  "version": "1.0.0",
+  "title": "Next-character lab",
+  "description": "A bigram language model to play with: tokenizer, counting, sampling, loss, temperature and context windows, at three levels.",
+  "concepts": [
+    "tokenizer",
+    "bigram",
+    "softmax",
+    "cross-entropy",
+    "sampling",
+    "temperature",
+    "block-size"
+  ],
+  "levels": [
+    "highschool",
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "tokenizer",
+      "title": "Text becomes numbers: the tokenizer",
+      "levels": [
+        "highschool"
+      ]
+    },
+    {
+      "id": "counted-probabilities",
+      "title": "Counted probabilities",
+      "levels": [
+        "highschool"
+      ]
+    },
+    {
+      "id": "generate",
+      "title": "Generating text character by character",
+      "levels": [
+        "highschool"
+      ]
+    },
+    {
+      "id": "loss",
+      "title": "The loss",
+      "levels": [
+        "college"
+      ]
+    },
+    {
+      "id": "training-curve",
+      "title": "Read more text, be less surprised",
+      "levels": [
+        "college"
+      ]
+    },
+    {
+      "id": "temperature",
+      "title": "Bold or careful sampling: temperature",
+      "levels": [
+        "college"
+      ]
+    },
+    {
+      "id": "context-window",
+      "title": "One snippet, many training examples",
+      "levels": [
+        "expert"
+      ]
+    },
+    {
+      "id": "bigram-table",
+      "title": "The model is a V×V table",
+      "levels": [
+        "expert"
+      ]
+    },
+    {
+      "id": "corpus",
+      "title": "What the model learns from",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "events": [
+    "level_changed"
+  ],
+  "derived_from": null,
+  "changelog": "First version. Corpus: excerpt of Tiny Shakespeare (about 1,600 characters); own text can be pasted in.",
+  "deprecated": "Refers to an external video in places; lessons must be self-contained. Use 2.x."
+}
