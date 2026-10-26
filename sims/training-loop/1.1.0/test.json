@@ -1,0 +1,90 @@
+{
+  "steps": [
+    {
+      "init": {
+        "level": "highschool"
+      }
+    },
+    {
+      "expectText": "Look up a row"
+    },
+    {
+      "click": "[data-gate='lookup'] button[data-ok]"
+    },
+    {
+      "click": "#lkTokens button[data-i='2']"
+    },
+    {
+      "click": "#lkTokens button[data-i='1']"
+    },
+    {
+      "expectText": "Every row is the same"
+    },
+    {
+      "expectEvent": "station_completed"
+    },
+    {
+      "click": "#ndStep"
+    },
+    {
+      "click": "#ndStep"
+    },
+    {
+      "expectText": "the right answer went up"
+    },
+    {
+      "click": "[data-gate='train'] button[data-ok]"
+    },
+    {
+      "expectText": "Try all three"
+    },
+    {
+      "click": "#tr100"
+    },
+    {
+      "expectText": "The table has learned all a bigram model can learn"
+    },
+    {
+      "click": "[data-lr='40']"
+    },
+    {
+      "click": "#tr10"
+    },
+    {
+      "expectText": "overshoots"
+    },
+    {
+      "click": "#gnRun"
+    },
+    {
+      "expectEvent": "experienced"
+    },
+    {
+      "click": "[data-level='2']"
+    },
+    {
+      "expectEvent": "level_changed"
+    },
+    {
+      "expectText": "Probabilities after training"
+    },
+    {
+      "click": "#focusStart"
+    },
+    {
+      "click": "#focusNext"
+    },
+    {
+      "expectText": "Nudge the numbers"
+    },
+    {
+      "goto": "check"
+    },
+    {
+      "snapshot": true
+    },
+    {
+      "expectNoError": true
+    }
+  ]
+}

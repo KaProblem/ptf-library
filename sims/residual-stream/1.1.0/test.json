@@ -1,0 +1,54 @@
+{
+  "steps": [
+    {
+      "init": {
+        "level": "highschool"
+      }
+    },
+    {
+      "expectText": "Does the learning signal reach the bottom?"
+    },
+    {
+      "click": "[data-gate='deep-signal'] button[data-ok]"
+    },
+    {
+      "expectText": "0.8 to the power of 40"
+    },
+    {
+      "type": {
+        "selector": "#depth",
+        "text": "40"
+      }
+    },
+    {
+      "expectText": "arrives after 40 layers"
+    },
+    {
+      "expectEvent": "station_completed"
+    },
+    {
+      "click": "#wild"
+    },
+    {
+      "expectText": "back in the usual range"
+    },
+    {
+      "click": "[data-level='2']"
+    },
+    {
+      "expectEvent": "level_changed"
+    },
+    {
+      "expectText": "Dropout rate"
+    },
+    {
+      "goto": "scale-up"
+    },
+    {
+      "snapshot": true
+    },
+    {
+      "expectNoError": true
+    }
+  ]
+}

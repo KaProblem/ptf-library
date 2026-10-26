@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- Simulators `residual-stream`, `transformer-block`, `attention-lab`, `training-loop` and `gpt-pipeline` 1.1.0: following PEDAGOGY.md (predict, then reveal; familiar first), six stations now ask for a guess before showing the result and report it as `answered`; `gpt-pipeline` starts with the familiar sentence (trace) before ordering the parts. `llm-basics` lockfile moves to 1.1.0.
 - CONTRIBUTING.md and pull request template: contributors are responsible for their content and its legal compliance, license contributions under the repository's licenses, and confirm a contributor statement in every PR.
 - Bundle `gravity` 0.1.0: learning elements free fall, air resistance, inclined plane, rolling, universal gravitation and curved spacetime (all four levels where it fits, misconceptions, 37 question blocks, `# Further reading`); learning path `pisa-to-einstein`; lockfile.
 - Simulators `falling-tower`, `inclined-plane` and `newton-einstein` 1.0.0 (English and German UI, focus mode, self-tests that check computed physics values against closed-form results). `newton-einstein` is the pilot for vendored libraries (SIMULATOR-SPEC §8 proposal): its spacetime station uses the allowlisted `three-core@0.170.0` build and falls back to text without WebGL.

@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attention lab</title>
+<style>
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
+  --accent:#0E6E68; --accent-soft:#D5ECEA; --warn:#C2410C; --warn-soft:#FBE3D6;
+  --f-display:"Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.3rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+header{display:flex;flex-direction:column;gap:12px}
+.levels{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start;background:var(--surface);max-width:100%}
+.levels button{font:600 1rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:10px 16px;min-height:44px;cursor:pointer}
+.levels button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.station{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.station .num{font:600 .8rem var(--f-mono);color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:600 .95rem var(--f-body);min-height:44px;padding:8px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--accent)}
+button.btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-height:44px;min-width:0}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+label{color:var(--muted);font-size:.95rem}
+.note{color:var(--muted);font-size:.95rem}
+.stat{font:600 1.5rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:24px}
+.stats div{display:flex;flex-direction:column}
+.scroll{overflow-x:auto;max-width:100%}
+.out{font:.95rem/1.5 var(--f-mono);white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px}
+.feedback{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:4px}
+.feedback.bad{border-color:var(--warn);background:var(--warn-soft)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices button{text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.choices button.right{border-color:var(--accent);background:var(--accent-soft)}
+.choices button.wrong{border-color:var(--warn);background:var(--warn-soft)}
+table.grid{border-collapse:collapse;font:.85rem var(--f-mono);font-variant-numeric:tabular-nums}
+table.grid th{color:var(--muted);font-weight:600;padding:4px 6px}
+table.grid td{width:46px;height:40px;text-align:center;border:1px solid var(--line);padding:0}
+table.grid td button{width:100%;height:100%;min-height:40px;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.bars{display:flex;flex-direction:column;gap:4px;font:.9rem var(--f-mono)}
+.bar{display:grid;grid-template-columns:5.5em 1fr 4em;gap:8px;align-items:center}
+.bar .fill{height:18px;background:var(--accent);border-radius:3px;min-width:2px}
+.bar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.tok{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:4px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font:1rem var(--f-mono);color:var(--ink);cursor:pointer}
+.tok[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+svg text{font-family:var(--f-mono)}
+details summary{cursor:pointer;font-weight:600;min-height:32px}
+footer{color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+html:not([lang="de"]) i-de,html[lang="de"] i-en{display:none!important}
+i-en,i-de{font-style:inherit}
+.focus-nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;bottom:0;background:var(--bg);padding:10px 0;border-top:1px solid var(--line)}
+.focus-nav #focusAll{margin-left:auto}
+.focus-nav button:disabled{opacity:.4;cursor:default}
+body.focused header > :not(.row){display:none}
+body.focused #focusStart{display:none}
+body.focused footer{display:none}
+
+.sent{display:flex;flex-wrap:wrap;gap:6px}
+.sent .tok{flex-direction:column;gap:0;min-width:56px;position:relative}
+.sent .tok small{font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums;min-height:1em}
+.sent .tok.future{opacity:.35;border-style:dashed}
+.plane{width:100%;max-width:360px;aspect-ratio:1;display:block;background:var(--bg);border:1px solid var(--line);border-radius:8px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;align-items:start}
+.srow{display:grid;grid-template-columns:6.5em 1fr 3.5em;gap:10px;align-items:center}
+.srow .v{text-align:right;font:600 .95rem var(--f-mono);font-variant-numeric:tabular-nums}
+.bar{grid-template-columns:6.5em 1fr 4em}
+.bar.warm .fill{background:var(--warn)}
+.same{font:600 1.05rem var(--f-mono)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow"><i-en>How GPT works · Attention</i-en><i-de>Wie GPT funktioniert · Attention</i-de></span>
+  <h1><i-en>Attention lab</i-en><i-de>Attention-Labor</i-de></h1>
+  <p><i-en>A word on its own is often ambiguous. Who is "she"? To predict the next word well, every position in a text has to find out which earlier positions matter to it and gather information from them. This mechanism is called self-attention. Here you tune it yourself.</i-en><i-de>Ein Wort allein ist oft mehrdeutig. Wer ist „sie“? Um das nächste Wort gut vorherzusagen, muss jede Stelle im Text herausfinden, welche früheren Stellen für sie wichtig sind, und von dort Information einsammeln. Dieser Mechanismus heißt Self-Attention. Hier stellst du ihn selbst ein.</i-de></p>
+  <div class="levels" role="group" aria-label="Level">
+    <button data-level="1" aria-pressed="true"><i-en>High school</i-en><i-de>Schule</i-de></button><button data-level="2" aria-pressed="false"><i-en>College</i-en><i-de>Studium</i-de></button><button data-level="3" aria-pressed="false"><i-en>Expert</i-en><i-de>Experte</i-de></button>
+  </div>
+</header>
+
+<section class="station" data-station="who-listens" data-show="1 2 3">
+  <span class="num"><i-en>Station 1 · Guess first</i-en><i-de>Station 1 · Rate zuerst</i-de></span>
+  <h2><i-en>Who does "she" listen to?</i-en><i-de>Wem hört „sie“ zu?</i-de></h2>
+  <p><i-en>The sentence below contains "she". Which earlier word should "she" pay most attention to, so that the model knows what it is about?</i-en><i-de>Im Satz unten steht „sie“. Welchem früheren Wort sollte „sie“ am meisten Aufmerksamkeit schenken, damit das Modell weiß, worum es geht?</i-de></p>
+  <div class="choices" id="guessBox"></div>
+  <p class="feedback" hidden></p>
+  <p><i-en>Now tap any word. The shading shows how much attention it pays to the words before it, roughly as a trained model might. Later words are faded: it must not see them.</i-en><i-de>Jetzt tipp ein beliebiges Wort an. Die Färbung zeigt, wie viel Aufmerksamkeit es den Wörtern davor schenkt, so wie es ein trainiertes Modell ungefähr tun könnte. Spätere Wörter sind blass: Die darf es nicht sehen.</i-de></p>
+  <div class="sent" id="sent1" role="group" aria-label="Sentence"></div>
+  <p class="note" id="sent1Note"></p>
+</section>
+
+<section class="station" data-station="query-key" data-show="1 2 3">
+  <span class="num"><i-en>Station 2 · Tune it yourself</i-en><i-de>Station 2 · Selbst einstellen</i-de></span>
+  <h2><i-en>Question meets label</i-en><i-de>Frage trifft Etikett</i-de></h2>
+  <p><i-en>Every word carries a <b>label</b> (key): an arrow saying "this is what I offer". The word that is gathering sends a <b>question</b> (query): an arrow saying "this is what I am looking for". The better question and label point the same way, the more attention. <b>Task:</b> turn the question of "she" so that "she" mainly listens to "cat".</i-en><i-de>Jedes Wort trägt ein <b>Etikett</b> (Key): einen Pfeil, der sagt „das habe ich zu bieten“. Das Wort, das gerade einsammelt, schickt eine <b>Frage</b> (Query): einen Pfeil, der sagt „das suche ich“. Je besser Frage und Etikett in dieselbe Richtung zeigen, desto mehr Aufmerksamkeit. <b>Aufgabe:</b> Dreh die Frage von „sie“ so, dass „sie“ vor allem „Katze“ zuhört.</i-de></p>
+  <div class="cols">
+    <svg class="plane" id="plane" viewBox="-1.3 -1.3 2.6 2.6" role="img" aria-label="Key arrows and query arrow"></svg>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="srow"><label for="qAng"><i-en>Direction</i-en><i-de>Richtung</i-de></label><input type="range" id="qAng" min="0" max="355" step="5" value="0"><span class="v" id="qAngV"></span></div>
+      <div class="srow"><label for="qLen"><i-en>Strength</i-en><i-de>Stärke</i-de></label><input type="range" id="qLen" min="0" max="5" step="0.25" value="3"><span class="v" id="qLenV"></span></div>
+      <div class="bars" id="qkBars"></div>
+      <p class="note" id="qkScores" data-show="2 3"></p>
+      <p class="note" id="qkNote"></p>
+    </div>
+  </div>
+  <p class="note" data-show="2 3"><i-en>Scores = q · k (dot product), future set to −∞, then softmax over the row. Strength acts like a temperature: long arrows make the distribution peaked, short ones make it flat.</i-en><i-de>Punkte = q · k (Skalarprodukt), Zukunft auf −∞, dann Softmax über die Zeile. Die Stärke wirkt wie eine Temperatur: Lange Pfeile machen die Verteilung spitz, kurze machen sie flach.</i-de></p>
+</section>
+
+<section class="station" data-station="value" data-show="2 3">
+  <span class="num"><i-en>Station 3 · What is passed on?</i-en><i-de>Station 3 · Was wird übergeben?</i-de></span>
+  <h2><i-en>Value: the actual message</i-en><i-de>Value: die eigentliche Botschaft</i-de></h2>
+  <p><i-en>The label only decides <i>who</i> is heard. What is actually passed on is a third vector, the <b>value</b>. Here every value has three features. "she" receives the weighted average of the values, using the weights from station 2. Change the question there and see what "she" now knows about itself.</i-en><i-de>Das Etikett entscheidet nur, <i>wer</i> gehört wird. Was dann tatsächlich weitergegeben wird, ist ein dritter Vektor, der <b>Value</b>. Hier hat jeder Value drei Merkmale. „sie“ bekommt den gewichteten Mittelwert der Values, mit den Gewichten aus Station 2. Stell dort die Frage um und schau, was „sie“ danach über sich weiß.</i-de></p>
+  <div class="bars" id="valBars"></div>
+  <p class="note" id="valNote"></p>
+  <p class="note"><i-en>Rule of thumb: query = what I look for, key = what I offer, value = what I pass on when chosen. Every word computes all three from its own vector x with learned matrices: q = x·W<sub>Q</sub>, k = x·W<sub>K</sub>, v = x·W<sub>V</sub>.</i-en><i-de>Merksatz: Query = was ich suche, Key = was ich biete, Value = was ich weitergebe, wenn man mich wählt. Alle drei berechnet jedes Wort aus seinem eigenen Vektor x mit gelernten Matrizen: q = x·W<sub>Q</sub>, k = x·W<sub>K</sub>, v = x·W<sub>V</sub>.</i-de></p>
+</section>
+
+<section class="station" data-station="scaling" data-show="3">
+  <span class="num"><i-en>Station 4 · Why divide by √d?</i-en><i-de>Station 4 · Warum durch √d?</i-de></span>
+  <h2><i-en>Scaling</i-en><i-de>Skalierung</i-de></h2>
+  <p><i-en>In real models, queries and keys have not 2 but d = 16 to 128 dimensions. Random vectors at the start of training then give scores with variance ≈ d. Softmax over such large numbers becomes almost one-hot: each position listens to a single other one and the gradients vanish. Push d up and compare.</i-en><i-de>In echten Modellen haben Query und Key nicht 2, sondern d = 16 bis 128 Dimensionen. Zufällige Vektoren am Trainingsbeginn ergeben dann Punktzahlen mit Varianz ≈ d. Softmax über so große Zahlen wird fast one-hot: Jede Stelle hört nur noch einer einzigen zu, und die Gradienten verschwinden. Schieb d hoch und vergleiche.</i-de></p>
+  <p><b><i-en>Guess first:</i-en><i-de>Erst raten:</i-de></b> <i-en>Without scaling, d grows from 2 to 128. What happens to the softmax weights?</i-en><i-de>Ohne Skalierung wächst d von 2 auf 128. Was passiert mit den Softmax-Gewichten?</i-de></p>
+  <div class="choices gate" data-gate="scaling">
+    <button data-ok data-fb-en="Right. The scores get huge, so softmax gives almost everything to one position. Check it below." data-fb-de="Richtig. Die Punktzahlen werden riesig, also gibt Softmax fast alles einer Stelle. Prüf es unten."><i-en>They become almost one-hot: one position gets nearly everything</i-en><i-de>Sie werden fast one-hot: Eine Stelle bekommt fast alles</i-de></button>
+    <button data-fb-en="The opposite: larger scores make softmax sharper, not flatter. See below." data-fb-de="Umgekehrt: Größere Punktzahlen machen Softmax spitzer, nicht flacher. Schau unten."><i-en>They become more even</i-en><i-de>Sie werden gleichmäßiger</i-de></button>
+    <button data-fb-en="They do change: the variance of q·k grows with d. See below." data-fb-de="Doch: Die Varianz von q·k wächst mit d. Schau unten."><i-en>Nothing changes</i-en><i-de>Nichts ändert sich</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div data-gated="scaling" hidden style="display:flex;flex-direction:column;gap:14px">
+  <div class="srow"><label for="dSl"><i-en>Head size d</i-en><i-de>Kopfgröße d</i-de></label><input type="range" id="dSl" min="1" max="256" value="16"><span class="v" id="dV"></span></div>
+  <div class="row"><button class="btn ghost" id="reroll"><i-en>Roll again</i-en><i-de>Neu würfeln</i-de></button></div>
+  <div class="stats">
+    <div><span class="note"><i-en>Variance of</i-en><i-de>Varianz</i-de> q·k</span><span class="stat" id="varRaw"></span></div>
+    <div><span class="note"><i-en>Variance of</i-en><i-de>Varianz</i-de> q·k / √d</span><span class="stat" id="varScaled"></span></div>
+  </div>
+  <div class="cols">
+    <div><p class="note"><i-en>Softmax without scaling</i-en><i-de>Softmax ohne Skalierung</i-de></p><div class="bars" id="rawBars"></div></div>
+    <div><p class="note"><i-en>Softmax with 1/√d</i-en><i-de>Softmax mit 1/√d</i-de></p><div class="bars" id="scBars"></div></div>
+  </div>
+  </div>
+</section>
+
+<section class="station" data-station="positions" data-show="2 3">
+  <span class="num"><i-en>Station 5 · Word order</i-en><i-de>Station 5 · Reihenfolge</i-de></span>
+  <h2><i-en>Does attention know where a word is?</i-en><i-de>Weiß Attention, wo ein Wort steht?</i-de></h2>
+  <p><i-en>Two sentences with the same words: "dog bites man ." and "man bites dog .". The full stop at the end gathers, via attention, what came before. Compare what arrives at the full stop, with and without position information.</i-en><i-de>Zwei Sätze mit denselben Wörtern: „Hund beißt Mann .“ und „Mann beißt Hund .“. Der Punkt am Ende sammelt per Attention ein, was davor stand. Vergleiche, was beim Punkt ankommt, mit und ohne Positionsinformation.</i-de></p>
+  <div class="row"><label for="posOn"><input type="checkbox" id="posOn"> <i-en>Add position embedding</i-en><i-de>Positions-Embedding addieren</i-de></label></div>
+  <div class="cols">
+    <div><p class="note" id="posAT"></p><div class="bars" id="posA"></div></div>
+    <div><p class="note" id="posBT"></p><div class="bars" id="posB"></div></div>
+  </div>
+  <p class="same" id="posNote"></p>
+</section>
+
+<section class="station" data-station="check" data-show="1 2 3">
+  <span class="num"><i-en>Check yourself</i-en><i-de>Prüf dich</i-de></span>
+  <h2><i-en>Short questions</i-en><i-de>Kurze Fragen</i-de></h2>
+  <div data-show="1 2 3">
+    <p><i-en>Who decides which word "she" listens to?</i-en><i-de>Wer legt fest, welchem Wort „sie“ zuhört?</i-de></p>
+    <div class="choices">
+      <button data-ok data-fb-en="Right. Nobody programs grammar rules. The matrices for query and key are tuned during training so that good predictions come out." data-fb-de="Richtig. Niemand programmiert Grammatikregeln. Die Matrizen für Query und Key werden beim Training so eingestellt, dass gute Vorhersagen herauskommen."><i-en>Learned numbers that produce question and label</i-en><i-de>Gelernte Zahlen, die Frage und Etikett erzeugen</i-de></button>
+      <button data-mis="attention-is-nearest" data-fb-en="No. Closeness alone does not decide: &quot;she&quot; listens to &quot;cat&quot;, although &quot;milk&quot; and &quot;because&quot; are closer." data-fb-de="Nein. Nähe allein entscheidet nicht: „sie“ hört „Katze“ zu, obwohl „Milch“ und „weil“ näher stehen."><i-en>Always the nearest word</i-en><i-de>Immer das nächstgelegene Wort</i-de></button>
+      <button data-mis="attention-is-programmed" data-fb-en="No. There are no built-in rules. Everything the model knows about references is in learned numbers." data-fb-de="Nein. Es gibt keine eingebauten Regeln. Alles, was das Modell über Bezüge weiß, steckt in gelernten Zahlen."><i-en>Grammar rules written by people</i-en><i-de>Von Menschen geschriebene Grammatikregeln</i-de></button>
+    </div>
+    <p class="feedback" hidden></p>
+  </div>
+  <div data-show="2 3">
+    <p><i-en>A batch holds four text chunks. Can a word in chunk 1 read something from chunk 3 via attention?</i-en><i-de>Ein Batch enthält vier Textausschnitte. Kann ein Wort aus Ausschnitt 1 per Attention etwas aus Ausschnitt 3 lesen?</i-de></p>
+    <div class="choices">
+      <button data-ok data-fb-en="Right. The chunks of a batch are only computed at the same time, but completely separately. Attention works only inside one chunk." data-fb-de="Richtig. Die Ausschnitte eines Batches werden nur gleichzeitig gerechnet, aber völlig getrennt. Attention wirkt nur innerhalb eines Ausschnitts."><i-en>No, each chunk is on its own</i-en><i-de>Nein, jeder Ausschnitt ist für sich</i-de></button>
+      <button data-mis="batch-elements-interact" data-fb-en="No. The batch is only a trick for speed. The chunks never talk to each other." data-fb-de="Nein. Der Batch ist nur ein Rechentrick für Tempo. Die Ausschnitte sprechen nie miteinander."><i-en>Yes, all words in the batch see each other</i-en><i-de>Ja, alle Wörter im Batch sehen sich</i-de></button>
+      <button data-mis="batch-elements-interact" data-fb-en="No, not across earlier chunks either. Every chunk is its own independent example." data-fb-de="Nein, auch nicht über frühere Ausschnitte. Jeder Ausschnitt ist ein eigenes, unabhängiges Beispiel."><i-en>Only if chunk 3 comes earlier in the batch</i-en><i-de>Nur wenn Ausschnitt 3 früher im Batch steht</i-de></button>
+    </div>
+    <p class="feedback" hidden></p>
+  </div>
+  <div data-show="3">
+    <p><i-en>What distinguishes cross-attention from self-attention?</i-en><i-de>Was unterscheidet Cross-Attention von Self-Attention?</i-de></p>
+    <div class="choices">
+      <button data-ok data-fb-en="Right. In cross-attention the queries come from the sequence itself, but keys and values come from another one, such as the encoder of a translator." data-fb-de="Richtig. Bei Cross-Attention kommen die Queries aus der eigenen Folge, Keys und Values aber aus einer anderen, etwa dem Encoder eines Übersetzers."><i-en>Keys and values come from another source</i-en><i-de>Keys und Values kommen aus einer anderen Quelle</i-de></button>
+      <button data-fb-en="No. Masking is a separate question (decoder or encoder), independent of self or cross." data-fb-de="Nein. Ob maskiert wird, ist eine eigene Frage (Decoder oder Encoder), unabhängig von self oder cross."><i-en>Cross-attention has no mask</i-en><i-de>Cross-Attention hat keine Maske</i-de></button>
+      <button data-fb-en="No. Both use query, key, value and softmax. The difference is where keys and values come from." data-fb-de="Nein. Beide verwenden Query, Key und Value und Softmax. Der Unterschied ist, woher Keys und Values stammen."><i-en>Cross-attention uses no softmax</i-en><i-de>Cross-Attention verwendet keine Softmax</i-de></button>
+    </div>
+    <p class="feedback" hidden></p>
+  </div>
+</section>
+<footer><i-en>Simulator "Attention lab"</i-en><i-de>Simulator „Attention-Labor“</i-de> · Personal Tutor Format</footer>
+</div>
+
+<script src="ptf-sim.js"></script>
+<script>
+const SIM_ID = "ptf:sim/attention-lab", SIM_VERSION = "1.1.0";
+const SIM_LOCALES = ["en", "de"];
+const PTF_LEVELS = {"1": "highschool", "2": "college", "3": "expert"};
+/* Shared PTF glue: levels, stations, snapshot (SIMULATOR-SPEC.md §4) */
+function setLevel(l){
+  document.querySelectorAll(".levels button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.level===l));
+  CURRENT_LEVEL=l;
+  if (FOCUS && !stationsAtLevel().includes(FOCUS)) FOCUS = stationsAtLevel()[0] || null;
+  applyVisibility();
+}
+const stationsAtLevel = () => [...document.querySelectorAll("section[data-station]")].filter(s => s.dataset.show.split(" ").includes(CURRENT_LEVEL)).map(s => s.dataset.station);
+/* Focus mode (SIMULATOR-SPEC.md §4.7): one station at a time with Back / Next. */
+let FOCUS = null;
+function applyVisibility() {
+  document.querySelectorAll("[data-show]").forEach(s => {
+    const lvl = s.dataset.show.split(" ").includes(CURRENT_LEVEL);
+    s.hidden = !lvl || (FOCUS !== null && s.matches("section[data-station]") && s.dataset.station !== FOCUS);
+  });
+  document.body.classList.toggle("focused", FOCUS !== null);
+  const nav = document.getElementById("focusNav");
+  if (!nav) return;
+  nav.hidden = FOCUS === null;
+  if (FOCUS === null) return;
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS);
+  document.getElementById("focusBack").disabled = i <= 0;
+  document.getElementById("focusNext").disabled = i >= list.length - 1;
+  document.getElementById("focusPos").textContent = `${i + 1} / ${list.length}`;
+}
+function setFocus(id) { FOCUS = id; applyVisibility(); }
+function moveFocus(step) {
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS), next = list[i + step];
+  if (!next) return;
+  setFocus(next);
+  ptf.event("experienced", { station: next, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: next } });
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+(function buildFocusNav() {
+  const nav = document.createElement("nav");
+  nav.id = "focusNav"; nav.className = "focus-nav"; nav.hidden = true;
+  nav.setAttribute("aria-label", "Stations");
+  nav.innerHTML = `<button class="btn ghost" id="focusBack"><i-en>Back</i-en><i-de>Zurück</i-de></button><span class="mono note" id="focusPos"></span><button class="btn" id="focusNext"><i-en>Next</i-en><i-de>Weiter</i-de></button><button class="btn ghost" id="focusAll"><i-en>Show all</i-en><i-de>Alles zeigen</i-de></button>`;
+  const footer = document.querySelector(".wrap > footer");
+  footer ? footer.before(nav) : document.querySelector(".wrap").append(nav);
+  nav.querySelector("#focusBack").onclick = () => moveFocus(-1);
+  nav.querySelector("#focusNext").onclick = () => moveFocus(1);
+  nav.querySelector("#focusAll").onclick = () => setFocus(null);
+  const start = document.createElement("button");
+  start.id = "focusStart"; start.className = "btn ghost";
+  start.innerHTML = "<i-en>Step by step</i-en><i-de>Schritt für Schritt</i-de>";
+  start.onclick = () => { setFocus(stationsAtLevel()[0]); ptf.event("experienced", { station: FOCUS, data: { focus: FOCUS } }); };
+  const levels = document.querySelector("header .levels");
+  const row = document.createElement("div"); row.className = "row";
+  levels.before(row); row.append(levels, start);
+})();
+let CURRENT_LEVEL="1", LOCALE="en", READY=false;
+/* UI language (en, de): static text as <i-en>/<i-de> pairs, dynamic text via L(en, de). */
+const L = (en, de) => LOCALE === "de" ? de : en;
+const fmt = (x, d = 2) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+/* Each simulator declares SIM_LOCALES (matching "lang" in sim.json); unsupported locales fall back to English. */
+function setLocale(loc) {
+  LOCALE = /^de/i.test(loc || "") && SIM_LOCALES.includes("de") ? "de" : "en";
+  document.documentElement.lang = LOCALE;
+  if (READY && typeof rerender === "function") rerender();
+}
+setLocale(navigator.language);
+const completed=new Set();
+const ptf = PTF.connect({
+  id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS["1"],
+  onInit(ctx) {
+    if (ctx.locale) setLocale(ctx.locale);
+    const lvl = (ctx.state && ctx.state.level) || ctx.level;
+    if (lvl) applyLevel(lvl);
+    if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus === true });
+  },
+  onSetLevel: applyLevel,
+  onGoto: gotoStation,
+  snapshot() {
+    const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `UI language: ${LOCALE}`, `Visible stations: ${shown.join(", ")}`];
+    if (FOCUS) parts.push(`Focus mode on station: ${FOCUS}`);
+    if (completed.size) parts.push(`Completed: ${[...completed].join(", ")}`);
+    if (typeof simSnapshot === "function") parts.push(simSnapshot());
+    return parts.join(". ");
+  }
+});
+function applyLevel(level) {
+  const n = Object.keys(PTF_LEVELS).find(k => PTF_LEVELS[k] === level);
+  if (n) setLevel(n);
+}
+function gotoStation(id, opts) {
+  const s = id ? document.querySelector(`section[data-station="${id}"]`) : null;
+  if (opts && opts.focus === false) setFocus(null);
+  if (!s) return;
+  if (!s.dataset.show.split(" ").includes(CURRENT_LEVEL)) setLevel(s.dataset.show.split(" ")[0]);
+  if (opts && opts.focus === true) { setFocus(id); window.scrollTo({ top: 0, behavior: "auto" }); return; }
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", () => {
+  setLevel(b.dataset.level);
+  const level = PTF_LEVELS[b.dataset.level];
+  ptf.event("level_changed", { level });
+  ptf.saveState({ level });
+}));
+function answered(station, correct, misconception, response) {
+  const result = { correct };
+  if (misconception && !correct) result.misconception = misconception;
+  if (response !== undefined) result.response = String(response);
+  ptf.event("answered", { station, level: PTF_LEVELS[CURRENT_LEVEL], result });
+}
+function done(station) {
+  if (completed.has(station)) return;
+  completed.add(station);
+  ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
+}
+/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb-en / data-fb-de,
+   followed by <p class="feedback" hidden>. A station completes when all its visible boxes are answered correctly. Call initChoices() once the DOM is built. */
+function initChoices() {
+document.querySelectorAll("[data-station] .choices").forEach(box => {
+  const sec = box.closest("[data-station]"), station = sec.dataset.station, fb = box.nextElementSibling;
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    const ok = b.hasAttribute("data-ok");
+    if (box.dataset.gate && box.dataset.answered) return;
+    box.dataset.answered = "1";
+    box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
+    b.classList.add(ok ? "right" : "wrong");
+    if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+    answered(station, ok, b.dataset.mis, (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim());
+    if (ok) box.dataset.solved = "1";
+    /* Predict, then reveal (PEDAGOGY.md §5): a .choices.gate box unhides [data-gated="<its data-gate>"] after any answer and never completes the station. */
+    if (box.dataset.gate) document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => { el.hidden = false; });
+    if (typeof onGuess === "function" && box.dataset.gate) onGuess(box.dataset.gate, ok);
+    const graded = [...sec.querySelectorAll(".choices:not(.gate)")].filter(x => !x.closest("[hidden]"));
+    if (graded.length && graded.every(x => x.dataset.solved)) done(station);
+  }));
+});
+}
+setLevel("1");
+
+const $ = id => document.getElementById(id);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const q2 = w => L(`"${w}"`, `„${w}“`);
+const softmax = a => { const m = Math.max(...a), e = a.map(x => Math.exp(x - m)), s = e.reduce((x, y) => x + y, 0); return e.map(x => x / s); };
+const W_EN = ["The", "cat", "drinks", "milk", "because", "she", "is", "thirsty"];
+const W_DE = ["Die", "Katze", "trinkt", "Milch", "weil", "sie", "Durst", "hat"];
+const words = () => LOCALE === "de" ? W_DE : W_EN;
+const SIE = 5, KATZE = 1, MILK = 3;
+/* Illustrative attention pattern of a trained head (rows sum to 1, causal). */
+const PATTERN = [
+  [1],
+  [.35, .65],
+  [.08, .62, .30],
+  [.05, .15, .45, .35],
+  [.05, .15, .30, .30, .20],
+  [.04, .62, .08, .14, .06, .06],
+  [.02, .18, .30, .10, .10, .25, .05],
+  [.02, .10, .08, .05, .10, .30, .30, .05]
+];
+/* Station 1 */
+function renderGuess() {
+  $("guessBox").innerHTML = W_EN.slice(0, SIE).map((w, j) => {
+    const en = j === KATZE ? 'Right. "she" means the cat. For the model to predict the next word well, information from "cat" has to arrive at "she".'
+      : j === MILK ? 'Close by, but milk is not thirsty. "she" refers to the cat, and that matters more than closeness.'
+      : "Probably not. Think: who is thirsty?";
+    const de = j === KATZE ? "Richtig. „sie“ meint die Katze. Damit das Modell das nächste Wort gut vorhersagt, muss Information von „Katze“ bei „sie“ ankommen."
+      : j === MILK ? "Nahe dran, aber Milch hat keinen Durst. „sie“ bezieht sich auf die Katze, und das ist mehr wert als Nähe."
+      : "Eher nicht. Überleg: Wer hat Durst?";
+    return `<button ${j === KATZE ? "data-ok" : `data-mis="${j === MILK || j === 4 ? "attention-is-nearest" : ""}"`} data-fb-en='${en}' data-fb-de="${de}"><i-en>${w}</i-en><i-de>${W_DE[j]}</i-de></button>`;
+  }).join("");
+}
+let sel1 = SIE;
+function renderSent() {
+  const W = words(), row = PATTERN[sel1];
+  $("sent1").innerHTML = W.map((w, j) => {
+    const vis = j <= sel1, a = vis ? row[j] : 0;
+    const bg = vis ? `background:color-mix(in srgb, var(--accent) ${Math.round(a * 100)}%, var(--bg))` : "";
+    return `<button class="tok ${vis ? "" : "future"}" aria-pressed="${j === sel1}" data-j="${j}" style="${bg}"><b>${w}</b><small>${vis ? fmt(a * 100, 0) + " %" : "–"}</small></button>`;
+  }).join("");
+  const top = row.indexOf(Math.max(...row));
+  $("sent1Note").textContent = L(`${q2(W[sel1])} listens most to ${q2(W[top])} (${fmt(row[top] * 100, 0)} %).`, `${q2(W[sel1])} hört am meisten auf ${q2(W[top])} (${fmt(row[top] * 100, 0)} %).`)
+    + (sel1 === 0 ? L(" The first word has no past and only hears itself.", " Das erste Wort hat keine Vergangenheit und hört nur sich selbst.") : "");
+}
+$("sent1").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; sel1 = +b.dataset.j; renderSent(); ptf.event("experienced", { station: "who-listens", data: { token: W_EN[sel1] } }); });
+
+/* Station 2 */
+const KEYS = [[.2, .1], [.3, 1], [-.9, .3], [.95, .1], [-.3, -.8], [.2, .6], [.7, -.5], [-.8, -.2]];
+const VALUES = [[.1, .1, 0], [1, 0, 0], [0, .2, 1], [0, 1, 0], [0, 0, .1], [.3, 0, 0], [.2, .4, .3], [0, 0, .6]];
+let qWeights = [];
+function arrow(x, y, color, w, label, lx = 1.12, dy = .04) {
+  const ex = x, ey = -y;
+  return `<line x1="0" y1="0" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/>` +
+    `<circle cx="${ex}" cy="${ey}" r="${w * 1.6}" fill="${color}"/>` +
+    (label ? `<text x="${ex * lx}" y="${ey * lx + dy}" font-size=".11" fill="${color}" text-anchor="middle">${label}</text>` : "");
+}
+function renderQK() {
+  const W = words(), ang = +$("qAng").value * Math.PI / 180, len = +$("qLen").value;
+  const q = [Math.cos(ang) * len, Math.sin(ang) * len];
+  const vis = W.slice(0, SIE + 1).map((_, j) => j);
+  const scores = vis.map(j => q[0] * KEYS[j][0] + q[1] * KEYS[j][1]);
+  qWeights = softmax(scores);
+  let svg = `<circle cx="0" cy="0" r="1" fill="none" stroke="${css("--line")}" stroke-width=".01"/>` +
+    `<line x1="-1.25" y1="0" x2="1.25" y2="0" stroke="${css("--line")}" stroke-width=".008"/><line x1="0" y1="-1.25" x2="0" y2="1.25" stroke="${css("--line")}" stroke-width=".008"/>`;
+  vis.forEach(j => { svg += arrow(KEYS[j][0], KEYS[j][1], css("--ink"), .012 + qWeights[j] * .03, W[j]); });
+  const ql = Math.min(1.2, .25 + len * .19);
+  svg += arrow(Math.cos(ang) * ql, Math.sin(ang) * ql, css("--warn"), .03, L("query", "Frage"), .55, .16);
+  $("plane").innerHTML = svg;
+  $("qAngV").textContent = Math.round(+$("qAng").value) + "°"; $("qLenV").textContent = fmt(len, 2);
+  $("qkBars").innerHTML = vis.map(j => `<div class="bar"><span>${W[j]}</span><div><div class="fill" style="width:${(qWeights[j] * 100).toFixed(1)}%"></div></div><span class="v">${fmt(qWeights[j] * 100, 0)} %</span></div>`).join("");
+  $("qkScores").textContent = L("Scores: ", "Punkte: ") + vis.map(j => W[j] + " " + fmt(scores[j], 1)).join(", ");
+  const win = qWeights[KATZE] > .5, pc = fmt(qWeights[KATZE] * 100, 0);
+  $("qkNote").textContent = win ? L(`Done: "she" listens to "cat" with ${pc} %.`, `Geschafft: „sie“ hört zu ${pc} % auf „Katze“.`)
+    : L(`"cat" gets ${pc} %. Goal: more than 50 %.`, `„Katze“ bekommt ${pc} %. Ziel: mehr als 50 %.`);
+  if (win && !completed.has("query-key")) { answered("query-key", true, null, `angle ${$("qAng").value}`); done("query-key"); }
+  renderValue();
+}
+function renderValue() {
+  const FEAT = [L("living being", "Lebewesen"), L("drink", "Getränk"), L("action", "Tätigkeit")];
+  const out = FEAT.map((_, f) => qWeights.reduce((a, w, j) => a + w * VALUES[j][f], 0));
+  $("valBars").innerHTML = FEAT.map((n, f) => `<div class="bar"><span>${n}</span><div><div class="fill" style="width:${Math.min(100, out[f] * 100).toFixed(1)}%"></div></div><span class="v">${fmt(out[f], 2)}</span></div>`).join("");
+  $("valNote").textContent = out[0] > .55
+    ? L('Now "she" carries the feature "living being": information from "cat" has arrived. The next word can build on it.', "Jetzt trägt „sie“ das Merkmal „Lebewesen“: Information von „Katze“ ist angekommen. Das nächste Wort kann darauf aufbauen.")
+    : L('"she" has taken over little from the living being "cat" so far.', "„sie“ hat noch wenig vom Lebewesen „Katze“ übernommen.");
+  if (out[0] > .55) done("value");
+}
+$("qAng").addEventListener("input", renderQK); $("qLen").addEventListener("input", renderQK);
+
+/* Station 4 */
+let seed = 7;
+function rng() { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }
+const gauss = () => Math.sqrt(-2 * Math.log(1 - rng())) * Math.cos(2 * Math.PI * rng());
+const vec = d => Array.from({ length: d }, gauss);
+const dot = (a, b) => a.reduce((s, x, i) => s + x * b[i], 0);
+let scaleSample = null;
+function sampleScale() {
+  const d = +$("dSl").value;
+  let s1 = 0, s2 = 0, n = 300;
+  for (let i = 0; i < n; i++) { const x = dot(vec(d), vec(d)); s1 += x; s2 += x * x; }
+  const q = vec(d);
+  scaleSample = { d, v: s2 / n - (s1 / n) ** 2, sc: Array.from({ length: 8 }, () => dot(q, vec(d))) };
+}
+function renderScale() {
+  const { d, v, sc } = scaleSample; $("dV").textContent = d;
+  $("varRaw").textContent = fmt(v, 1); $("varScaled").textContent = fmt(v / d, 2);
+  const raw = softmax(sc), scaled = softmax(sc.map(x => x / Math.sqrt(d)));
+  const bars = p => p.map((x, j) => `<div class="bar ${x > .8 ? "warm" : ""}"><span>${L("Pos.", "Stelle")} ${j + 1}</span><div><div class="fill" style="width:${(x * 100).toFixed(1)}%"></div></div><span class="v">${fmt(x * 100, 0)} %</span></div>`).join("");
+  $("rawBars").innerHTML = bars(raw); $("scBars").innerHTML = bars(scaled);
+  if (d >= 64) done("scaling");
+}
+$("dSl").addEventListener("input", () => { sampleScale(); renderScale(); });
+$("reroll").onclick = () => { seed = Math.floor(Math.random() * 1e9); sampleScale(); renderScale(); };
+
+/* Station 5 */
+const EMB = { dog: [1, 0, .2], bites: [0, 1, 0], man: [.2, 0, 1], ".": [.3, .3, .3] };
+const DE5 = { dog: "Hund", bites: "beißt", man: "Mann", ".": "." };
+const POS = [[.9, -.4, 0], [0, .1, .5], [-.6, .2, .8], [0, 0, 0]];
+function attendLast(ws, usePos) {
+  const xs = ws.map((w, i) => EMB[w].map((x, f) => x + (usePos ? POS[i][f] : 0)));
+  const q = xs[xs.length - 1], p = softmax(xs.map(x => dot(q, x) * 2));
+  return [0, 1, 2].map(f => p.reduce((a, w, j) => a + w * xs[j][f], 0));
+}
+function renderPos() {
+  const A = ["dog", "bites", "man", "."], B = ["man", "bites", "dog", "."], on = $("posOn").checked;
+  const say = s => LOCALE === "de" ? `„${s.map(w => DE5[w]).join(" ")}“` : `"${s.join(" ")}"`;
+  $("posAT").textContent = say(A); $("posBT").textContent = say(B);
+  const a = attendLast(A, on), b = attendLast(B, on), F = L("feature", "Merkmal");
+  const bars = o => o.map((x, f) => `<div class="bar"><span>${F} ${"ABC"[f]}</span><div><div class="fill" style="width:${Math.min(100, Math.abs(x) * 60).toFixed(1)}%"></div></div><span class="v">${fmt(x, 2)}</span></div>`).join("");
+  $("posA").innerHTML = bars(a); $("posB").innerHTML = bars(b);
+  const same = a.every((x, i) => Math.abs(x - b[i]) < 1e-9);
+  $("posNote").textContent = same
+    ? L("Identical. Without position information attention only sees a set of words: who bites whom is lost.", "Identisch. Ohne Positionsinformation sieht Attention nur eine Menge von Wörtern: Wer wen beißt, geht verloren.")
+    : L("Different. Only the added position tells the model which word stood where.", "Verschieden. Erst die addierte Position sagt dem Modell, welches Wort wo stand.");
+  if (on) done("positions");
+}
+$("posOn").addEventListener("change", () => { renderPos(); ptf.event("experienced", { station: "positions", data: { positional: $("posOn").checked } }); });
+
+function simSnapshot() {
+  return `Station 1 selected word: ${W_EN[sel1]}. Query angle ${$("qAng").value} deg, strength ${$("qLen").value}, weight on 'cat' ${Math.round(qWeights[KATZE] * 100)} %. Head size d = ${$("dSl").value}. Positional embedding ${$("posOn").checked ? "on" : "off"}`;
+}
+function rerender() { renderSent(); renderQK(); renderScale(); renderPos(); }
+renderGuess(); sampleScale(); rerender(); initChoices(); READY = true;
+</script>
+</body>
+</html>
