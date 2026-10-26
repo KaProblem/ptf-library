@@ -51,7 +51,7 @@ sources:
     title: "Vaswani et al.: Attention Is All You Need"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.2.1
+version: 0.2.2
 license: CC-BY-SA-4.0
 ---
 
@@ -197,11 +197,11 @@ implement in-context copying.
   "level": "highschool",
   "purpose": "transfer",
   "title": "One attention step by hand",
-  "intro": "The query of the current token is q = (1, 0). Three visible tokens have keys k1 = (2, 0), k2 = (0, 1), k3 = (1, 1).",
-  "columns": ["Token", "q · k", "e^(q·k)", "Weight"],
-  "rows": [["1", "2", "7.39", "7.39 / 11.11 = 0.665"], ["2", "0", "1.00", "1.00 / 11.11 = 0.090"], ["3", "1", "2.72", "2.72 / 11.11 = 0.245"]],
-  "result": { "label": "Most attention goes to", "value": "token 1 (66.5 %)" },
-  "explanation": "Dot product, softmax, done. The output is then 0.665·v1 + 0.090·v2 + 0.245·v3."
+  "intro": "The query of the current token is q = (1, 0). Three visible tokens have keys k1 = (2, 0), k2 = (0, 1), k3 = (1, 1). The vectors have d = 2 numbers, so the scores are divided by √2 ≈ 1.41 before the softmax.",
+  "columns": ["Token", "q · k", "q · k / √2", "e^(score)", "Weight"],
+  "rows": [["1", "2", "1.41", "4.11", "4.11 / 7.14 = 0.576"], ["2", "0", "0.00", "1.00", "1.00 / 7.14 = 0.140"], ["3", "1", "0.71", "2.03", "2.03 / 7.14 = 0.284"]],
+  "result": { "label": "Most attention goes to", "value": "token 1 (57.6 %)" },
+  "explanation": "Dot product, scale by 1/√d, softmax, done. The output is then 0.576·v1 + 0.140·v2 + 0.284·v3. Without the scaling the weights would be 0.665, 0.090 and 0.245: dividing by √d makes the softmax softer, which is exactly its job."
 }
 ```
 

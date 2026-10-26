@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Fixed
+- `loss-lens` 1.1.0: the simulator now tells the tutor what the learner did. Every station emits `experienced` with the tried values (p, text, distribution, loss), the quiz is checkable multiple choice with `answered` and misconception IDs, stations emit `station_completed`, the snapshot describes the current values instead of only the visible stations, the whole experiment is saved via `ptf/state` and restored, and the simulator supports focus mode (starts at station 1, Back/Next, progress row, `goto { focus }`).
+- `next-char-lab` 2.1.0: follows `goto { focus }` and starts in focus mode, so a path step shows one station instead of six; own texts with emoji no longer break the lab (vocabulary, counting and slicing all split text into code points); every station reports `experienced` and `station_completed`; richer snapshot; full state incl. a custom corpus up to 30,000 characters is saved and restored; the source reference in the footer is gone (lessons are self-contained).
+- `training-loop` 1.1.0: resume after a reload. The state holds lookups, the nudged example and its learning rate, training steps (replayed deterministically), generated text, quiz answers, completed stations and focus; starts in focus mode.
+- `self-attention` 0.2.2: the hand calculation `tiny-attention` now scales the scores by 1/√d as the element's formula does (first weight 57.6 % instead of 66.5 %) and says what the scaling changes.
+
+### Changed
+- Self-tests of the new versions check the tutor contract: events per station, exactly one visible station after a focused `goto`, snapshot contents, and a resume round trip (`reload`), using the new `ptf-selftest` steps (ptf-spec SIMULATOR-SPEC.md §6). `llm-basics` 0.3.2 locks the new versions.
+- CI pins every tool: ptf-spec by commit (`PTF_SPEC_REF`), GitHub Actions by commit SHA, the runner image, Node, Python, Playwright and PyTorch by exact version.
+
 ### Added
 - Wikidata subject anchors (`about`, ptf-spec SPEC.md §6.6) for 16 of 17 learning elements, looked up and verified against Wikidata (`causal-mask` has no matching item). `llm-basics` 0.3.1, `gravity` 0.1.1, element patch versions bumped. CI verifies all IDs with `ptf-wikidata verify`.
 - CONTRIBUTING.md and pull request template: contributors are responsible for their content and its legal compliance, license contributions under the repository's licenses, and confirm a contributor statement in every PR.

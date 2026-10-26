@@ -1,0 +1,141 @@
+{
+  "steps": [
+    {
+      "init": {
+        "level": "highschool"
+      }
+    },
+    {
+      "expectStations": [
+        "lookup"
+      ]
+    },
+    {
+      "click": "#focusAll"
+    },
+    {
+      "expectText": "Look up a row"
+    },
+    {
+      "click": "#lkTokens button[data-i='2']"
+    },
+    {
+      "click": "#lkTokens button[data-i='1']"
+    },
+    {
+      "expectText": "Every row is the same"
+    },
+    {
+      "expectEvent": "station_completed"
+    },
+    {
+      "click": "#ndStep"
+    },
+    {
+      "click": "#ndStep"
+    },
+    {
+      "expectText": "the right answer went up"
+    },
+    {
+      "click": "#tr100"
+    },
+    {
+      "expectText": "The table has learned all a bigram model can learn"
+    },
+    {
+      "click": "[data-lr='40']"
+    },
+    {
+      "click": "#tr10"
+    },
+    {
+      "expectText": "overshoots"
+    },
+    {
+      "click": "#gnRun"
+    },
+    {
+      "expectEvent": "experienced"
+    },
+    {
+      "click": "[data-level='2']"
+    },
+    {
+      "expectEvent": "level_changed"
+    },
+    {
+      "expectText": "Probabilities after training"
+    },
+    {
+      "click": "#focusStart"
+    },
+    {
+      "expectStations": [
+        "lookup"
+      ]
+    },
+    {
+      "click": "#focusNext"
+    },
+    {
+      "expectStations": [
+        "nudge"
+      ]
+    },
+    {
+      "expectText": "Nudge the numbers"
+    },
+    {
+      "goto": {
+        "station": "check",
+        "focus": true
+      }
+    },
+    {
+      "expectStations": [
+        "check"
+      ]
+    },
+    {
+      "click": "[data-station='check'] .choices button[data-mis='training-stores-text']"
+    },
+    {
+      "expectEvent": {
+        "verb": "answered",
+        "station": "check"
+      }
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "Training: 10 steps at learning rate 40",
+          "Nudge example",
+          "after 2 steps",
+          "Quiz: question 1 wrong"
+        ]
+      }
+    },
+    {
+      "click": "#focusBack"
+    },
+    {
+      "reload": true
+    },
+    {
+      "expectStations": [
+        "generate"
+      ]
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "Training: 10 steps at learning rate 40"
+        ]
+      }
+    },
+    {
+      "expectNoError": true
+    }
+  ]
+}
