@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Residual-Autobahn</title>
+<style>
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
+  --accent:#0E6E68; --accent-soft:#D5ECEA; --warn:#C2410C; --warn-soft:#FBE3D6;
+  --f-display:"Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.3rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+header{display:flex;flex-direction:column;gap:12px}
+.levels{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start;background:var(--surface);max-width:100%}
+.levels button{font:600 1rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:10px 16px;min-height:44px;cursor:pointer}
+.levels button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.station{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.station .num{font:600 .8rem var(--f-mono);color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:600 .95rem var(--f-body);min-height:44px;padding:8px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--accent)}
+button.btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-height:44px;min-width:0}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+label{color:var(--muted);font-size:.95rem}
+.note{color:var(--muted);font-size:.95rem}
+.stat{font:600 1.5rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:24px}
+.stats div{display:flex;flex-direction:column}
+.scroll{overflow-x:auto;max-width:100%}
+.out{font:.95rem/1.5 var(--f-mono);white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px}
+.feedback{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:4px}
+.feedback.bad{border-color:var(--warn);background:var(--warn-soft)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices button{text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.choices button.right{border-color:var(--accent);background:var(--accent-soft)}
+.choices button.wrong{border-color:var(--warn);background:var(--warn-soft)}
+table.grid{border-collapse:collapse;font:.85rem var(--f-mono);font-variant-numeric:tabular-nums}
+table.grid th{color:var(--muted);font-weight:600;padding:4px 6px}
+table.grid td{width:46px;height:40px;text-align:center;border:1px solid var(--line);padding:0}
+table.grid td button{width:100%;height:100%;min-height:40px;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.bars{display:flex;flex-direction:column;gap:4px;font:.9rem var(--f-mono)}
+.bar{display:grid;grid-template-columns:5.5em 1fr 4em;gap:8px;align-items:center}
+.bar .fill{height:18px;background:var(--accent);border-radius:3px;min-width:2px}
+.bar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.tok{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:4px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font:1rem var(--f-mono);color:var(--ink);cursor:pointer}
+.tok[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+svg text{font-family:var(--f-mono)}
+details summary{cursor:pointer;font-weight:600;min-height:32px}
+footer{color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+.srow{display:grid;grid-template-columns:7.5em 1fr 4.5em;gap:10px;align-items:center}
+.srow .v{text-align:right;font:600 .95rem var(--f-mono);font-variant-numeric:tabular-nums}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;align-items:start}
+.lane{display:flex;flex-direction:column;gap:6px}
+.lane .bar{grid-template-columns:7em 1fr 5em}
+.bar.warm .fill{background:var(--warn)}
+.neurons{display:grid;grid-template-columns:repeat(12,1fr);gap:6px;max-width:420px}
+.neurons i{aspect-ratio:1;border-radius:50%;background:var(--accent);display:block}
+.neurons i.off{background:transparent;border:1px dashed var(--muted)}
+canvas{display:block;max-width:100%;height:auto}
+select{font:1rem var(--f-body);min-height:44px;padding:8px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);max-width:100%}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow">Wie GPT funktioniert · Tiefe</span>
+  <h1>Die Residual-Autobahn</h1>
+  <p>Ein Block allein ist schwach. Stapelt man aber viele Blöcke übereinander, wird das Training plötzlich schwierig: Das Lernsignal kommt unten kaum noch an. Drei kleine Tricks lösen das: Residualverbindungen, LayerNorm und Dropout. Danach kann man das Modell groß machen.</p>
+  <div class="levels" role="group" aria-label="Stufe">
+    <button data-level="1" aria-pressed="true">Schule</button><button data-level="2" aria-pressed="false">Studium</button><button data-level="3" aria-pressed="false">Experte</button>
+  </div>
+</header>
+
+<section class="station" data-station="deep-signal" data-show="1 2 3">
+  <span class="num">Station 1 · Stille Post</span>
+  <h2>Kommt das Lernsignal unten an?</h2>
+  <p>Beim Training läuft ein Korrektursignal (der Gradient) vom Ausgang rückwärts durch alle Schichten. Ohne Abkürzung wird es in jeder Schicht mit einem Faktor multipliziert, wie bei stiller Post. Mit einer Residualverbindung gibt es zusätzlich eine Autobahn: Jeder Block <i>addiert</i> nur etwas zum Strom, und das Signal kann direkt durchfahren. Stell Tiefe und Faktor ein.</p>
+  <div class="srow"><label for="depth">Anzahl Schichten</label><input type="range" id="depth" min="1" max="60" value="12"><span class="v" id="depthV"></span></div>
+  <div class="srow"><label for="fac">Faktor pro Schicht</label><input type="range" id="fac" min="0.5" max="1.5" step="0.05" value="0.8"><span class="v" id="facV"></span></div>
+  <div class="cols">
+    <div class="lane"><p class="note">Ohne Residual</p><div class="bars" id="noRes"></div></div>
+    <div class="lane"><p class="note">Mit Residual</p><div class="bars" id="withRes"></div></div>
+  </div>
+  <p class="note" id="sigNote"></p>
+  <p class="note" data-show="2 3">Rechnung: Ohne Residual ist der Gradient ein Produkt ∏ f<sub>l</sub>, er verschwindet (f &lt; 1) oder explodiert (f &gt; 1) exponentiell. Mit x<sub>l+1</sub> = x<sub>l</sub> + Block(x<sub>l</sub>) ist jede Ableitung 1 + Block′. Ist der Block am Anfang klein initialisiert, bleibt das Produkt nahe 1. Hier: Block′ = (f − 1) · 0,1.</p>
+</section>
+
+<section class="station" data-station="layer-norm" data-show="1 2 3">
+  <span class="num">Station 2 · Ordnung halten</span>
+  <h2>LayerNorm</h2>
+  <p>Die Zahlen im Vektor eines Wortes können nach vielen Blöcken sehr groß oder sehr klein werden. LayerNorm bringt sie für jedes Wort einzeln zurück: Mittelwert 0, Streuung 1. Danach darf das Modell mit zwei gelernten Zahlen nachjustieren. Mach die Werte wild und schau, was herauskommt.</p>
+  <div class="row"><button class="btn ghost" id="wild">Wilde Werte</button><button class="btn ghost" id="tame">Ruhige Werte</button></div>
+  <div class="cols">
+    <div class="lane"><p class="note">Vorher</p><div class="bars" id="lnIn"></div></div>
+    <div class="lane"><p class="note">Nachher</p><div class="bars" id="lnOut"></div></div>
+  </div>
+  <div data-show="2 3" style="display:flex;flex-direction:column;gap:6px">
+    <div class="srow"><label for="gam">γ (Skala)</label><input type="range" id="gam" min="0" max="3" step="0.1" value="1"><span class="v" id="gamV"></span></div>
+    <div class="srow"><label for="bet">β (Verschiebung)</label><input type="range" id="bet" min="-2" max="2" step="0.1" value="0"><span class="v" id="betV"></span></div>
+    <p class="note">y = γ · (x − Mittelwert) / √(Varianz + ε) + β, berechnet über die Merkmale eines Wortes, nicht über den Batch (anders als BatchNorm). Moderne GPTs normieren <b>vor</b> Attention und Feed-Forward (Pre-Norm), nicht danach.</p>
+  </div>
+  <p class="note" id="lnNote"></p>
+</section>
+
+<section class="station" data-station="dropout" data-show="2 3">
+  <span class="num">Station 3 · Nicht auswendig lernen</span>
+  <h2>Dropout</h2>
+  <p>Ein großes Modell kann den Trainingstext auswendig lernen. Dann sinkt der Loss auf dem Trainingstext weiter, auf neuem Text aber nicht mehr. Dropout schaltet bei jedem Trainingsschritt zufällig einen Teil der Neuronen ab. Das Modell kann sich auf kein einzelnes verlassen.</p>
+  <div class="srow"><label for="drop">Dropout-Rate</label><input type="range" id="drop" min="0" max="0.5" step="0.05" value="0"><span class="v" id="dropV"></span></div>
+  <div class="neurons" id="neurons" aria-hidden="true"></div>
+  <div class="row"><button class="btn ghost" id="step">Nächster Trainingsschritt</button></div>
+  <canvas id="curves" width="760" height="280" aria-label="Schematische Lernkurven"></canvas>
+  <p class="note" id="dropNote"></p>
+  <p class="note">Die Kurven sind schematisch. Beim Benutzen des fertigen Modells ist Dropout aus.</p>
+</section>
+
+<section class="station" data-station="scale-up" data-show="1 2 3">
+  <span class="num">Station 4 · Groß machen</span>
+  <h2>Wie viele Parameter?</h2>
+  <p>Mit diesen Tricks kann man Blöcke stapeln und breiter machen. Wähle eine Größe oder stell selbst ein. Fast alle Parameter stecken in den Blöcken: grob 12 · Schichten · Breite².</p>
+  <div class="row"><label for="preset">Vorlage</label><select id="preset"><option value="small">Kleines Shakespeare-Modell</option><option value="gpt2">GPT-2 (klein)</option><option value="gpt3">GPT-3</option><option value="custom">Eigene Einstellung</option></select></div>
+  <div class="srow"><label for="nl">Schichten</label><input type="range" id="nl" min="1" max="96" value="6"><span class="v" id="nlV"></span></div>
+  <div class="srow"><label for="ne">Breite</label><input type="range" id="ne" min="0" max="8" value="2"><span class="v" id="neV"></span></div>
+  <div class="stats"><div><span class="note">Parameter</span><span class="stat" id="params"></span></div><div><span class="note">Verglichen mit dem kleinen Modell</span><span class="stat" id="ratio"></span></div></div>
+  <p class="note" id="scaleNote"></p>
+</section>
+
+<section class="station" data-station="check" data-show="1 2 3">
+  <span class="num">Prüf dich</span>
+  <h2>Kurze Fragen</h2>
+  <p>Warum helfen Residualverbindungen beim Training tiefer Modelle?</p>
+  <div class="choices">
+    <button data-ok data-fb="Richtig. Weil jeder Block nur etwas addiert, kann das Lernsignal über die Abkürzung unverändert bis zur ersten Schicht fließen.">Das Lernsignal hat einen direkten Weg durch alle Schichten</button>
+    <button data-mis="residual-adds-capacity" data-fb="Nein. Eine Residualverbindung hat keine eigenen Parameter. Sie macht das Modell nicht größer, sondern trainierbar.">Sie fügen viele zusätzliche Parameter hinzu</button>
+    <button data-fb="Nein. Die Blöcke werden weiter benutzt, sie addieren ihr Ergebnis nur zum Strom.">Sie überspringen unnötige Blöcke dauerhaft</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div data-show="2 3">
+    <p>Wann ist Dropout eingeschaltet?</p>
+    <div class="choices">
+      <button data-ok data-fb="Richtig. Beim Benutzen (Inferenz) sind alle Neuronen aktiv.">Nur beim Training</button>
+      <button data-mis="dropout-at-inference" data-fb="Nein. Beim Benutzen würde zufälliges Abschalten nur schlechtere und schwankende Antworten liefern.">Immer, auch beim Benutzen</button>
+      <button data-mis="dropout-at-inference" data-fb="Nein, beim Benutzen bleibt Dropout aus.">Nur beim Benutzen</button>
+    </div>
+    <p class="feedback" hidden></p>
+  </div>
+</section>
+<footer>Simulator „Residual-Autobahn“ · Personal Tutor Format</footer>
+</div>
+
+<script src="ptf-sim.js"></script>
+<script>
+const SIM_ID = "ptf:sim/residual-stream", SIM_VERSION = "1.0.0";
+const PTF_LEVELS = {"1": "highschool", "2": "college", "3": "expert"};
+/* Shared PTF glue: levels, stations, snapshot (SIMULATOR-SPEC.md §4) */
+function setLevel(l){
+  document.querySelectorAll(".levels button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.level===l));
+  document.querySelectorAll("[data-show]").forEach(s=>s.hidden=!s.dataset.show.split(" ").includes(l));
+  CURRENT_LEVEL=l;
+}
+let CURRENT_LEVEL="1";
+const completed=new Set();
+const ptf = PTF.connect({
+  id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS["1"],
+  onInit(ctx) {
+    const lvl = (ctx.state && ctx.state.level) || ctx.level;
+    if (lvl) applyLevel(lvl);
+    if (ctx.station) gotoStation(ctx.station);
+  },
+  onSetLevel: applyLevel,
+  onGoto: gotoStation,
+  snapshot() {
+    const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `Visible stations: ${shown.join(", ")}`];
+    if (completed.size) parts.push(`Completed: ${[...completed].join(", ")}`);
+    if (typeof simSnapshot === "function") parts.push(simSnapshot());
+    return parts.join(". ");
+  }
+});
+function applyLevel(level) {
+  const n = Object.keys(PTF_LEVELS).find(k => PTF_LEVELS[k] === level);
+  if (n) setLevel(n);
+}
+function gotoStation(id) {
+  const s = document.querySelector(`[data-station="${id}"]`);
+  if (!s) return;
+  if (s.hidden && s.dataset.show) setLevel(s.dataset.show.split(" ")[0]);
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", () => {
+  setLevel(b.dataset.level);
+  const level = PTF_LEVELS[b.dataset.level];
+  ptf.event("level_changed", { level });
+  ptf.saveState({ level });
+}));
+function answered(station, correct, misconception, response) {
+  const result = { correct };
+  if (misconception && !correct) result.misconception = misconception;
+  if (response !== undefined) result.response = String(response);
+  ptf.event("answered", { station, level: PTF_LEVELS[CURRENT_LEVEL], result });
+}
+function done(station) {
+  if (completed.has(station)) return;
+  completed.add(station);
+  ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
+}
+/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb,
+   followed by <p class="feedback" hidden>. A station completes when all its visible boxes are answered correctly. Call initChoices() once the DOM is built. */
+function initChoices() {
+document.querySelectorAll("[data-station] .choices").forEach(box => {
+  const sec = box.closest("[data-station]"), station = sec.dataset.station, fb = box.nextElementSibling;
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    const ok = b.hasAttribute("data-ok");
+    box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
+    b.classList.add(ok ? "right" : "wrong");
+    if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = b.dataset.fb || (ok ? "Richtig." : "Nicht ganz."); }
+    answered(station, ok, b.dataset.mis, b.textContent.trim());
+    if (ok) box.dataset.solved = "1";
+    if ([...sec.querySelectorAll(".choices")].filter(x => !x.closest("[hidden]")).every(x => x.dataset.solved)) done(station);
+  }));
+});
+}
+setLevel("1");
+
+const $ = id => document.getElementById(id);
+const fmt = (x, d = 2) => x.toLocaleString("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d });
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const sci = x => x === 0 ? "0" : (x >= 1e-3 && x < 1e4) ? fmt(x, x < 10 ? 3 : 0) : x.toExponential(1).replace(".", ",");
+
+/* Station 1 */
+function renderSig() {
+  const n = +$("depth").value, f = +$("fac").value; $("depthV").textContent = n; $("facV").textContent = fmt(f, 2);
+  const marks = [...new Set([1, Math.ceil(n / 4), Math.ceil(n / 2), Math.ceil(3 * n / 4), n])];
+  const bar = (lab, g) => { const w = Math.max(0, Math.min(100, (Math.log10(g) + 4) / 6 * 100)); return `<div class="bar ${g < .01 || g > 100 ? "warm" : ""}"><span>${lab}</span><div><div class="fill" style="width:${w.toFixed(1)}%"></div></div><span class="v">${sci(g)}</span></div>`; };
+  $("noRes").innerHTML = marks.map(k => bar(`nach ${k}`, Math.pow(f, k))).join("");
+  $("withRes").innerHTML = marks.map(k => bar(`nach ${k}`, Math.pow(1 + (f - 1) * .1, k))).join("");
+  const a = Math.pow(f, n), b = Math.pow(1 + (f - 1) * .1, n);
+  $("sigNote").textContent = a < .01 ? `Ohne Residual kommt nach ${n} Schichten nur noch ${sci(a)} des Signals an: Die unteren Schichten lernen praktisch nichts. Mit Residual sind es ${sci(b)}.`
+    : a > 100 ? `Ohne Residual explodiert das Signal auf das ${sci(a)}-Fache: Das Training wird instabil. Mit Residual: ${sci(b)}.`
+    : `Bei wenigen Schichten oder einem Faktor nahe 1 geht es noch ohne Abkürzung. Mach das Modell tiefer.`;
+  if (n >= 30 && (a < .01 || a > 100)) done("deep-signal");
+}
+["depth", "fac"].forEach(id => $(id).addEventListener("input", renderSig));
+
+/* Station 2 */
+let ln = [2.1, -0.4, 0.8, 1.5, -1.2, 0.3];
+const LABELS = ["Merkmal 1", "Merkmal 2", "Merkmal 3", "Merkmal 4", "Merkmal 5", "Merkmal 6"];
+function renderLN() {
+  const g = +$("gam").value, b = +$("bet").value; $("gamV").textContent = fmt(g, 1); $("betV").textContent = fmt(b, 1);
+  const m = ln.reduce((a, x) => a + x, 0) / ln.length, v = ln.reduce((a, x) => a + (x - m) ** 2, 0) / ln.length;
+  const y = ln.map(x => g * (x - m) / Math.sqrt(v + 1e-5) + b);
+  const mx = Math.max(3, ...ln.map(Math.abs));
+  const bars = (xs, M) => xs.map((x, i) => `<div class="bar ${x < 0 ? "warm" : ""}"><span>${LABELS[i]}</span><div><div class="fill" style="width:${Math.min(100, Math.abs(x) / M * 100).toFixed(1)}%"></div></div><span class="v">${fmt(x, 2)}</span></div>`).join("");
+  $("lnIn").innerHTML = bars(ln, mx); $("lnOut").innerHTML = bars(y, 3);
+  const my = y.reduce((a, x) => a + x, 0) / y.length, sy = Math.sqrt(y.reduce((a, x) => a + (x - my) ** 2, 0) / y.length);
+  $("lnNote").textContent = `Vorher: Mittelwert ${fmt(m, 2)}, Streuung ${fmt(Math.sqrt(v), 2)}. Nachher: Mittelwert ${fmt(my, 2)}, Streuung ${fmt(sy, 2)}. Die Rangfolge der Merkmale bleibt erhalten.` + (v > 100 ? " Egal wie wild: Nachher ist alles wieder im gewohnten Bereich." : "");
+}
+$("wild").onclick = () => { ln = [140, -35, 60, 210, -90, 15]; renderLN(); done("layer-norm"); };
+$("tame").onclick = () => { ln = [2.1, -0.4, 0.8, 1.5, -1.2, 0.3]; renderLN(); };
+["gam", "bet"].forEach(id => $(id).addEventListener("input", renderLN));
+
+/* Station 3 */
+let seed = 5;
+function rng() { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }
+function renderNeurons() { const p = +$("drop").value; $("neurons").innerHTML = Array.from({ length: 36 }, () => `<i class="${rng() < p ? "off" : ""}"></i>`).join(""); }
+function drawCurves() {
+  const p = +$("drop").value; $("dropV").textContent = fmt(p * 100, 0) + " %";
+  const cv = $("curves"), g = cv.getContext("2d"), Wd = cv.width, H = cv.height, L = 46, R = 16, Tp = 16, B = 30;
+  const X = t => L + (Wd - L - R) * t, Y = l => Tp + (H - Tp - B) * (1 - (l - 1) / 3);
+  g.clearRect(0, 0, Wd, H); g.font = "22px " + css("--f-mono"); g.lineWidth = 1.5;
+  g.strokeStyle = css("--line"); g.fillStyle = css("--muted");
+  [1, 2, 3, 4].forEach(l => { g.beginPath(); g.moveTo(L, Y(l)); g.lineTo(Wd - R, Y(l)); g.stroke(); g.fillText(String(l), L - 30, Y(l) + 7); });
+  g.fillText("Trainingsschritte →", L, H - 8);
+  const train = t => 1.2 + 2.8 * Math.exp(-5 * t) - (1 - p * 1.6) * .35 * t + p * .25;
+  const val = t => 1.45 + 2.6 * Math.exp(-5 * t) + (1 - p * 1.9) * .55 * Math.max(0, t - .35) ** 1.5 + p * .12 - .05;
+  [[train, css("--accent"), "Trainingstext"], [val, css("--warn"), "neuer Text"]].forEach(([fn, c, lab], k) => {
+    g.strokeStyle = c; g.lineWidth = 4; g.beginPath();
+    for (let i = 0; i <= 100; i++) { const t = i / 100; i ? g.lineTo(X(t), Y(fn(t))) : g.moveTo(X(t), Y(fn(t))); } g.stroke();
+    g.fillStyle = c; g.fillText(lab, X(.72), Y(fn(1)) + (k ? -14 : 30));
+  });
+  const gap = val(1) - train(1);
+  $("dropNote").textContent = p < .1 ? `Ohne Dropout: Die Lücke zwischen Trainingstext und neuem Text ist groß (${fmt(gap, 2)}). Das Modell lernt auswendig.` : `Mit ${fmt(p * 100, 0)} % Dropout ist die Lücke ${fmt(gap, 2)}. Das Modell lernt Muster statt Sätze.`;
+  if (p >= .15) done("dropout");
+}
+$("drop").addEventListener("input", () => { renderNeurons(); drawCurves(); });
+$("step").onclick = renderNeurons;
+
+/* Station 4 */
+const WIDTHS = [128, 256, 384, 768, 1024, 2048, 4096, 8192, 12288];
+const PRESETS = { small: { L: 6, w: 2, V: 65, T: 256 }, gpt2: { L: 12, w: 3, V: 50257, T: 1024 }, gpt3: { L: 96, w: 8, V: 50257, T: 2048 } };
+let V = 65, Tctx = 256;
+const count = (L, d) => 12 * L * d * d + V * d + Tctx * d;
+const SMALL = count(6, 384);
+const human = n => n >= 1e9 ? fmt(n / 1e9, 1) + " Mrd." : n >= 1e6 ? fmt(n / 1e6, 1) + " Mio." : fmt(n / 1e3, 0) + " Tsd.";
+function renderScale() {
+  const L = +$("nl").value, d = WIDTHS[+$("ne").value]; $("nlV").textContent = L; $("neV").textContent = d;
+  const n = count(L, d); $("params").textContent = human(n); $("ratio").textContent = fmt(n / SMALL, n / SMALL < 10 ? 1 : 0) + "×";
+  $("scaleNote").textContent = n > 1e11 ? "So groß wie GPT-3 (175 Mrd. Parameter, trainiert auf etwa 300 Mrd. Tokens). Ein solches Training braucht Tausende Grafikkarten über Wochen." :
+    n > 1e8 ? "Die Größenordnung von GPT-2. Das passt noch auf eine gute Grafikkarte." : "Ein kleines Modell wie dieses trainiert auf einer einzigen Grafikkarte in etwa einer Viertelstunde.";
+  if (n > 1e11) done("scale-up");
+}
+$("preset").addEventListener("change", e => { const p = PRESETS[e.target.value]; if (p) { $("nl").value = p.L; $("ne").value = p.w; V = p.V; Tctx = p.T; } renderScale(); });
+["nl", "ne"].forEach(id => $(id).addEventListener("input", () => { $("preset").value = "custom"; renderScale(); }));
+
+function simSnapshot() { return `Depth ${$("depth").value}, factor ${$("fac").value}. LayerNorm input [${ln.join(", ")}]. Dropout ${$("drop").value}. Scale: ${$("nl").value} layers, width ${WIDTHS[+$("ne").value]}, ${$("params").textContent} parameters`; }
+renderSig(); renderLN(); renderNeurons(); drawCurves(); renderScale(); initChoices();
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", drawCurves));
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawCurves);
+</script>
+</body>
+</html>

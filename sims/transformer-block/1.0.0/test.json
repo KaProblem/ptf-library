@@ -1,0 +1,18 @@
+{
+  "steps": [
+    { "init": { "level": "highschool" } },
+    { "expectText": "Drei Köpfe, drei Fragen" },
+    { "click": "[data-station='heads'] .choices button[data-ok]" },
+    { "expectEvent": "answered" },
+    { "type": { "selector": "#ffSl", "text": "-1.5" } },
+    { "expectText": "Nur „Katze“ ändert sich" },
+    { "click": "#ladder button[data-i='1']" },
+    { "click": "#ladder button[data-i='2']" },
+    { "expectText": "mehrere Köpfe" },
+    { "click": "[data-level='2']" },
+    { "expectEvent": "level_changed" },
+    { "goto": "check" },
+    { "snapshot": true },
+    { "expectNoError": true }
+  ]
+}

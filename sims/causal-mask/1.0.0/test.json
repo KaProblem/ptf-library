@@ -1,0 +1,20 @@
+{
+  "steps": [
+    { "init": { "level": "highschool" } },
+    { "expectText": "Mittelwert der Vergangenheit" },
+    { "click": "[data-station='average-past'] .choices button[data-ok]" },
+    { "expectEvent": "answered" },
+    { "click": "#tri button[data-c='2,5']" },
+    { "expectText": "Achtung, Leck" },
+    { "click": "#triReset" },
+    { "expectEvent": "station_completed" },
+    { "click": "[data-level='2']" },
+    { "expectEvent": "level_changed" },
+    { "expectText": "Punkte, Maske, Softmax" },
+    { "click": "#smFocus" },
+    { "expectText": "Ungleiche Punkte" },
+    { "goto": "check" },
+    { "snapshot": true },
+    { "expectNoError": true }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/transformer-block",
+  "version": "1.0.0",
+  "title": "Transformer block: listen, then think",
+  "description": "Multi-head attention patterns, the per-token feed-forward layer, and a ladder that adds components one by one with real validation losses from a small Shakespeare model.",
+  "lang": [
+    "de"
+  ],
+  "concepts": [
+    "multi-head-attention",
+    "feed-forward",
+    "transformer-block",
+    "communication-computation",
+    "validation-loss"
+  ],
+  "levels": [
+    "highschool",
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "heads",
+      "title": "Three heads, three questions",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "feed-forward",
+      "title": "Feed-forward: each token on its own",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "stack",
+      "title": "Build your model step by step",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "check",
+      "title": "Short questions",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "entry": "index.html",
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "events": [
+    "answered",
+    "experienced",
+    "station_completed",
+    "level_changed"
+  ],
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "derived_from": null,
+  "changelog": "First version.",
+  "integrity": "sha256-ksIfYqvpe5Yf+5JrRnwvVGefhjwwTI4yq87bZ3h9jPU="
+}

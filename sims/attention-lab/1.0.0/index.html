@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attention-Labor</title>
+<style>
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
+  --accent:#0E6E68; --accent-soft:#D5ECEA; --warn:#C2410C; --warn-soft:#FBE3D6;
+  --f-display:"Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.3rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+header{display:flex;flex-direction:column;gap:12px}
+.levels{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start;background:var(--surface);max-width:100%}
+.levels button{font:600 1rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:10px 16px;min-height:44px;cursor:pointer}
+.levels button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.station{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.station .num{font:600 .8rem var(--f-mono);color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:600 .95rem var(--f-body);min-height:44px;padding:8px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--accent)}
+button.btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-height:44px;min-width:0}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+label{color:var(--muted);font-size:.95rem}
+.note{color:var(--muted);font-size:.95rem}
+.stat{font:600 1.5rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:24px}
+.stats div{display:flex;flex-direction:column}
+.scroll{overflow-x:auto;max-width:100%}
+.out{font:.95rem/1.5 var(--f-mono);white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px}
+.feedback{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:4px}
+.feedback.bad{border-color:var(--warn);background:var(--warn-soft)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices button{text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.choices button.right{border-color:var(--accent);background:var(--accent-soft)}
+.choices button.wrong{border-color:var(--warn);background:var(--warn-soft)}
+table.grid{border-collapse:collapse;font:.85rem var(--f-mono);font-variant-numeric:tabular-nums}
+table.grid th{color:var(--muted);font-weight:600;padding:4px 6px}
+table.grid td{width:46px;height:40px;text-align:center;border:1px solid var(--line);padding:0}
+table.grid td button{width:100%;height:100%;min-height:40px;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.bars{display:flex;flex-direction:column;gap:4px;font:.9rem var(--f-mono)}
+.bar{display:grid;grid-template-columns:5.5em 1fr 4em;gap:8px;align-items:center}
+.bar .fill{height:18px;background:var(--accent);border-radius:3px;min-width:2px}
+.bar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.tok{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:4px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font:1rem var(--f-mono);color:var(--ink);cursor:pointer}
+.tok[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+svg text{font-family:var(--f-mono)}
+details summary{cursor:pointer;font-weight:600;min-height:32px}
+footer{color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+.sent{display:flex;flex-wrap:wrap;gap:6px}
+.sent .tok{flex-direction:column;gap:0;min-width:56px;position:relative}
+.sent .tok small{font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums;min-height:1em}
+.sent .tok.future{opacity:.35;border-style:dashed}
+.plane{width:100%;max-width:360px;aspect-ratio:1;display:block;background:var(--bg);border:1px solid var(--line);border-radius:8px;touch-action:none}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;align-items:start}
+.srow{display:grid;grid-template-columns:6.5em 1fr 3.5em;gap:10px;align-items:center}
+.srow .v{text-align:right;font:600 .95rem var(--f-mono);font-variant-numeric:tabular-nums}
+.bar.warm .fill{background:var(--warn)}
+.same{font:600 1.05rem var(--f-mono)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow">Wie GPT funktioniert · Attention</span>
+  <h1>Attention-Labor</h1>
+  <p>Ein Wort allein ist oft mehrdeutig. Wer ist „sie“? Um das nächste Wort gut vorherzusagen, muss jede Stelle im Text herausfinden, welche früheren Stellen für sie wichtig sind, und von dort Information einsammeln. Dieser Mechanismus heißt Self-Attention. Hier stellst du ihn selbst ein.</p>
+  <div class="levels" role="group" aria-label="Stufe">
+    <button data-level="1" aria-pressed="true">Schule</button><button data-level="2" aria-pressed="false">Studium</button><button data-level="3" aria-pressed="false">Experte</button>
+  </div>
+</header>
+
+<section class="station" data-station="who-listens" data-show="1 2 3">
+  <span class="num">Station 1 · Rate zuerst</span>
+  <h2>Wem hört „sie“ zu?</h2>
+  <p>Im Satz unten steht „sie“. Welchem früheren Wort sollte „sie“ am meisten Aufmerksamkeit schenken, damit das Modell weiß, worum es geht?</p>
+  <div class="choices" id="guessBox"></div>
+  <p class="feedback" hidden></p>
+  <p>Jetzt tipp ein beliebiges Wort an. Die Färbung zeigt, wie viel Aufmerksamkeit es den Wörtern davor schenkt, so wie es ein trainiertes Modell ungefähr tun könnte. Spätere Wörter sind blass: Die darf es nicht sehen.</p>
+  <div class="sent" id="sent1" role="group" aria-label="Satz"></div>
+  <p class="note" id="sent1Note"></p>
+</section>
+
+<section class="station" data-station="query-key" data-show="1 2 3">
+  <span class="num">Station 2 · Selbst einstellen</span>
+  <h2>Frage trifft Etikett</h2>
+  <p>Jedes Wort trägt ein <b>Etikett</b> (Key): einen Pfeil, der sagt „das habe ich zu bieten“. Das Wort, das gerade einsammelt, schickt eine <b>Frage</b> (Query): einen Pfeil, der sagt „das suche ich“. Je besser Frage und Etikett in dieselbe Richtung zeigen, desto mehr Aufmerksamkeit. <b>Aufgabe:</b> Dreh die Frage von „sie“ so, dass „sie“ vor allem „Katze“ zuhört.</p>
+  <div class="cols">
+    <svg class="plane" id="plane" viewBox="-1.3 -1.3 2.6 2.6" role="img" aria-label="Pfeile der Etiketten und der Frage"></svg>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="srow"><label for="qAng">Richtung</label><input type="range" id="qAng" min="0" max="355" step="5" value="0"><span class="v" id="qAngV"></span></div>
+      <div class="srow"><label for="qLen">Stärke</label><input type="range" id="qLen" min="0" max="5" step="0.25" value="3"><span class="v" id="qLenV"></span></div>
+      <div class="bars" id="qkBars"></div>
+      <p class="note" id="qkNote"></p>
+    </div>
+  </div>
+  <p class="note" data-show="2 3">Punkte = q · k (Skalarprodukt), Zukunft auf −∞, dann Softmax über die Zeile. Die Stärke wirkt wie eine Temperatur: Lange Pfeile machen die Verteilung spitz, kurze machen sie flach.</p>
+</section>
+
+<section class="station" data-station="value" data-show="2 3">
+  <span class="num">Station 3 · Was wird übergeben?</span>
+  <h2>Value: die eigentliche Botschaft</h2>
+  <p>Das Etikett entscheidet nur, <i>wer</i> gehört wird. Was dann tatsächlich weitergegeben wird, ist ein dritter Vektor, der <b>Value</b>. Hier hat jeder Value drei Merkmale. „sie“ bekommt den gewichteten Mittelwert der Values, mit den Gewichten aus Station 2. Stell dort die Frage um und schau, was „sie“ danach über sich weiß.</p>
+  <div class="bars" id="valBars"></div>
+  <p class="note" id="valNote"></p>
+  <p class="note">Merksatz: Query = was ich suche, Key = was ich biete, Value = was ich weitergebe, wenn man mich wählt. Alle drei berechnet jedes Wort aus seinem eigenen Vektor x mit gelernten Matrizen: q = x·W<sub>Q</sub>, k = x·W<sub>K</sub>, v = x·W<sub>V</sub>.</p>
+</section>
+
+<section class="station" data-station="scaling" data-show="3">
+  <span class="num">Station 4 · Warum durch √d?</span>
+  <h2>Skalierung</h2>
+  <p>In echten Modellen haben Query und Key nicht 2, sondern d = 16 bis 128 Dimensionen. Zufällige Vektoren am Trainingsbeginn ergeben dann Punktzahlen mit Varianz ≈ d. Softmax über so große Zahlen wird fast one-hot: Jede Stelle hört nur noch einer einzigen zu, und die Gradienten verschwinden. Schieb d hoch und vergleiche.</p>
+  <div class="srow"><label for="dSl">Kopfgröße d</label><input type="range" id="dSl" min="1" max="256" value="16"><span class="v" id="dV"></span></div>
+  <div class="row"><button class="btn ghost" id="reroll">Neu würfeln</button></div>
+  <div class="stats">
+    <div><span class="note">Varianz q·k</span><span class="stat" id="varRaw"></span></div>
+    <div><span class="note">Varianz q·k / √d</span><span class="stat" id="varScaled"></span></div>
+  </div>
+  <div class="cols">
+    <div><p class="note">Softmax ohne Skalierung</p><div class="bars" id="rawBars"></div></div>
+    <div><p class="note">Softmax mit 1/√d</p><div class="bars" id="scBars"></div></div>
+  </div>
+</section>
+
+<section class="station" data-station="positions" data-show="2 3">
+  <span class="num">Station 5 · Reihenfolge</span>
+  <h2>Weiß Attention, wo ein Wort steht?</h2>
+  <p>Zwei Sätze mit denselben Wörtern: „Hund beißt Mann .“ und „Mann beißt Hund .“. Der Punkt am Ende sammelt per Attention ein, was davor stand. Vergleiche, was beim Punkt ankommt, mit und ohne Positionsinformation.</p>
+  <div class="row"><label for="posOn"><input type="checkbox" id="posOn"> Positions-Embedding addieren</label></div>
+  <div class="cols">
+    <div><p class="note">„Hund beißt Mann .“</p><div class="bars" id="posA"></div></div>
+    <div><p class="note">„Mann beißt Hund .“</p><div class="bars" id="posB"></div></div>
+  </div>
+  <p class="same" id="posNote"></p>
+</section>
+
+<section class="station" data-station="check" data-show="1 2 3">
+  <span class="num">Prüf dich</span>
+  <h2>Kurze Fragen</h2>
+  <div data-show="1 2 3">
+    <p>Wer legt fest, welchem Wort „sie“ zuhört?</p>
+    <div class="choices">
+      <button data-ok data-fb="Richtig. Niemand programmiert Grammatikregeln. Die Matrizen für Query und Key werden beim Training so eingestellt, dass gute Vorhersagen herauskommen.">Gelernte Zahlen, die Frage und Etikett erzeugen</button>
+      <button data-mis="attention-is-nearest" data-fb="Nein. Nähe allein entscheidet nicht: „sie“ hört „Katze“ zu, obwohl „Milch“ und „weil“ näher stehen.">Immer das nächstgelegene Wort</button>
+      <button data-mis="attention-is-programmed" data-fb="Nein. Es gibt keine eingebauten Regeln. Alles, was das Modell über Bezüge weiß, steckt in gelernten Zahlen.">Von Menschen geschriebene Grammatikregeln</button>
+    </div>
+    <p class="feedback" hidden></p>
+  </div>
+  <div data-show="2 3">
+    <p>Ein Batch enthält vier Textausschnitte. Kann ein Wort aus Ausschnitt 1 per Attention etwas aus Ausschnitt 3 lesen?</p>
+    <div class="choices">
+      <button data-ok data-fb="Richtig. Die Ausschnitte eines Batches werden nur gleichzeitig gerechnet, aber völlig getrennt. Attention wirkt nur innerhalb eines Ausschnitts.">Nein, jeder Ausschnitt ist für sich</button>
+      <button data-mis="batch-elements-interact" data-fb="Nein. Der Batch ist nur ein Rechentrick für Tempo. Die Ausschnitte sprechen nie miteinander.">Ja, alle Wörter im Batch sehen sich</button>
+      <button data-mis="batch-elements-interact" data-fb="Nein, auch nicht über frühere Ausschnitte. Jeder Ausschnitt ist ein eigenes, unabhängiges Beispiel.">Nur wenn Ausschnitt 3 früher im Batch steht</button>
+    </div>
+    <p class="feedback" hidden></p>
+  </div>
+  <div data-show="3">
+    <p>Was unterscheidet Cross-Attention von Self-Attention?</p>
+    <div class="choices">
+      <button data-ok data-fb="Richtig. Bei Cross-Attention kommen die Queries aus der eigenen Folge, Keys und Values aber aus einer anderen, etwa dem Encoder eines Übersetzers.">Keys und Values kommen aus einer anderen Quelle</button>
+      <button data-fb="Nein. Ob maskiert wird, ist eine eigene Frage (Decoder oder Encoder), unabhängig von self oder cross.">Cross-Attention hat keine Maske</button>
+      <button data-fb="Nein. Beide verwenden Query, Key und Value und Softmax. Der Unterschied ist, woher Keys und Values stammen.">Cross-Attention verwendet keine Softmax</button>
+    </div>
+    <p class="feedback" hidden></p>
+  </div>
+</section>
+<footer>Simulator „Attention-Labor“ · Personal Tutor Format</footer>
+</div>
+
+<script src="ptf-sim.js"></script>
+<script>
+const SIM_ID = "ptf:sim/attention-lab", SIM_VERSION = "1.0.0";
+const PTF_LEVELS = {"1": "highschool", "2": "college", "3": "expert"};
+/* Shared PTF glue: levels, stations, snapshot (SIMULATOR-SPEC.md §4) */
+function setLevel(l){
+  document.querySelectorAll(".levels button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.level===l));
+  document.querySelectorAll("[data-show]").forEach(s=>s.hidden=!s.dataset.show.split(" ").includes(l));
+  CURRENT_LEVEL=l;
+}
+let CURRENT_LEVEL="1";
+const completed=new Set();
+const ptf = PTF.connect({
+  id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS["1"],
+  onInit(ctx) {
+    const lvl = (ctx.state && ctx.state.level) || ctx.level;
+    if (lvl) applyLevel(lvl);
+    if (ctx.station) gotoStation(ctx.station);
+  },
+  onSetLevel: applyLevel,
+  onGoto: gotoStation,
+  snapshot() {
+    const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `Visible stations: ${shown.join(", ")}`];
+    if (completed.size) parts.push(`Completed: ${[...completed].join(", ")}`);
+    if (typeof simSnapshot === "function") parts.push(simSnapshot());
+    return parts.join(". ");
+  }
+});
+function applyLevel(level) {
+  const n = Object.keys(PTF_LEVELS).find(k => PTF_LEVELS[k] === level);
+  if (n) setLevel(n);
+}
+function gotoStation(id) {
+  const s = document.querySelector(`[data-station="${id}"]`);
+  if (!s) return;
+  if (s.hidden && s.dataset.show) setLevel(s.dataset.show.split(" ")[0]);
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", () => {
+  setLevel(b.dataset.level);
+  const level = PTF_LEVELS[b.dataset.level];
+  ptf.event("level_changed", { level });
+  ptf.saveState({ level });
+}));
+function answered(station, correct, misconception, response) {
+  const result = { correct };
+  if (misconception && !correct) result.misconception = misconception;
+  if (response !== undefined) result.response = String(response);
+  ptf.event("answered", { station, level: PTF_LEVELS[CURRENT_LEVEL], result });
+}
+function done(station) {
+  if (completed.has(station)) return;
+  completed.add(station);
+  ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
+}
+/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb,
+   followed by <p class="feedback" hidden>. A station completes when all its visible boxes are answered correctly. Call initChoices() once the DOM is built. */
+function initChoices() {
+document.querySelectorAll("[data-station] .choices").forEach(box => {
+  const sec = box.closest("[data-station]"), station = sec.dataset.station, fb = box.nextElementSibling;
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    const ok = b.hasAttribute("data-ok");
+    box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
+    b.classList.add(ok ? "right" : "wrong");
+    if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = b.dataset.fb || (ok ? "Richtig." : "Nicht ganz."); }
+    answered(station, ok, b.dataset.mis, b.textContent.trim());
+    if (ok) box.dataset.solved = "1";
+    if ([...sec.querySelectorAll(".choices")].filter(x => !x.closest("[hidden]")).every(x => x.dataset.solved)) done(station);
+  }));
+});
+}
+setLevel("1");
+
+const $ = id => document.getElementById(id);
+const fmt = (x, d = 2) => x.toLocaleString("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d });
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const softmax = a => { const m = Math.max(...a), e = a.map(x => Math.exp(x - m)), s = e.reduce((x, y) => x + y, 0); return e.map(x => x / s); };
+const W = ["Die", "Katze", "trinkt", "Milch", "weil", "sie", "Durst", "hat"], SIE = 5, KATZE = 1;
+/* Illustrative attention pattern of a trained head (rows sum to 1, causal). */
+const PATTERN = [
+  [1],
+  [.35, .65],
+  [.08, .62, .30],
+  [.05, .15, .45, .35],
+  [.05, .15, .30, .30, .20],
+  [.04, .62, .08, .14, .06, .06],
+  [.02, .18, .30, .10, .10, .25, .05],
+  [.02, .10, .08, .05, .10, .30, .30, .05]
+];
+/* Station 1 */
+$("guessBox").innerHTML = W.slice(0, SIE).map((w, j) => {
+  const fb = j === KATZE ? "Richtig. „sie“ meint die Katze. Damit das Modell das nächste Wort gut vorhersagt (etwa „hat“ oder „ist“), muss Information von „Katze“ bei „sie“ ankommen."
+    : j === 3 ? "Nahe dran, aber Milch hat keinen Durst. „sie“ bezieht sich auf die Katze, und das ist mehr wert als Nähe."
+    : "Eher nicht. Überleg: Wer hat Durst?";
+  return `<button ${j === KATZE ? "data-ok" : `data-mis="${j === 3 || j === 4 ? "attention-is-nearest" : ""}"`} data-fb="${fb}">${w}</button>`;
+}).join("");
+let sel1 = SIE;
+function renderSent() {
+  const row = PATTERN[sel1];
+  $("sent1").innerHTML = W.map((w, j) => {
+    const vis = j <= sel1, a = vis ? row[j] : 0;
+    const bg = vis ? `background:color-mix(in srgb, var(--accent) ${Math.round(a * 100)}%, var(--bg))` : "";
+    return `<button class="tok ${vis ? "" : "future"}" aria-pressed="${j === sel1}" data-j="${j}" style="${bg}"><b>${w}</b><small>${vis ? fmt(a * 100, 0) + " %" : "–"}</small></button>`;
+  }).join("");
+  const top = row.indexOf(Math.max(...row));
+  $("sent1Note").textContent = `„${W[sel1]}“ hört am meisten auf „${W[top]}“ (${fmt(row[top] * 100, 0)} %).` + (sel1 === 0 ? " Das erste Wort hat keine Vergangenheit und hört nur sich selbst." : "");
+}
+$("sent1").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; sel1 = +b.dataset.j; renderSent(); ptf.event("experienced", { station: "who-listens", data: { token: W[sel1] } }); });
+
+/* Station 2 */
+const KEYS = [[.2, .1], [.3, 1], [-.9, .3], [.95, .1], [-.3, -.8], [.2, .6], [.7, -.5], [-.8, -.2]];
+const VALUES = [[.1, .1, 0], [1, 0, 0], [0, .2, 1], [0, 1, 0], [0, 0, .1], [.3, 0, 0], [.2, .4, .3], [0, 0, .6]];
+const FEAT = ["Lebewesen", "Getränk", "Tätigkeit"];
+let qWeights = [];
+function arrow(x, y, color, w, label, lx = 1.12, dy = .04) {
+  const ex = x, ey = -y;
+  return `<line x1="0" y1="0" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/>` +
+    `<circle cx="${ex}" cy="${ey}" r="${w * 1.6}" fill="${color}"/>` +
+    (label ? `<text x="${ex * lx}" y="${ey * lx + dy}" font-size=".11" fill="${color}" text-anchor="middle">${label}</text>` : "");
+}
+function renderQK() {
+  const ang = +$("qAng").value * Math.PI / 180, len = +$("qLen").value;
+  const q = [Math.cos(ang) * len, Math.sin(ang) * len];
+  const vis = W.slice(0, SIE + 1).map((_, j) => j);
+  const scores = vis.map(j => q[0] * KEYS[j][0] + q[1] * KEYS[j][1]);
+  qWeights = softmax(scores);
+  let svg = `<circle cx="0" cy="0" r="1" fill="none" stroke="${css("--line")}" stroke-width=".01"/>` +
+    `<line x1="-1.25" y1="0" x2="1.25" y2="0" stroke="${css("--line")}" stroke-width=".008"/><line x1="0" y1="-1.25" x2="0" y2="1.25" stroke="${css("--line")}" stroke-width=".008"/>`;
+  vis.forEach(j => { svg += arrow(KEYS[j][0], KEYS[j][1], css("--ink"), .012 + qWeights[j] * .03, W[j]); });
+  const ql = Math.min(1.2, .25 + len * .19);
+  svg += arrow(Math.cos(ang) * ql, Math.sin(ang) * ql, css("--warn"), .03, "Frage", .55, .16);
+  $("plane").innerHTML = svg;
+  $("qAngV").textContent = Math.round(+$("qAng").value) + "°"; $("qLenV").textContent = fmt(len, 2);
+  $("qkBars").innerHTML = vis.map(j => `<div class="bar"><span>${W[j]}</span><div><div class="fill" style="width:${(qWeights[j] * 100).toFixed(1)}%"></div></div><span class="v">${fmt(qWeights[j] * 100, 0)} %</span></div>`).join("")
+    + `<p class="note" data-show="2 3"${CURRENT_LEVEL === "1" ? " hidden" : ""}>Punkte: ${vis.map(j => W[j] + " " + fmt(scores[j], 1)).join(", ")}</p>`;
+  const win = qWeights[KATZE] > .5;
+  $("qkNote").textContent = win ? `Geschafft: „sie“ hört zu ${fmt(qWeights[KATZE] * 100, 0)} % auf „Katze“.` : `„Katze“ bekommt ${fmt(qWeights[KATZE] * 100, 0)} %. Ziel: mehr als 50 %.`;
+  if (win && !completed.has("query-key")) { answered("query-key", true, null, `angle ${$("qAng").value}`); done("query-key"); }
+  renderValue();
+}
+function renderValue() {
+  const out = FEAT.map((_, f) => qWeights.reduce((a, w, j) => a + w * VALUES[j][f], 0));
+  $("valBars").innerHTML = FEAT.map((n, f) => `<div class="bar"><span>${n}</span><div><div class="fill" style="width:${Math.min(100, out[f] * 100).toFixed(1)}%"></div></div><span class="v">${fmt(out[f], 2)}</span></div>`).join("");
+  $("valNote").textContent = out[0] > .55 ? "Jetzt trägt „sie“ das Merkmal „Lebewesen“: Information von „Katze“ ist angekommen. Das nächste Wort kann darauf aufbauen." : "„sie“ hat noch wenig vom Lebewesen „Katze“ übernommen.";
+  if (out[0] > .55) done("value");
+}
+$("qAng").addEventListener("input", renderQK); $("qLen").addEventListener("input", renderQK);
+
+/* Station 4 */
+let seed = 7;
+function rng() { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }
+const gauss = () => Math.sqrt(-2 * Math.log(1 - rng())) * Math.cos(2 * Math.PI * rng());
+const vec = d => Array.from({ length: d }, gauss);
+const dot = (a, b) => a.reduce((s, x, i) => s + x * b[i], 0);
+function renderScale() {
+  const d = +$("dSl").value; $("dV").textContent = d;
+  let s1 = 0, s2 = 0, n = 300;
+  for (let i = 0; i < n; i++) { const x = dot(vec(d), vec(d)); s1 += x; s2 += x * x; }
+  const v = s2 / n - (s1 / n) ** 2;
+  $("varRaw").textContent = fmt(v, 1); $("varScaled").textContent = fmt(v / d, 2);
+  const q = vec(d), sc = Array.from({ length: 8 }, () => dot(q, vec(d)));
+  const raw = softmax(sc), scaled = softmax(sc.map(x => x / Math.sqrt(d)));
+  const bars = p => p.map((x, j) => `<div class="bar ${x > .8 ? "warm" : ""}"><span>Stelle ${j + 1}</span><div><div class="fill" style="width:${(x * 100).toFixed(1)}%"></div></div><span class="v">${fmt(x * 100, 0)} %</span></div>`).join("");
+  $("rawBars").innerHTML = bars(raw); $("scBars").innerHTML = bars(scaled);
+  if (d >= 64) done("scaling");
+}
+$("dSl").addEventListener("input", renderScale); $("reroll").onclick = () => { seed = Math.floor(Math.random() * 1e9); renderScale(); };
+
+/* Station 5 */
+const EMB = { "Hund": [1, 0, .2], "beißt": [0, 1, 0], "Mann": [.2, 0, 1], ".": [.3, .3, .3] };
+const POS = [[.9, -.4, 0], [0, .1, .5], [-.6, .2, .8], [0, 0, 0]];
+const FEAT5 = ["Merkmal A", "Merkmal B", "Merkmal C"];
+function attendLast(words, usePos) {
+  const xs = words.map((w, i) => EMB[w].map((x, f) => x + (usePos ? POS[i][f] : 0)));
+  const q = xs[xs.length - 1], sc = xs.map(x => dot(q, x) * 2), p = softmax(sc);
+  return FEAT5.map((_, f) => p.reduce((a, w, j) => a + w * xs[j][f], 0));
+}
+function renderPos() {
+  const on = $("posOn").checked, a = attendLast(["Hund", "beißt", "Mann", "."], on), b = attendLast(["Mann", "beißt", "Hund", "."], on);
+  const bars = o => o.map((x, f) => `<div class="bar"><span>${FEAT5[f]}</span><div><div class="fill" style="width:${Math.min(100, Math.abs(x) * 60).toFixed(1)}%"></div></div><span class="v">${fmt(x, 2)}</span></div>`).join("");
+  $("posA").innerHTML = bars(a); $("posB").innerHTML = bars(b);
+  const same = a.every((x, i) => Math.abs(x - b[i]) < 1e-9);
+  $("posNote").textContent = same ? "Identisch. Ohne Positionsinformation sieht Attention nur eine Menge von Wörtern: Wer wen beißt, geht verloren." : "Verschieden. Erst die addierte Position sagt dem Modell, welches Wort wo stand.";
+  if (on) done("positions");
+}
+$("posOn").addEventListener("change", () => { renderPos(); ptf.event("experienced", { station: "positions", data: { positional: $("posOn").checked } }); });
+
+function simSnapshot() {
+  return `Station 1 selected word: ${W[sel1]}. Query angle ${$("qAng").value} deg, strength ${$("qLen").value}, weight on 'Katze' ${Math.round(qWeights[KATZE] * 100)} %. Head size d = ${$("dSl").value}. Positional embedding ${$("posOn").checked ? "on" : "off"}`;
+}
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", renderQK));
+renderSent(); renderQK(); renderScale(); renderPos(); initChoices();
+</script>
+</body>
+</html>

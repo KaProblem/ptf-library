@@ -8,6 +8,7 @@ lang: en
 levels: [child, highschool, college]
 tags: [llm, tokenizer, vocabulary]
 leads_to:
+  - ptf:el/llm-basics/training-examples
   - ptf:el/llm-basics/softmax
 duration_min: { child: 5, highschool: 10, college: 15 }
 simulators:
@@ -26,7 +27,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.1.0
+version: 0.1.1
 license: CC-BY-SA-4.0
 ---
 

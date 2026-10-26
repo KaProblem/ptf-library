@@ -13,12 +13,17 @@ the questions. The content is open; the explanation is personal.
 
 | Bundle | Topic | Elements |
 | --- | --- | --- |
-| [llm-basics](bundles/llm-basics/index.md) | How large language models work | tokenizer, softmax, cross-entropy (+ 5 planned steps) |
+| [llm-basics](bundles/llm-basics/index.md) | How large language models work | tokenizer, training examples, softmax, cross-entropy, causal mask, self-attention, transformer block, residual stream, from babbler to assistant |
 
 | Simulator | Versions | UI language | Concepts |
 | --- | --- | --- | --- |
 | [next-char-lab](sims/next-char-lab/) | 1.0.0 (deprecated), 2.0.0 | de | tokenizer, bigram, softmax, loss, sampling, temperature |
 | [loss-lens](sims/loss-lens/) | 1.0.0 | de | cross-entropy, negative log-likelihood |
+| [causal-mask](sims/causal-mask/) | 1.0.0 | de | causal mask, weighted average, masked softmax |
+| [attention-lab](sims/attention-lab/) | 1.0.0 | de | self-attention, query/key/value, scaling, positions |
+| [transformer-block](sims/transformer-block/) | 1.0.0 | de | multi-head attention, feed-forward, loss ladder |
+| [residual-stream](sims/residual-stream/) | 1.0.0 | de | residual connections, layer norm, dropout, parameter count |
+| [babbler-to-assistant](sims/babbler-to-assistant/) | 1.0.0 | de | pretraining, fine-tuning, RLHF, encoder/decoder, scale |
 
 ## Layout
 

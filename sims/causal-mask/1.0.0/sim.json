@@ -1,0 +1,79 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/causal-mask",
+  "version": "1.0.0",
+  "title": "Looking back: the causal mask",
+  "description": "Averaging over the past, the lower-triangular mask as a weight table, and masked softmax as the bridge to self-attention.",
+  "lang": [
+    "de"
+  ],
+  "concepts": [
+    "causal-mask",
+    "weighted-average",
+    "lower-triangular-matrix",
+    "masked-softmax",
+    "self-attention"
+  ],
+  "levels": [
+    "highschool",
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "average-past",
+      "title": "Average of the past",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "triangle",
+      "title": "The triangle (open the future and see the leak)",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "softmax-mask",
+      "title": "Scores, mask, softmax",
+      "levels": [
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "check",
+      "title": "Two short questions",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "entry": "index.html",
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "events": [
+    "answered",
+    "experienced",
+    "station_completed",
+    "level_changed"
+  ],
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "derived_from": null,
+  "changelog": "First version.",
+  "integrity": "sha256-6KqXBXlmMuxcQQIwi6nN8QAopDcLifejBxn6lIiQ0LU="
+}
