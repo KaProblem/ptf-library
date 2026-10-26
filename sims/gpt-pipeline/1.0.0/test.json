@@ -1,0 +1,126 @@
+{
+  "steps": [
+    {
+      "init": {
+        "level": "highschool"
+      }
+    },
+    {
+      "expectText": "Put the parts in order"
+    },
+    {
+      "click": "#ordPool button[data-s='softmax']"
+    },
+    {
+      "expectText": "Not yet"
+    },
+    {
+      "click": "#ordPool button[data-s='tok']"
+    },
+    {
+      "click": "#ordPool button[data-s='emb']"
+    },
+    {
+      "click": "#ordPool button[data-s='blocks']"
+    },
+    {
+      "click": "#ordPool button[data-s='head']"
+    },
+    {
+      "click": "#ordPool button[data-s='softmax']"
+    },
+    {
+      "click": "#ordPool button[data-s='sample']"
+    },
+    {
+      "expectText": "That is the whole machine"
+    },
+    {
+      "expectEvent": "station_completed"
+    },
+    {
+      "click": "#trNext"
+    },
+    {
+      "click": "#trNext"
+    },
+    {
+      "click": "#trNext"
+    },
+    {
+      "click": "#trNext"
+    },
+    {
+      "click": "#trNext"
+    },
+    {
+      "expectText": "A weighted die picks"
+    },
+    {
+      "click": "#wnNext"
+    },
+    {
+      "click": "#wnNext"
+    },
+    {
+      "click": "#wnNext"
+    },
+    {
+      "click": "#wnNext"
+    },
+    {
+      "click": "#wnNext"
+    },
+    {
+      "click": "#wnNext"
+    },
+    {
+      "click": "#wnNext"
+    },
+    {
+      "click": "#wnNext"
+    },
+    {
+      "click": "#wnNext"
+    },
+    {
+      "click": "#wnNext"
+    },
+    {
+      "expectText": "no longer exist for it"
+    },
+    {
+      "click": "button[data-p='mask'][data-v='0']"
+    },
+    {
+      "expectText": "A fixed rule"
+    },
+    {
+      "click": "[data-level='2']"
+    },
+    {
+      "expectEvent": "level_changed"
+    },
+    {
+      "expectText": "What shape is the tensor?"
+    },
+    {
+      "click": "#focusStart"
+    },
+    {
+      "click": "#focusNext"
+    },
+    {
+      "expectText": "One prediction, stage by stage"
+    },
+    {
+      "goto": "check"
+    },
+    {
+      "snapshot": true
+    },
+    {
+      "expectNoError": true
+    }
+  ]
+}

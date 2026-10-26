@@ -26,13 +26,18 @@ simulators:
     station: stack
     levels: [highschool, college, expert]
     role: practice
+code:
+  - ref: ptf:code/gpt-from-scratch@^1.0.0
+    step: transformer-block
+    levels: [college, expert]
+    note: Compare --n-head 1, 4 and 8; then --n-layer 4 without residuals.
 sources:
   - id: karpathy-gpt
     resource: https://www.youtube.com/watch?v=kCc8FmEb1nY
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.1.0
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
 

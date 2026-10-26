@@ -9,6 +9,8 @@ levels: [highschool, college, expert]
 tags: [llm, loss, cross-entropy, training]
 requires:
   - ptf:el/llm-basics/softmax
+leads_to:
+  - ptf:el/llm-basics/bigram-model
 duration_min: { highschool: 15, college: 20, expert: 15 }
 simulators:
   - ref: ptf:sim/loss-lens@^1.0.0
@@ -24,13 +26,18 @@ simulators:
     station: training-curve
     levels: [college]
     role: practice
+code:
+  - ref: ptf:code/gpt-from-scratch@^1.0.0
+    step: bigram
+    levels: [college, expert]
+    note: Compare the printed loss before training with ln 65.
 sources:
   - id: karpathy-gpt
     resource: https://www.youtube.com/watch?v=kCc8FmEb1nY
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.1.1
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
 

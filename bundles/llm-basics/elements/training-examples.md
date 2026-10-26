@@ -17,13 +17,18 @@ simulators:
     station: context-window
     levels: [highschool, college, expert]
     role: explore
+code:
+  - ref: ptf:code/gpt-from-scratch@^1.0.0
+    step: batches
+    levels: [college, expert]
+    note: Change --block-size and count the examples per chunk.
 sources:
   - id: karpathy-gpt
     resource: https://www.youtube.com/watch?v=kCc8FmEb1nY
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.1.0
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
 

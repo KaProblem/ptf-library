@@ -8,7 +8,7 @@ lang: en
 levels: [child, highschool, college, expert]
 tags: [llm, pretraining, fine-tuning, rlhf, decoder-only, encoder-decoder, scale]
 requires:
-  - ptf:el/llm-basics/residual-stream
+  - ptf:el/llm-basics/gpt-end-to-end
 duration_min: { child: 10, highschool: 15, college: 20, expert: 15 }
 simulators:
   - ref: ptf:sim/babbler-to-assistant@^1.0.0
@@ -33,7 +33,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.1.0
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
 

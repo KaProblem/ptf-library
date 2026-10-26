@@ -34,6 +34,11 @@ simulators:
     station: scaling
     levels: [expert]
     role: explore
+code:
+  - ref: ptf:code/gpt-from-scratch@^1.0.0
+    step: self-attention
+    levels: [college, expert]
+    note: Try --no-mask and explain why the loss drops while the text gets worse.
 sources:
   - id: karpathy-gpt
     resource: https://www.youtube.com/watch?v=kCc8FmEb1nY
@@ -43,7 +48,7 @@ sources:
     title: "Vaswani et al.: Attention Is All You Need"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.1.0
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
 

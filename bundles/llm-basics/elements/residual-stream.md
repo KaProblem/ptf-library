@@ -10,7 +10,7 @@ tags: [llm, residual, layer-norm, dropout, scaling, optimisation]
 requires:
   - ptf:el/llm-basics/transformer-block
 leads_to:
-  - ptf:el/llm-basics/from-babbler-to-assistant
+  - ptf:el/llm-basics/gpt-end-to-end
 duration_min: { highschool: 15, college: 25, expert: 15 }
 simulators:
   - ref: ptf:sim/residual-stream@^1.0.0
@@ -30,13 +30,18 @@ simulators:
     station: scale-up
     levels: [highschool, college, expert]
     role: practice
+code:
+  - ref: ptf:code/gpt-from-scratch@^1.0.0
+    step: gpt
+    levels: [college, expert]
+    note: Run --preset tiny with and without --no-residual.
 sources:
   - id: karpathy-gpt
     resource: https://www.youtube.com/watch?v=kCc8FmEb1nY
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.1.0
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
 

@@ -13,6 +13,10 @@
       "version": "1.0.0",
       "integrity": "sha256-f68wTvHwqbvISGZnqH1loWx8JooM9jUMcvJFwGdi5po="
     },
+    "ptf:sim/gpt-pipeline": {
+      "version": "1.0.0",
+      "integrity": "sha256-YOLmVb4sgpBctj6gySDotUNDD/Ahfx0rVQpKnI2YayE="
+    },
     "ptf:sim/loss-lens": {
       "version": "1.0.0",
       "integrity": "sha256-Zx08du0SuZD6MiRByNgkQwvtSVwv1dScbIZFxTFfMWI="
@@ -25,9 +29,19 @@
       "version": "1.0.0",
       "integrity": "sha256-qLKJBSnWLpwwUZjSLT/FTpMuGZ4x2nGBpI85SLtAlIs="
     },
+    "ptf:sim/training-loop": {
+      "version": "1.0.0",
+      "integrity": "sha256-X/Rlzw4l2ksBpfDkOkO6trS93IphB23yG6Z6ciFITgw="
+    },
     "ptf:sim/transformer-block": {
       "version": "1.0.0",
       "integrity": "sha256-SswDxBGtwlMurl+Zyd4Hf16qWBI9BmJE5F9pYWAhY08="
+    }
+  },
+  "code": {
+    "ptf:code/gpt-from-scratch": {
+      "version": "1.0.0",
+      "integrity": "sha256-NoKj3z1sE4caB3iamm4hAQlfPW0Ec8bm4i7KL7C3PeY="
     }
   }
 }

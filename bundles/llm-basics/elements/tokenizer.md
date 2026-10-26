@@ -21,13 +21,18 @@ simulators:
     station: tokenizer
     levels: [highschool, college]
     role: explore
+code:
+  - ref: ptf:code/gpt-from-scratch@^1.0.0
+    step: tokenizer
+    levels: [college, expert]
+    note: Run it on the learner's own text and compare vocabulary sizes.
 sources:
   - id: karpathy-gpt
     resource: https://www.youtube.com/watch?v=kCc8FmEb1nY
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.1.1
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
 

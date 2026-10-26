@@ -2,8 +2,9 @@
 
 Learning content in the [Personal Tutor Format (PTF)](https://github.com/KaProblem/ptf-spec):
 bundles of learning elements (each concept explained at up to four levels:
-child, high school, college, expert), question blocks, learning paths, and
-versioned, sandboxed simulators.
+child, high school, college, expert), question blocks, learning paths,
+versioned, sandboxed simulators, and code labs that learners run and extend
+on their own machine.
 
 An AI tutor uses this library as material: it picks the right level for the
 learner, adapts or rewrites the explanations, shows the simulators and asks
@@ -13,7 +14,7 @@ the questions. The content is open; the explanation is personal.
 
 | Bundle | Topic | Elements |
 | --- | --- | --- |
-| [llm-basics](bundles/llm-basics/index.md) | How large language models work | tokenizer, training examples, softmax, cross-entropy, causal mask, self-attention, transformer block, residual stream, from babbler to assistant |
+| [llm-basics](bundles/llm-basics/index.md) | How large language models work | tokenizer, training examples, softmax, cross-entropy, bigram model, causal mask, self-attention, transformer block, residual stream, the whole machine, from babbler to assistant |
 
 | Simulator | Versions | UI language | Concepts |
 | --- | --- | --- | --- |
@@ -24,6 +25,12 @@ the questions. The content is open; the explanation is personal.
 | [transformer-block](sims/transformer-block/) | 1.0.0 | en | multi-head attention, feed-forward, loss ladder |
 | [residual-stream](sims/residual-stream/) | 1.0.0 | en | residual connections, layer norm, dropout, parameter count |
 | [babbler-to-assistant](sims/babbler-to-assistant/) | 1.0.0 | en | pretraining, fine-tuning, RLHF, encoder/decoder, scale |
+| [training-loop](sims/training-loop/) | 1.0.0 | en | bigram table, gradient step, learning rate, training loop, generation |
+| [gpt-pipeline](sims/gpt-pipeline/) | 1.0.0 | en | the whole GPT pipeline, tensor shapes, context window, learned vs. fixed parts |
+
+| Code lab | Versions | Language | Steps |
+| --- | --- | --- | --- |
+| [gpt-from-scratch](code/gpt-from-scratch/1.0.0/README.md) | 1.0.0 | Python, PyTorch | tokenizer → batches → bigram → averaging → self-attention → transformer block → GPT → generate |
 
 ## Layout
 
@@ -33,6 +40,7 @@ bundles/<bundle>/elements/*.md     learning elements
 bundles/<bundle>/paths/*.md        learning paths
 bundles/<bundle>/ptf.lock          pinned simulator versions
 sims/<name>/<version>/             immutable simulator packages (sim.json, index.html, ptf-sim.js, test.json)
+code/<name>/<version>/             immutable code labs (lab.json, README.md, steps/, data/)
 ```
 
 ## Working on the library
@@ -46,16 +54,18 @@ node ../ptf-spec/tools/ptf-selftest.mjs sims/*/*/                        # run s
 node ../ptf-spec/tools/ptf-selftest.mjs --serve sims/next-char-lab/2.0.0 # try a simulator in the dev host
 node ../ptf-spec/tools/ptf-check.mjs hash --write sims/<name>/<version>  # after editing an unpublished version
 node ../ptf-spec/tools/ptf-check.mjs lock bundles/<bundle> .             # refresh a bundle's lockfile
+node ../ptf-spec/tools/ptf-codetest.mjs code/*/*/                        # smoke-test code labs (needs Python and the lab's packages)
 ```
 
 Rules:
 
 - Everything in this repository is written in English, except simulator UIs, which declare their language in `sim.json`.
-- Published simulator versions never change. Fix something by adding a new version.
+- Published simulator and code lab versions never change. Fix something by adding a new version.
+- Code labs follow [CODE-SPEC.md](https://github.com/KaProblem/ptf-spec/blob/main/CODE-SPEC.md): every step runs on its own, no network, no subprocesses.
 - Lessons are self-contained: learner-facing text never refers to the source material.
 - Simulators follow [SIMULATOR-SPEC.md](https://github.com/KaProblem/ptf-spec/blob/main/SIMULATOR-SPEC.md): no network, no storage, no eval.
 
 ## License
 
 Content (bundles): [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
-Simulators (`sims/`) and tools: MIT. See [LICENSE](LICENSE).
+Simulators (`sims/`), code labs (`code/`) and tools: MIT. The Tiny Shakespeare text in `code/gpt-from-scratch/*/data/` is public domain. See [LICENSE](LICENSE).

@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Added
+- Code lab `gpt-from-scratch` 1.0.0 (CODE-SPEC.md): eight runnable Python/PyTorch steps from the character tokenizer to a trained GPT and text generation, each complete on its own, with `try` ideas, CPU-friendly defaults, a `--preset gpu` for the 10.8 M parameter model, the Tiny Shakespeare dataset and a smoke mode. CI runs the smoke test.
+- `llm-basics` 0.3.0: elements `bigram-model` (a first model that learns: table lookup, gradient step, learning rate, training loop, generation) and `gpt-end-to-end` (the whole pipeline, shapes, learned vs. fixed parts, context window); path `gpt-from-scratch` 0.3.0 with eleven steps; every element from the tokenizer to the residual stream links its code lab step (`code:`).
+- Simulators `training-loop` 1.0.0 (look up a row, nudge one example, train with three learning rates, generate) and `gpt-pipeline` 1.0.0 (order the parts, trace one prediction with shapes, shape quiz, context window, learned or fixed), both with focus mode and self-tests.
 - `llm-basics` 0.2.0: learning elements `training-examples`, `causal-mask`, `self-attention`, `transformer-block`, `residual-stream` and `from-babbler-to-assistant`, each with level texts, misconceptions and question blocks; the `gpt-from-scratch` path now has nine written steps and tutor notes for pacing.
 - Simulators `causal-mask`, `attention-lab`, `transformer-block`, `residual-stream` and `babbler-to-assistant` 1.0.0, with self-tests. UI in English; `causal-mask` and `attention-lab` also ship a German UI as the example of the language rules in SIMULATOR-SPEC.md §4.6.
 

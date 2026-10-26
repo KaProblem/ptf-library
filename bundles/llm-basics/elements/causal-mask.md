@@ -9,7 +9,7 @@ levels: [highschool, college, expert]
 tags: [llm, attention, causal-mask, matrix-multiplication]
 requires:
   - ptf:el/llm-basics/training-examples
-  - ptf:el/llm-basics/softmax
+  - ptf:el/llm-basics/bigram-model
 leads_to:
   - ptf:el/llm-basics/self-attention
 duration_min: { highschool: 15, college: 20, expert: 10 }
@@ -28,13 +28,18 @@ simulators:
     station: softmax-mask
     levels: [college, expert]
     role: practice
+code:
+  - ref: ptf:code/gpt-from-scratch@^1.0.0
+    step: averaging
+    levels: [college, expert]
+    note: The three versions of the average, and data-dependent weights at the end.
 sources:
   - id: karpathy-gpt
     resource: https://www.youtube.com/watch?v=kCc8FmEb1nY
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.1.0
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
 
