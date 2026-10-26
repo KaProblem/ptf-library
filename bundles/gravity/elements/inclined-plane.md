@@ -7,6 +7,9 @@ description: A ramp passes on only the part g sin θ of gravity along the slope,
 lang: en
 levels: [highschool, college, expert]
 tags: [physics, mechanics, inclined-plane, force-components, uniform-acceleration]
+about:
+  - wikidata: Q161462
+    label: inclined plane
 requires:
   - ptf:el/gravity/free-fall
 leads_to:
@@ -32,7 +35,7 @@ sources:
     title: "OpenStax University Physics Volume 1, 6.2 Solving Problems with Newton's Laws"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.1
+version: 0.1.2
 license: CC-BY-SA-4.0
 ---
 

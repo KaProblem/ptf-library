@@ -7,6 +7,11 @@ description: A block first lets tokens exchange information through several atte
 lang: en
 levels: [highschool, college, expert]
 tags: [llm, transformer, multi-head-attention, feed-forward, mlp]
+about:
+  - wikidata: Q85810444
+    label: transformer
+  - wikidata: Q2991667
+    label: multilayer perceptron
 requires:
   - ptf:el/llm-basics/self-attention
 leads_to:
@@ -37,7 +42,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.2.0
+version: 0.2.1
 license: CC-BY-SA-4.0
 ---
 

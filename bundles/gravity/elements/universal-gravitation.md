@@ -7,6 +7,9 @@ description: Every mass attracts every other mass with a force that falls off wi
 lang: en
 levels: [child, highschool, college, expert]
 tags: [physics, gravity, newton, orbit, inverse-square-law, weightlessness]
+about:
+  - wikidata: Q134465
+    label: "Newton's law of universal gravitation"
 requires:
   - ptf:el/gravity/free-fall
 leads_to:
@@ -32,7 +35,7 @@ sources:
     title: "The Feynman Lectures on Physics, Vol. I, ch. 7: The Theory of Gravitation"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.1
+version: 0.1.2
 license: CC-BY-SA-4.0
 ---
 

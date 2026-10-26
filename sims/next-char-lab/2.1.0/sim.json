@@ -1,0 +1,125 @@
+{
+  "ptf_sim": "0.1",
+  "lang": [
+    "de"
+  ],
+  "entry": "index.html",
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "integrity": "sha256-m1+mpPmlKYH6MoEsTCbfjYfFOyuhzrCo4sXhkW81A9w=",
+  "id": "ptf:sim/next-char-lab",
+  "version": "2.1.0",
+  "title": "Next-character lab",
+  "description": "A bigram language model to play with: guess the next character yourself, then build the simplest model that does the same.",
+  "concepts": [
+    "tokenizer",
+    "bigram",
+    "softmax",
+    "cross-entropy",
+    "sampling",
+    "temperature",
+    "block-size"
+  ],
+  "levels": [
+    "highschool",
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "guess",
+      "title": "You are the language model: guess the next character",
+      "levels": [
+        "highschool"
+      ]
+    },
+    {
+      "id": "tokenizer",
+      "title": "Text becomes numbers: the tokenizer",
+      "levels": [
+        "highschool"
+      ]
+    },
+    {
+      "id": "counted-probabilities",
+      "title": "Counted probabilities",
+      "levels": [
+        "highschool"
+      ]
+    },
+    {
+      "id": "generate",
+      "title": "Generating text character by character",
+      "levels": [
+        "highschool"
+      ]
+    },
+    {
+      "id": "loss",
+      "title": "The loss",
+      "levels": [
+        "college"
+      ]
+    },
+    {
+      "id": "training-curve",
+      "title": "Read more text, be less surprised",
+      "levels": [
+        "college"
+      ]
+    },
+    {
+      "id": "temperature",
+      "title": "Bold or careful sampling: temperature",
+      "levels": [
+        "college"
+      ]
+    },
+    {
+      "id": "context-window",
+      "title": "One snippet, many training examples",
+      "levels": [
+        "expert"
+      ]
+    },
+    {
+      "id": "bigram-table",
+      "title": "The model is a V×V table",
+      "levels": [
+        "expert"
+      ]
+    },
+    {
+      "id": "summary",
+      "title": "Summary of the beginner level",
+      "levels": [
+        "highschool"
+      ]
+    },
+    {
+      "id": "corpus",
+      "title": "What the model learns from",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "events": [
+    "level_changed",
+    "answered",
+    "station_completed",
+    "experienced"
+  ],
+  "derived_from": "ptf:sim/next-char-lab@2.0.0",
+  "changelog": "Starts in focus mode (one station, Back/Next, progress row) and follows goto { focus }; own texts with emoji or other characters outside the Basic Multilingual Plane no longer break counting (one code-point split everywhere); every station reports what the learner tried (experienced) and completes (station_completed); the snapshot describes the current values; the full lab state, including a custom corpus up to 30,000 characters, is saved and restored; source reference removed from the UI."
+}
