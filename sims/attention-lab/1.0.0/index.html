@@ -72,6 +72,12 @@ footer{color:var(--muted);font-size:.85rem}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 html:not([lang="de"]) i-de,html[lang="de"] i-en{display:none!important}
 i-en,i-de{font-style:inherit}
+.focus-nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;bottom:0;background:var(--bg);padding:10px 0;border-top:1px solid var(--line)}
+.focus-nav #focusAll{margin-left:auto}
+.focus-nav button:disabled{opacity:.4;cursor:default}
+body.focused header > :not(.row){display:none}
+body.focused #focusStart{display:none}
+body.focused footer{display:none}
 
 .sent{display:flex;flex-wrap:wrap;gap:6px}
 .sent .tok{flex-direction:column;gap:0;min-width:56px;position:relative}
@@ -204,9 +210,54 @@ const PTF_LEVELS = {"1": "highschool", "2": "college", "3": "expert"};
 /* Shared PTF glue: levels, stations, snapshot (SIMULATOR-SPEC.md §4) */
 function setLevel(l){
   document.querySelectorAll(".levels button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.level===l));
-  document.querySelectorAll("[data-show]").forEach(s=>s.hidden=!s.dataset.show.split(" ").includes(l));
   CURRENT_LEVEL=l;
+  if (FOCUS && !stationsAtLevel().includes(FOCUS)) FOCUS = stationsAtLevel()[0] || null;
+  applyVisibility();
 }
+const stationsAtLevel = () => [...document.querySelectorAll("section[data-station]")].filter(s => s.dataset.show.split(" ").includes(CURRENT_LEVEL)).map(s => s.dataset.station);
+/* Focus mode (SIMULATOR-SPEC.md §4.7): one station at a time with Back / Next. */
+let FOCUS = null;
+function applyVisibility() {
+  document.querySelectorAll("[data-show]").forEach(s => {
+    const lvl = s.dataset.show.split(" ").includes(CURRENT_LEVEL);
+    s.hidden = !lvl || (FOCUS !== null && s.matches("section[data-station]") && s.dataset.station !== FOCUS);
+  });
+  document.body.classList.toggle("focused", FOCUS !== null);
+  const nav = document.getElementById("focusNav");
+  if (!nav) return;
+  nav.hidden = FOCUS === null;
+  if (FOCUS === null) return;
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS);
+  document.getElementById("focusBack").disabled = i <= 0;
+  document.getElementById("focusNext").disabled = i >= list.length - 1;
+  document.getElementById("focusPos").textContent = `${i + 1} / ${list.length}`;
+}
+function setFocus(id) { FOCUS = id; applyVisibility(); }
+function moveFocus(step) {
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS), next = list[i + step];
+  if (!next) return;
+  setFocus(next);
+  ptf.event("experienced", { station: next, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: next } });
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+(function buildFocusNav() {
+  const nav = document.createElement("nav");
+  nav.id = "focusNav"; nav.className = "focus-nav"; nav.hidden = true;
+  nav.setAttribute("aria-label", "Stations");
+  nav.innerHTML = `<button class="btn ghost" id="focusBack"><i-en>Back</i-en><i-de>Zurück</i-de></button><span class="mono note" id="focusPos"></span><button class="btn" id="focusNext"><i-en>Next</i-en><i-de>Weiter</i-de></button><button class="btn ghost" id="focusAll"><i-en>Show all</i-en><i-de>Alles zeigen</i-de></button>`;
+  const footer = document.querySelector(".wrap > footer");
+  footer ? footer.before(nav) : document.querySelector(".wrap").append(nav);
+  nav.querySelector("#focusBack").onclick = () => moveFocus(-1);
+  nav.querySelector("#focusNext").onclick = () => moveFocus(1);
+  nav.querySelector("#focusAll").onclick = () => setFocus(null);
+  const start = document.createElement("button");
+  start.id = "focusStart"; start.className = "btn ghost";
+  start.innerHTML = "<i-en>Step by step</i-en><i-de>Schritt für Schritt</i-de>";
+  start.onclick = () => { setFocus(stationsAtLevel()[0]); ptf.event("experienced", { station: FOCUS, data: { focus: FOCUS } }); };
+  const levels = document.querySelector("header .levels");
+  const row = document.createElement("div"); row.className = "row";
+  levels.before(row); row.append(levels, start);
+})();
 let CURRENT_LEVEL="1", LOCALE="en", READY=false;
 /* UI language (en, de): static text as <i-en>/<i-de> pairs, dynamic text via L(en, de). */
 const L = (en, de) => LOCALE === "de" ? de : en;
@@ -225,13 +276,14 @@ const ptf = PTF.connect({
     if (ctx.locale) setLocale(ctx.locale);
     const lvl = (ctx.state && ctx.state.level) || ctx.level;
     if (lvl) applyLevel(lvl);
-    if (ctx.station) gotoStation(ctx.station);
+    if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus === true });
   },
   onSetLevel: applyLevel,
   onGoto: gotoStation,
   snapshot() {
     const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
     const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `UI language: ${LOCALE}`, `Visible stations: ${shown.join(", ")}`];
+    if (FOCUS) parts.push(`Focus mode on station: ${FOCUS}`);
     if (completed.size) parts.push(`Completed: ${[...completed].join(", ")}`);
     if (typeof simSnapshot === "function") parts.push(simSnapshot());
     return parts.join(". ");
@@ -241,10 +293,12 @@ function applyLevel(level) {
   const n = Object.keys(PTF_LEVELS).find(k => PTF_LEVELS[k] === level);
   if (n) setLevel(n);
 }
-function gotoStation(id) {
-  const s = document.querySelector(`[data-station="${id}"]`);
+function gotoStation(id, opts) {
+  const s = id ? document.querySelector(`section[data-station="${id}"]`) : null;
+  if (opts && opts.focus === false) setFocus(null);
   if (!s) return;
-  if (s.hidden && s.dataset.show) setLevel(s.dataset.show.split(" ")[0]);
+  if (!s.dataset.show.split(" ").includes(CURRENT_LEVEL)) setLevel(s.dataset.show.split(" ")[0]);
+  if (opts && opts.focus === true) { setFocus(id); window.scrollTo({ top: 0, behavior: "auto" }); return; }
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
 }

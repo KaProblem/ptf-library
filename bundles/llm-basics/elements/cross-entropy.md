@@ -30,7 +30,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.1.0
+version: 0.1.1
 license: CC-BY-SA-4.0
 ---
 
@@ -165,6 +165,12 @@ outputs after fine-tuning.
   "explanation": "Only held-out data tells you whether the model generalises."
 }
 ```
+
+# Further reading
+
+Optional deep dive after the lesson; the element does not depend on it.
+
+- [Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY&t=1320s): the loss of a bigram model before and after training, with the expected value ln 65 (video, 0:22–0:42; college).
 
 # Sources
 

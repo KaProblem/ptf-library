@@ -211,6 +211,13 @@ base models can already do much with careful few-shot prompting.
 }
 ```
 
+# Further reading
+
+Optional deep dive after the lesson; the element does not depend on it.
+
+- [Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY&t=6120s): decoder-only vs. encoder-decoder, nanoGPT, and how ChatGPT is trained from pretraining to RLHF (video, 1:42–1:56; highschool, college).
+- [Training language models to follow instructions with human feedback](https://arxiv.org/abs/2203.02155): the InstructGPT paper behind the fine-tuning and RLHF stages (paper; expert).
+
 # Sources
 
 Grounding: decoder-only vs. encoder-decoder and ChatGPT training chapters of [^karpathy-gpt].

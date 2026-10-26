@@ -190,6 +190,12 @@ never multiplied by zero after it, which would break normalisation.
 }
 ```
 
+# Further reading
+
+Optional deep dive after the lesson; the element does not depend on it.
+
+- [Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY&t=2520s): the "mathematical trick" of self-attention: averaging the past with a triangular matrix and masked softmax (video, 0:42–0:58; college).
+
 # Sources
 
 Grounding: "the mathematical trick in self-attention" chapter of [^karpathy-gpt].

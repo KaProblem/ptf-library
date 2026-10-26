@@ -214,6 +214,14 @@ tokens per parameter in the Chinchilla analysis).
 }
 ```
 
+# Further reading
+
+Optional deep dive after the lesson; the element does not depend on it.
+
+- [Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY&t=5220s): residual connections, layer norm, dropout and scaling the model up to a validation loss of 1.48 (video, 1:27–1:42; college).
+- [Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385): the paper that introduced residual connections (paper; expert).
+- [Layer Normalization](https://arxiv.org/abs/1607.06450): the original layer norm paper (paper; expert).
+
 # Sources
 
 Grounding: residual connections, layer norm, dropout and scaling-up chapters of [^karpathy-gpt].

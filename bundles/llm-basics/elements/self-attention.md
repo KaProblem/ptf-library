@@ -241,6 +241,13 @@ implement in-context copying.
 }
 ```
 
+# Further reading
+
+Optional deep dive after the lesson; the element does not depend on it.
+
+- [Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY&t=3720s): a single self-attention head built from queries, keys and values, with the notes on positions, batches, encoders and scaling (video, 1:02–1:20; college, expert).
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762): the 2017 paper that introduced the transformer (paper; expert).
+
 # Sources
 
 Grounding: self-attention chapter of [^karpathy-gpt] and the original transformer paper [^vaswani].

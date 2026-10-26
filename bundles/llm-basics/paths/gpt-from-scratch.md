@@ -50,6 +50,8 @@ transformer that looks at the whole context.
 
 # Tutor notes
 
+- Show simulators one station at a time (focus mode, SIMULATOR-SPEC.md §4.7): open the station named in the element's `simulators` entry with focus, let the learner try it, talk about it, then move on with Next. Show the whole simulator only for review.
+- Every element has an optional `# Further reading` section with the matching part of the source video and papers. Offer it after the step, as a deep dive, never as a prerequisite.
 - Start every session with step 1's guessing game, even for advanced learners: it anchors everything that follows.
 - Typical pace at highschool level: steps 1 to 4 in one session of 45 to 60 minutes, steps 5 and 6 in a second session (self-attention is the core and deserves time), steps 7 to 9 in a third.
 - Step 5 is the bridge: make sure the learner has seen that masked softmax over all-zero scores reproduces the plain average, because self-attention only replaces those zeros with query · key.

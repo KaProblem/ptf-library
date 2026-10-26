@@ -76,5 +76,5 @@
   ],
   "derived_from": null,
   "changelog": "First version. UI in English and German, chosen from the host's locale (falls back to the browser language, then English).",
-  "integrity": "sha256-OuPP8dvd34ysyjFkuqPlXbVUTJbgksrS6qcCSgrDWLE="
+  "integrity": "sha256-f68wTvHwqbvISGZnqH1loWx8JooM9jUMcvJFwGdi5po="
 }

@@ -1,21 +1,76 @@
 {
   "steps": [
-    { "init": { "level": "highschool", "locale": "de" } },
-    { "expectText": "Wem hört" },
-    { "click": "#guessBox button[data-ok]" },
-    { "expectEvent": "answered" },
-    { "click": "#sent1 button[data-j='2']" },
-    { "expectText": "hört am meisten auf „Katze“" },
-    { "type": { "selector": "#qAng", "text": "75" } },
-    { "expectText": "Geschafft" },
-    { "expectEvent": "station_completed" },
-    { "click": "[data-level='3']" },
-    { "expectEvent": "level_changed" },
-    { "expectText": "Skalierung" },
-    { "click": "#posOn" },
-    { "expectText": "Verschieden" },
-    { "goto": "scaling" },
-    { "snapshot": true },
-    { "expectNoError": true }
+    {
+      "init": {
+        "level": "highschool",
+        "locale": "de"
+      }
+    },
+    {
+      "click": "#focusStart"
+    },
+    {
+      "expectEvent": "experienced"
+    },
+    {
+      "click": "#focusNext"
+    },
+    {
+      "expectText": "Frage trifft Etikett"
+    },
+    {
+      "click": "#focusAll"
+    },
+    {
+      "expectText": "Wem hört"
+    },
+    {
+      "click": "#guessBox button[data-ok]"
+    },
+    {
+      "expectEvent": "answered"
+    },
+    {
+      "click": "#sent1 button[data-j='2']"
+    },
+    {
+      "expectText": "hört am meisten auf „Katze“"
+    },
+    {
+      "type": {
+        "selector": "#qAng",
+        "text": "75"
+      }
+    },
+    {
+      "expectText": "Geschafft"
+    },
+    {
+      "expectEvent": "station_completed"
+    },
+    {
+      "click": "[data-level='3']"
+    },
+    {
+      "expectEvent": "level_changed"
+    },
+    {
+      "expectText": "Skalierung"
+    },
+    {
+      "click": "#posOn"
+    },
+    {
+      "expectText": "Verschieden"
+    },
+    {
+      "goto": "scaling"
+    },
+    {
+      "snapshot": true
+    },
+    {
+      "expectNoError": true
+    }
   ]
 }

@@ -28,7 +28,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.1.0
+version: 0.1.1
 license: CC-BY-SA-4.0
 ---
 
@@ -174,6 +174,12 @@ often over-confident, which temperature can partly correct.
   "explanation": "This is the same temperature effect: √d acts as a temperature that keeps the softmax soft."
 }
 ```
+
+# Further reading
+
+Optional deep dive after the lesson; the element does not depend on it.
+
+- [Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY&t=1320s): a bigram model in PyTorch: logits, softmax, sampling and generation (video, 0:22–0:42; college).
 
 # Sources
 

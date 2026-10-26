@@ -182,6 +182,12 @@ from compute per token.
 }
 ```
 
+# Further reading
+
+Optional deep dive after the lesson; the element does not depend on it.
+
+- [Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY&t=4860s): multi-head attention, the feed-forward layer and the block structure, with the loss after each step (video, 1:21–1:27; college).
+
 # Sources
 
 Grounding: multi-head attention, feed-forward and block chapters of [^karpathy-gpt].

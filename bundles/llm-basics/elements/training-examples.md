@@ -162,6 +162,13 @@ tokens and mask attention across document boundaries.
 }
 ```
 
+# Further reading
+
+Optional deep dive after the lesson; the element does not depend on it.
+
+- [Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY&t=780s): splitting train and validation data, block size and batches, shown in code (video, 0:13–0:22; college).
+- [nanoGPT](https://github.com/karpathy/nanoGPT): a compact GPT implementation whose data loader works exactly like this (code; college, expert).
+
 # Sources
 
 Grounding: data loading and batching chapter of [^karpathy-gpt].
