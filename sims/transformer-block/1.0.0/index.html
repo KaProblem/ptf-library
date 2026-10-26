@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Transformer-Block</title>
+<title>Transformer block</title>
 <style>
 :root{
   --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
@@ -70,6 +70,8 @@ svg text{font-family:var(--f-mono)}
 details summary{cursor:pointer;font-weight:600;min-height:32px}
 footer{color:var(--muted);font-size:.85rem}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+html:not([lang="de"]) i-de,html[lang="de"] i-en{display:none!important}
+i-en,i-de{font-style:inherit}
 
 .heads{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
 .heads figure{margin:0;display:flex;flex-direction:column;gap:6px}
@@ -98,81 +100,82 @@ table.ff tr.changed td{background:var(--warn-soft)}
 <body>
 <div class="wrap">
 <header>
-  <span class="eyebrow">Wie GPT funktioniert · Der Block</span>
-  <h1>Zuhören, dann nachdenken</h1>
-  <p>Ein Transformer besteht aus vielen gleichen Bausteinen, den Blöcken. Jeder Block hat zwei Teile: Zuerst tauschen die Wörter Information aus (mehrere Attention-Köpfe gleichzeitig), dann denkt jedes Wort für sich allein darüber nach (Feed-Forward). Hier nimmst du beide Teile auseinander.</p>
-  <div class="levels" role="group" aria-label="Stufe">
-    <button data-level="1" aria-pressed="true">Schule</button><button data-level="2" aria-pressed="false">Studium</button><button data-level="3" aria-pressed="false">Experte</button>
+  <span class="eyebrow">How GPT works · The block</span>
+  <h1>Listen, then think</h1>
+  <p>A transformer is made of many identical building blocks. Each block has two parts: first the words exchange information (several attention heads at once), then each word thinks it over on its own (feed-forward). Here you take both parts apart.</p>
+  <div class="levels" role="group" aria-label="Level">
+    <button data-level="1" aria-pressed="true">High school</button><button data-level="2" aria-pressed="false">College</button><button data-level="3" aria-pressed="false">Expert</button>
   </div>
 </header>
 
 <section class="station" data-station="heads" data-show="1 2 3">
-  <span class="num">Station 1 · Mehrere Köpfe</span>
-  <h2>Drei Köpfe, drei Fragen</h2>
-  <p>Ein einzelner Attention-Kopf kann nur eine Sorte Frage stellen. Darum arbeiten mehrere Köpfe parallel, jeder mit eigenen Query-, Key- und Value-Zahlen. Unten siehst du, wem jedes Wort (Zeile) in jedem Kopf zuhört (Spalte). Dunkel heißt viel Aufmerksamkeit. Satz: „Die Katze trinkt Milch weil sie Durst hat“.</p>
+  <span class="num">Station 1 · Several heads</span>
+  <h2>Three heads, three questions</h2>
+  <p>A single attention head can only ask one kind of question. So several heads work in parallel, each with its own query, key and value numbers. Below you see whom each word (row) listens to (column) in each head. Dark means a lot of attention. Sentence: "The cat drinks milk because she is thirsty".</p>
   <div class="heads" id="heads"></div>
-  <p><b>Frage:</b> Welcher Kopf schaut fast immer auf das Wort direkt davor?</p>
+  <p><b>Question:</b> Which head almost always looks at the word directly before?</p>
   <div class="choices">
-    <button data-mis="one-head-is-enough" data-fb="Kopf 1 sucht in jeder Zeile das Verb („trinkt“, später „hat“). Schau nach einer Diagonale direkt links neben der Hauptdiagonale.">Kopf 1</button>
-    <button data-ok data-fb="Richtig. Kopf 2 bildet eine Diagonale knapp unter der Hauptdiagonale: Jedes Wort hört dem vorigen zu. Kopf 3 sucht Bezüge (sie → Katze), Kopf 1 das Verb.">Kopf 2</button>
-    <button data-mis="one-head-is-enough" data-fb="Kopf 3 sucht inhaltliche Bezüge, etwa „sie“ → „Katze“. Die Diagonale direkt neben der Hauptdiagonale findest du woanders.">Kopf 3</button>
+    <button data-mis="one-head-is-enough" data-fb-en="Head 1 looks for the verb in every row (&quot;drinks&quot;, later &quot;thirsty&quot;). Look for a diagonal just left of the main diagonal.">Head 1</button>
+    <button data-ok data-fb-en="Right. Head 2 forms a diagonal just below the main diagonal: every word listens to the previous one. Head 3 tracks references (she → cat), head 1 the verb.">Head 2</button>
+    <button data-mis="one-head-is-enough" data-fb-en="Head 3 tracks references, such as &quot;she&quot; → &quot;cat&quot;. The diagonal right next to the main diagonal is elsewhere.">Head 3</button>
   </div>
   <p class="feedback" hidden></p>
-  <p class="note" data-show="2 3">Die Ergebnisse der Köpfe werden aneinandergehängt (concat) und mit einer Matrix zurück in die Modellbreite projiziert. Beispiel: 4 Köpfe mit je 8 Dimensionen ergeben wieder 32. Mehr Köpfe kosten also nicht mehr Breite, sie teilen sie auf.</p>
+  <p class="note" data-show="2 3">The outputs of the heads are concatenated and projected back to the model width with a matrix. Example: 4 heads of 8 dimensions give 32 again. More heads do not cost more width; they split it.</p>
 </section>
 
 <section class="station" data-station="feed-forward" data-show="1 2 3">
-  <span class="num">Station 2 · Jeder für sich</span>
-  <h2>Feed-Forward: allein nachdenken</h2>
-  <p>Nach dem Zuhören hat jedes Wort neue Information gesammelt. Jetzt schickt jedes Wort seinen Vektor durch dasselbe kleine Netz, aber jedes Wort einzeln. Verändere das Merkmal von „Katze“ und beobachte, welche Zeilen sich ändern.</p>
-  <div class="srow"><label for="ffSl">„Katze“, Merkmal 1</label><input type="range" id="ffSl" min="-2" max="2" step="0.1" value="1"><span class="v" id="ffV"></span></div>
+  <span class="num">Station 2 · Each on its own</span>
+  <h2>Feed-forward: thinking alone</h2>
+  <p>After listening, each word has gathered new information. Now each word sends its vector through the same small network, but each word separately. Change the feature of "cat" and watch which rows change.</p>
+  <div class="srow"><label for="ffSl">"cat", feature 1</label><input type="range" id="ffSl" min="-2" max="2" step="0.1" value="1"><span class="v" id="ffV"></span></div>
   <div class="scroll"><table class="ff" id="ffTab"></table></div>
   <p class="note" id="ffNote"></p>
-  <p class="note" data-show="2 3">Formel pro Wort: FF(x) = ReLU(x·W<sub>1</sub> + b<sub>1</sub>)·W<sub>2</sub> + b<sub>2</sub>. Die innere Schicht ist meist 4-mal so breit wie das Modell (hier 3 → 12 → 3). Etwa zwei Drittel der Parameter eines Transformers stecken in diesen Schichten.</p>
+  <p class="note" data-show="2 3">Formula per word: FF(x) = ReLU(x·W<sub>1</sub> + b<sub>1</sub>)·W<sub>2</sub> + b<sub>2</sub>. The inner layer is usually 4 times as wide as the model (here 3 → 12 → 3). About two thirds of a block's parameters sit in these layers.</p>
 </section>
 
 <section class="station" data-station="stack" data-show="1 2 3">
-  <span class="num">Station 3 · Baue dein Modell</span>
-  <h2>Stufe für Stufe besser</h2>
-  <p>Ein kleines Modell lernt, Text im Stil von Shakespeare zu schreiben (etwa 1 Million Zeichen Trainingstext). Der Loss misst, wie überrascht es von echtem Text ist: kleiner ist besser. Füge die Bausteine in dieser Reihenfolge hinzu. Rate vorher: Welcher Schritt bringt am meisten?</p>
+  <span class="num">Station 3 · Build your model</span>
+  <h2>Better step by step</h2>
+  <p>A small model learns to write text in the style of Shakespeare (about 1 million characters of training text). The loss measures how surprised it is by real text: lower is better. Add the components in this order. Guess first: which step helps most?</p>
   <div class="ladder" id="ladder"></div>
-  <div class="stats"><div><span class="note">Validierungs-Loss</span><span class="stat" id="lossV"></span></div><div><span class="note">Gesamt gespart</span><span class="stat" id="gainV"></span></div></div>
+  <div class="stats"><div><span class="note">Validation loss</span><span class="stat" id="lossV"></span></div><div><span class="note">Total improvement</span><span class="stat" id="gainV"></span></div></div>
   <div class="out" id="sample"></div>
-  <p class="note">Die Loss-Werte stammen aus einem echten Trainingslauf eines kleinen Modells. Die Textproben sind nachgestellt und zeigen, wie die Qualität sich ungefähr anfühlt.</p>
-  <div class="diagram" aria-label="Aufbau eines Blocks" data-show="2 3">
-    <span>Eingabe: Token-Embedding + Positions-Embedding</span>
-    <div>LayerNorm</div><div class="a">Multi-Head Self-Attention (Kommunikation)</div><span>+ Residual</span>
-    <div>LayerNorm</div><div class="f">Feed-Forward (Berechnung)</div><span>+ Residual</span>
-    <span>× N Blöcke, dann LayerNorm, Linear → Logits</span>
+  <p class="note">The loss values come from a real training run of a small model. The text samples are re-created to show roughly how the quality feels.</p>
+  <div class="diagram" aria-label="Structure of a block" data-show="2 3">
+    <span>Input: token embedding + position embedding</span>
+    <div>LayerNorm</div><div class="a">Multi-head self-attention (communication)</div><span>+ residual</span>
+    <div>LayerNorm</div><div class="f">Feed-forward (computation)</div><span>+ residual</span>
+    <span>× N blocks, then LayerNorm, linear → logits</span>
   </div>
 </section>
 
 <section class="station" data-station="check" data-show="1 2 3">
-  <span class="num">Prüf dich</span>
-  <h2>Kurze Fragen</h2>
-  <p>Welcher Teil eines Blocks lässt Wörter miteinander Information austauschen?</p>
+  <span class="num">Check yourself</span>
+  <h2>Short questions</h2>
+  <p>Which part of a block lets words exchange information?</p>
   <div class="choices">
-    <button data-ok data-fb="Richtig. Nur Attention verbindet Stellen. Feed-Forward rechnet für jede Stelle einzeln.">Die Attention-Köpfe</button>
-    <button data-mis="feed-forward-mixes-tokens" data-fb="Nein. Feed-Forward wird auf jedes Wort einzeln angewendet, wie du in Station 2 gesehen hast.">Die Feed-Forward-Schicht</button>
-    <button data-mis="feed-forward-mixes-tokens" data-fb="Nein, nur Attention tauscht zwischen Stellen aus.">Beide gleich</button>
+    <button data-ok data-fb-en="Right. Only attention connects positions. Feed-forward computes for each position separately.">The attention heads</button>
+    <button data-mis="feed-forward-mixes-tokens" data-fb-en="No. Feed-forward is applied to each word separately, as you saw in station 2.">The feed-forward layer</button>
+    <button data-mis="feed-forward-mixes-tokens" data-fb-en="No, only attention exchanges between positions.">Both equally</button>
   </div>
   <p class="feedback" hidden></p>
   <div data-show="2 3">
-    <p>Ein Modell hat Breite 384 und 6 Köpfe. Wie groß ist jeder Kopf?</p>
+    <p>A model has width 384 and 6 heads. How large is each head?</p>
     <div class="choices">
-      <button data-ok data-fb="Richtig: 384 / 6 = 64. Aneinandergehängt ergeben die sechs Köpfe wieder 384.">64</button>
-      <button data-mis="one-head-is-enough" data-fb="Nein. Die Köpfe teilen sich die Breite, sie bekommen nicht jeweils die volle Breite.">384</button>
-      <button data-fb="Nein, 384 · 6 wäre sechsmal so breit wie das Modell.">2304</button>
+      <button data-ok data-fb-en="Right: 384 / 6 = 64. Concatenated, the six heads give 384 again.">64</button>
+      <button data-mis="one-head-is-enough" data-fb-en="No. The heads share the width; they do not each get the full width.">384</button>
+      <button data-fb-en="No, 384 · 6 would be six times as wide as the model.">2304</button>
     </div>
     <p class="feedback" hidden></p>
   </div>
 </section>
-<footer>Simulator „Transformer-Block“ · Personal Tutor Format</footer>
+<footer>Simulator "Transformer block" · Personal Tutor Format</footer>
 </div>
 
 <script src="ptf-sim.js"></script>
 <script>
 const SIM_ID = "ptf:sim/transformer-block", SIM_VERSION = "1.0.0";
+const SIM_LOCALES = ["en"];
 const PTF_LEVELS = {"1": "highschool", "2": "college", "3": "expert"};
 /* Shared PTF glue: levels, stations, snapshot (SIMULATOR-SPEC.md §4) */
 function setLevel(l){
@@ -180,11 +183,22 @@ function setLevel(l){
   document.querySelectorAll("[data-show]").forEach(s=>s.hidden=!s.dataset.show.split(" ").includes(l));
   CURRENT_LEVEL=l;
 }
-let CURRENT_LEVEL="1";
+let CURRENT_LEVEL="1", LOCALE="en", READY=false;
+/* UI language (en, de): static text as <i-en>/<i-de> pairs, dynamic text via L(en, de). */
+const L = (en, de) => LOCALE === "de" ? de : en;
+const fmt = (x, d = 2) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+/* Each simulator declares SIM_LOCALES (matching "lang" in sim.json); unsupported locales fall back to English. */
+function setLocale(loc) {
+  LOCALE = /^de/i.test(loc || "") && SIM_LOCALES.includes("de") ? "de" : "en";
+  document.documentElement.lang = LOCALE;
+  if (READY && typeof rerender === "function") rerender();
+}
+setLocale(navigator.language);
 const completed=new Set();
 const ptf = PTF.connect({
   id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS["1"],
   onInit(ctx) {
+    if (ctx.locale) setLocale(ctx.locale);
     const lvl = (ctx.state && ctx.state.level) || ctx.level;
     if (lvl) applyLevel(lvl);
     if (ctx.station) gotoStation(ctx.station);
@@ -193,7 +207,7 @@ const ptf = PTF.connect({
   onGoto: gotoStation,
   snapshot() {
     const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
-    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `Visible stations: ${shown.join(", ")}`];
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `UI language: ${LOCALE}`, `Visible stations: ${shown.join(", ")}`];
     if (completed.size) parts.push(`Completed: ${[...completed].join(", ")}`);
     if (typeof simSnapshot === "function") parts.push(simSnapshot());
     return parts.join(". ");
@@ -227,7 +241,7 @@ function done(station) {
   completed.add(station);
   ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
 }
-/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb,
+/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb-en / data-fb-de,
    followed by <p class="feedback" hidden>. A station completes when all its visible boxes are answered correctly. Call initChoices() once the DOM is built. */
 function initChoices() {
 document.querySelectorAll("[data-station] .choices").forEach(box => {
@@ -236,8 +250,8 @@ document.querySelectorAll("[data-station] .choices").forEach(box => {
     const ok = b.hasAttribute("data-ok");
     box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
     b.classList.add(ok ? "right" : "wrong");
-    if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = b.dataset.fb || (ok ? "Richtig." : "Nicht ganz."); }
-    answered(station, ok, b.dataset.mis, b.textContent.trim());
+    if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+    answered(station, ok, b.dataset.mis, (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim());
     if (ok) box.dataset.solved = "1";
     if ([...sec.querySelectorAll(".choices")].filter(x => !x.closest("[hidden]")).every(x => x.dataset.solved)) done(station);
   }));
@@ -246,14 +260,13 @@ document.querySelectorAll("[data-station] .choices").forEach(box => {
 setLevel("1");
 
 const $ = id => document.getElementById(id);
-const fmt = (x, d = 2) => x.toLocaleString("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d });
-const W = ["Die", "Katze", "trinkt", "Milch", "weil", "sie", "Durst", "hat"], T = W.length;
+const W = ["The", "cat", "drinks", "milk", "because", "she", "is", "thirsty"], T = W.length;
 const norm = r => { const s = r.reduce((a, b) => a + b, 0); return r.map(x => x / s); };
 const row = (i, f) => norm(Array.from({ length: i + 1 }, (_, j) => f(i, j)));
 const HEADS = [
-  { name: "Kopf 1", f: (i, j) => (j === 2 ? 8 : 0) + (j === 7 ? 9 : 0) + (i < 2 && j === i ? 5 : 0) + .4 },
-  { name: "Kopf 2", f: (i, j) => (j === i - 1 ? 9 : 0) + (i === 0 ? 1 : 0) + (j === i ? 1.5 : 0) + .15 },
-  { name: "Kopf 3", f: (i, j) => ({ "5,1": 9, "6,5": 5, "6,1": 3, "7,5": 4, "2,1": 6, "3,2": 4, "4,2": 2, "1,1": 3, "0,0": 1 })[i + "," + j] || .5 }
+  { name: "Head 1", f: (i, j) => (j === 2 ? 8 : 0) + (j === 7 ? 9 : 0) + (i < 2 && j === i ? 5 : 0) + .4 },
+  { name: "Head 2", f: (i, j) => (j === i - 1 ? 9 : 0) + (i === 0 ? 1 : 0) + (j === i ? 1.5 : 0) + .15 },
+  { name: "Head 3", f: (i, j) => ({ "5,1": 9, "6,5": 5, "6,1": 3, "7,5": 4, "2,1": 6, "3,2": 4, "4,2": 2, "1,1": 3, "0,0": 1 })[i + "," + j] || .5 }
 ];
 $("heads").innerHTML = HEADS.map(h => {
   let t = `<table class="heat" aria-label="${h.name}"><tr><th></th>${W.map((_, j) => `<th>${j + 1}</th>`).join("")}</tr>`;
@@ -276,24 +289,24 @@ function renderFF() {
   const v = +$("ffSl").value; $("ffV").textContent = fmt(v, 1);
   const xs = X.map((x, i) => i === 1 ? [v, x[1], x[2]] : x), ys = xs.map(ff);
   let changed = [];
-  $("ffTab").innerHTML = `<tr><th>Wort</th><th colspan="3">Eingang</th><th colspan="3">Ausgang</th></tr>` + xs.map((x, i) => {
+  $("ffTab").innerHTML = `<tr><th>Word</th><th colspan="3">Input</th><th colspan="3">Output</th></tr>` + xs.map((x, i) => {
     const ch = ys[i].some((y, o) => Math.abs(y - base[i][o]) > 1e-9); if (ch) changed.push(W[i]);
     return `<tr class="${ch ? "changed" : ""}"><td>${W[i]}</td>${x.map(a => `<td>${fmt(a, 1)}</td>`).join("")}${ys[i].map(a => `<td>${fmt(a, 2)}</td>`).join("")}</tr>`;
   }).join("");
-  $("ffNote").textContent = changed.length ? `Nur „${changed.join("“, „")}“ ändert sich. Feed-Forward tauscht nichts zwischen Wörtern aus: Jedes Wort wird mit denselben Gewichten, aber für sich allein verarbeitet.` : "Schieb den Regler und schau, welche Zeilen sich färben.";
+  $("ffNote").textContent = changed.length ? `Only "${changed.join('", "')}" changes. Feed-forward exchanges nothing between words: every word is processed with the same weights, but on its own.` : "Move the slider and see which rows light up.";
   if (changed.length) done("feed-forward");
 }
 $("ffSl").addEventListener("input", renderFF);
 
 /* Station 3 */
 const STEPS = [
-  { t: "Bigramm (nur das letzte Zeichen)", l: 2.50, s: "Thy wousthe, ar hesot fay ble\nIn the meathe sto ane wor; amat" },
-  { t: "+ 1 Attention-Kopf", l: 2.40, s: "Whent thik ond hand so hisen,\nAnd thee wis be the meer and" },
-  { t: "+ mehrere Köpfe (4 × 8)", l: 2.28, s: "Whe thy hast the bear my lord,\nAnd sot in me the son of wear" },
-  { t: "+ Feed-Forward", l: 2.24, s: "What thou hast the heart of men,\nAnd so the lord be stand to me" },
-  { t: "+ 3 Blöcke mit Residual", l: 2.08, s: "KING: What say you to the duke?\nI will not speak, and so the time" },
+  { t: "Bigram (last character only)", l: 2.50, s: "Thy wousthe, ar hesot fay ble\nIn the meathe sto ane wor; amat" },
+  { t: "+ 1 attention head", l: 2.40, s: "Whent thik ond hand so hisen,\nAnd thee wis be the meer and" },
+  { t: "+ several heads (4 × 8)", l: 2.28, s: "Whe thy hast the bear my lord,\nAnd sot in me the son of wear" },
+  { t: "+ feed-forward", l: 2.24, s: "What thou hast the heart of men,\nAnd so the lord be stand to me" },
+  { t: "+ 3 blocks with residual connections", l: 2.08, s: "KING: What say you to the duke?\nI will not speak, and so the time" },
   { t: "+ LayerNorm", l: 2.06, s: "KING: What say you to the duke?\nI will not speak; and yet the time" },
-  { t: "Hochskaliert: 6 Blöcke, 6 Köpfe, Breite 384, Dropout", l: 1.48, s: "DUKE VINCENTIO:\nWhy, then, my lord, the time is come\nThat you should speak the thing you know." }
+  { t: "Scaled up: 6 blocks, 6 heads, width 384, dropout", l: 1.48, s: "DUKE VINCENTIO:\nWhy, then, my lord, the time is come\nThat you should speak the thing you know." }
 ];
 let upto = 0;
 function renderLadder() {

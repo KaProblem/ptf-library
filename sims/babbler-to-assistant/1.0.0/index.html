@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vom Plappern zum Assistenten</title>
+<title>From babbler to assistant</title>
 <style>
 :root{
   --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
@@ -70,6 +70,8 @@ svg text{font-family:var(--f-mono)}
 details summary{cursor:pointer;font-weight:600;min-height:32px}
 footer{color:var(--muted);font-size:.85rem}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+html:not([lang="de"]) i-de,html[lang="de"] i-en{display:none!important}
+i-en,i-de{font-style:inherit}
 
 .pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
 .card{border:1px solid var(--line);border-radius:8px;padding:12px;background:var(--bg);display:flex;flex-direction:column;gap:8px}
@@ -88,80 +90,81 @@ table.grid th{font-size:.75rem}
 <body>
 <div class="wrap">
 <header>
-  <span class="eyebrow">Wie GPT funktioniert · Vom Modell zum Assistenten</span>
-  <h1>Vom Plappern zum Assistenten</h1>
-  <p>Ein Sprachmodell, das nur gelernt hat, Text fortzusetzen, ist noch kein hilfreicher Assistent. Es plappert im Stil seines Trainingstexts weiter. Hier siehst du, was danach noch passiert, wie groß echte Modelle sind und welche Bauarten es gibt.</p>
-  <div class="levels" role="group" aria-label="Stufe">
-    <button data-level="1" aria-pressed="true">Kind</button><button data-level="2" aria-pressed="false">Schule</button><button data-level="3" aria-pressed="false">Studium</button>
+  <span class="eyebrow">How GPT works · From model to assistant</span>
+  <h1>From babbler to assistant</h1>
+  <p>A language model that has only learned to continue text is not yet a helpful assistant. It babbles on in the style of its training text. Here you see what happens next, how big real models are, and which kinds of architecture exist.</p>
+  <div class="levels" role="group" aria-label="Level">
+    <button data-level="1" aria-pressed="true">Child</button><button data-level="2" aria-pressed="false">High school</button><button data-level="3" aria-pressed="false">College</button>
   </div>
 </header>
 
 <section class="station" data-station="document-completer" data-show="1 2 3">
-  <span class="num">Station 1 · Rate zuerst</span>
-  <h2>Wer hat das geschrieben?</h2>
-  <p>Zwei Modelle bekommen denselben Anfang: <b>„Wie backe ich einen Apfelkuchen?“</b> Das eine hat nur gelernt, Texte aus dem Internet fortzusetzen. Das andere wurde danach noch zum Assistenten erzogen. Welche Antwort stammt vom Modell, das nur fortsetzen kann?</p>
+  <span class="num">Station 1 · Guess first</span>
+  <h2>Who wrote this?</h2>
+  <p>Two models get the same start: <b>"How do I bake an apple pie?"</b> One has only learned to continue texts from the internet. The other was then trained to be an assistant. Which answer comes from the model that can only continue text?</p>
   <div class="pair">
-    <div class="card"><b>Antwort A</b><div class="out">Wie backe ich einen Apfelkuchen? Wie lange muss ein Hefeteig gehen? Kann man Äpfel einfrieren? Diese und weitere Fragen beantworten wir in unserem Forum. Registriere dich jetzt kostenlos!</div></div>
-    <div class="card"><b>Antwort B</b><div class="out">Gern! Du brauchst 4 Äpfel, 200 g Mehl, 100 g Butter, 100 g Zucker und 2 Eier. 1. Teig kneten und in die Form drücken. 2. Äpfel schneiden und darauflegen. 3. Bei 180 °C etwa 45 Minuten backen.</div></div>
+    <div class="card"><b>Answer A</b><div class="out">How do I bake an apple pie? How long does yeast dough need to rise? Can you freeze apples? These and other questions are answered in our forum. Sign up now for free!</div></div>
+    <div class="card"><b>Answer B</b><div class="out">Sure! You need 4 apples, 200 g flour, 100 g butter, 100 g sugar and 2 eggs. 1. Knead the dough and press it into the tin. 2. Slice the apples and lay them on top. 3. Bake at 180 °C for about 45 minutes.</div></div>
   </div>
   <div class="choices">
-    <button data-ok data-fb="Richtig. Das nur vortrainierte Modell setzt den Text so fort, wie solche Texte im Internet oft weitergehen: mit weiteren Fragen einer Forumsseite. Es beantwortet nichts, es vervollständigt ein Dokument.">Antwort A</button>
-    <button data-mis="pretraining-makes-assistant" data-fb="Nicht ganz. Eine hilfreiche, direkte Antwort ist genau das, was erst die Erziehung zum Assistenten beibringt. Ein Modell, das nur fortsetzt, schreibt eher weiter wie eine Webseite.">Antwort B</button>
+    <button data-ok data-fb-en="Right. The model that was only pretrained continues the text the way such texts often continue on the internet: with more questions from a forum page. It answers nothing; it completes a document.">Answer A</button>
+    <button data-mis="pretraining-makes-assistant" data-fb-en="Not quite. A helpful, direct answer is exactly what the assistant training teaches. A model that only continues text tends to write on like a web page.">Answer B</button>
   </div>
   <p class="feedback" hidden></p>
-  <p class="note">Beide Texte sind nachgestellte Beispiele.</p>
+  <p class="note">Both texts are re-created examples.</p>
 </section>
 
 <section class="station" data-station="stages" data-show="1 2 3">
-  <span class="num">Station 2 · Reihenfolge</span>
-  <h2>In welcher Reihenfolge lernt ein Assistent?</h2>
-  <p>Tipp die Schritte in der Reihenfolge an, in der sie passieren.</p>
+  <span class="num">Station 2 · Order</span>
+  <h2>In which order does an assistant learn?</h2>
+  <p>Tap the steps in the order in which they happen.</p>
   <div class="order" id="order"></div>
   <p class="feedback" id="orderFb" hidden></p>
-  <div class="row"><button class="btn ghost" id="orderReset">Neu ordnen</button></div>
+  <div class="row"><button class="btn ghost" id="orderReset">Start over</button></div>
 </section>
 
 <section class="station" data-station="scale" data-show="1 2 3">
-  <span class="num">Station 3 · Schätzen</span>
-  <h2>Wie viel größer?</h2>
-  <p>Ein kleines Modell, das Shakespeare-ähnlichen Text schreibt, hat etwa 10 Millionen Parameter (einstellbare Zahlen). GPT-3 hat 175 Milliarden. Wie viel größer ist GPT-3 ungefähr?</p>
+  <span class="num">Station 3 · Estimate</span>
+  <h2>How much bigger?</h2>
+  <p>A small model that writes Shakespeare-like text has about 10 million parameters (adjustable numbers). GPT-3 has 175 billion. Roughly how much bigger is GPT-3?</p>
   <div class="choices">
-    <button data-mis="scale-is-small" data-fb="Viel mehr. 100-mal wären erst 1 Milliarde Parameter.">etwa 100-mal</button>
-    <button data-mis="scale-is-small" data-fb="Immer noch zu wenig. 1.000-mal wären 10 Milliarden.">etwa 1.000-mal</button>
-    <button data-ok data-fb="Richtig: 175.000.000.000 / 10.000.000 = 17.500. Und GPT-3 hat beim Training rund 300 Milliarden Tokens gelesen, das kleine Modell nur etwa 1 Million Zeichen.">etwa 17.500-mal</button>
-    <button data-fb="Zu viel. Eine Million Mal wären 10 Billionen Parameter.">etwa 1 Million Mal</button>
+    <button data-mis="scale-is-small" data-fb-en="Much more. 100 times would only be 1 billion parameters.">about 100 times</button>
+    <button data-mis="scale-is-small" data-fb-en="Still too few. 1,000 times would be 10 billion.">about 1,000 times</button>
+    <button data-ok data-fb-en="Right: 175,000,000,000 / 10,000,000 = 17,500. And GPT-3 read about 300 billion tokens during training, the small model only about 1 million characters.">about 17,500 times</button>
+    <button data-fb-en="Too many. A million times would be 10 trillion parameters.">about a million times</button>
   </div>
   <p class="feedback" hidden></p>
   <div class="bars logbars" id="sizeBars"></div>
-  <p class="note" data-show="1">Stell dir vor, das kleine Modell ist ein einzelnes Blatt Papier. Dann wäre GPT-3 ein Stapel aus 17.500 Blättern: fast zwei Meter hoch, größer als ein Erwachsener.</p>
-  <p class="note" data-show="2 3">Die Balken sind logarithmisch: Jeder Strich nach rechts bedeutet zehnmal mehr. Der Bauplan ist bei beiden fast derselbe, ein Decoder-Transformer. Der Unterschied liegt in Größe, Datenmenge und Rechenzeit.</p>
+  <p class="note" data-show="1">Imagine the small model is a single sheet of paper. Then GPT-3 would be a stack of 17,500 sheets: almost two metres high, taller than a grown-up.</p>
+  <p class="note" data-show="2 3">The bars are logarithmic: each step to the right means ten times more. The blueprint of both is almost the same, a decoder-only transformer. The difference is size, amount of data and compute.</p>
 </section>
 
 <section class="station" data-station="architectures" data-show="2 3">
-  <span class="num">Station 4 · Bauarten</span>
-  <h2>Decoder, Encoder, Cross-Attention</h2>
-  <p>Die Bauart zeigt sich daran, wer wem zuhören darf. Zeilen hören Spalten zu. Wähle eine Bauart.</p>
-  <div class="modes" role="group" aria-label="Bauart">
+  <span class="num">Station 4 · Architectures</span>
+  <h2>Decoder, encoder, cross-attention</h2>
+  <p>The architecture shows in who may listen to whom. Rows listen to columns. Pick an architecture.</p>
+  <div class="modes" role="group" aria-label="Architecture">
     <button class="btn ghost" data-mode="decoder" aria-pressed="true">Decoder (GPT)</button>
     <button class="btn ghost" data-mode="encoder" aria-pressed="false">Encoder</button>
-    <button class="btn ghost" data-mode="cross" aria-pressed="false">Cross-Attention</button>
+    <button class="btn ghost" data-mode="cross" aria-pressed="false">Cross-attention</button>
   </div>
   <div class="scroll"><table class="grid" id="arch"></table></div>
   <p class="note" id="archNote"></p>
-  <p><b>Frage:</b> Ein Modell soll entscheiden, ob eine Produktbewertung positiv oder negativ ist. Es muss nichts schreiben. Welche Bauart passt?</p>
+  <p><b>Question:</b> A model has to decide whether a product review is positive or negative. It does not have to write anything. Which architecture fits?</p>
   <div class="choices">
-    <button data-ok data-fb="Richtig. Es gibt nichts vorherzusagen, das verborgen bleiben muss, also dürfen alle Wörter einander sehen.">Encoder: alle hören allen zu</button>
-    <button data-mis="decoder-needed-everywhere" data-fb="Geht auch, ist aber unnötig eingeschränkt. Die Maske braucht man nur, wenn das Modell die nächsten Wörter vorhersagen soll.">Decoder: nur in die Vergangenheit</button>
-    <button data-fb="Nein. Cross-Attention braucht eine zweite Quelle, etwa den Ausgangstext bei einer Übersetzung.">Cross-Attention</button>
+    <button data-ok data-fb-en="Right. There is nothing to predict that has to stay hidden, so all words may see each other.">Encoder: everyone listens to everyone</button>
+    <button data-mis="decoder-needed-everywhere" data-fb-en="That works too, but it is needlessly restricted. The mask is only needed when the model has to predict the next words.">Decoder: only into the past</button>
+    <button data-fb-en="No. Cross-attention needs a second source, such as the source text in a translation.">Cross-attention</button>
   </div>
   <p class="feedback" hidden></p>
 </section>
-<footer>Simulator „Vom Plappern zum Assistenten“ · Personal Tutor Format</footer>
+<footer>Simulator "From babbler to assistant" · Personal Tutor Format</footer>
 </div>
 
 <script src="ptf-sim.js"></script>
 <script>
 const SIM_ID = "ptf:sim/babbler-to-assistant", SIM_VERSION = "1.0.0";
+const SIM_LOCALES = ["en"];
 const PTF_LEVELS = {"1": "child", "2": "highschool", "3": "college"};
 /* Shared PTF glue: levels, stations, snapshot (SIMULATOR-SPEC.md §4) */
 function setLevel(l){
@@ -169,11 +172,22 @@ function setLevel(l){
   document.querySelectorAll("[data-show]").forEach(s=>s.hidden=!s.dataset.show.split(" ").includes(l));
   CURRENT_LEVEL=l;
 }
-let CURRENT_LEVEL="1";
+let CURRENT_LEVEL="1", LOCALE="en", READY=false;
+/* UI language (en, de): static text as <i-en>/<i-de> pairs, dynamic text via L(en, de). */
+const L = (en, de) => LOCALE === "de" ? de : en;
+const fmt = (x, d = 2) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+/* Each simulator declares SIM_LOCALES (matching "lang" in sim.json); unsupported locales fall back to English. */
+function setLocale(loc) {
+  LOCALE = /^de/i.test(loc || "") && SIM_LOCALES.includes("de") ? "de" : "en";
+  document.documentElement.lang = LOCALE;
+  if (READY && typeof rerender === "function") rerender();
+}
+setLocale(navigator.language);
 const completed=new Set();
 const ptf = PTF.connect({
   id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS["1"],
   onInit(ctx) {
+    if (ctx.locale) setLocale(ctx.locale);
     const lvl = (ctx.state && ctx.state.level) || ctx.level;
     if (lvl) applyLevel(lvl);
     if (ctx.station) gotoStation(ctx.station);
@@ -182,7 +196,7 @@ const ptf = PTF.connect({
   onGoto: gotoStation,
   snapshot() {
     const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
-    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `Visible stations: ${shown.join(", ")}`];
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `UI language: ${LOCALE}`, `Visible stations: ${shown.join(", ")}`];
     if (completed.size) parts.push(`Completed: ${[...completed].join(", ")}`);
     if (typeof simSnapshot === "function") parts.push(simSnapshot());
     return parts.join(". ");
@@ -216,7 +230,7 @@ function done(station) {
   completed.add(station);
   ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
 }
-/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb,
+/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb-en / data-fb-de,
    followed by <p class="feedback" hidden>. A station completes when all its visible boxes are answered correctly. Call initChoices() once the DOM is built. */
 function initChoices() {
 document.querySelectorAll("[data-station] .choices").forEach(box => {
@@ -225,8 +239,8 @@ document.querySelectorAll("[data-station] .choices").forEach(box => {
     const ok = b.hasAttribute("data-ok");
     box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
     b.classList.add(ok ? "right" : "wrong");
-    if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = b.dataset.fb || (ok ? "Richtig." : "Nicht ganz."); }
-    answered(station, ok, b.dataset.mis, b.textContent.trim());
+    if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+    answered(station, ok, b.dataset.mis, (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim());
     if (ok) box.dataset.solved = "1";
     if ([...sec.querySelectorAll(".choices")].filter(x => !x.closest("[hidden]")).every(x => x.dataset.solved)) done(station);
   }));
@@ -235,14 +249,13 @@ document.querySelectorAll("[data-station] .choices").forEach(box => {
 setLevel("1");
 
 const $ = id => document.getElementById(id);
-const fmt = (x, d = 0) => x.toLocaleString("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d });
 
 /* Station 2 */
 const STAGES = [
-  { t: "Vortraining: riesige Mengen Internettext lesen und das nächste Token vorhersagen", c: "Ergebnis: ein Modell, das Dokumente fortsetzen kann. Das ist der teuerste Schritt." },
-  { t: "Feinabstimmung mit Beispielgesprächen: Frage und gute Antwort, von Menschen geschrieben", c: "Ergebnis: Das Modell lernt das Format „Frage, dann hilfreiche Antwort“. Dafür reichen vergleichsweise wenige Beispiele: Tausende statt Milliarden." },
-  { t: "Menschen vergleichen mehrere Antworten; daraus lernt ein Bewertungsmodell", c: "Ergebnis: ein zweites Modell, das schätzt, welche Antwort Menschen besser finden." },
-  { t: "Verstärkungslernen: Das Modell übt und wird belohnt, wenn das Bewertungsmodell zufrieden ist", c: "Ergebnis: der Assistent. Dieser Schritt heißt oft RLHF (Lernen aus menschlichem Feedback)." }
+  { t: "Pretraining: read huge amounts of internet text and predict the next token", c: "Result: a model that can continue documents. This is the most expensive step." },
+  { t: "Fine-tuning on example conversations: a question and a good answer, written by people", c: "Result: the model learns the format \"question, then helpful answer\". Comparatively few examples are enough: thousands instead of billions." },
+  { t: "People compare several answers; a reward model learns from that", c: "Result: a second model that estimates which answer people prefer." },
+  { t: "Reinforcement learning: the model practises and is rewarded when the reward model is satisfied", c: "Result: the assistant. This step is often called RLHF (reinforcement learning from human feedback)." }
 ];
 const SHUFFLED = [2, 0, 3, 1];
 let placed = [];
@@ -253,32 +266,32 @@ $("order").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b || b.disabled) return; const i = +b.dataset.i, fb = $("orderFb");
   if (i === placed.length) {
     placed.push(i); fb.hidden = false; fb.classList.remove("bad"); fb.textContent = STAGES[i].c; renderOrder();
-    if (placed.length === STAGES.length) { answered("stages", true, null, "order complete"); done("stages"); fb.textContent += " Fertig: Das ist die ganze Kette."; }
+    if (placed.length === STAGES.length) { answered("stages", true, null, "order complete"); done("stages"); fb.textContent += " Done: that is the whole chain."; }
   } else {
     b.classList.add("wrong"); fb.hidden = false; fb.classList.add("bad");
-    fb.textContent = placed.length === 0 ? "Noch nicht. Ganz am Anfang kann das Modell noch gar keine Sprache. Womit lernt es die?" : "Noch nicht. Was braucht man, bevor dieser Schritt möglich ist?";
+    fb.textContent = placed.length === 0 ? "Not yet. At the very beginning the model knows no language at all. How does it learn it?" : "Not yet. What do you need before this step is possible?";
     answered("stages", false, placed.length === 0 && i !== 0 ? "pretraining-makes-assistant" : null, STAGES[i].t);
   }
 });
 $("orderReset").onclick = () => { placed = []; $("orderFb").hidden = true; renderOrder(); };
 
 /* Station 3 */
-const SIZES = [["kleines Modell", 1.07e7, "Parameter"], ["GPT-2 (klein)", 1.24e8, "Parameter"], ["GPT-3", 1.75e11, "Parameter"]];
-$("sizeBars").innerHTML = SIZES.map(([n, v]) => `<div class="bar"><span>${n}</span><div><div class="fill" style="width:${((Math.log10(v) - 6) / 6 * 100).toFixed(1)}%"></div></div><span class="v">${v >= 1e9 ? fmt(v / 1e9) + " Mrd." : fmt(v / 1e6) + " Mio."}</span></div>`).join("");
+const SIZES = [["small model", 1.07e7], ["GPT-2 (small)", 1.24e8], ["GPT-3", 1.75e11]];
+$("sizeBars").innerHTML = SIZES.map(([n, v]) => `<div class="bar"><span>${n}</span><div><div class="fill" style="width:${((Math.log10(v) - 6) / 6 * 100).toFixed(1)}%"></div></div><span class="v">${v >= 1e9 ? fmt(v / 1e9, 0) + " B" : fmt(v / 1e6, 0) + " M"}</span></div>`).join("");
 
 /* Station 4 */
-const SRC = ["Ich", "mag", "Tee"], TGT = ["I", "like", "tea"];
+const SRC = ["Ich", "mag", "Tee"], EN = ["I", "like", "tea"];
 let mode = "decoder";
 function renderArch() {
   document.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === mode));
-  const rows = mode === "cross" ? TGT : SRC, cols = SRC;
+  const rows = EN, cols = mode === "cross" ? SRC : EN;
   let h = `<tr><th></th>${cols.map(c => `<th>${c}</th>`).join("")}</tr>`;
   rows.forEach((r, i) => { h += `<tr><th>${r}</th>` + cols.map((_, j) => { const on = mode !== "decoder" || j <= i; return `<td style="${on ? "background:color-mix(in srgb, var(--accent) 55%, var(--bg))" : ""}">${on ? "✓" : ""}</td>`; }).join("") + "</tr>"; });
   $("arch").innerHTML = h;
   $("archNote").textContent = {
-    decoder: "Decoder: Jedes Wort hört nur sich und der Vergangenheit zu. So kann das Modell Wort für Wort schreiben. GPT besteht nur aus solchen Blöcken.",
-    encoder: "Encoder: Alle Wörter hören allen zu, auch nach vorn. Gut zum Verstehen eines fertigen Textes, aber nicht zum Weiterschreiben.",
-    cross: "Cross-Attention: Die englischen Wörter (Zeilen) stellen Fragen, die Antworten kommen aus dem deutschen Satz (Spalten), den ein Encoder vorher gelesen hat. So arbeitet das ursprüngliche Übersetzungsmodell mit Encoder und Decoder."
+    decoder: "Decoder: every word listens only to itself and the past. That way the model can write word by word. GPT consists only of such blocks.",
+    encoder: "Encoder: all words listen to all words, forwards too. Good for understanding a finished text, but not for continuing it.",
+    cross: "Cross-attention: the English words (rows) ask the questions; the answers come from the German sentence (columns), which an encoder has read before. This is how the original encoder-decoder translation model works."
   }[mode];
 }
 document.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => { mode = b.dataset.mode; renderArch(); ptf.event("experienced", { station: "architectures", data: { mode } }); }));

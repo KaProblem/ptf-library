@@ -1,6 +1,6 @@
 {
   "steps": [
-    { "init": { "level": "highschool" } },
+    { "init": { "level": "highschool", "locale": "de" } },
     { "expectText": "Wem hört" },
     { "click": "#guessBox button[data-ok]" },
     { "expectEvent": "answered" },

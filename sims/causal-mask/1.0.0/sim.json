@@ -5,6 +5,7 @@
   "title": "Looking back: the causal mask",
   "description": "Averaging over the past, the lower-triangular mask as a weight table, and masked softmax as the bridge to self-attention.",
   "lang": [
+    "en",
     "de"
   ],
   "concepts": [
@@ -74,6 +75,6 @@
     "claude/opus"
   ],
   "derived_from": null,
-  "changelog": "First version.",
-  "integrity": "sha256-6KqXBXlmMuxcQQIwi6nN8QAopDcLifejBxn6lIiQ0LU="
+  "changelog": "First version. UI in English and German, chosen from the host's locale (falls back to the browser language, then English).",
+  "integrity": "sha256-OuPP8dvd34ysyjFkuqPlXbVUTJbgksrS6qcCSgrDWLE="
 }

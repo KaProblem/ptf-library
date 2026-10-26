@@ -5,7 +5,7 @@
   "title": "Residual highway",
   "description": "Why deep transformers train at all: vanishing signals with and without residual connections, layer norm, dropout against memorising, and a parameter counter from a small model to GPT-3.",
   "lang": [
-    "de"
+    "en"
   ],
   "concepts": [
     "residual-connection",
@@ -86,5 +86,5 @@
   ],
   "derived_from": null,
   "changelog": "First version.",
-  "integrity": "sha256-qi9FN7/+KrHI5badze2nVgY2vEY2hoAXIf6Xc7nJ/uQ="
+  "integrity": "sha256-dR6u8y6jDaxiSiVa7ue2sQ+/jtrsGCmzQzzeVDL6l2Y="
 }

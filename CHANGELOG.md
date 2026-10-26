@@ -4,7 +4,7 @@
 
 ### Added
 - `llm-basics` 0.2.0: learning elements `training-examples`, `causal-mask`, `self-attention`, `transformer-block`, `residual-stream` and `from-babbler-to-assistant`, each with level texts, misconceptions and question blocks; the `gpt-from-scratch` path now has nine written steps and tutor notes for pacing.
-- Simulators `causal-mask`, `attention-lab`, `transformer-block`, `residual-stream` and `babbler-to-assistant` 1.0.0 (German UI), with self-tests.
+- Simulators `causal-mask`, `attention-lab`, `transformer-block`, `residual-stream` and `babbler-to-assistant` 1.0.0, with self-tests. UI in English; `causal-mask` and `attention-lab` also ship a German UI as the example of the language rules in SIMULATOR-SPEC.md §4.6.
 
 ### Changed
 - `tokenizer` 0.1.1: `leads_to` now includes `training-examples`.

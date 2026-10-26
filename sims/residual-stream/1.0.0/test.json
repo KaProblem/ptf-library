@@ -1,15 +1,15 @@
 {
   "steps": [
     { "init": { "level": "highschool" } },
-    { "expectText": "Kommt das Lernsignal unten an?" },
+    { "expectText": "Does the learning signal reach the bottom?" },
     { "type": { "selector": "#depth", "text": "40" } },
-    { "expectText": "Ohne Residual kommt nach 40 Schichten" },
+    { "expectText": "arrives after 40 layers" },
     { "expectEvent": "station_completed" },
     { "click": "#wild" },
-    { "expectText": "im gewohnten Bereich" },
+    { "expectText": "back in the usual range" },
     { "click": "[data-level='2']" },
     { "expectEvent": "level_changed" },
-    { "expectText": "Dropout-Rate" },
+    { "expectText": "Dropout rate" },
     { "goto": "scale-up" },
     { "snapshot": true },
     { "expectNoError": true }

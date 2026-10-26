@@ -1,19 +1,19 @@
 {
   "steps": [
     { "init": { "level": "child" } },
-    { "expectText": "Wer hat das geschrieben?" },
+    { "expectText": "Who wrote this?" },
     { "click": "[data-station='document-completer'] .choices button[data-ok]" },
     { "expectEvent": "answered" },
     { "click": "#order button[data-i='0']" },
     { "click": "#order button[data-i='1']" },
     { "click": "#order button[data-i='2']" },
     { "click": "#order button[data-i='3']" },
-    { "expectText": "Das ist die ganze Kette" },
+    { "expectText": "that is the whole chain" },
     { "expectEvent": "station_completed" },
     { "click": "[data-level='3']" },
     { "expectEvent": "level_changed" },
     { "click": "[data-mode='cross']" },
-    { "expectText": "Cross-Attention: Die englischen" },
+    { "expectText": "Cross-attention: the English words" },
     { "snapshot": true },
     { "expectNoError": true }
   ]

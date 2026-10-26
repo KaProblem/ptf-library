@@ -5,7 +5,7 @@
   "title": "Transformer block: listen, then think",
   "description": "Multi-head attention patterns, the per-token feed-forward layer, and a ladder that adds components one by one with real validation losses from a small Shakespeare model.",
   "lang": [
-    "de"
+    "en"
   ],
   "concepts": [
     "multi-head-attention",
@@ -76,5 +76,5 @@
   ],
   "derived_from": null,
   "changelog": "First version.",
-  "integrity": "sha256-ksIfYqvpe5Yf+5JrRnwvVGefhjwwTI4yq87bZ3h9jPU="
+  "integrity": "sha256-6YyibE7D2DoklDfvCFtOJF0S73OOJ09SHhvh3tnlEEY="
 }

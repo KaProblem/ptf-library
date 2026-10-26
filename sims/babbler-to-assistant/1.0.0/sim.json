@@ -5,7 +5,7 @@
   "title": "From babbler to assistant",
   "description": "A pretrained model only continues documents: spot it, order the training stages up to RLHF, estimate the scale gap to GPT-3, and compare decoder, encoder and cross-attention.",
   "lang": [
-    "de"
+    "en"
   ],
   "concepts": [
     "pretraining",
@@ -78,5 +78,5 @@
   ],
   "derived_from": null,
   "changelog": "First version.",
-  "integrity": "sha256-2MVJ1qCvuXlGbmRdxppPwKmJ9jphablQkmDU0LjvyqE="
+  "integrity": "sha256-kDhm6AtLJ91avWMBCAtx8RaPEJAzU4l5goDpQfBOLwc="
 }

@@ -3,15 +3,15 @@
   "simulators": {
     "ptf:sim/attention-lab": {
       "version": "1.0.0",
-      "integrity": "sha256-DUtdvQDkAiX6H0xn5uPKVL3N53gdFGFE6Lxlu13aqNk="
+      "integrity": "sha256-mt45Ifem4FBNQb+7mq4ZBekn2BY2oV+mRGznKuK6Fdg="
     },
     "ptf:sim/babbler-to-assistant": {
       "version": "1.0.0",
-      "integrity": "sha256-2MVJ1qCvuXlGbmRdxppPwKmJ9jphablQkmDU0LjvyqE="
+      "integrity": "sha256-kDhm6AtLJ91avWMBCAtx8RaPEJAzU4l5goDpQfBOLwc="
     },
     "ptf:sim/causal-mask": {
       "version": "1.0.0",
-      "integrity": "sha256-6KqXBXlmMuxcQQIwi6nN8QAopDcLifejBxn6lIiQ0LU="
+      "integrity": "sha256-OuPP8dvd34ysyjFkuqPlXbVUTJbgksrS6qcCSgrDWLE="
     },
     "ptf:sim/loss-lens": {
       "version": "1.0.0",
@@ -23,11 +23,11 @@
     },
     "ptf:sim/residual-stream": {
       "version": "1.0.0",
-      "integrity": "sha256-qi9FN7/+KrHI5badze2nVgY2vEY2hoAXIf6Xc7nJ/uQ="
+      "integrity": "sha256-dR6u8y6jDaxiSiVa7ue2sQ+/jtrsGCmzQzzeVDL6l2Y="
     },
     "ptf:sim/transformer-block": {
       "version": "1.0.0",
-      "integrity": "sha256-ksIfYqvpe5Yf+5JrRnwvVGefhjwwTI4yq87bZ3h9jPU="
+      "integrity": "sha256-6YyibE7D2DoklDfvCFtOJF0S73OOJ09SHhvh3tnlEEY="
     }
   }
 }

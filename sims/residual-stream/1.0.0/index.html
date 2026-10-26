@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Residual-Autobahn</title>
+<title>Residual highway</title>
 <style>
 :root{
   --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
@@ -70,6 +70,8 @@ svg text{font-family:var(--f-mono)}
 details summary{cursor:pointer;font-weight:600;min-height:32px}
 footer{color:var(--muted);font-size:.85rem}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+html:not([lang="de"]) i-de,html[lang="de"] i-en{display:none!important}
+i-en,i-de{font-style:inherit}
 
 .srow{display:grid;grid-template-columns:7.5em 1fr 4.5em;gap:10px;align-items:center}
 .srow .v{text-align:right;font:600 .95rem var(--f-mono);font-variant-numeric:tabular-nums}
@@ -87,94 +89,95 @@ select{font:1rem var(--f-body);min-height:44px;padding:8px;border-radius:6px;bor
 <body>
 <div class="wrap">
 <header>
-  <span class="eyebrow">Wie GPT funktioniert · Tiefe</span>
-  <h1>Die Residual-Autobahn</h1>
-  <p>Ein Block allein ist schwach. Stapelt man aber viele Blöcke übereinander, wird das Training plötzlich schwierig: Das Lernsignal kommt unten kaum noch an. Drei kleine Tricks lösen das: Residualverbindungen, LayerNorm und Dropout. Danach kann man das Modell groß machen.</p>
-  <div class="levels" role="group" aria-label="Stufe">
-    <button data-level="1" aria-pressed="true">Schule</button><button data-level="2" aria-pressed="false">Studium</button><button data-level="3" aria-pressed="false">Experte</button>
+  <span class="eyebrow">How GPT works · Depth</span>
+  <h1>The residual highway</h1>
+  <p>One block on its own is weak. But stack many blocks and training suddenly becomes hard: the learning signal barely reaches the bottom. Three small tricks fix this: residual connections, layer norm and dropout. After that, the model can be made big.</p>
+  <div class="levels" role="group" aria-label="Level">
+    <button data-level="1" aria-pressed="true">High school</button><button data-level="2" aria-pressed="false">College</button><button data-level="3" aria-pressed="false">Expert</button>
   </div>
 </header>
 
 <section class="station" data-station="deep-signal" data-show="1 2 3">
-  <span class="num">Station 1 · Stille Post</span>
-  <h2>Kommt das Lernsignal unten an?</h2>
-  <p>Beim Training läuft ein Korrektursignal (der Gradient) vom Ausgang rückwärts durch alle Schichten. Ohne Abkürzung wird es in jeder Schicht mit einem Faktor multipliziert, wie bei stiller Post. Mit einer Residualverbindung gibt es zusätzlich eine Autobahn: Jeder Block <i>addiert</i> nur etwas zum Strom, und das Signal kann direkt durchfahren. Stell Tiefe und Faktor ein.</p>
-  <div class="srow"><label for="depth">Anzahl Schichten</label><input type="range" id="depth" min="1" max="60" value="12"><span class="v" id="depthV"></span></div>
-  <div class="srow"><label for="fac">Faktor pro Schicht</label><input type="range" id="fac" min="0.5" max="1.5" step="0.05" value="0.8"><span class="v" id="facV"></span></div>
+  <span class="num">Station 1 · Telephone game</span>
+  <h2>Does the learning signal reach the bottom?</h2>
+  <p>During training, a correction signal (the gradient) runs backwards from the output through all layers. Without a shortcut it is multiplied by a factor at every layer, like a message in the telephone game. A residual connection adds a highway: each block only <i>adds</i> something to the stream, and the signal can drive straight through. Set depth and factor.</p>
+  <div class="srow"><label for="depth">Number of layers</label><input type="range" id="depth" min="1" max="60" value="12"><span class="v" id="depthV"></span></div>
+  <div class="srow"><label for="fac">Factor per layer</label><input type="range" id="fac" min="0.5" max="1.5" step="0.05" value="0.8"><span class="v" id="facV"></span></div>
   <div class="cols">
-    <div class="lane"><p class="note">Ohne Residual</p><div class="bars" id="noRes"></div></div>
-    <div class="lane"><p class="note">Mit Residual</p><div class="bars" id="withRes"></div></div>
+    <div class="lane"><p class="note">Without residual</p><div class="bars" id="noRes"></div></div>
+    <div class="lane"><p class="note">With residual</p><div class="bars" id="withRes"></div></div>
   </div>
   <p class="note" id="sigNote"></p>
-  <p class="note" data-show="2 3">Rechnung: Ohne Residual ist der Gradient ein Produkt ∏ f<sub>l</sub>, er verschwindet (f &lt; 1) oder explodiert (f &gt; 1) exponentiell. Mit x<sub>l+1</sub> = x<sub>l</sub> + Block(x<sub>l</sub>) ist jede Ableitung 1 + Block′. Ist der Block am Anfang klein initialisiert, bleibt das Produkt nahe 1. Hier: Block′ = (f − 1) · 0,1.</p>
+  <p class="note" data-show="2 3">The maths: without residuals the gradient is a product ∏ f<sub>l</sub>, which vanishes (f &lt; 1) or explodes (f &gt; 1) exponentially. With x<sub>l+1</sub> = x<sub>l</sub> + Block(x<sub>l</sub>) every derivative is 1 + Block′. If the block starts out small, the product stays close to 1. Here: Block′ = (f − 1) · 0.1.</p>
 </section>
 
 <section class="station" data-station="layer-norm" data-show="1 2 3">
-  <span class="num">Station 2 · Ordnung halten</span>
-  <h2>LayerNorm</h2>
-  <p>Die Zahlen im Vektor eines Wortes können nach vielen Blöcken sehr groß oder sehr klein werden. LayerNorm bringt sie für jedes Wort einzeln zurück: Mittelwert 0, Streuung 1. Danach darf das Modell mit zwei gelernten Zahlen nachjustieren. Mach die Werte wild und schau, was herauskommt.</p>
-  <div class="row"><button class="btn ghost" id="wild">Wilde Werte</button><button class="btn ghost" id="tame">Ruhige Werte</button></div>
+  <span class="num">Station 2 · Keeping order</span>
+  <h2>Layer norm</h2>
+  <p>After many blocks, the numbers in a word's vector can become very large or very small. Layer norm brings them back for each word separately: mean 0, spread 1. Afterwards the model may adjust with two learned numbers. Make the values wild and see what comes out.</p>
+  <div class="row"><button class="btn ghost" id="wild">Wild values</button><button class="btn ghost" id="tame">Calm values</button></div>
   <div class="cols">
-    <div class="lane"><p class="note">Vorher</p><div class="bars" id="lnIn"></div></div>
-    <div class="lane"><p class="note">Nachher</p><div class="bars" id="lnOut"></div></div>
+    <div class="lane"><p class="note">Before</p><div class="bars" id="lnIn"></div></div>
+    <div class="lane"><p class="note">After</p><div class="bars" id="lnOut"></div></div>
   </div>
   <div data-show="2 3" style="display:flex;flex-direction:column;gap:6px">
-    <div class="srow"><label for="gam">γ (Skala)</label><input type="range" id="gam" min="0" max="3" step="0.1" value="1"><span class="v" id="gamV"></span></div>
-    <div class="srow"><label for="bet">β (Verschiebung)</label><input type="range" id="bet" min="-2" max="2" step="0.1" value="0"><span class="v" id="betV"></span></div>
-    <p class="note">y = γ · (x − Mittelwert) / √(Varianz + ε) + β, berechnet über die Merkmale eines Wortes, nicht über den Batch (anders als BatchNorm). Moderne GPTs normieren <b>vor</b> Attention und Feed-Forward (Pre-Norm), nicht danach.</p>
+    <div class="srow"><label for="gam">γ (scale)</label><input type="range" id="gam" min="0" max="3" step="0.1" value="1"><span class="v" id="gamV"></span></div>
+    <div class="srow"><label for="bet">β (shift)</label><input type="range" id="bet" min="-2" max="2" step="0.1" value="0"><span class="v" id="betV"></span></div>
+    <p class="note">y = γ · (x − mean) / √(variance + ε) + β, computed over the features of one word, not over the batch (unlike batch norm). Modern GPTs normalise <b>before</b> attention and feed-forward (pre-norm), not after.</p>
   </div>
   <p class="note" id="lnNote"></p>
 </section>
 
 <section class="station" data-station="dropout" data-show="2 3">
-  <span class="num">Station 3 · Nicht auswendig lernen</span>
+  <span class="num">Station 3 · Don't memorise</span>
   <h2>Dropout</h2>
-  <p>Ein großes Modell kann den Trainingstext auswendig lernen. Dann sinkt der Loss auf dem Trainingstext weiter, auf neuem Text aber nicht mehr. Dropout schaltet bei jedem Trainingsschritt zufällig einen Teil der Neuronen ab. Das Modell kann sich auf kein einzelnes verlassen.</p>
-  <div class="srow"><label for="drop">Dropout-Rate</label><input type="range" id="drop" min="0" max="0.5" step="0.05" value="0"><span class="v" id="dropV"></span></div>
+  <p>A large model can memorise its training text. Then the loss keeps falling on the training text but no longer on new text. Dropout switches off a random part of the neurons at every training step, so the model cannot rely on any single one.</p>
+  <div class="srow"><label for="drop">Dropout rate</label><input type="range" id="drop" min="0" max="0.5" step="0.05" value="0"><span class="v" id="dropV"></span></div>
   <div class="neurons" id="neurons" aria-hidden="true"></div>
-  <div class="row"><button class="btn ghost" id="step">Nächster Trainingsschritt</button></div>
-  <canvas id="curves" width="760" height="280" aria-label="Schematische Lernkurven"></canvas>
+  <div class="row"><button class="btn ghost" id="step">Next training step</button></div>
+  <canvas id="curves" width="760" height="280" aria-label="Schematic learning curves"></canvas>
   <p class="note" id="dropNote"></p>
-  <p class="note">Die Kurven sind schematisch. Beim Benutzen des fertigen Modells ist Dropout aus.</p>
+  <p class="note">The curves are schematic. When the finished model is used, dropout is off.</p>
 </section>
 
 <section class="station" data-station="scale-up" data-show="1 2 3">
-  <span class="num">Station 4 · Groß machen</span>
-  <h2>Wie viele Parameter?</h2>
-  <p>Mit diesen Tricks kann man Blöcke stapeln und breiter machen. Wähle eine Größe oder stell selbst ein. Fast alle Parameter stecken in den Blöcken: grob 12 · Schichten · Breite².</p>
-  <div class="row"><label for="preset">Vorlage</label><select id="preset"><option value="small">Kleines Shakespeare-Modell</option><option value="gpt2">GPT-2 (klein)</option><option value="gpt3">GPT-3</option><option value="custom">Eigene Einstellung</option></select></div>
-  <div class="srow"><label for="nl">Schichten</label><input type="range" id="nl" min="1" max="96" value="6"><span class="v" id="nlV"></span></div>
-  <div class="srow"><label for="ne">Breite</label><input type="range" id="ne" min="0" max="8" value="2"><span class="v" id="neV"></span></div>
-  <div class="stats"><div><span class="note">Parameter</span><span class="stat" id="params"></span></div><div><span class="note">Verglichen mit dem kleinen Modell</span><span class="stat" id="ratio"></span></div></div>
+  <span class="num">Station 4 · Make it big</span>
+  <h2>How many parameters?</h2>
+  <p>With these tricks you can stack blocks and make them wider. Pick a size or set your own. Almost all parameters are in the blocks: roughly 12 · layers · width².</p>
+  <div class="row"><label for="preset">Preset</label><select id="preset"><option value="small">Small Shakespeare model</option><option value="gpt2">GPT-2 (small)</option><option value="gpt3">GPT-3</option><option value="custom">Custom</option></select></div>
+  <div class="srow"><label for="nl">Layers</label><input type="range" id="nl" min="1" max="96" value="6"><span class="v" id="nlV"></span></div>
+  <div class="srow"><label for="ne">Width</label><input type="range" id="ne" min="0" max="8" value="2"><span class="v" id="neV"></span></div>
+  <div class="stats"><div><span class="note">Parameters</span><span class="stat" id="params"></span></div><div><span class="note">Compared with the small model</span><span class="stat" id="ratio"></span></div></div>
   <p class="note" id="scaleNote"></p>
 </section>
 
 <section class="station" data-station="check" data-show="1 2 3">
-  <span class="num">Prüf dich</span>
-  <h2>Kurze Fragen</h2>
-  <p>Warum helfen Residualverbindungen beim Training tiefer Modelle?</p>
+  <span class="num">Check yourself</span>
+  <h2>Short questions</h2>
+  <p>Why do residual connections help train deep models?</p>
   <div class="choices">
-    <button data-ok data-fb="Richtig. Weil jeder Block nur etwas addiert, kann das Lernsignal über die Abkürzung unverändert bis zur ersten Schicht fließen.">Das Lernsignal hat einen direkten Weg durch alle Schichten</button>
-    <button data-mis="residual-adds-capacity" data-fb="Nein. Eine Residualverbindung hat keine eigenen Parameter. Sie macht das Modell nicht größer, sondern trainierbar.">Sie fügen viele zusätzliche Parameter hinzu</button>
-    <button data-fb="Nein. Die Blöcke werden weiter benutzt, sie addieren ihr Ergebnis nur zum Strom.">Sie überspringen unnötige Blöcke dauerhaft</button>
+    <button data-ok data-fb-en="Right. Because each block only adds something, the learning signal can flow unchanged along the shortcut down to the first layer.">The learning signal gets a direct path through all layers</button>
+    <button data-mis="residual-adds-capacity" data-fb-en="No. A residual connection has no parameters of its own. It does not make the model bigger, it makes it trainable.">They add many extra parameters</button>
+    <button data-fb-en="No. The blocks are still used; they just add their result to the stream.">They permanently skip unnecessary blocks</button>
   </div>
   <p class="feedback" hidden></p>
   <div data-show="2 3">
-    <p>Wann ist Dropout eingeschaltet?</p>
+    <p>When is dropout switched on?</p>
     <div class="choices">
-      <button data-ok data-fb="Richtig. Beim Benutzen (Inferenz) sind alle Neuronen aktiv.">Nur beim Training</button>
-      <button data-mis="dropout-at-inference" data-fb="Nein. Beim Benutzen würde zufälliges Abschalten nur schlechtere und schwankende Antworten liefern.">Immer, auch beim Benutzen</button>
-      <button data-mis="dropout-at-inference" data-fb="Nein, beim Benutzen bleibt Dropout aus.">Nur beim Benutzen</button>
+      <button data-ok data-fb-en="Right. When the model is used (inference), all neurons are active.">Only during training</button>
+      <button data-mis="dropout-at-inference" data-fb-en="No. Random switching-off during use would only give worse and fluctuating answers.">Always, also when the model is used</button>
+      <button data-mis="dropout-at-inference" data-fb-en="No, dropout stays off when the model is used.">Only when the model is used</button>
     </div>
     <p class="feedback" hidden></p>
   </div>
 </section>
-<footer>Simulator „Residual-Autobahn“ · Personal Tutor Format</footer>
+<footer>Simulator "Residual highway" · Personal Tutor Format</footer>
 </div>
 
 <script src="ptf-sim.js"></script>
 <script>
 const SIM_ID = "ptf:sim/residual-stream", SIM_VERSION = "1.0.0";
+const SIM_LOCALES = ["en"];
 const PTF_LEVELS = {"1": "highschool", "2": "college", "3": "expert"};
 /* Shared PTF glue: levels, stations, snapshot (SIMULATOR-SPEC.md §4) */
 function setLevel(l){
@@ -182,11 +185,22 @@ function setLevel(l){
   document.querySelectorAll("[data-show]").forEach(s=>s.hidden=!s.dataset.show.split(" ").includes(l));
   CURRENT_LEVEL=l;
 }
-let CURRENT_LEVEL="1";
+let CURRENT_LEVEL="1", LOCALE="en", READY=false;
+/* UI language (en, de): static text as <i-en>/<i-de> pairs, dynamic text via L(en, de). */
+const L = (en, de) => LOCALE === "de" ? de : en;
+const fmt = (x, d = 2) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+/* Each simulator declares SIM_LOCALES (matching "lang" in sim.json); unsupported locales fall back to English. */
+function setLocale(loc) {
+  LOCALE = /^de/i.test(loc || "") && SIM_LOCALES.includes("de") ? "de" : "en";
+  document.documentElement.lang = LOCALE;
+  if (READY && typeof rerender === "function") rerender();
+}
+setLocale(navigator.language);
 const completed=new Set();
 const ptf = PTF.connect({
   id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS["1"],
   onInit(ctx) {
+    if (ctx.locale) setLocale(ctx.locale);
     const lvl = (ctx.state && ctx.state.level) || ctx.level;
     if (lvl) applyLevel(lvl);
     if (ctx.station) gotoStation(ctx.station);
@@ -195,7 +209,7 @@ const ptf = PTF.connect({
   onGoto: gotoStation,
   snapshot() {
     const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
-    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `Visible stations: ${shown.join(", ")}`];
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `UI language: ${LOCALE}`, `Visible stations: ${shown.join(", ")}`];
     if (completed.size) parts.push(`Completed: ${[...completed].join(", ")}`);
     if (typeof simSnapshot === "function") parts.push(simSnapshot());
     return parts.join(". ");
@@ -229,7 +243,7 @@ function done(station) {
   completed.add(station);
   ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
 }
-/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb,
+/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb-en / data-fb-de,
    followed by <p class="feedback" hidden>. A station completes when all its visible boxes are answered correctly. Call initChoices() once the DOM is built. */
 function initChoices() {
 document.querySelectorAll("[data-station] .choices").forEach(box => {
@@ -238,8 +252,8 @@ document.querySelectorAll("[data-station] .choices").forEach(box => {
     const ok = b.hasAttribute("data-ok");
     box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
     b.classList.add(ok ? "right" : "wrong");
-    if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = b.dataset.fb || (ok ? "Richtig." : "Nicht ganz."); }
-    answered(station, ok, b.dataset.mis, b.textContent.trim());
+    if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+    answered(station, ok, b.dataset.mis, (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim());
     if (ok) box.dataset.solved = "1";
     if ([...sec.querySelectorAll(".choices")].filter(x => !x.closest("[hidden]")).every(x => x.dataset.solved)) done(station);
   }));
@@ -248,28 +262,27 @@ document.querySelectorAll("[data-station] .choices").forEach(box => {
 setLevel("1");
 
 const $ = id => document.getElementById(id);
-const fmt = (x, d = 2) => x.toLocaleString("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d });
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-const sci = x => x === 0 ? "0" : (x >= 1e-3 && x < 1e4) ? fmt(x, x < 10 ? 3 : 0) : x.toExponential(1).replace(".", ",");
+const sci = x => x === 0 ? "0" : (x >= 1e-3 && x < 1e4) ? fmt(x, x < 10 ? 3 : 0) : x.toExponential(1);
 
 /* Station 1 */
 function renderSig() {
   const n = +$("depth").value, f = +$("fac").value; $("depthV").textContent = n; $("facV").textContent = fmt(f, 2);
   const marks = [...new Set([1, Math.ceil(n / 4), Math.ceil(n / 2), Math.ceil(3 * n / 4), n])];
   const bar = (lab, g) => { const w = Math.max(0, Math.min(100, (Math.log10(g) + 4) / 6 * 100)); return `<div class="bar ${g < .01 || g > 100 ? "warm" : ""}"><span>${lab}</span><div><div class="fill" style="width:${w.toFixed(1)}%"></div></div><span class="v">${sci(g)}</span></div>`; };
-  $("noRes").innerHTML = marks.map(k => bar(`nach ${k}`, Math.pow(f, k))).join("");
-  $("withRes").innerHTML = marks.map(k => bar(`nach ${k}`, Math.pow(1 + (f - 1) * .1, k))).join("");
+  $("noRes").innerHTML = marks.map(k => bar(`after ${k}`, Math.pow(f, k))).join("");
+  $("withRes").innerHTML = marks.map(k => bar(`after ${k}`, Math.pow(1 + (f - 1) * .1, k))).join("");
   const a = Math.pow(f, n), b = Math.pow(1 + (f - 1) * .1, n);
-  $("sigNote").textContent = a < .01 ? `Ohne Residual kommt nach ${n} Schichten nur noch ${sci(a)} des Signals an: Die unteren Schichten lernen praktisch nichts. Mit Residual sind es ${sci(b)}.`
-    : a > 100 ? `Ohne Residual explodiert das Signal auf das ${sci(a)}-Fache: Das Training wird instabil. Mit Residual: ${sci(b)}.`
-    : `Bei wenigen Schichten oder einem Faktor nahe 1 geht es noch ohne Abkürzung. Mach das Modell tiefer.`;
+  $("sigNote").textContent = a < .01 ? `Without residuals only ${sci(a)} of the signal arrives after ${n} layers: the lower layers learn practically nothing. With residuals it is ${sci(b)}.`
+    : a > 100 ? `Without residuals the signal explodes to ${sci(a)} times its size: training becomes unstable. With residuals: ${sci(b)}.`
+    : `With few layers or a factor close to 1, it still works without a shortcut. Make the model deeper.`;
   if (n >= 30 && (a < .01 || a > 100)) done("deep-signal");
 }
 ["depth", "fac"].forEach(id => $(id).addEventListener("input", renderSig));
 
 /* Station 2 */
 let ln = [2.1, -0.4, 0.8, 1.5, -1.2, 0.3];
-const LABELS = ["Merkmal 1", "Merkmal 2", "Merkmal 3", "Merkmal 4", "Merkmal 5", "Merkmal 6"];
+const LABELS = ["feature 1", "feature 2", "feature 3", "feature 4", "feature 5", "feature 6"];
 function renderLN() {
   const g = +$("gam").value, b = +$("bet").value; $("gamV").textContent = fmt(g, 1); $("betV").textContent = fmt(b, 1);
   const m = ln.reduce((a, x) => a + x, 0) / ln.length, v = ln.reduce((a, x) => a + (x - m) ** 2, 0) / ln.length;
@@ -278,7 +291,7 @@ function renderLN() {
   const bars = (xs, M) => xs.map((x, i) => `<div class="bar ${x < 0 ? "warm" : ""}"><span>${LABELS[i]}</span><div><div class="fill" style="width:${Math.min(100, Math.abs(x) / M * 100).toFixed(1)}%"></div></div><span class="v">${fmt(x, 2)}</span></div>`).join("");
   $("lnIn").innerHTML = bars(ln, mx); $("lnOut").innerHTML = bars(y, 3);
   const my = y.reduce((a, x) => a + x, 0) / y.length, sy = Math.sqrt(y.reduce((a, x) => a + (x - my) ** 2, 0) / y.length);
-  $("lnNote").textContent = `Vorher: Mittelwert ${fmt(m, 2)}, Streuung ${fmt(Math.sqrt(v), 2)}. Nachher: Mittelwert ${fmt(my, 2)}, Streuung ${fmt(sy, 2)}. Die Rangfolge der Merkmale bleibt erhalten.` + (v > 100 ? " Egal wie wild: Nachher ist alles wieder im gewohnten Bereich." : "");
+  $("lnNote").textContent = `Before: mean ${fmt(m, 2)}, spread ${fmt(Math.sqrt(v), 2)}. After: mean ${fmt(my, 2)}, spread ${fmt(sy, 2)}. The order of the features is kept.` + (v > 100 ? " However wild: afterwards everything is back in the usual range." : "");
 }
 $("wild").onclick = () => { ln = [140, -35, 60, 210, -90, 15]; renderLN(); done("layer-norm"); };
 $("tame").onclick = () => { ln = [2.1, -0.4, 0.8, 1.5, -1.2, 0.3]; renderLN(); };
@@ -295,16 +308,16 @@ function drawCurves() {
   g.clearRect(0, 0, Wd, H); g.font = "22px " + css("--f-mono"); g.lineWidth = 1.5;
   g.strokeStyle = css("--line"); g.fillStyle = css("--muted");
   [1, 2, 3, 4].forEach(l => { g.beginPath(); g.moveTo(L, Y(l)); g.lineTo(Wd - R, Y(l)); g.stroke(); g.fillText(String(l), L - 30, Y(l) + 7); });
-  g.fillText("Trainingsschritte →", L, H - 8);
+  g.fillText("training steps →", L, H - 8);
   const train = t => 1.2 + 2.8 * Math.exp(-5 * t) - (1 - p * 1.6) * .35 * t + p * .25;
   const val = t => 1.45 + 2.6 * Math.exp(-5 * t) + (1 - p * 1.9) * .55 * Math.max(0, t - .35) ** 1.5 + p * .12 - .05;
-  [[train, css("--accent"), "Trainingstext"], [val, css("--warn"), "neuer Text"]].forEach(([fn, c, lab], k) => {
+  [[train, css("--accent"), "training text"], [val, css("--warn"), "new text"]].forEach(([fn, c, lab], k) => {
     g.strokeStyle = c; g.lineWidth = 4; g.beginPath();
     for (let i = 0; i <= 100; i++) { const t = i / 100; i ? g.lineTo(X(t), Y(fn(t))) : g.moveTo(X(t), Y(fn(t))); } g.stroke();
     g.fillStyle = c; g.fillText(lab, X(.72), Y(fn(1)) + (k ? -14 : 30));
   });
   const gap = val(1) - train(1);
-  $("dropNote").textContent = p < .1 ? `Ohne Dropout: Die Lücke zwischen Trainingstext und neuem Text ist groß (${fmt(gap, 2)}). Das Modell lernt auswendig.` : `Mit ${fmt(p * 100, 0)} % Dropout ist die Lücke ${fmt(gap, 2)}. Das Modell lernt Muster statt Sätze.`;
+  $("dropNote").textContent = p < .1 ? `Without dropout the gap between training text and new text is large (${fmt(gap, 2)}). The model memorises.` : `With ${fmt(p * 100, 0)} % dropout the gap is ${fmt(gap, 2)}. The model learns patterns instead of sentences.`;
   if (p >= .15) done("dropout");
 }
 $("drop").addEventListener("input", () => { renderNeurons(); drawCurves(); });
@@ -316,12 +329,12 @@ const PRESETS = { small: { L: 6, w: 2, V: 65, T: 256 }, gpt2: { L: 12, w: 3, V: 
 let V = 65, Tctx = 256;
 const count = (L, d) => 12 * L * d * d + V * d + Tctx * d;
 const SMALL = count(6, 384);
-const human = n => n >= 1e9 ? fmt(n / 1e9, 1) + " Mrd." : n >= 1e6 ? fmt(n / 1e6, 1) + " Mio." : fmt(n / 1e3, 0) + " Tsd.";
+const human = n => n >= 1e9 ? fmt(n / 1e9, 1) + " B" : n >= 1e6 ? fmt(n / 1e6, 1) + " M" : fmt(n / 1e3, 0) + " K";
 function renderScale() {
   const L = +$("nl").value, d = WIDTHS[+$("ne").value]; $("nlV").textContent = L; $("neV").textContent = d;
   const n = count(L, d); $("params").textContent = human(n); $("ratio").textContent = fmt(n / SMALL, n / SMALL < 10 ? 1 : 0) + "×";
-  $("scaleNote").textContent = n > 1e11 ? "So groß wie GPT-3 (175 Mrd. Parameter, trainiert auf etwa 300 Mrd. Tokens). Ein solches Training braucht Tausende Grafikkarten über Wochen." :
-    n > 1e8 ? "Die Größenordnung von GPT-2. Das passt noch auf eine gute Grafikkarte." : "Ein kleines Modell wie dieses trainiert auf einer einzigen Grafikkarte in etwa einer Viertelstunde.";
+  $("scaleNote").textContent = n > 1e11 ? "As big as GPT-3 (175 billion parameters, trained on about 300 billion tokens). Training something like that takes thousands of GPUs for weeks." :
+    n > 1e8 ? "The size range of GPT-2. That still fits on one good GPU." : "A small model like this trains on a single GPU in about a quarter of an hour.";
   if (n > 1e11) done("scale-up");
 }
 $("preset").addEventListener("change", e => { const p = PRESETS[e.target.value]; if (p) { $("nl").value = p.L; $("ne").value = p.w; V = p.V; Tctx = p.T; } renderScale(); });
