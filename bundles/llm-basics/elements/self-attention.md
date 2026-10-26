@@ -7,6 +7,9 @@ description: Each token sends a query, offers a key and hands over a value; quer
 lang: en
 levels: [child, highschool, college, expert]
 tags: [llm, attention, transformer, query, key, value]
+about:
+  - wikidata: Q103701642
+    label: attention
 requires:
   - ptf:el/llm-basics/causal-mask
 leads_to:
@@ -48,7 +51,7 @@ sources:
     title: "Vaswani et al.: Attention Is All You Need"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.2.0
+version: 0.2.1
 license: CC-BY-SA-4.0
 ---
 

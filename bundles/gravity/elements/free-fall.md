@@ -7,6 +7,11 @@ description: Without air, every object falls with the same acceleration g, whate
 lang: en
 levels: [child, highschool, college, expert]
 tags: [physics, mechanics, gravity, free-fall, acceleration]
+about:
+  - wikidata: Q140028
+    label: free fall
+  - wikidata: Q30006
+    label: gravitational acceleration
 leads_to:
   - ptf:el/gravity/air-resistance
   - ptf:el/gravity/inclined-plane
@@ -34,7 +39,7 @@ sources:
     title: "NASA NSSDCA: The Apollo 15 Hammer-Feather Drop"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.0
+version: 0.1.1
 license: CC-BY-SA-4.0
 ---
 

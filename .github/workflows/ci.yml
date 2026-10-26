@@ -21,6 +21,13 @@ jobs:
       - run: npm ci --prefix .ptf-spec
       - name: Validate library
         run: node .ptf-spec/tools/ptf-check.mjs .
+      - name: Verify Wikidata subject anchors
+        run: |
+          if [ ! -f .ptf-spec/tools/ptf-wikidata.mjs ]; then
+            echo "::warning::ptf-spec main has no ptf-wikidata.mjs yet; skipping the Wikidata check"
+            exit 0
+          fi
+          node .ptf-spec/tools/ptf-wikidata.mjs verify .
       - name: Simulator self-tests
         run: |
           npm install --no-save --prefix .ptf-spec playwright

@@ -7,6 +7,13 @@ description: Deep stacks of blocks only train well with residual connections (a 
 lang: en
 levels: [highschool, college, expert]
 tags: [llm, residual, layer-norm, dropout, scaling, optimisation]
+about:
+  - wikidata: Q43744058
+    label: residual neural network
+  - wikidata: Q140587694
+    label: Layer normalization
+  - wikidata: Q25339462
+    label: dropout
 requires:
   - ptf:el/llm-basics/transformer-block
 leads_to:
@@ -41,7 +48,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.2.0
+version: 0.2.1
 license: CC-BY-SA-4.0
 ---
 

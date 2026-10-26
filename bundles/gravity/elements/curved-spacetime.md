@@ -7,6 +7,15 @@ description: In Einstein's theory gravity is not a force but the curvature of sp
 lang: en
 levels: [child, highschool, college, expert]
 tags: [physics, gravity, general-relativity, einstein, time-dilation, gps, equivalence-principle]
+about:
+  - wikidata: Q4240689
+    label: spacetime curvature
+  - wikidata: Q11452
+    label: general relativity
+  - wikidata: Q1188682
+    label: gravitational time dilation
+  - wikidata: Q210546
+    label: equivalence principle
 requires:
   - ptf:el/gravity/universal-gravitation
 duration_min: { child: 10, highschool: 20, college: 25, expert: 20 }
@@ -38,7 +47,7 @@ sources:
     title: "Albert Einstein: The Foundation of the General Theory of Relativity (1916), English translation"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.0
+version: 0.1.1
 license: CC-BY-SA-4.0
 ---
 
