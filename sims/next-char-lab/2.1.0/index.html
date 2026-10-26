@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nächstes-Zeichen-Labor</title>
+<style>
+/* Layout: ein Laborheft, eine Spalte; Stufen-Umschalter oben, jedes Experiment ist eine Station */
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
+  --accent:#0E6E68; --accent-soft:#D5ECEA; --heat:#C2410C; --heat-soft:#FBE3D6;
+  --f-display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --heat:#FB8B55; --heat-soft:#3A2218; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --heat:#FB8B55; --heat-soft:#3A2218; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.3rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+header{display:flex;flex-direction:column;gap:12px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 16px;color:var(--muted);font-size:.95rem}
+.badge{font:600 .75rem var(--f-mono);border:1px solid var(--line);border-radius:4px;padding:2px 6px;color:var(--muted)}
+.levels{display:flex;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start;background:var(--surface)}
+.levels button{font:600 1rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:10px 16px;min-height:44px;cursor:pointer}
+.levels button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+.levels button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.station{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.station .num{font:600 .8rem var(--f-mono);color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+input[type=text],textarea,select{max-width:100%;font:1rem var(--f-mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;min-height:44px}
+input[type=text]{flex:1 1 220px;min-width:0}
+textarea{width:100%;min-height:160px;resize:vertical}
+button.btn{font:600 .95rem var(--f-body);min-height:44px;padding:8px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--accent)}
+input[type=range]{accent-color:var(--accent);flex:1 1 200px;min-height:44px}
+label{color:var(--muted);font-size:.95rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:flex;flex-direction:column;align-items:center;min-width:34px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);cursor:pointer;font-family:var(--f-mono)}
+.chip b{font-size:1.05rem;font-weight:600}
+.chip small{font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft)}
+.chip.bad{border-color:var(--heat);background:var(--heat-soft)}
+.bars{display:flex;flex-direction:column;gap:4px;font-family:var(--f-mono);font-size:.9rem}
+.bar{display:grid;grid-template-columns:2.2em 1fr 4.2em;gap:8px;align-items:center}
+.bar .fill{height:18px;background:var(--accent);border-radius:3px;min-width:2px}
+.bar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.out{font:1rem/1.5 var(--f-mono);white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px;min-height:5.5em;max-height:18em;overflow:auto}
+.out .new{background:var(--accent-soft)}
+.note{color:var(--muted);font-size:.95rem}
+.stat{font:600 1.6rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:24px}
+.stats div{display:flex;flex-direction:column}
+canvas{display:block;max-width:100%}
+.scroll{overflow-x:auto}
+details.quiz{border-top:1px solid var(--line);padding-top:10px}
+details.quiz summary{cursor:pointer;font-weight:600;min-height:32px}
+.lossline span{border-radius:3px;padding:1px 0}
+.pairs{font:.9rem/1.7 var(--f-mono);display:flex;flex-direction:column}
+.pairs .last{background:var(--accent-soft);border-radius:3px}
+.pairs .tgt{color:var(--heat);font-weight:600}
+pre.code{font:.85rem/1.5 var(--f-mono);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px;overflow-x:auto;margin:0}
+.tip{font:.85rem var(--f-mono);color:var(--muted);min-height:1.4em}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+.focus-nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;bottom:0;background:var(--bg);padding:10px 0;border-top:1px solid var(--line)}
+.focus-nav #focusAll{margin-left:auto}
+.focus-nav button:disabled{opacity:.4;cursor:default}
+body.focused header > p, body.focused header > .meta{display:none}
+body.focused #focusStart{display:none}
+body.focused footer{display:none}
+.stepper{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.stepper .step{min-width:44px;min-height:44px;border-radius:22px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:600 1rem var(--f-mono);cursor:pointer}
+.stepper .step.done{border-color:var(--accent);color:var(--accent)}
+.stepper .step[aria-current="step"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+footer{color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Wie GPT funktioniert · Lektion 1</span>
+  <h1>Nächstes-Zeichen-Labor</h1>
+  <p>ChatGPT wirkt, als würde es denken. Unter der Haube macht es aber immer wieder dasselbe: Es schätzt, wie der Text weitergeht, wählt ein Stück aus, hängt es an und schätzt erneut. In dieser Lektion erlebst du das erst selbst und baust dann das einfachste Modell, das so arbeitet. Du brauchst kein Vorwissen, nur ein paar Minuten zum Ausprobieren.</p>
+  <div class="meta"><span class="badge">v2.1</span><span id="corpusInfo" class="mono"></span></div>
+  <div class="levels" role="group" aria-label="Stufe">
+    <button data-level="1" aria-pressed="true">Einsteiger</button>
+    <button data-level="2" aria-pressed="false">Fortgeschritten</button>
+    <button data-level="3" aria-pressed="false">Tief</button>
+  </div>
+</header>
+
+<!-- STUFE 1 -->
+<section class="station" data-station="guess" data-show="1">
+  <span class="num">Station 0 · Du bist das Sprachmodell</span>
+  <h2>Rate das nächste Zeichen</h2>
+  <p>Unten steht ein Stück Text, mitten im Satz abgeschnitten. Tipp das Zeichen, von dem du glaubst, dass es als Nächstes kommt (auch Leerzeichen zählt). Mach fünf, sechs Runden. Achte darauf, <em>woher</em> du deine Vermutung nimmst.</p>
+  <div class="out" id="g0Text"></div>
+  <div class="row"><input type="text" id="g0In" maxlength="1" aria-label="Dein Tipp" style="flex:0 0 4.5em;text-align:center"><button class="btn" id="g0Check">Prüfen</button><button class="btn ghost" id="g0Next">Nächstes Stück</button><span class="mono" id="g0Score"></span></div>
+  <div class="tip" id="g0Res">Tipp ein Zeichen und drück „Prüfen“.</div>
+  <details class="quiz"><summary>Was du gerade gemacht hast</summary><p>Genau das ist die Aufgabe eines Sprachmodells: aus dem bisherigen Text das nächste Stück vorhersagen. Du nutzt dafür viel Wissen: Rechtschreibung, Grammatik, den Sinn des Satzes. Unser erstes Modell wird viel weniger wissen. Es kennt nur das letzte Zeichen, und trotzdem kommt erstaunlich viel heraus.</p></details>
+</section>
+
+<section class="station" data-station="tokenizer" data-show="1">
+  <span class="num">Station 1 · Text wird zu Zahlen</span>
+  <h2>Der Tokenizer</h2>
+  <p>Das Modell sieht keine Buchstaben, nur Zahlen. Jedes Zeichen, das im Trainingstext vorkommt, bekommt eine Nummer. Das ist das ganze „Vokabular“.</p>
+  <div class="row"><input type="text" id="tokIn" value="Speak, citizens!" aria-label="Text zum Zerlegen"></div>
+  <div class="chips" id="tokChips"></div>
+  <p class="note" id="tokNote"></p>
+</section>
+
+<section class="station" data-station="counted-probabilities" data-show="1">
+  <span class="num">Station 2 · Was kommt danach?</span>
+  <h2>Gezählte Wahrscheinlichkeiten</h2>
+  <p>Das Bigramm-Modell schaut nur auf das <em>letzte</em> Zeichen und fragt: Was kam im Trainingstext danach, und wie oft? Tipp ein Zeichen oben in Station 1 an oder wähle hier eins.</p>
+  <div class="row"><label for="nextSel">Aktuelles Zeichen</label><select id="nextSel"></select></div>
+  <div class="bars" id="nextBars"></div>
+</section>
+
+<section class="station" data-station="generate" data-show="1">
+  <span class="num">Station 3 · Würfeln</span>
+  <h2>Text erzeugen, Zeichen für Zeichen</h2>
+  <p>Erzeugen heißt: Wahrscheinlichkeiten ausrechnen, einmal gewichtet würfeln, das Ergebnis anhängen, wiederholen. Vergleich ein Modell, das nichts gelernt hat, mit dem gezählten.</p>
+  <div class="row">
+    <select id="genMode" aria-label="Modell"><option value="bigram">Bigramm (gezählt)</option><option value="uniform">Untrainiert (alles gleich wahrscheinlich)</option></select>
+    <button class="btn" id="gen1">+1 Zeichen</button><button class="btn" id="gen100">+100</button><button class="btn ghost" id="genReset">Neu</button>
+  </div>
+  <div class="out" id="genOut" aria-live="polite"></div>
+  <details class="quiz"><summary>Prüf dich: Warum ist der Bigramm-Text immer noch Unsinn?</summary><p>Weil das Modell nur das allerletzte Zeichen kennt. Nach „e“ weiß es, dass oft ein Leerzeichen oder „r“ kommt, aber nicht, welches Wort gerade entsteht. Genau das löst später die Attention: Die Zeichen dürfen in ihren Kontext zurückschauen.</p></details>
+</section>
+
+<!-- STUFE 2 -->
+<section class="station" data-station="loss" data-show="2">
+  <span class="num">Station 4 · Wie gut ist das Modell?</span>
+  <h2>Der Loss</h2>
+  <p>Für jedes echte nächste Zeichen fragen wir: Welche Wahrscheinlichkeit hatte das Modell ihm gegeben? Der Loss ist −ln(p), gemittelt. Sichere, richtige Vorhersagen ergeben fast 0, Überraschungen große Werte. Rot heißt: Das Modell war überrascht.</p>
+  <div class="row"><input type="text" id="lossIn" value="First Citizen: speak, speak." aria-label="Testsatz"></div>
+  <div class="out lossline" id="lossOut"></div>
+  <div class="stats"><div><span class="note">Loss dieses Satzes</span><span class="stat" id="lossVal"></span></div><div><span class="note">Raten (ln V)</span><span class="stat" id="lossBase"></span></div><div><span class="note">Bigramm mit 1 Mio. Zeichen</span><span class="stat">≈ 2,5</span></div></div>
+  <div class="tip" id="lossTip">Zeig auf ein Zeichen für Details.</div>
+</section>
+
+<section class="station" data-station="training-curve" data-show="2">
+  <span class="num">Station 5 · Training</span>
+  <h2>Mehr Text gelesen, weniger überrascht</h2>
+  <p>Beim Bigramm ist „Training“ einfach Zählen. Schieb den Regler: So viele Zeichen des Trainingstexts hat das Modell schon gesehen. Gemessen wird auf den letzten 10 %, die es nie sieht (Validierung).</p>
+  <div class="row"><label for="trainK">Gelesen</label><input type="range" id="trainK" min="0" max="40" value="40"><span class="mono" id="trainKVal"></span></div>
+  <div class="scroll"><canvas id="lossCurve" width="780" height="240" aria-label="Validierungs-Loss über gelesene Zeichen"></canvas></div>
+  <p class="note">Zum Vergleich: Mit dem kompletten Shakespeare (gut 1 Mio. Zeichen, 65 verschiedene) landet ein Bigramm bei etwa 2,5. Ein kleines GPT schafft auf denselben Daten ungefähr 1,5, weil es weit mehr als ein Zeichen zurückschaut. Wie das geht, ist Thema der nächsten Lektionen.</p>
+</section>
+
+<section class="station" data-station="temperature" data-show="2">
+  <span class="num">Station 6 · Temperatur</span>
+  <h2>Mutig oder vorsichtig würfeln</h2>
+  <p>Vor dem Würfeln kann man die Verteilung schärfen oder glätten. Niedrige Temperatur nimmt fast immer das Wahrscheinlichste, hohe macht alles gleich wahrscheinlich.</p>
+  <div class="row"><label for="temp">Temperatur</label><input type="range" id="temp" min="0.1" max="3" step="0.1" value="1"><span class="mono" id="tempVal"></span></div>
+  <div class="bars" id="tempBars"></div>
+  <div class="row"><button class="btn" id="tgen">200 Zeichen erzeugen</button></div>
+  <div class="out" id="tgenOut"></div>
+</section>
+
+<!-- STUFE 3 -->
+<section class="station" data-station="context-window" data-show="3">
+  <span class="num">Station 7 · Trainingsbeispiele</span>
+  <h2>Ein Ausschnitt, viele Beispiele</h2>
+  <p>Trainiert wird auf Ausschnitten der Länge <span class="mono">block_size + 1</span>. Darin stecken <span class="mono">block_size</span> Beispiele: Kontext → nächstes Zeichen. <span class="mono">y</span> ist einfach <span class="mono">x</span> um eins verschoben. Markiert ist das, was das Bigramm davon tatsächlich benutzt.</p>
+  <div class="row"><label for="bs">block_size</label><input type="range" id="bs" min="1" max="12" value="8"><span class="mono" id="bsVal"></span><button class="btn ghost" id="bsNew">Neuer Ausschnitt</button></div>
+  <div class="pairs" id="pairs"></div>
+</section>
+
+<section class="station" data-station="bigram-table" data-show="3">
+  <span class="num">Station 8 · Die Tabelle hinter allem</span>
+  <h2>Das Modell ist eine V×V-Tabelle</h2>
+  <p>Jede Zeile gehört zu einem Zeichen, jede Spalte zum möglichen Nachfolger. In PyTorch schreibt man das als <span class="mono">nn.Embedding(vocab_size, vocab_size)</span>: Die Zeile des aktuellen Zeichens wird nachgeschlagen und als „Logits“ gelesen, also als rohe Punktzahlen, die Softmax in Wahrscheinlichkeiten umrechnet. Hier stehen die gezählten Wahrscheinlichkeiten drin. Tipp eine Zelle an.</p>
+  <div class="scroll"><canvas id="heat" width="640" height="640" aria-label="Bigramm-Matrix"></canvas></div>
+  <div class="tip" id="heatTip">Tipp eine Zelle an.</div>
+  <pre class="code">class BigramLanguageModel(nn.Module):
+    def __init__(self, vocab_size):
+        super().__init__()
+        self.token_embedding_table = nn.Embedding(vocab_size, vocab_size)
+    def forward(self, idx, targets=None):
+        logits = self.token_embedding_table(idx)   # (B, T, C)
+        ...
+        loss = F.cross_entropy(logits.view(B*T, C), targets.view(B*T))</pre>
+  <details class="quiz"><summary>Prüf dich: Was ist der Unterschied zwischen dieser Tabelle und einem Bigramm, das als neuronales Netz trainiert wird?</summary><p>Inhaltlich fast keiner. Das Netz lernt die Tabelle per Gradientenabstieg statt sie zu zählen, landet aber bei derselben Lösung: Softmax der gelernten Zeile ≈ gezählte Häufigkeit. Das Netz-Gerüst lohnt sich erst, wenn mehr als ein Zeichen Kontext ins Spiel kommt.</p></details>
+</section>
+
+<section class="station" data-station="summary" data-show="1">
+  <span class="num">Zusammenfassung</span>
+  <h2>Das Wichtigste aus Stufe Einsteiger</h2>
+  <p>1. Ein Sprachmodell sagt das nächste Zeichen (oder Token) voraus, mehr nicht. Ganze Antworten entstehen, indem es das immer wieder tut.<br>2. Text wird vorher in Zahlen übersetzt.<br>3. Die Vorhersage ist eine Wahrscheinlichkeitsverteilung, aus der gewürfelt wird. Darum antwortet ChatGPT auf dieselbe Frage nicht immer gleich.<br>4. Unser Bigramm kennt nur das letzte Zeichen. Das ist seine große Schwäche, und genau die beheben die nächsten Lektionen.</p>
+  <div class="row"><button class="btn" id="toL2">Weiter zu Fortgeschritten</button></div>
+</section>
+
+<section class="station" data-station="corpus" data-show="1 2 3">
+  <span class="num">Trainingstext</span>
+  <h2>Woraus das Modell lernt</h2>
+  <p>Standard ist ein Auszug aus Shakespeares „Coriolanus“, ein klassischer Übungstext für solche Modelle. Du kannst jeden eigenen Text einsetzen, zum Beispiel etwas Deutsches, und zuschauen, wie sich alles ändert.</p>
+  <textarea id="corpus" aria-label="Trainingstext"></textarea>
+  <div class="row"><button class="btn" id="useCorpus">Mit diesem Text neu zählen</button><button class="btn ghost" id="resetCorpus">Shakespeare wiederherstellen</button></div>
+</section>
+<footer>Trainingstext: Auszug aus Shakespeares „Coriolanus“.</footer>
+</div>
+
+<script>
+const SHAKESPEARE=`First Citizen:
+Before we proceed any further, hear me speak.
+
+All:
+Speak, speak.
+
+First Citizen:
+You are all resolved rather to die than to famish?
+
+All:
+Resolved. resolved.
+
+First Citizen:
+First, you know Caius Marcius is chief enemy to the people.
+
+All:
+We know't, we know't.
+
+First Citizen:
+Let us kill him, and we'll have corn at our own price.
+Is't a verdict?
+
+All:
+No more talking on't; let it be done: away, away!
+
+Second Citizen:
+One word, good citizens.
+
+First Citizen:
+We are accounted poor citizens, the patricians good.
+What authority surfeits on would relieve us: if they
+would yield us but the superfluity, while it were
+wholesome, we might guess they relieved us humanely;
+but they think we are too dear: the leanness that
+afflicts us, the object of our misery, is as an
+inventory to particularise their abundance; our
+sufferance is a gain to them Let us revenge this with
+our pikes, ere we become rakes: for the gods know I
+speak this in hunger for bread, not in thirst for revenge.
+
+Second Citizen:
+Would you proceed especially against Caius Marcius?
+
+All:
+Against him first: he's a very dog to the commonalty.
+
+Second Citizen:
+Consider you what services he has done for his country?
+
+First Citizen:
+Very well; and could be content to give him good
+report fort, but that he pays himself with being proud.
+
+Second Citizen:
+Nay, but speak not maliciously.
+
+First Citizen:
+I say unto you, what he hath done famously, he did
+it to that end: though soft-conscienced men can be
+content to say it was for his country he did it to
+please his mother and to be partly proud; which he
+is, even till the altitude of his virtue.
+`;
+const ALPHA=0.1, $=id=>document.getElementById(id);
+const disp=c=>c==="\n"?"↵":c===" "?"␣":c;
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+let M=null, genText="\n", genNew=0, curChar="e", bsOffset=0;
+
+/* Text is split into code points ([...text], like Python's list(text)) everywhere: vocabulary, counting, slicing.
+   Indexing the string directly would split an emoji into two halves that are not in the vocabulary. */
+const lastChar=s=>Array.from(s.slice(-2)).pop();
+function build(text){
+  const seq=[...text], chars=[...new Set(seq)].sort(), V=chars.length, stoi={};
+  chars.forEach((c,i)=>stoi[c]=i);
+  const cnt=Array.from({length:V},()=>new Float64Array(V)), row=new Float64Array(V);
+  for(let i=0;i+1<seq.length;i++){const a=stoi[seq[i]],b=stoi[seq[i+1]];cnt[a][b]++;row[a]++;}
+  return {text,seq,chars,V,stoi,cnt,row};
+}
+function probs(a,T=1,mode="bigram"){
+  const {V,cnt,row}=M; let p=new Float64Array(V);
+  for(let b=0;b<V;b++) p[b]=mode==="uniform"?1/V:(cnt[a][b]+ALPHA)/(row[a]+ALPHA*V);
+  if(T!==1){let s=0;for(let b=0;b<V;b++){p[b]=Math.pow(p[b],1/T);s+=p[b];}for(let b=0;b<V;b++)p[b]/=s;}
+  return p;
+}
+function sample(p){let r=Math.random(),s=0;for(let i=0;i<p.length;i++){s+=p[i];if(r<s)return i;}return p.length-1;}
+function fmt(x,d=2){return x.toLocaleString("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d});}
+function barsHTML(p,k=10){
+  const idx=[...p.keys()].sort((a,b)=>p[b]-p[a]).slice(0,k), mx=p[idx[0]];
+  return idx.map(i=>`<div class="bar"><span>${disp(M.chars[i])}</span><div><div class="fill" style="width:${(p[i]/mx*100).toFixed(1)}%"></div></div><span class="v">${fmt(p[i]*100,1)} %</span></div>`).join("");
+}
+
+/* Station 0 */
+let g0={pos:0,hits:0,total:0,done:false};
+function g0New(){const t=M.seq;g0.pos=Math.min(40,t.length-1)+Math.floor(Math.random()*Math.max(1,t.length-41));g0.done=false;
+  $("g0Text").textContent=t.slice(Math.max(0,g0.pos-40),g0.pos).join("")+"▍";$("g0In").value="";$("g0Res").textContent="Tipp ein Zeichen und drück „Prüfen“.";}
+function g0Check(){if(g0.done)return;const t=M.seq,c=t[g0.pos],g=$("g0In").value;if(!g){$("g0In").focus();return;}
+  g0.done=true;g0.total++;const ok=g===c||(g===" "&&c==="\n");if(ok)g0.hits++;window.__ptfAnswered&&window.__ptfAnswered("guess",ok,g0.total,g);
+  const p=probs(M.stoi[t[g0.pos-1]]),top=[...p.keys()].sort((a,b)=>p[b]-p[a])[0];
+  $("g0Text").textContent=t.slice(Math.max(0,g0.pos-40),g0.pos+1).join("");
+  $("g0Res").textContent=`${ok?"Richtig!":"Daneben."} Es kam „${disp(c)}“. Das Bigramm, das nur „${disp(t[g0.pos-1])}“ sieht, hätte „${disp(M.chars[top])}“ getippt (${fmt(p[top]*100,0)} %).`;
+  $("g0Score").textContent=`${g0.hits} von ${g0.total} richtig`;}
+$("g0Check").onclick=g0Check;$("g0Next").onclick=g0New;
+$("g0In").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();g0.done?g0New():g0Check();}});
+
+/* Station 1 */
+function renderTok(){
+  const s=$("tokIn").value; let unk=0;
+  $("tokChips").innerHTML=[...s].map((c,i)=>{const id=M.stoi[c];if(id===undefined)unk++;
+    return `<button class="chip${id===undefined?" bad":""}${c===curChar?" sel":""}" data-c="${encodeURIComponent(c)}" title="${id===undefined?"nicht im Vokabular":"Zeichen "+id}"><b>${disp(c)}</b><small>${id===undefined?"?":id}</small></button>`}).join("");
+  $("tokNote").textContent=`Vokabular: ${M.V} verschiedene Zeichen. Echte GPTs zerlegen Text nicht in einzelne Zeichen, sondern in rund 50.000 bis 200.000 Wortstücke, die „Tokens“. Das Prinzip bleibt gleich.`+(unk?` ${unk} Zeichen kommen im Trainingstext nicht vor (rot) und wären für das Modell unbekannt.`:"");
+}
+$("tokChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;const c=decodeURIComponent(b.dataset.c);if(M.stoi[c]===undefined)return;curChar=c;renderAll();});
+/* Station 2 */
+function renderNext(){
+  $("nextSel").innerHTML=M.chars.map(c=>`<option value="${encodeURIComponent(c)}"${c===curChar?" selected":""}>${disp(c)}  (#${M.stoi[c]}, ${M.row[M.stoi[c]]}× gesehen)</option>`).join("");
+  $("nextBars").innerHTML=barsHTML(probs(M.stoi[curChar]));
+}
+$("nextSel").addEventListener("change",e=>{curChar=decodeURIComponent(e.target.value);renderAll();});
+/* Station 3 */
+function renderGen(){const old=genText.slice(0,genText.length-genNew),nw=genText.slice(genText.length-genNew);
+  $("genOut").innerHTML=esc(old)+(nw?`<span class="new">${esc(nw)}</span>`:"");$("genOut").scrollTop=1e9;}
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+function gen(n,mode,T=1,from){let t=from;for(let i=0;i<n;i++){const a=M.stoi[lastChar(t)]??0;t+=M.chars[sample(probs(a,T,mode))];}return t;}
+$("gen1").onclick=()=>{const t=gen(1,$("genMode").value,1,genText);genNew=1;genText=t;renderGen();};
+$("gen100").onclick=()=>{const t=gen(100,$("genMode").value,1,genText);genNew=100;genText=t;renderGen();};
+$("genReset").onclick=()=>{genText=M.stoi["\n"]!==undefined?"\n":M.chars[0];genNew=0;renderGen();};
+/* Station 4 */
+function sentenceLoss(){const s=[...$("lossIn").value];let sum=0,n=0;
+  for(let i=1;i<s.length;i++){const a=M.stoi[s[i-1]],b=M.stoi[s[i]];if(a===undefined||b===undefined)continue;sum+=-Math.log(probs(a)[b]);n++;}
+  return {n,loss:n?sum/n:0};}
+function renderLoss(){
+  const s=[...$("lossIn").value];let sum=0,n=0;const parts=[esc(s[0]||"")];
+  for(let i=1;i<s.length;i++){const a=M.stoi[s[i-1]],b=M.stoi[s[i]];
+    if(a===undefined||b===undefined){parts.push(`<span title="unbekanntes Zeichen">${esc(s[i])}</span>`);continue;}
+    const p=probs(a)[b],l=-Math.log(p);sum+=l;n++;
+    const a1=Math.min(1,l/6);
+    parts.push(`<span data-i="${i}" data-p="${p}" data-l="${l}" style="background:color-mix(in srgb, var(--heat) ${(a1*70).toFixed(0)}%, transparent)">${esc(s[i])}</span>`);}
+  $("lossOut").innerHTML=parts.join("");
+  $("lossVal").textContent=n?fmt(sum/n):"–";$("lossBase").textContent=fmt(Math.log(M.V));
+}
+function lossTip(e){const sp=e.target.closest("span[data-i]");if(!sp)return;const s=[...$("lossIn").value],i=+sp.dataset.i;
+  $("lossTip").textContent=`nach „${disp(s[i-1])}“ kommt „${disp(s[i])}“: p = ${fmt(sp.dataset.p*100,1)} %, −ln p = ${fmt(+sp.dataset.l)}`;}
+$("lossOut").addEventListener("pointerover",lossTip);$("lossOut").addEventListener("click",lossTip);
+/* Station 5 */
+let curve=[];
+function computeCurve(){
+  const t=M.seq,split=Math.floor(t.length*.9),tr=t.slice(0,split),va=t.slice(split-1),V=M.V;
+  const cnt=Array.from({length:V},()=>new Float64Array(V)),row=new Float64Array(V);curve=[];
+  const val=()=>{let s=0,n=0;for(let i=0;i+1<va.length;i++){const a=M.stoi[va[i]],b=M.stoi[va[i+1]];s+=-Math.log((cnt[a][b]+ALPHA)/(row[a]+ALPHA*V));n++;}return s/n;};
+  const steps=40;let done=0;curve.push([0,val()]);
+  for(let k=1;k<=steps;k++){const upto=Math.round(tr.length*k/steps);
+    for(;done+1<upto;done++){const a=M.stoi[tr[done]],b=M.stoi[tr[done+1]];cnt[a][b]++;row[a]++;}
+    curve.push([upto,val()]);}
+}
+function drawCurve(){
+  const cv=$("lossCurve"),g=cv.getContext("2d"),W=cv.width,H=cv.height,L=48,R=16,Tp=16,B=36;
+  g.clearRect(0,0,W,H);const k=+$("trainK").value,ymax=Math.ceil(Math.log(M.V)+.3),ymin=Math.max(0,Math.floor(Math.min(...curve.map(c=>c[1]))-.5));
+  const xmax=curve[curve.length-1][0]||1,X=x=>L+(W-L-R)*x/xmax,Y=y=>Tp+(H-Tp-B)*(1-(y-ymin)/(ymax-ymin));
+  g.font="12px "+css("--f-mono");g.fillStyle=css("--muted");g.strokeStyle=css("--line");g.lineWidth=1;
+  for(let y=ymin;y<=ymax;y++){g.beginPath();g.moveTo(L,Y(y));g.lineTo(W-R,Y(y));g.stroke();g.fillText(String(y),L-22,Y(y)+4);}
+  g.fillText("Loss",4,Tp+4);g.fillText("gelesene Zeichen →",W-R-130,H-8);g.fillText("0",L,H-B+16);g.fillText(String(xmax),W-R-36,H-B+16);
+  g.setLineDash([5,4]);g.strokeStyle=css("--muted");g.beginPath();g.moveTo(L,Y(Math.log(M.V)));g.lineTo(W-R,Y(Math.log(M.V)));g.stroke();g.setLineDash([]);
+  g.fillText("Raten: ln V",W-R-90,Y(Math.log(M.V))-6);
+  g.strokeStyle=css("--accent");g.lineWidth=2.5;g.beginPath();curve.slice(0,k+1).forEach(([x,y],i)=>i?g.lineTo(X(x),Y(y)):g.moveTo(X(x),Y(y)));g.stroke();
+  const [px,py]=curve[k];g.fillStyle=css("--accent");g.beginPath();g.arc(X(px),Y(py),5,0,7);g.fill();
+  g.fillStyle=css("--ink");g.font="600 13px "+css("--f-mono");g.fillText(fmt(py),Math.min(X(px)+8,W-R-40),Y(py)-8);
+  $("trainKVal").textContent=`${px.toLocaleString("de-DE")} Zeichen`;
+}
+$("trainK").addEventListener("input",drawCurve);
+/* Station 6 */
+function renderTemp(){const T=+$("temp").value;$("tempVal").textContent=fmt(T,1);
+  $("tempBars").innerHTML=`<span class="note">Nach „${disp(curChar)}“:</span>`+barsHTML(probs(M.stoi[curChar],T),8);}
+$("temp").addEventListener("input",renderTemp);
+$("tgen").onclick=()=>{const s=M.stoi["\n"]!==undefined?"\n":M.chars[0];$("tgenOut").textContent=gen(200,"bigram",+$("temp").value,s).slice(1);};
+/* Station 7 */
+function renderPairs(){
+  const bs=+$("bs").value;$("bsVal").textContent=bs;const t=M.seq;
+  if(bsOffset+bs+1>t.length)bsOffset=0;const chunk=t.slice(bsOffset,bsOffset+bs+1),x=chunk.slice(0,bs),y=chunk.slice(1);
+  const ids=s=>s.map(c=>M.stoi[c]).join(" ");
+  let h=`<div>x = [${ids(x)}]   „${esc(x.map(disp).join(""))}“</div><div>y = [${ids(y)}]   „${esc(y.map(disp).join(""))}“</div><div>&nbsp;</div>`;
+  for(let i=0;i<bs;i++){const ctx=x.slice(0,i+1).map(disp);const last=ctx.pop();
+    h+=`<div>Kontext ${esc(ctx.join(""))}<span class="last">${esc(last)}</span> → <span class="tgt">${esc(disp(y[i]))}</span></div>`;}
+  $("pairs").innerHTML=h;
+}
+$("bs").addEventListener("input",renderPairs);
+$("bsNew").onclick=()=>{bsOffset=Math.floor(Math.random()*Math.max(1,M.seq.length-14));renderPairs();};
+/* Station 8 */
+let cell=8,HL=22;
+function drawHeat(){
+  const cv=$("heat"),V=M.V;cell=Math.max(8,Math.floor(600/V));HL=22;cv.width=cv.height=HL+cell*V+2;
+  const g=cv.getContext("2d"),acc=css("--accent"),bg=css("--bg");g.fillStyle=bg;g.fillRect(0,0,cv.width,cv.height);
+  g.font=`${Math.min(12,cell)}px `+css("--f-mono");g.fillStyle=css("--muted");g.textAlign="center";
+  for(let i=0;i<V;i++){g.fillText(disp(M.chars[i]),HL+cell*i+cell/2,14);g.fillText(disp(M.chars[i]),10,HL+cell*i+cell/2+4);}
+  for(let a=0;a<V;a++){const p=probs(a);for(let b=0;b<V;b++){g.globalAlpha=Math.sqrt(p[b]);g.fillStyle=acc;g.fillRect(HL+cell*b,HL+cell*a,cell-1,cell-1);}}
+  g.globalAlpha=1;
+}
+$("heat").addEventListener("click",e=>{const cv=$("heat"),r=cv.getBoundingClientRect(),sx=cv.width/r.width;
+  const b=Math.floor(((e.clientX-r.left)*sx-HL)/cell),a=Math.floor(((e.clientY-r.top)*sx-HL)/cell);if(a<0||b<0||a>=M.V||b>=M.V)return;
+  $("heatTip").textContent=`Zeile „${disp(M.chars[a])}“ → Spalte „${disp(M.chars[b])}“: ${M.cnt[a][b]}× gezählt, p = ${fmt(probs(a)[b]*100,1)} %`;
+  curChar=M.chars[a];renderTok();renderNext();renderTemp();});
+
+/* Gesamt */
+function renderAll(){renderTok();renderNext();renderTemp();}
+function setCorpus(text){M=build(text);if(M.stoi[curChar]===undefined)curChar=M.chars[Math.floor(M.V/2)];
+  $("corpusInfo").textContent=`Trainingstext: ${M.seq.length.toLocaleString("de-DE")} Zeichen · V = ${M.V}`;
+  genText=M.stoi["\n"]!==undefined?"\n":M.chars[0];genNew=0;computeCurve();
+  renderAll();renderGen();renderLoss();drawCurve();renderPairs();drawHeat();g0New();}
+$("lossIn").addEventListener("input",renderLoss);$("tokIn").addEventListener("input",renderTok);
+$("useCorpus").onclick=()=>{const t=$("corpus").value;if([...t].length<50){$("corpus").setCustomValidity("");return;}setCorpus(t);};
+$("resetCorpus").onclick=()=>{$("corpus").value=SHAKESPEARE;setCorpus(SHAKESPEARE);};
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{drawCurve();drawHeat();});
+$("corpus").value=SHAKESPEARE;setCorpus(SHAKESPEARE);
+</script>
+<script src="ptf-sim.js"></script>
+<script>
+/* PTF integration (SIMULATOR-SPEC.md §4). UI is German only; snapshots and events are English (§4.6). */
+const SIM_ID = "ptf:sim/next-char-lab", SIM_VERSION = "2.1.0";
+const PTF_LEVELS = {"1": "highschool", "2": "college", "3": "expert"};
+const START_LEVEL = "1";
+let CURRENT_LEVEL = START_LEVEL;
+function setLevel(l) {
+  document.querySelectorAll(".levels button").forEach(b => b.setAttribute("aria-pressed", b.dataset.level === l));
+  CURRENT_LEVEL = l;
+  if (FOCUS && !stationsAtLevel().includes(FOCUS)) FOCUS = stationsAtLevel()[0] || null;
+  applyVisibility();
+  drawCurve(); drawHeat();
+  persist();
+}
+const stationsAtLevel = () => [...document.querySelectorAll("section[data-station]")].filter(s => s.dataset.show.split(" ").includes(CURRENT_LEVEL)).map(s => s.dataset.station);
+/* Focus mode (SIMULATOR-SPEC.md §4.7): one station at a time with Back / Next. */
+let FOCUS = null;
+var completed = new Set();   /* var: hoisted, so applyVisibility can run before this line */
+function applyVisibility() {
+  document.querySelectorAll("[data-show]").forEach(s => {
+    const lvl = s.dataset.show.split(" ").includes(CURRENT_LEVEL);
+    s.hidden = !lvl || (FOCUS !== null && s.matches("section[data-station]") && s.dataset.station !== FOCUS);
+  });
+  document.body.classList.toggle("focused", FOCUS !== null);
+  renderStepper();
+  const nav = document.getElementById("focusNav");
+  if (!nav) return;
+  nav.hidden = FOCUS === null;
+  if (FOCUS === null) return;
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS);
+  document.getElementById("focusBack").disabled = i <= 0;
+  document.getElementById("focusNext").disabled = i >= list.length - 1;
+  document.getElementById("focusPos").textContent = `${i + 1} / ${list.length}`;
+}
+/* Progress: one numbered step per station at the current level; done steps get a tick, any step can be opened directly. */
+function renderStepper() {
+  const nav = document.getElementById("stepper");
+  if (!nav) return;
+  nav.innerHTML = "";
+  stationsAtLevel().forEach((id, i) => {
+    const h = document.querySelector(`section[data-station="${id}"] h2`), title = h ? h.textContent.trim() : id;
+    const b = document.createElement("button");
+    b.className = "step" + (completed.has(id) ? " done" : "");
+    b.textContent = completed.has(id) ? "✓" : String(i + 1);
+    b.title = title; b.setAttribute("aria-label", `${i + 1}. ${title}${completed.has(id) ? " (erledigt)" : ""}`);
+    if (id === FOCUS) b.setAttribute("aria-current", "step");
+    b.onclick = () => { setFocus(id); ptf.event("experienced", { station: id, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: id } }); window.scrollTo({ top: 0, behavior: "auto" }); };
+    nav.append(b);
+  });
+}
+function setFocus(id) { FOCUS = id; applyVisibility(); drawCurve(); drawHeat(); persist(); }
+function moveFocus(step) {
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS), next = list[i + step];
+  if (!next) return;
+  setFocus(next);
+  ptf.event("experienced", { station: next, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: next } });
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+(function buildFocusNav() {
+  const nav = document.createElement("nav");
+  nav.id = "focusNav"; nav.className = "focus-nav"; nav.hidden = true;
+  nav.setAttribute("aria-label", "Stationen");
+  nav.innerHTML = `<button class="btn ghost" id="focusBack">Zurück</button><span class="mono note" id="focusPos"></span><button class="btn" id="focusNext">Weiter</button><button class="btn ghost" id="focusAll">Alles zeigen</button>`;
+  document.querySelector(".wrap > footer").before(nav);
+  nav.querySelector("#focusBack").onclick = () => moveFocus(-1);
+  nav.querySelector("#focusNext").onclick = () => moveFocus(1);
+  nav.querySelector("#focusAll").onclick = () => setFocus(null);
+  const start = document.createElement("button");
+  start.id = "focusStart"; start.className = "btn ghost"; start.textContent = "Schritt für Schritt";
+  start.onclick = () => { setFocus(stationsAtLevel()[0]); ptf.event("experienced", { station: FOCUS, data: { focus: FOCUS } }); };
+  const levels = document.querySelector("header .levels");
+  const row = document.createElement("div"); row.className = "row";
+  levels.before(row); row.append(levels, start);
+  const stepper = document.createElement("nav");
+  stepper.id = "stepper"; stepper.className = "stepper"; stepper.setAttribute("aria-label", "Fortschritt");
+  document.querySelector(".wrap > header").after(stepper);
+})();
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", () => {
+  setLevel(b.dataset.level);
+  ptf.event("level_changed", { level: PTF_LEVELS[b.dataset.level] });
+}));
+$("toL2").onclick = () => {
+  done("summary");
+  setLevel("2");
+  if (FOCUS) setFocus(stationsAtLevel()[0]);
+  ptf.event("level_changed", { level: PTF_LEVELS["2"] });
+  window.scrollTo({ top: 0, behavior: "auto" });
+};
+
+/* Events: every experiment reports what the learner tried, so the tutor can talk about it. */
+function report(station, data) { ptf.event("experienced", { station, level: PTF_LEVELS[CURRENT_LEVEL], data }); persist(); }
+function done(station) {
+  if (completed.has(station)) return;
+  completed.add(station);
+  ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
+  renderStepper(); persist();
+}
+const debounced = (fn, ms = 400) => { let t = null; return () => { clearTimeout(t); t = setTimeout(fn, ms); }; };
+window.__ptfAnswered = (station, correct, total, response) => {
+  ptf.event("answered", { station, level: PTF_LEVELS[CURRENT_LEVEL], result: { correct, response } });
+  persist();
+  if (total >= 5) done(station);
+};
+$("tokIn").addEventListener("input", debounced(() => {
+  const s = [...$("tokIn").value];
+  report("tokenizer", { text: s.slice(0, 80).join(""), ids: s.slice(0, 80).map(c => M.stoi[c] ?? null), unknown: s.filter(c => M.stoi[c] === undefined).length });
+  done("tokenizer");
+}));
+function reportChar() {
+  const p = probs(M.stoi[curChar]), top = [...p.keys()].sort((a, b) => p[b] - p[a]).slice(0, 3);
+  report("counted-probabilities", { char: curChar, top: top.map(i => ({ char: M.chars[i], p: +p[i].toFixed(3) })) });
+  done("counted-probabilities");
+}
+$("nextSel").addEventListener("change", reportChar);
+$("tokChips").addEventListener("click", e => { const b = e.target.closest(".chip"); if (b && M.stoi[decodeURIComponent(b.dataset.c)] !== undefined) reportChar(); });
+const genModes = new Set();
+["gen1", "gen100"].forEach(id => $(id).addEventListener("click", () => {
+  const mode = $("genMode").value; genModes.add(mode);
+  report("generate", { mode, added: genNew, text: [...genText].slice(-60).join("") });
+  if (genModes.size === 2) done("generate");
+}));
+$("genReset").addEventListener("click", persist);
+$("lossIn").addEventListener("input", debounced(() => {
+  const r = sentenceLoss();
+  report("loss", { text: [...$("lossIn").value].slice(0, 80).join(""), steps: r.n, loss: r.n ? +r.loss.toFixed(3) : null });
+  done("loss");
+}));
+$("trainK").addEventListener("change", () => {
+  const [read, loss] = curve[+$("trainK").value];
+  report("training-curve", { characters_read: read, validation_loss: +loss.toFixed(3) });
+  if (+$("trainK").value < 10) done("training-curve");
+});
+const tempTried = { low: false, high: false };
+$("temp").addEventListener("change", () => {
+  const T = +$("temp").value; if (T <= .5) tempTried.low = true; if (T >= 1.5) tempTried.high = true;
+  report("temperature", { temperature: T, after: curChar });
+  if (tempTried.low && tempTried.high) done("temperature");
+});
+$("tgen").addEventListener("click", () => report("temperature", { temperature: +$("temp").value, generated: $("tgenOut").textContent.slice(0, 80) }));
+$("bs").addEventListener("change", () => { report("context-window", { block_size: +$("bs").value }); done("context-window"); });
+$("bsNew").addEventListener("click", () => { report("context-window", { block_size: +$("bs").value, offset: bsOffset }); done("context-window"); });
+$("heat").addEventListener("click", () => { const t = $("heatTip").textContent; report("bigram-table", { cell: t }); done("bigram-table"); });
+$("useCorpus").addEventListener("click", () => { if (M.text === $("corpus").value) { report("corpus", { characters: M.seq.length, vocabulary: M.V, custom: M.text !== SHAKESPEARE }); done("corpus"); } });
+$("resetCorpus").addEventListener("click", () => report("corpus", { characters: M.seq.length, vocabulary: M.V, custom: false }));
+
+/* Resume state (ptf/state): everything the learner set, so a reload shows the same lab. Custom corpora above 30,000 characters are not saved (64 KB limit). */
+let restoring = true;
+function persist() {
+  if (restoring) return;
+  const custom = M.text !== SHAKESPEARE && M.text.length <= 30000 ? M.text : null;
+  ptf.saveState({ level: PTF_LEVELS[CURRENT_LEVEL], focus: FOCUS, completed: [...completed], corpus: custom, guess: { hits: g0.hits, total: g0.total },
+    tok: $("tokIn").value, curChar, genMode: $("genMode").value, genText: [...genText].slice(-400).join(""), genModes: [...genModes],
+    loss: $("lossIn").value, trainK: +$("trainK").value, temp: +$("temp").value, tempTried, bs: +$("bs").value });
+}
+function restore(st) {
+  if (!st || typeof st !== "object") return;
+  const str = x => typeof x === "string", num = x => Number.isFinite(x);
+  if (str(st.corpus) && st.corpus.length >= 50) { $("corpus").value = st.corpus; setCorpus(st.corpus); }
+  if (st.guess && num(st.guess.hits) && num(st.guess.total)) { g0.hits = st.guess.hits; g0.total = st.guess.total; if (g0.total) $("g0Score").textContent = `${g0.hits} von ${g0.total} richtig`; }
+  if (str(st.tok)) $("tokIn").value = st.tok;
+  if (str(st.curChar) && M.stoi[st.curChar] !== undefined) curChar = st.curChar;
+  if (str(st.genMode)) $("genMode").value = st.genMode;
+  if (str(st.genText) && st.genText) { genText = st.genText; genNew = 0; }
+  if (Array.isArray(st.genModes)) st.genModes.forEach(m => genModes.add(m));
+  if (str(st.loss)) $("lossIn").value = st.loss;
+  if (num(st.trainK)) $("trainK").value = st.trainK;
+  if (num(st.temp)) $("temp").value = st.temp;
+  if (st.tempTried) { tempTried.low = !!st.tempTried.low; tempTried.high = !!st.tempTried.high; }
+  if (num(st.bs)) $("bs").value = st.bs;
+  if (Array.isArray(st.completed)) st.completed.forEach(id => { if (document.querySelector(`section[data-station="${id}"]`)) completed.add(id); });
+  renderAll(); renderGen(); renderLoss(); drawCurve(); renderPairs();
+  if (st.focus === null || document.querySelector(`section[data-station="${st.focus}"]`)) FOCUS = st.focus;
+}
+
+function simSnapshot() {
+  const r = sentenceLoss(), [read, vloss] = curve[+$("trainK").value];
+  const parts = [
+    `Corpus: ${M.text === SHAKESPEARE ? "Shakespeare excerpt" : "learner's own text"}, ${M.seq.length} characters, vocabulary ${M.V}`,
+    `Guessing: ${g0.hits} of ${g0.total} right`,
+    `Current character: ${JSON.stringify(curChar)}`,
+    `Tokenizer text: ${JSON.stringify($("tokIn").value)}`,
+    `Generating with the ${$("genMode").value === "uniform" ? "untrained (uniform)" : "counted bigram"} model, text so far ends ${JSON.stringify([...genText].slice(-40).join(""))}`
+  ];
+  if (CURRENT_LEVEL !== "1") parts.push(
+    `Loss sentence: ${JSON.stringify($("lossIn").value)}, loss ${r.n ? r.loss.toFixed(2) : "none"} (guessing ${Math.log(M.V).toFixed(2)})`,
+    `Training curve: ${read} characters read, validation loss ${vloss.toFixed(2)}`,
+    `Temperature: ${(+$("temp").value).toFixed(1)}`);
+  if (CURRENT_LEVEL === "3") parts.push(`Block size: ${$("bs").value}`);
+  return parts.join(". ");
+}
+const ptf = PTF.connect({
+  id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS[START_LEVEL],
+  onInit(ctx) {
+    restoring = true;
+    try {
+      restore(ctx.state);
+      const lvl = (ctx.state && ctx.state.level) || ctx.level;
+      if (lvl) applyLevel(lvl); else applyVisibility();
+      if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus !== false });
+    } finally { restoring = false; }
+  },
+  onSetLevel: applyLevel,
+  onGoto: gotoStation,
+  snapshot() {
+    const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `Visible stations: ${shown.join(", ")}`];
+    if (FOCUS) parts.push(`Focus mode on station: ${FOCUS}`);
+    if (completed.size) parts.push(`Completed: ${[...document.querySelectorAll("section[data-station]")].map(s => s.dataset.station).filter(id => completed.has(id)).join(", ")}`);
+    parts.push(simSnapshot());
+    return parts.join(". ");
+  }
+});
+function applyLevel(level) {
+  const n = Object.keys(PTF_LEVELS).find(k => PTF_LEVELS[k] === level);
+  if (n) setLevel(n);
+}
+function gotoStation(id, opts) {
+  const s = id ? document.querySelector(`section[data-station="${id}"]`) : null;
+  if (opts && opts.focus === false) setFocus(null);
+  if (!s) return;
+  if (!s.dataset.show.split(" ").includes(CURRENT_LEVEL)) setLevel(s.dataset.show.split(" ")[0]);
+  if (opts && opts.focus === true) { setFocus(id); window.scrollTo({ top: 0, behavior: "auto" }); return; }
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+/* Start with one station at a time (SIMULATOR-SPEC.md §4.7); "Alles zeigen" opens everything for review. */
+setLevel(START_LEVEL);
+setFocus(stationsAtLevel()[0] || null);
+restoring = false;
+</script>
+</body>
+</html>

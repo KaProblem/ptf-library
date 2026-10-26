@@ -19,14 +19,14 @@ the questions. The content is open; the explanation is personal.
 
 | Simulator | Versions | UI language | Concepts |
 | --- | --- | --- | --- |
-| [next-char-lab](sims/next-char-lab/) | 1.0.0 (deprecated), 2.0.0 | de | tokenizer, bigram, softmax, loss, sampling, temperature |
-| [loss-lens](sims/loss-lens/) | 1.0.0 | de | cross-entropy, negative log-likelihood |
+| [next-char-lab](sims/next-char-lab/) | 1.0.0 (deprecated), 2.0.0, 2.1.0 | de | tokenizer, bigram, softmax, loss, sampling, temperature |
+| [loss-lens](sims/loss-lens/) | 1.0.0, 1.1.0 | de | cross-entropy, negative log-likelihood |
 | [causal-mask](sims/causal-mask/) | 1.0.0 | en, de | causal mask, weighted average, masked softmax |
 | [attention-lab](sims/attention-lab/) | 1.0.0 | en, de | self-attention, query/key/value, scaling, positions |
 | [transformer-block](sims/transformer-block/) | 1.0.0 | en | multi-head attention, feed-forward, loss ladder |
 | [residual-stream](sims/residual-stream/) | 1.0.0 | en | residual connections, layer norm, dropout, parameter count |
 | [babbler-to-assistant](sims/babbler-to-assistant/) | 1.0.0 | en | pretraining, fine-tuning, RLHF, encoder/decoder, scale |
-| [training-loop](sims/training-loop/) | 1.0.0 | en | bigram table, gradient step, learning rate, training loop, generation |
+| [training-loop](sims/training-loop/) | 1.0.0, 1.1.0 | en | bigram table, gradient step, learning rate, training loop, generation |
 | [gpt-pipeline](sims/gpt-pipeline/) | 1.0.0 | en | the whole GPT pipeline, tensor shapes, context window, learned vs. fixed parts |
 | [falling-tower](sims/falling-tower/) | 1.0.0 | en, de | free fall, drag, terminal speed, numerical integration |
 | [inclined-plane](sims/inclined-plane/) | 1.0.0 | en, de | inclined plane, t² law, force components, rolling, moment of inertia |

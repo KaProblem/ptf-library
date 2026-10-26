@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learning by nudging</title>
+<style>
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
+  --accent:#0E6E68; --accent-soft:#D5ECEA; --warn:#C2410C; --warn-soft:#FBE3D6;
+  --f-display:"Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.3rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+header{display:flex;flex-direction:column;gap:12px}
+.levels{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start;background:var(--surface);max-width:100%}
+.levels button{font:600 1rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:10px 16px;min-height:44px;cursor:pointer}
+.levels button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.station{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.station .num{font:600 .8rem var(--f-mono);color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:600 .95rem var(--f-body);min-height:44px;padding:8px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--accent)}
+button.btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-height:44px;min-width:0}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+label{color:var(--muted);font-size:.95rem}
+.note{color:var(--muted);font-size:.95rem}
+.stat{font:600 1.5rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:24px}
+.stats div{display:flex;flex-direction:column}
+.scroll{overflow-x:auto;max-width:100%}
+.out{font:.95rem/1.5 var(--f-mono);white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px}
+.feedback{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:4px}
+.feedback.bad{border-color:var(--warn);background:var(--warn-soft)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices button{text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.choices button.right{border-color:var(--accent);background:var(--accent-soft)}
+.choices button.wrong{border-color:var(--warn);background:var(--warn-soft)}
+table.grid{border-collapse:collapse;font:.85rem var(--f-mono);font-variant-numeric:tabular-nums}
+table.grid th{color:var(--muted);font-weight:600;padding:4px 6px}
+table.grid td{width:46px;height:40px;text-align:center;border:1px solid var(--line);padding:0}
+table.grid td button{width:100%;height:100%;min-height:40px;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.bars{display:flex;flex-direction:column;gap:4px;font:.9rem var(--f-mono)}
+.bar{display:grid;grid-template-columns:5.5em 1fr 4em;gap:8px;align-items:center}
+.bar .fill{height:18px;background:var(--accent);border-radius:3px;min-width:2px}
+.bar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.tok{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:4px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font:1rem var(--f-mono);color:var(--ink);cursor:pointer}
+.tok[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+svg text{font-family:var(--f-mono)}
+details summary{cursor:pointer;font-weight:600;min-height:32px}
+footer{color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+html:not([lang="de"]) i-de,html[lang="de"] i-en{display:none!important}
+i-en,i-de{font-style:inherit}
+.focus-nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;bottom:0;background:var(--bg);padding:10px 0;border-top:1px solid var(--line)}
+.focus-nav #focusAll{margin-left:auto}
+.focus-nav button:disabled{opacity:.4;cursor:default}
+body.focused header > :not(.row){display:none}
+body.focused #focusStart{display:none}
+body.focused footer{display:none}
+
+.corpus{font:1.1rem/1.6 var(--f-mono);letter-spacing:.06em;word-break:break-all}
+.corpus mark{background:var(--accent-soft);color:var(--ink);border-radius:3px;outline:2px solid var(--accent)}
+.srow{display:grid;grid-template-columns:8em 1fr 4.5em;gap:10px;align-items:center}
+.srow .v{text-align:right;font:600 .95rem var(--f-mono);font-variant-numeric:tabular-nums}
+.bar .fill.target{background:var(--warn)}
+.delta{font:.85rem var(--f-mono)}
+.delta.up{color:var(--accent)}
+.delta.down{color:var(--warn)}
+table.heat td{width:52px;height:44px;font-size:.8rem}
+canvas{display:block;max-width:100%;height:auto}
+.gen{font:1.3rem/1.6 var(--f-mono);letter-spacing:.08em;min-height:2.2em;word-break:break-all}
+.gen b{color:var(--accent)}
+pre.code{font:.85rem/1.5 var(--f-mono);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px;overflow-x:auto;margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow">How GPT works · Training</span>
+  <h1>Learning by nudging</h1>
+  <p>The smallest language model there is: a table of numbers. Each row belongs to one character and holds a score for every character that could come next. At first the table knows nothing. Training changes its numbers a tiny bit at a time until the predictions fit the text. Here the text is a single line: "a banana and a bandana".</p>
+  <div class="levels" role="group" aria-label="Level">
+    <button data-level="1" aria-pressed="true">High school</button><button data-level="2" aria-pressed="false">College</button><button data-level="3" aria-pressed="false">Expert</button>
+  </div>
+</header>
+
+<section class="station" data-station="lookup" data-show="1 2 3">
+  <span class="num">Station 1 · The model is a table</span>
+  <h2>Look up a row</h2>
+  <p>The text uses five characters (␣ is the space). Tap a character: the model looks up its row of scores, and softmax turns the scores into probabilities for the next character. The table has not been trained yet. What do you expect?</p>
+  <div class="row" id="lkTokens" role="group" aria-label="Current character"></div>
+  <div class="bars" id="lkScores"></div>
+  <div class="bars" id="lkProbs"></div>
+  <p class="note" id="lkNote"></p>
+  <p class="note" data-show="2 3">In code this table is <span class="mono">nn.Embedding(vocab_size, vocab_size)</span>: looking up row i is the same as multiplying a one-hot vector by the table.</p>
+</section>
+
+<section class="station" data-station="nudge" data-show="1 2 3">
+  <span class="num">Station 2 · One training step</span>
+  <h2>Nudge the numbers</h2>
+  <p>One example from the text: after "<span class="mono" id="ndFrom"></span>" comes "<span class="mono" id="ndTo"></span>". The loss says how surprised the model is: −ln(probability of the right answer). One training step raises the score of the right character a little and lowers the others. Press the button a few times and watch the probability of the right answer.</p>
+  <div class="row"><label for="ndPair">Example</label><select id="ndPair"></select></div>
+  <div class="srow"><label for="ndLr">Step size</label><input type="range" id="ndLr" min="0" max="4" step="1" value="2"><span class="v" id="ndLrV"></span></div>
+  <div class="bars" id="ndBars"></div>
+  <div class="stats"><div><span class="note">Probability of the right answer</span><span class="stat" id="ndP"></span></div><div><span class="note">Loss for this example</span><span class="stat" id="ndLoss"></span></div></div>
+  <div class="row"><button class="btn" id="ndStep">One training step</button><button class="btn ghost" id="ndReset">Forget again</button></div>
+  <p class="note" id="ndNote"></p>
+  <p class="note" data-show="2 3">The direction comes from the gradient of the loss. For softmax with cross-entropy it is simple: score j changes by −step size · (p<sub>j</sub> − 1) for the right character and −step size · p<sub>j</sub> for every other one. Wrong characters that the model believed in most are pushed down hardest.</p>
+</section>
+
+<section class="station" data-station="train" data-show="1 2 3">
+  <span class="num">Station 3 · Many steps</span>
+  <h2>The training loop</h2>
+  <p>Now all 23 examples of the text at once: compute the average loss, nudge every row, repeat. Choose a step size (learning rate) and train. The dashed line is the best any bigram table can reach on this text.</p>
+  <div class="row" role="group" aria-label="Learning rate">
+    <button class="btn ghost" data-lr="0.1" aria-pressed="false">Tiny steps (0.1)</button><button class="btn ghost" data-lr="5" aria-pressed="true">Good steps (5)</button><button class="btn ghost" data-lr="40" aria-pressed="false">Huge steps (40)</button>
+  </div>
+  <div class="row"><button class="btn" id="tr1">1 step</button><button class="btn" id="tr10">10 steps</button><button class="btn" id="tr100">100 steps</button><button class="btn ghost" id="trReset">Start over</button></div>
+  <canvas id="trCurve" width="760" height="260" aria-label="Loss over training steps"></canvas>
+  <div class="stats"><div><span class="note">Steps</span><span class="stat" id="trSteps"></span></div><div><span class="note">Loss</span><span class="stat" id="trLoss"></span></div><div><span class="note">Best possible</span><span class="stat" id="trFloor"></span></div></div>
+  <p class="note" id="trNote"></p>
+  <div data-show="2 3">
+    <p class="note">Probabilities after training (row: current character, column: next character). They approach the counts in the text: after "b" always "a", after "a" mostly "n" or the space.</p>
+    <div class="scroll"><table class="grid heat" id="trHeat" aria-label="Probability table"></table></div>
+  </div>
+  <pre class="code" data-show="3">for step in range(max_iters):
+    xb, yb = get_batch("train")
+    logits, loss = model(xb, yb)        # 1. how wrong are we?
+    optimizer.zero_grad(set_to_none=True)
+    loss.backward()                     # 2. which direction lowers the loss?
+    optimizer.step()                    # 3. move every number a little</pre>
+</section>
+
+<section class="station" data-station="generate" data-show="1 2 3">
+  <span class="num">Station 4 · Writing</span>
+  <h2>Generate, one character at a time</h2>
+  <p>To write, the model looks up the row of the last character, rolls a die weighted with the probabilities, appends the result and starts again. Compare the untrained table with the one you trained in station 3.</p>
+  <div class="row" role="group" aria-label="Model"><button class="btn ghost" id="gnUntrained" aria-pressed="false">Untrained</button><button class="btn ghost" id="gnTrained" aria-pressed="true">Trained</button></div>
+  <div class="gen" id="gnText" aria-live="polite"></div>
+  <div class="bars" id="gnBars"></div>
+  <div class="row"><button class="btn" id="gnNext">Next character</button><button class="btn" id="gnRun">20 characters</button><button class="btn ghost" id="gnClear">Clear</button></div>
+  <p class="note" id="gnNote"></p>
+</section>
+
+<section class="station" data-station="check" data-show="1 2 3">
+  <span class="num">Check yourself</span>
+  <h2>Short questions</h2>
+  <p>What does one training step change?</p>
+  <div class="choices">
+    <button data-ok data-fb-en="Right. Training only ever nudges the numbers (parameters) in the direction that lowers the loss. The text itself is not stored anywhere.">Every number in the table moves a little, in the direction that lowers the loss</button>
+    <button data-mis="training-stores-text" data-fb-en="No. The model never stores the text. It only has its table of numbers, and training adjusts those numbers.">The model stores the example so it can look it up later</button>
+    <button data-mis="one-step-learns" data-fb-en="No. One step only nudges. It takes many steps, over many examples, before the predictions fit the text.">The right answer is set to 100 %</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <p>The trained model still sometimes writes "aa" or "nn", which never occur in the text. Why?</p>
+  <div class="choices">
+    <button data-ok data-fb-en="Right. After 'a' the model only knows 'the next character is often n or a space'. It cannot see further back, so it cannot know which word it is in.">It only sees the last character, so it cannot know where in a word it is</button>
+    <button data-fb-en="No. The probability of 'a' after 'a' is close to zero after training. The odd pairs come from the model forgetting everything except the last character.">It has not been trained enough yet</button>
+    <button data-mis="sampling-is-error" data-fb-en="Not quite. Sampling is wanted: always taking the most likely character would repeat the same few characters forever.">Sampling is a mistake; it should always take the most likely character</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div data-show="2 3">
+    <p>Before training, all scores are 0. What is the loss on this text, which has five different characters?</p>
+    <div class="choices">
+      <button data-ok data-fb-en="Right. Every character has probability 1/5, so the loss is −ln(0.2) ≈ 1.61 for every example.">−ln(1/5) ≈ 1.61</button>
+      <button data-fb-en="No. A loss of 0 would mean the model is certain and right.">0</button>
+      <button data-fb-en="No. Cross-entropy uses the natural logarithm of the probability of the right answer: −ln(1/5).">5</button>
+    </div>
+    <p class="feedback" hidden></p>
+  </div>
+</section>
+<footer>Simulator "Learning by nudging" · Personal Tutor Format</footer>
+</div>
+
+<script src="ptf-sim.js"></script>
+<script>
+const SIM_ID = "ptf:sim/training-loop", SIM_VERSION = "1.1.0";
+const SIM_LOCALES = ["en"];
+const PTF_LEVELS = {"1": "highschool", "2": "college", "3": "expert"};
+/* Shared PTF glue: levels, stations, snapshot (SIMULATOR-SPEC.md §4) */
+function setLevel(l){
+  document.querySelectorAll(".levels button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.level===l));
+  CURRENT_LEVEL=l;
+  if (FOCUS && !stationsAtLevel().includes(FOCUS)) FOCUS = stationsAtLevel()[0] || null;
+  applyVisibility();
+  persist();
+}
+const stationsAtLevel = () => [...document.querySelectorAll("section[data-station]")].filter(s => s.dataset.show.split(" ").includes(CURRENT_LEVEL)).map(s => s.dataset.station);
+/* Focus mode (SIMULATOR-SPEC.md §4.7): one station at a time with Back / Next. */
+let FOCUS = null;
+function applyVisibility() {
+  document.querySelectorAll("[data-show]").forEach(s => {
+    const lvl = s.dataset.show.split(" ").includes(CURRENT_LEVEL);
+    s.hidden = !lvl || (FOCUS !== null && s.matches("section[data-station]") && s.dataset.station !== FOCUS);
+  });
+  document.body.classList.toggle("focused", FOCUS !== null);
+  const nav = document.getElementById("focusNav");
+  if (!nav) return;
+  nav.hidden = FOCUS === null;
+  if (FOCUS === null) return;
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS);
+  document.getElementById("focusBack").disabled = i <= 0;
+  document.getElementById("focusNext").disabled = i >= list.length - 1;
+  document.getElementById("focusPos").textContent = `${i + 1} / ${list.length}`;
+}
+function setFocus(id) { FOCUS = id; applyVisibility(); persist(); }
+function moveFocus(step) {
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS), next = list[i + step];
+  if (!next) return;
+  setFocus(next);
+  ptf.event("experienced", { station: next, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: next } });
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+(function buildFocusNav() {
+  const nav = document.createElement("nav");
+  nav.id = "focusNav"; nav.className = "focus-nav"; nav.hidden = true;
+  nav.setAttribute("aria-label", "Stations");
+  nav.innerHTML = `<button class="btn ghost" id="focusBack"><i-en>Back</i-en><i-de>Zurück</i-de></button><span class="mono note" id="focusPos"></span><button class="btn" id="focusNext"><i-en>Next</i-en><i-de>Weiter</i-de></button><button class="btn ghost" id="focusAll"><i-en>Show all</i-en><i-de>Alles zeigen</i-de></button>`;
+  const footer = document.querySelector(".wrap > footer");
+  footer ? footer.before(nav) : document.querySelector(".wrap").append(nav);
+  nav.querySelector("#focusBack").onclick = () => moveFocus(-1);
+  nav.querySelector("#focusNext").onclick = () => moveFocus(1);
+  nav.querySelector("#focusAll").onclick = () => setFocus(null);
+  const start = document.createElement("button");
+  start.id = "focusStart"; start.className = "btn ghost";
+  start.innerHTML = "<i-en>Step by step</i-en><i-de>Schritt für Schritt</i-de>";
+  start.onclick = () => { setFocus(stationsAtLevel()[0]); ptf.event("experienced", { station: FOCUS, data: { focus: FOCUS } }); };
+  const levels = document.querySelector("header .levels");
+  const row = document.createElement("div"); row.className = "row";
+  levels.before(row); row.append(levels, start);
+})();
+let CURRENT_LEVEL="1", LOCALE="en", READY=false;
+/* UI language (en, de): static text as <i-en>/<i-de> pairs, dynamic text via L(en, de). */
+const L = (en, de) => LOCALE === "de" ? de : en;
+const fmt = (x, d = 2) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+/* Each simulator declares SIM_LOCALES (matching "lang" in sim.json); unsupported locales fall back to English. */
+function setLocale(loc) {
+  LOCALE = /^de/i.test(loc || "") && SIM_LOCALES.includes("de") ? "de" : "en";
+  document.documentElement.lang = LOCALE;
+  if (READY && typeof rerender === "function") rerender();
+}
+setLocale(navigator.language);
+const completed=new Set();
+const ptf = PTF.connect({
+  id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS["1"],
+  onInit(ctx) {
+    if (ctx.locale) setLocale(ctx.locale);
+    const lvl = (ctx.state && ctx.state.level) || ctx.level;
+    if (lvl) applyLevel(lvl);
+    restore(ctx.state);
+    if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus !== false });
+    RESTORED = true;
+  },
+  onSetLevel: applyLevel,
+  onGoto: gotoStation,
+  snapshot() {
+    const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `UI language: ${LOCALE}`, `Visible stations: ${shown.join(", ")}`];
+    if (FOCUS) parts.push(`Focus mode on station: ${FOCUS}`);
+    if (completed.size) parts.push(`Completed: ${[...completed].join(", ")}`);
+    if (typeof simSnapshot === "function") parts.push(simSnapshot());
+    return parts.join(". ");
+  }
+});
+function applyLevel(level) {
+  const n = Object.keys(PTF_LEVELS).find(k => PTF_LEVELS[k] === level);
+  if (n) setLevel(n);
+}
+function gotoStation(id, opts) {
+  const s = id ? document.querySelector(`section[data-station="${id}"]`) : null;
+  if (opts && opts.focus === false) setFocus(null);
+  if (!s) return;
+  if (!s.dataset.show.split(" ").includes(CURRENT_LEVEL)) setLevel(s.dataset.show.split(" ")[0]);
+  if (opts && opts.focus === true) { setFocus(id); window.scrollTo({ top: 0, behavior: "auto" }); return; }
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", () => {
+  setLevel(b.dataset.level);
+  const level = PTF_LEVELS[b.dataset.level];
+  ptf.event("level_changed", { level });
+}));
+function answered(station, correct, misconception, response) {
+  const result = { correct };
+  if (misconception && !correct) result.misconception = misconception;
+  if (response !== undefined) result.response = String(response);
+  ptf.event("answered", { station, level: PTF_LEVELS[CURRENT_LEVEL], result });
+}
+function done(station) {
+  if (completed.has(station)) return;
+  completed.add(station);
+  ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
+}
+/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb-en / data-fb-de,
+   followed by <p class="feedback" hidden>. A station completes when all its visible boxes are answered correctly. Call initChoices() once the DOM is built. */
+function markChoice(box, b) {
+  const ok = b.hasAttribute("data-ok"), fb = box.nextElementSibling;
+  box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
+  b.classList.add(ok ? "right" : "wrong");
+  if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+  box.dataset.choice = [...box.querySelectorAll("button")].indexOf(b);
+  if (ok) box.dataset.solved = "1"; else delete box.dataset.solved;
+  return ok;
+}
+function initChoices() {
+document.querySelectorAll("[data-station] .choices").forEach(box => {
+  const sec = box.closest("[data-station]"), station = sec.dataset.station, fb = box.nextElementSibling;
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    const ok = markChoice(box, b);
+    answered(station, ok, b.dataset.mis, (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim());
+    if ([...sec.querySelectorAll(".choices")].filter(x => !x.closest("[hidden]")).every(x => x.dataset.solved)) done(station);
+  }));
+});
+}
+setLevel("1");
+
+const $ = id => document.getElementById(id);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const TEXT = "a banana and a bandana ";
+const V = [...new Set(TEXT)].sort(), N = V.length, ix = c => V.indexOf(c);
+const show = c => c === " " ? "␣" : c;
+const PAIRS = [...TEXT].map((c, i) => [ix(c), ix(TEXT[(i + 1) % TEXT.length])]);
+const zeros = () => Array.from({ length: N }, () => Array(N).fill(0));
+const softmax = r => { const m = Math.max(...r), e = r.map(x => Math.exp(x - m)), s = e.reduce((a, b) => a + b, 0); return e.map(x => x / s); };
+const COUNTS = zeros(); PAIRS.forEach(([i, j]) => COUNTS[i][j]++);
+const FLOOR = PAIRS.reduce((a, [i, j]) => a - Math.log(COUNTS[i][j] / COUNTS[i].reduce((x, y) => x + y, 0)), 0) / PAIRS.length;
+const lossOf = W => PAIRS.reduce((a, [i, j]) => a - Math.log(softmax(W[i])[j]), 0) / PAIRS.length;
+const bar = (label, x, max, text, cls = "") => `<div class="bar"><span>${label}</span><div><div class="fill ${cls}" style="width:${Math.max(0, Math.min(100, x / max * 100)).toFixed(1)}%"></div></div><span class="v">${text}</span></div>`;
+
+/* Station 1: lookup */
+let lkRow = null; const lkSeen = new Set();
+function renderLookup() {
+  $("lkTokens").innerHTML = V.map((c, i) => `<button class="tok" data-i="${i}" aria-pressed="${lkRow === i}">${show(c)}</button>`).join("");
+  $("lkTokens").querySelectorAll("button").forEach(b => b.onclick = () => { lkRow = +b.dataset.i; lkSeen.add(lkRow); renderLookup(); if (lkSeen.size >= 2) done("lookup"); });
+  if (lkRow === null) { $("lkScores").innerHTML = ""; $("lkProbs").innerHTML = ""; $("lkNote").textContent = "Pick a character."; return; }
+  const p = softmax(Array(N).fill(0));
+  $("lkScores").innerHTML = `<p class="note">Scores in row "${show(V[lkRow])}"</p>` + V.map((c, k) => bar(show(c), 0, 1, fmt(0, 1))).join("");
+  $("lkProbs").innerHTML = `<p class="note">Probabilities after softmax</p>` + V.map((c, k) => bar(show(c), p[k], 1, fmt(p[k] * 100, 0) + " %")).join("");
+  $("lkNote").textContent = lkSeen.size < 2 ? "Try another character." :
+    "Every row is the same: all scores are 0, so every character gets 20 %. In the text, though, \"b\" is always followed by \"a\". Training has to put that into the table.";
+}
+
+/* Station 2: one step on one example */
+const LRS = [0.1, 0.5, 1, 2, 5];
+let ndW = zeros(), ndPair = 0, ndSteps = 0, ndLast = null;
+const NDP = [];
+PAIRS.forEach(([i, j]) => { const k = `${i},${j}`; if (!NDP.includes(k)) NDP.push(k); });
+function renderNudge() {
+  const [i, j] = NDP[ndPair].split(",").map(Number), lr = LRS[+$("ndLr").value];
+  $("ndFrom").textContent = show(V[i]); $("ndTo").textContent = show(V[j]); $("ndLrV").textContent = fmt(lr, lr < 1 ? 1 : 0);
+  const p = softmax(ndW[i]);
+  $("ndBars").innerHTML = V.map((c, k) => {
+    const d = ndLast ? ndLast[k] : 0, dTxt = ndLast ? `<span class="delta ${d >= 0 ? "up" : "down"}">${d >= 0 ? "+" : "−"}${fmt(Math.abs(d), 2)}</span>` : "";
+    return `<div class="bar"><span>${show(c)}${k === j ? " ✓" : ""}</span><div><div class="fill ${k === j ? "target" : ""}" style="width:${(p[k] * 100).toFixed(1)}%"></div></div><span class="v">${fmt(p[k] * 100, 0)} %</span></div>` + (dTxt ? `<div class="note" style="text-align:right">score ${fmt(ndW[i][k], 2)} ${dTxt}</div>` : "");
+  }).join("");
+  $("ndP").textContent = fmt(p[j] * 100, 0) + " %"; $("ndLoss").textContent = fmt(-Math.log(p[j]), 2);
+  $("ndNote").textContent = ndSteps === 0 ? "Untrained: the right answer has 20 %, the loss is −ln(0.2) ≈ 1.61." :
+    p[j] > .9 ? `After ${ndSteps} steps the model is very sure. But careful: training on this one example only would forget everything else the text says after "${show(V[i])}". That is why real training mixes all examples.` :
+    `After ${ndSteps} step${ndSteps > 1 ? "s" : ""}: the right answer went up, all others went down. Small steps, each in the direction that lowers the loss.`;
+  if (p[j] > .5) done("nudge");
+}
+$("ndStep").onclick = () => {
+  const [i, j] = NDP[ndPair].split(",").map(Number), lr = LRS[+$("ndLr").value], p = softmax(ndW[i]);
+  ndLast = p.map((pk, k) => -lr * (pk - (k === j ? 1 : 0)));
+  ndLast.forEach((d, k) => ndW[i][k] += d); ndSteps++; renderNudge();
+  ptf.event("experienced", { station: "nudge", data: { steps: ndSteps, lr } });
+};
+$("ndReset").onclick = () => { ndW = zeros(); ndSteps = 0; ndLast = null; renderNudge(); };
+$("ndPair").innerHTML = NDP.map((k, n) => { const [i, j] = k.split(",").map(Number); return `<option value="${n}">"${show(V[i])}" → "${show(V[j])}"</option>`; }).join("");
+$("ndPair").onchange = e => { ndPair = +e.target.value; ndW = zeros(); ndSteps = 0; ndLast = null; renderNudge(); };
+$("ndLr").oninput = renderNudge;
+
+/* Station 3: full training */
+let trW = zeros(), trHist = [lossOf(trW)], trLr = 5;
+function trainRaw(n) {
+  for (let s = 0; s < n; s++) {
+    const G = zeros();
+    PAIRS.forEach(([i, j]) => softmax(trW[i]).forEach((pk, k) => G[i][k] += (pk - (k === j ? 1 : 0)) / PAIRS.length));
+    for (let i = 0; i < N; i++) for (let k = 0; k < N; k++) trW[i][k] -= trLr * G[i][k];
+    trHist.push(lossOf(trW));
+  }
+}
+function trainSteps(n) {
+  trainRaw(n);
+  renderTrain(); renderGen();
+  ptf.event("experienced", { station: "train", data: { steps: trHist.length - 1, lr: trLr, loss: +trHist.at(-1).toFixed(3) } });
+}
+function drawCurve() {
+  const cv = $("trCurve"), g = cv.getContext("2d"), W = cv.width, H = cv.height, L = 50, R = 14, T = 14, B = 30;
+  const maxS = Math.max(20, trHist.length - 1), top = Math.max(1.8, ...trHist.map(x => Math.min(x, 6)));
+  const X = s => L + (W - L - R) * s / maxS, Y = l => T + (H - T - B) * (1 - Math.min(l, top) / top);
+  g.clearRect(0, 0, W, H); g.font = "20px " + css("--f-mono"); g.lineWidth = 1.5; g.strokeStyle = css("--line"); g.fillStyle = css("--muted");
+  for (let l = 0; l <= top; l += .5) { g.beginPath(); g.moveTo(L, Y(l)); g.lineTo(W - R, Y(l)); g.stroke(); g.fillText(fmt(l, 1), 4, Y(l) + 6); }
+  g.fillText("steps →", W - 110, H - 6);
+  g.setLineDash([8, 6]); g.strokeStyle = css("--warn"); g.beginPath(); g.moveTo(L, Y(FLOOR)); g.lineTo(W - R, Y(FLOOR)); g.stroke(); g.setLineDash([]);
+  g.strokeStyle = css("--accent"); g.lineWidth = 4; g.beginPath(); trHist.forEach((l, s) => s ? g.lineTo(X(s), Y(l)) : g.moveTo(X(s), Y(l))); g.stroke();
+}
+function renderTrain() {
+  const l = trHist.at(-1), steps = trHist.length - 1;
+  $("trSteps").textContent = steps; $("trLoss").textContent = fmt(l, 3); $("trFloor").textContent = fmt(FLOOR, 3);
+  document.querySelectorAll("[data-lr]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.lr === trLr));
+  const recent = trHist.slice(-12), bouncy = recent.some((x, k) => k > 1 && (x - recent[k - 1]) * (recent[k - 1] - recent[k - 2]) < 0 && Math.abs(x - recent[k - 1]) > .01);
+  $("trNote").textContent = steps === 0 ? `Start: every character 20 %, loss ${fmt(l, 2)}.` :
+    trLr >= 40 && bouncy ? "The steps are so big that the model overshoots: the loss jumps up and down instead of settling. Too large a learning rate makes training unstable." :
+    l - FLOOR < .03 ? "The table has learned all a bigram model can learn from this text. To get better, the model would have to look further back than one character." :
+    trLr <= .1 ? "It learns, but very slowly. With tiny steps you need many more of them." : "The loss falls quickly and flattens out near the best possible value.";
+  if (l - FLOOR < .03) done("train");
+  const P = trW.map(softmax);
+  $("trHeat").innerHTML = `<tr><th></th>${V.map(c => `<th>${show(c)}</th>`).join("")}</tr>` + P.map((r, i) => `<tr><th>${show(V[i])}</th>${r.map(p => `<td style="background:color-mix(in srgb, var(--accent) ${(p * 100).toFixed(0)}%, transparent)">${fmt(p, 2)}</td>`).join("")}</tr>`).join("");
+  drawCurve();
+}
+document.querySelectorAll("[data-lr]").forEach(b => b.onclick = () => { trLr = +b.dataset.lr; trW = zeros(); trHist = [lossOf(trW)]; renderTrain(); renderGen(); });
+$("tr1").onclick = () => trainSteps(1); $("tr10").onclick = () => trainSteps(10); $("tr100").onclick = () => trainSteps(100);
+$("trReset").onclick = () => { trW = zeros(); trHist = [lossOf(trW)]; renderTrain(); renderGen(); };
+
+/* Station 4: generation */
+let gnTrained = true, gnText = "a", seed = 7, gnCount = 0;
+function rng() { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }
+const gnProbs = () => softmax((gnTrained ? trW : zeros())[ix(gnText.at(-1))]);
+function renderGen() {
+  $("gnUntrained").setAttribute("aria-pressed", !gnTrained); $("gnTrained").setAttribute("aria-pressed", gnTrained);
+  $("gnText").innerHTML = [...gnText].map((c, k) => k === gnText.length - 1 ? `<b>${show(c)}</b>` : show(c)).join("");
+  const p = gnProbs();
+  $("gnBars").innerHTML = `<p class="note">Row "${show(gnText.at(-1))}": what comes next?</p>` + V.map((c, k) => bar(show(c), p[k], 1, fmt(p[k] * 100, 0) + " %")).join("");
+  const untrainedTable = trHist.length === 1;
+  $("gnNote").textContent = gnTrained && untrainedTable ? "You have not trained the table yet (station 3), so \"trained\" is still uniform." :
+    gnTrained ? "Locally it looks like the text (\"an\", \"ba\", \"na\"), but there are no real words: the model only ever sees one character." :
+    "Untrained, every character is equally likely: pure noise.";
+}
+function gnStep() {
+  const p = gnProbs(); let r = rng(), k = 0; while (k < N - 1 && (r -= p[k]) > 0) k++;
+  gnText += V[k]; if (gnText.length > 60) gnText = gnText.slice(-60); gnCount++;
+  if (gnTrained && trHist.length > 1 && gnCount >= 10) done("generate");
+}
+$("gnNext").onclick = () => { gnStep(); renderGen(); };
+$("gnRun").onclick = () => { for (let k = 0; k < 20; k++) gnStep(); renderGen(); ptf.event("experienced", { station: "generate", data: { trained: gnTrained, text: gnText } }); };
+$("gnClear").onclick = () => { gnText = "a"; gnCount = 0; renderGen(); };
+$("gnUntrained").onclick = () => { gnTrained = false; renderGen(); };
+$("gnTrained").onclick = () => { gnTrained = true; renderGen(); };
+
+function simSnapshot() {
+  const quiz = [...document.querySelectorAll("[data-station] .choices")].filter(b => b.dataset.choice !== undefined && !b.closest("div[data-show][hidden]"))
+    .map((b, k) => `question ${k + 1} ${b.dataset.solved ? "right" : "wrong"}`);
+  return (quiz.length ? `Quiz: ${quiz.join(", ")}. ` : "") + `Lookup row: ${lkRow === null ? "none" : show(V[lkRow])}. Nudge example ${NDP[ndPair]} at learning rate ${LRS[+$("ndLr").value]} after ${ndSteps} steps, right answer ${(softmax(ndW[NDP[ndPair].split(",")[0]])[+NDP[ndPair].split(",")[1]] * 100).toFixed(0)} %. Training: ${trHist.length - 1} steps at learning rate ${trLr}, loss ${trHist.at(-1).toFixed(3)} (best possible ${FLOOR.toFixed(3)}). Generated (${gnTrained ? "trained" : "untrained"}): "${gnText}"`;
+}
+function rerender() { renderLookup(); renderNudge(); renderTrain(); renderGen(); }
+
+/* Resume state (ptf/state): the whole experiment, so a reload continues where the learner stopped.
+   Training is deterministic, so the state keeps the number of steps and replays them instead of storing the table. */
+var RESTORED = false;   /* var: hoisted, setLevel runs before this line */
+function persist() {
+  if (!RESTORED) return;
+  const quiz = [...document.querySelectorAll("[data-station] .choices")].map(b => b.dataset.choice === undefined ? null : +b.dataset.choice);
+  ptf.saveState({ level: PTF_LEVELS[CURRENT_LEVEL], focus: FOCUS, completed: [...completed], lookup: { row: lkRow, seen: [...lkSeen] },
+    nudge: { pair: ndPair, lr: +$("ndLr").value, W: ndW, steps: ndSteps, last: ndLast },
+    train: { lr: trLr, steps: trHist.length - 1 }, gen: { trained: gnTrained, text: gnText, seed, count: gnCount }, quiz });
+}
+let persistTimer = null;
+["click", "input", "change"].forEach(t => document.addEventListener(t, () => { clearTimeout(persistTimer); persistTimer = setTimeout(persist, 50); }));
+function restore(st) {
+  if (!st || typeof st !== "object") return;
+  const num = x => Number.isFinite(x), mat = W => Array.isArray(W) && W.length === N && W.every(r => Array.isArray(r) && r.length === N && r.every(num));
+  if (st.lookup) { if (num(st.lookup.row) && st.lookup.row >= 0 && st.lookup.row < N) lkRow = st.lookup.row; (st.lookup.seen || []).filter(num).forEach(i => lkSeen.add(i)); }
+  if (st.nudge) {
+    if (num(st.nudge.pair) && NDP[st.nudge.pair]) { ndPair = st.nudge.pair; $("ndPair").value = ndPair; }
+    if (num(st.nudge.lr) && LRS[st.nudge.lr] !== undefined) $("ndLr").value = st.nudge.lr;
+    if (mat(st.nudge.W)) ndW = st.nudge.W;
+    if (num(st.nudge.steps)) ndSteps = st.nudge.steps;
+    ndLast = Array.isArray(st.nudge.last) && st.nudge.last.length === N && st.nudge.last.every(num) ? st.nudge.last : null;
+  }
+  if (st.train && num(st.train.lr) && document.querySelector(`[data-lr="${st.train.lr}"]`)) {
+    trLr = st.train.lr; trW = zeros(); trHist = [lossOf(trW)];
+    if (num(st.train.steps)) trainRaw(Math.min(st.train.steps, 5000));
+  }
+  if (st.gen) {
+    gnTrained = st.gen.trained !== false;
+    if (typeof st.gen.text === "string" && st.gen.text && [...st.gen.text].every(c => V.includes(c))) gnText = st.gen.text.slice(-60);
+    if (num(st.gen.seed)) seed = st.gen.seed;
+    if (num(st.gen.count)) gnCount = st.gen.count;
+  }
+  if (Array.isArray(st.quiz)) document.querySelectorAll("[data-station] .choices").forEach((box, k) => {
+    const b = num(st.quiz[k]) && box.querySelectorAll("button")[st.quiz[k]];
+    if (b) markChoice(box, b);
+  });
+  if (Array.isArray(st.completed)) st.completed.forEach(id => { if (document.querySelector(`section[data-station="${id}"]`)) completed.add(id); });
+  rerender();
+  if (st.focus === null || stationsAtLevel().includes(st.focus)) setFocus(st.focus);
+}
+rerender(); initChoices(); READY = true;
+/* Start with one station at a time (SIMULATOR-SPEC.md §4.7); Show all opens everything for review. */
+setFocus(stationsAtLevel()[0] || null);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawCurve);
+</script>
+</body>
+</html>
