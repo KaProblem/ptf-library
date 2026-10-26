@@ -54,3 +54,5 @@ Rules:
 
 Content (bundles): [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 Simulators (`sims/`) and tools: MIT. See [LICENSE](LICENSE).
+
+Contributions are licensed under the same terms; contributors are responsible for their content. See [CONTRIBUTING.md](CONTRIBUTING.md).
