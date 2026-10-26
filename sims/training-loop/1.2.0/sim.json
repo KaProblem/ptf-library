@@ -1,0 +1,92 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/training-loop",
+  "version": "1.2.0",
+  "title": "Learning by nudging",
+  "description": "How a model learns: a bigram table of scores, one gradient step on one example, the training loop with too small, good and too large learning rates, and generating text from the trained table.",
+  "lang": [
+    "en"
+  ],
+  "concepts": [
+    "bigram",
+    "embedding-table",
+    "gradient-descent",
+    "learning-rate",
+    "training-loop",
+    "loss-curve",
+    "sampling",
+    "generation"
+  ],
+  "levels": [
+    "highschool",
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "lookup",
+      "title": "Look up a row",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "nudge",
+      "title": "Nudge the numbers",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "train",
+      "title": "The training loop",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "generate",
+      "title": "Generate, one character at a time",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "check",
+      "title": "Short questions",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "entry": "index.html",
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "events": [
+    "answered",
+    "station_completed",
+    "level_changed",
+    "experienced"
+  ],
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "derived_from": "ptf:sim/training-loop@1.1.0",
+  "changelog": "Predict first: stations lookup and train ask for a guess (untrained probability, fastest learning rate) before they show the table or the training controls; the guess is judged after the result is in view (SIMULATOR-SPEC §7 rule 5), saved and restored with the rest of the state, and reported in the snapshot.",
+  "integrity": "sha256-uVcEs8pZoEipXF8VAuZfdg+4vZRsHsdVJufLHQu2Gmk="
+}

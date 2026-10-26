@@ -1,0 +1,80 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/transformer-block",
+  "version": "1.1.0",
+  "title": "Transformer block: listen, then think",
+  "description": "Multi-head attention patterns, the per-token feed-forward layer, and a ladder that adds components one by one with real validation losses from a small Shakespeare model.",
+  "lang": [
+    "en"
+  ],
+  "concepts": [
+    "multi-head-attention",
+    "feed-forward",
+    "transformer-block",
+    "communication-computation",
+    "validation-loss"
+  ],
+  "levels": [
+    "highschool",
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "heads",
+      "title": "Three heads, three questions",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "feed-forward",
+      "title": "Feed-forward: each token on its own",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "stack",
+      "title": "Build your model step by step",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "check",
+      "title": "Short questions",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "entry": "index.html",
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "events": [
+    "answered",
+    "experienced",
+    "station_completed",
+    "level_changed"
+  ],
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "derived_from": "ptf:sim/transformer-block@1.0.0",
+  "changelog": "Station stack asks which change lowers the loss most before the ladder is shown (PEDAGOGY.md: predict, then reveal). The guess is only recorded when picked and judged at the first use of the revealed controls (SIMULATOR-SPEC §7 rule 5).",
+  "integrity": "sha256-TsFcpqrkxoHHzP+Jsu48NzRmAHTq0zC9qaoyJiYSUhM="
+}

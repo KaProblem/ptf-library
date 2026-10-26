@@ -1,0 +1,98 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/attention-lab",
+  "version": "1.1.0",
+  "title": "Attention lab",
+  "description": "Self-attention hands-on: guess who a word listens to, steer a query against keys, see what the values carry, why scores are scaled by 1/sqrt(d), and why attention needs positions.",
+  "lang": [
+    "en",
+    "de"
+  ],
+  "concepts": [
+    "self-attention",
+    "query",
+    "key",
+    "value",
+    "dot-product",
+    "scaled-attention",
+    "positional-embedding",
+    "cross-attention"
+  ],
+  "levels": [
+    "highschool",
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "who-listens",
+      "title": "Who does 'she' listen to?",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "query-key",
+      "title": "Query meets key",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "value",
+      "title": "Value: what is passed on",
+      "levels": [
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "scaling",
+      "title": "Scaling by 1/sqrt(d)",
+      "levels": [
+        "expert"
+      ]
+    },
+    {
+      "id": "positions",
+      "title": "Does attention know word order?",
+      "levels": [
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "check",
+      "title": "Short questions",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "entry": "index.html",
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "events": [
+    "answered",
+    "experienced",
+    "station_completed",
+    "level_changed"
+  ],
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "derived_from": "ptf:sim/attention-lab@1.0.0",
+  "changelog": "Station scaling asks what happens to softmax without scaling before showing it (PEDAGOGY.md: predict, then reveal). The guess is only recorded when picked and judged at the first use of the revealed controls (SIMULATOR-SPEC §7 rule 5).",
+  "integrity": "sha256-zoWZEbu6uNRuwlwXbyN041Wu3T++7p4cWQFoSnr/Azk="
+}

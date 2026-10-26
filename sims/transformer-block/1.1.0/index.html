@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transformer block</title>
+<style>
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
+  --accent:#0E6E68; --accent-soft:#D5ECEA; --warn:#C2410C; --warn-soft:#FBE3D6;
+  --f-display:"Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.3rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+header{display:flex;flex-direction:column;gap:12px}
+.levels{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start;background:var(--surface);max-width:100%}
+.levels button{font:600 1rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:10px 16px;min-height:44px;cursor:pointer}
+.levels button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.station{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.station .num{font:600 .8rem var(--f-mono);color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:600 .95rem var(--f-body);min-height:44px;padding:8px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--accent)}
+button.btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-height:44px;min-width:0}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+label{color:var(--muted);font-size:.95rem}
+.note{color:var(--muted);font-size:.95rem}
+.stat{font:600 1.5rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:24px}
+.stats div{display:flex;flex-direction:column}
+.scroll{overflow-x:auto;max-width:100%}
+.out{font:.95rem/1.5 var(--f-mono);white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px}
+.feedback{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:4px}
+.feedback.bad{border-color:var(--warn);background:var(--warn-soft)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices button{text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.choices button.right{border-color:var(--accent);background:var(--accent-soft)}
+.choices button.wrong{border-color:var(--warn);background:var(--warn-soft)}
+.choices button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
+.choices button:disabled{cursor:default}
+table.grid{border-collapse:collapse;font:.85rem var(--f-mono);font-variant-numeric:tabular-nums}
+table.grid th{color:var(--muted);font-weight:600;padding:4px 6px}
+table.grid td{width:46px;height:40px;text-align:center;border:1px solid var(--line);padding:0}
+table.grid td button{width:100%;height:100%;min-height:40px;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.bars{display:flex;flex-direction:column;gap:4px;font:.9rem var(--f-mono)}
+.bar{display:grid;grid-template-columns:5.5em 1fr 4em;gap:8px;align-items:center}
+.bar .fill{height:18px;background:var(--accent);border-radius:3px;min-width:2px}
+.bar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.tok{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:4px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font:1rem var(--f-mono);color:var(--ink);cursor:pointer}
+.tok[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+svg text{font-family:var(--f-mono)}
+details summary{cursor:pointer;font-weight:600;min-height:32px}
+footer{color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+html:not([lang="de"]) i-de,html[lang="de"] i-en{display:none!important}
+i-en,i-de{font-style:inherit}
+.focus-nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;bottom:0;background:var(--bg);padding:10px 0;border-top:1px solid var(--line)}
+.focus-nav #focusAll{margin-left:auto}
+.focus-nav button:disabled{opacity:.4;cursor:default}
+body.focused header > :not(.row){display:none}
+body.focused #focusStart{display:none}
+body.focused footer{display:none}
+
+.heads{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.heads figure{margin:0;display:flex;flex-direction:column;gap:6px}
+.heads figcaption{font:600 .95rem var(--f-mono)}
+table.heat{border-collapse:collapse}
+table.heat td{width:20px;height:20px;border:1px solid var(--line);padding:0}
+table.heat th{font:.7rem var(--f-mono);color:var(--muted);padding:0 3px;font-weight:400}
+table.ff{border-collapse:collapse;font:.85rem var(--f-mono);font-variant-numeric:tabular-nums;width:100%;min-width:340px}
+table.ff th,table.ff td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right}
+table.ff th:first-child,table.ff td:first-child{text-align:left}
+table.ff tr.changed td{background:var(--warn-soft)}
+.ladder{display:flex;flex-direction:column;gap:8px}
+.ladder button{display:grid;grid-template-columns:1fr auto;gap:10px;text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.ladder button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.ladder button:disabled{opacity:.45;cursor:default}
+.ladder .l{font:600 .95rem var(--f-mono)}
+.srow{display:grid;grid-template-columns:7em 1fr 3.5em;gap:10px;align-items:center}
+.srow .v{text-align:right;font:600 .95rem var(--f-mono)}
+.diagram{display:flex;flex-direction:column;align-items:stretch;gap:6px;max-width:340px;font:.95rem var(--f-mono)}
+.diagram div{border:1px solid var(--line);border-radius:6px;padding:8px 10px;background:var(--bg);text-align:center}
+.diagram .a{border-color:var(--accent);background:var(--accent-soft)}
+.diagram .f{border-color:var(--warn);background:var(--warn-soft)}
+.diagram span{text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow">How GPT works · The block</span>
+  <h1>Listen, then think</h1>
+  <p>A transformer is made of many identical building blocks. Each block has two parts: first the words exchange information (several attention heads at once), then each word thinks it over on its own (feed-forward). Here you take both parts apart.</p>
+  <div class="levels" role="group" aria-label="Level">
+    <button data-level="1" aria-pressed="true">High school</button><button data-level="2" aria-pressed="false">College</button><button data-level="3" aria-pressed="false">Expert</button>
+  </div>
+</header>
+
+<section class="station" data-station="heads" data-show="1 2 3">
+  <span class="num">Station 1 · Several heads</span>
+  <h2>Three heads, three questions</h2>
+  <p>A single attention head can only ask one kind of question. So several heads work in parallel, each with its own query, key and value numbers. Below you see whom each word (row) listens to (column) in each head. Dark means a lot of attention. Sentence: "The cat drinks milk because she is thirsty".</p>
+  <div class="heads" id="heads"></div>
+  <p><b>Question:</b> Which head almost always looks at the word directly before?</p>
+  <div class="choices">
+    <button data-mis="one-head-is-enough" data-fb-en="Head 1 looks for the verb in every row (&quot;drinks&quot;, later &quot;thirsty&quot;). Look for a diagonal just left of the main diagonal.">Head 1</button>
+    <button data-ok data-fb-en="Right. Head 2 forms a diagonal just below the main diagonal: every word listens to the previous one. Head 3 tracks references (she → cat), head 1 the verb.">Head 2</button>
+    <button data-mis="one-head-is-enough" data-fb-en="Head 3 tracks references, such as &quot;she&quot; → &quot;cat&quot;. The diagonal right next to the main diagonal is elsewhere.">Head 3</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <p class="note" data-show="2 3">The outputs of the heads are concatenated and projected back to the model width with a matrix. Example: 4 heads of 8 dimensions give 32 again. More heads do not cost more width; they split it.</p>
+</section>
+
+<section class="station" data-station="feed-forward" data-show="1 2 3">
+  <span class="num">Station 2 · Each on its own</span>
+  <h2>Feed-forward: thinking alone</h2>
+  <p>After listening, each word has gathered new information. Now each word sends its vector through the same small network, but each word separately. Change the feature of "cat" and watch which rows change.</p>
+  <div class="srow"><label for="ffSl">"cat", feature 1</label><input type="range" id="ffSl" min="-2" max="2" step="0.1" value="1"><span class="v" id="ffV"></span></div>
+  <div class="scroll"><table class="ff" id="ffTab"></table></div>
+  <p class="note" id="ffNote"></p>
+  <p class="note" data-show="2 3">Formula per word: FF(x) = ReLU(x·W<sub>1</sub> + b<sub>1</sub>)·W<sub>2</sub> + b<sub>2</sub>. The inner layer is usually 4 times as wide as the model (here 3 → 12 → 3). About two thirds of a block's parameters sit in these layers.</p>
+</section>
+
+<section class="station" data-station="stack" data-show="1 2 3">
+  <span class="num">Station 3 · Build your model</span>
+  <h2>Better step by step</h2>
+  <p>A small model learns to write text in the style of Shakespeare (about 1 million characters of training text). The loss measures how surprised it is by real text: lower is better. Add the components in this order.</p>
+  <p><b>Guess first:</b> Which change will lower the loss the most?</p>
+  <div class="choices gate" data-gate="stack">
+    <button data-mis="one-head-is-enough" data-fb-en="It helps (2.40 → 2.28), but it is not the biggest step.">Several heads instead of one</button>
+    <button data-fb-en="Layer norm helps only a little here (2.08 → 2.06).">Adding layer norm</button>
+    <button data-ok data-fb-en="Right: 2.06 → 1.48, by far the biggest jump. But scaling only works because residuals and layer norm make the deep model trainable.">Scaling the model up</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div data-gated="stack" hidden style="display:flex;flex-direction:column;gap:14px">
+  <div class="ladder" id="ladder"></div>
+  <div class="stats"><div><span class="note">Validation loss</span><span class="stat" id="lossV"></span></div><div><span class="note">Total improvement</span><span class="stat" id="gainV"></span></div></div>
+  <div class="out" id="sample"></div>
+  <p class="note">The loss values come from a real training run of a small model. The text samples are re-created to show roughly how the quality feels.</p>
+  </div>
+  <div class="diagram" aria-label="Structure of a block" data-show="2 3">
+    <span>Input: token embedding + position embedding</span>
+    <div>LayerNorm</div><div class="a">Multi-head self-attention (communication)</div><span>+ residual</span>
+    <div>LayerNorm</div><div class="f">Feed-forward (computation)</div><span>+ residual</span>
+    <span>× N blocks, then LayerNorm, linear → logits</span>
+  </div>
+</section>
+
+<section class="station" data-station="check" data-show="1 2 3">
+  <span class="num">Check yourself</span>
+  <h2>Short questions</h2>
+  <p>Which part of a block lets words exchange information?</p>
+  <div class="choices">
+    <button data-ok data-fb-en="Right. Only attention connects positions. Feed-forward computes for each position separately.">The attention heads</button>
+    <button data-mis="feed-forward-mixes-tokens" data-fb-en="No. Feed-forward is applied to each word separately, as you saw in station 2.">The feed-forward layer</button>
+    <button data-mis="feed-forward-mixes-tokens" data-fb-en="No, only attention exchanges between positions.">Both equally</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div data-show="2 3">
+    <p>A model has width 384 and 6 heads. How large is each head?</p>
+    <div class="choices">
+      <button data-ok data-fb-en="Right: 384 / 6 = 64. Concatenated, the six heads give 384 again.">64</button>
+      <button data-mis="one-head-is-enough" data-fb-en="No. The heads share the width; they do not each get the full width.">384</button>
+      <button data-fb-en="No, 384 · 6 would be six times as wide as the model.">2304</button>
+    </div>
+    <p class="feedback" hidden></p>
+  </div>
+</section>
+<footer>Simulator "Transformer block" · Personal Tutor Format</footer>
+</div>
+
+<script src="ptf-sim.js"></script>
+<script>
+const SIM_ID = "ptf:sim/transformer-block", SIM_VERSION = "1.1.0";
+const SIM_LOCALES = ["en"];
+const PTF_LEVELS = {"1": "highschool", "2": "college", "3": "expert"};
+/* Shared PTF glue: levels, stations, snapshot (SIMULATOR-SPEC.md §4) */
+function setLevel(l){
+  document.querySelectorAll(".levels button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.level===l));
+  CURRENT_LEVEL=l;
+  if (FOCUS && !stationsAtLevel().includes(FOCUS)) FOCUS = stationsAtLevel()[0] || null;
+  applyVisibility();
+}
+const stationsAtLevel = () => [...document.querySelectorAll("section[data-station]")].filter(s => s.dataset.show.split(" ").includes(CURRENT_LEVEL)).map(s => s.dataset.station);
+/* Focus mode (SIMULATOR-SPEC.md §4.7): one station at a time with Back / Next. */
+let FOCUS = null;
+function applyVisibility() {
+  document.querySelectorAll("[data-show]").forEach(s => {
+    const lvl = s.dataset.show.split(" ").includes(CURRENT_LEVEL);
+    s.hidden = !lvl || (FOCUS !== null && s.matches("section[data-station]") && s.dataset.station !== FOCUS);
+  });
+  document.body.classList.toggle("focused", FOCUS !== null);
+  const nav = document.getElementById("focusNav");
+  if (!nav) return;
+  nav.hidden = FOCUS === null;
+  if (FOCUS === null) return;
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS);
+  document.getElementById("focusBack").disabled = i <= 0;
+  document.getElementById("focusNext").disabled = i >= list.length - 1;
+  document.getElementById("focusPos").textContent = `${i + 1} / ${list.length}`;
+}
+function setFocus(id) { FOCUS = id; applyVisibility(); }
+function moveFocus(step) {
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS), next = list[i + step];
+  if (!next) return;
+  setFocus(next);
+  ptf.event("experienced", { station: next, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: next } });
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+(function buildFocusNav() {
+  const nav = document.createElement("nav");
+  nav.id = "focusNav"; nav.className = "focus-nav"; nav.hidden = true;
+  nav.setAttribute("aria-label", "Stations");
+  nav.innerHTML = `<button class="btn ghost" id="focusBack"><i-en>Back</i-en><i-de>Zurück</i-de></button><span class="mono note" id="focusPos"></span><button class="btn" id="focusNext"><i-en>Next</i-en><i-de>Weiter</i-de></button><button class="btn ghost" id="focusAll"><i-en>Show all</i-en><i-de>Alles zeigen</i-de></button>`;
+  const footer = document.querySelector(".wrap > footer");
+  footer ? footer.before(nav) : document.querySelector(".wrap").append(nav);
+  nav.querySelector("#focusBack").onclick = () => moveFocus(-1);
+  nav.querySelector("#focusNext").onclick = () => moveFocus(1);
+  nav.querySelector("#focusAll").onclick = () => setFocus(null);
+  const start = document.createElement("button");
+  start.id = "focusStart"; start.className = "btn ghost";
+  start.innerHTML = "<i-en>Step by step</i-en><i-de>Schritt für Schritt</i-de>";
+  start.onclick = () => { setFocus(stationsAtLevel()[0]); ptf.event("experienced", { station: FOCUS, data: { focus: FOCUS } }); };
+  const levels = document.querySelector("header .levels");
+  const row = document.createElement("div"); row.className = "row";
+  levels.before(row); row.append(levels, start);
+})();
+let CURRENT_LEVEL="1", LOCALE="en", READY=false;
+/* UI language (en, de): static text as <i-en>/<i-de> pairs, dynamic text via L(en, de). */
+const L = (en, de) => LOCALE === "de" ? de : en;
+const fmt = (x, d = 2) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+/* Each simulator declares SIM_LOCALES (matching "lang" in sim.json); unsupported locales fall back to English. */
+function setLocale(loc) {
+  LOCALE = /^de/i.test(loc || "") && SIM_LOCALES.includes("de") ? "de" : "en";
+  document.documentElement.lang = LOCALE;
+  if (READY && typeof rerender === "function") rerender();
+}
+setLocale(navigator.language);
+const completed=new Set();
+const ptf = PTF.connect({
+  id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS["1"],
+  onInit(ctx) {
+    if (ctx.locale) setLocale(ctx.locale);
+    const lvl = (ctx.state && ctx.state.level) || ctx.level;
+    if (lvl) applyLevel(lvl);
+    if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus === true });
+  },
+  onSetLevel: applyLevel,
+  onGoto: gotoStation,
+  snapshot() {
+    const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `UI language: ${LOCALE}`, `Visible stations: ${shown.join(", ")}`];
+    if (FOCUS) parts.push(`Focus mode on station: ${FOCUS}`);
+    if (completed.size) parts.push(`Completed: ${[...completed].join(", ")}`);
+    if (typeof simSnapshot === "function") parts.push(simSnapshot());
+    return parts.join(". ");
+  }
+});
+function applyLevel(level) {
+  const n = Object.keys(PTF_LEVELS).find(k => PTF_LEVELS[k] === level);
+  if (n) setLevel(n);
+}
+function gotoStation(id, opts) {
+  const s = id ? document.querySelector(`section[data-station="${id}"]`) : null;
+  if (opts && opts.focus === false) setFocus(null);
+  if (!s) return;
+  if (!s.dataset.show.split(" ").includes(CURRENT_LEVEL)) setLevel(s.dataset.show.split(" ")[0]);
+  if (opts && opts.focus === true) { setFocus(id); window.scrollTo({ top: 0, behavior: "auto" }); return; }
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", () => {
+  setLevel(b.dataset.level);
+  const level = PTF_LEVELS[b.dataset.level];
+  ptf.event("level_changed", { level });
+  ptf.saveState({ level });
+}));
+function answered(station, correct, misconception, response) {
+  const result = { correct };
+  if (misconception && !correct) result.misconception = misconception;
+  if (response !== undefined) result.response = String(response);
+  ptf.event("answered", { station, level: PTF_LEVELS[CURRENT_LEVEL], result });
+}
+function done(station) {
+  if (completed.has(station)) return;
+  completed.add(station);
+  ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
+}
+/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb-en / data-fb-de,
+   followed by <p class="feedback" hidden>. A station completes when all its visible boxes are answered correctly. Call initChoices() once the DOM is built. */
+/* Predict, observe, explain (SIMULATOR-SPEC.md §7 rule 5): a .choices.gate box is a prediction. Picking an option only
+   records it and shows the hidden part [data-gated="<its data-gate>"]. The prediction is judged and reported as answered
+   at the learner's first use of a control there (or of one matching its data-judge-on), once the result is in view, and it never completes the station. */
+function initGuess(box) {
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { if (!box.dataset.judged) pickGuess(box, b); }));
+  document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => ["click", "input"].forEach(t =>
+    el.addEventListener(t, e => { if (e.target.closest(el.dataset.judgeOn || "button, input, select")) judgeGuess(box); })));
+}
+function pickGuess(box, b) {
+  box.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  box.dataset.pick = [...box.querySelectorAll("button")].indexOf(b);
+  document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => { el.hidden = false; });
+}
+function judgeGuess(box, restoring) {
+  const b = box.dataset.pick === undefined ? null : box.querySelectorAll("button")[+box.dataset.pick];
+  if (!b || box.dataset.judged) return;
+  box.dataset.judged = "1";
+  const ok = b.hasAttribute("data-ok"), fb = box.nextElementSibling;
+  b.classList.add(ok ? "right" : "wrong");
+  box.querySelectorAll("button").forEach(x => { x.disabled = true; });
+  if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+  if (!restoring) answered(box.closest("[data-station]").dataset.station, ok, b.dataset.mis, (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim());
+  if (typeof onGuess === "function") onGuess(box.dataset.gate, ok);
+}
+function initChoices() {
+document.querySelectorAll("[data-station] .choices").forEach(box => {
+  const sec = box.closest("[data-station]"), station = sec.dataset.station, fb = box.nextElementSibling;
+  if (box.dataset.gate) return initGuess(box);
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    const ok = b.hasAttribute("data-ok");
+    box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
+    b.classList.add(ok ? "right" : "wrong");
+    if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+    answered(station, ok, b.dataset.mis, (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim());
+    if (ok) box.dataset.solved = "1";
+    const graded = [...sec.querySelectorAll(".choices:not(.gate)")].filter(x => !x.closest("[hidden]"));
+    if (graded.length && graded.every(x => x.dataset.solved)) done(station);
+  }));
+});
+}
+setLevel("1");
+
+const $ = id => document.getElementById(id);
+const W = ["The", "cat", "drinks", "milk", "because", "she", "is", "thirsty"], T = W.length;
+const norm = r => { const s = r.reduce((a, b) => a + b, 0); return r.map(x => x / s); };
+const row = (i, f) => norm(Array.from({ length: i + 1 }, (_, j) => f(i, j)));
+const HEADS = [
+  { name: "Head 1", f: (i, j) => (j === 2 ? 8 : 0) + (j === 7 ? 9 : 0) + (i < 2 && j === i ? 5 : 0) + .4 },
+  { name: "Head 2", f: (i, j) => (j === i - 1 ? 9 : 0) + (i === 0 ? 1 : 0) + (j === i ? 1.5 : 0) + .15 },
+  { name: "Head 3", f: (i, j) => ({ "5,1": 9, "6,5": 5, "6,1": 3, "7,5": 4, "2,1": 6, "3,2": 4, "4,2": 2, "1,1": 3, "0,0": 1 })[i + "," + j] || .5 }
+];
+$("heads").innerHTML = HEADS.map(h => {
+  let t = `<table class="heat" aria-label="${h.name}"><tr><th></th>${W.map((_, j) => `<th>${j + 1}</th>`).join("")}</tr>`;
+  for (let i = 0; i < T; i++) {
+    const r = row(i, h.f);
+    t += `<tr><th>${W[i]}</th>` + W.map((_, j) => j <= i ? `<td title="${fmt(r[j] * 100, 0)} %" style="background:color-mix(in srgb, var(--accent) ${Math.round(r[j] * 100)}%, var(--bg))"></td>` : `<td></td>`).join("") + "</tr>";
+  }
+  return `<figure><figcaption>${h.name}</figcaption>${t}</table></figure>`;
+}).join("");
+
+/* Station 2 */
+let seed = 11;
+function rng() { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }
+const W1 = Array.from({ length: 3 }, () => Array.from({ length: 12 }, () => rng() * 2 - 1));
+const W2 = Array.from({ length: 12 }, () => Array.from({ length: 3 }, () => (rng() * 2 - 1) * .6));
+const X = [[.1, .1, 0], [1, 0, 0], [0, .2, 1], [0, 1, 0], [0, 0, .1], [.7, .1, .1], [.2, .4, .3], [.1, 0, .6]];
+const ff = x => { const h = W1[0].map((_, k) => Math.max(0, x[0] * W1[0][k] + x[1] * W1[1][k] + x[2] * W1[2][k])); return [0, 1, 2].map(o => h.reduce((a, hk, k) => a + hk * W2[k][o], 0)); };
+const base = X.map(ff);
+function renderFF() {
+  const v = +$("ffSl").value; $("ffV").textContent = fmt(v, 1);
+  const xs = X.map((x, i) => i === 1 ? [v, x[1], x[2]] : x), ys = xs.map(ff);
+  let changed = [];
+  $("ffTab").innerHTML = `<tr><th>Word</th><th colspan="3">Input</th><th colspan="3">Output</th></tr>` + xs.map((x, i) => {
+    const ch = ys[i].some((y, o) => Math.abs(y - base[i][o]) > 1e-9); if (ch) changed.push(W[i]);
+    return `<tr class="${ch ? "changed" : ""}"><td>${W[i]}</td>${x.map(a => `<td>${fmt(a, 1)}</td>`).join("")}${ys[i].map(a => `<td>${fmt(a, 2)}</td>`).join("")}</tr>`;
+  }).join("");
+  $("ffNote").textContent = changed.length ? `Only "${changed.join('", "')}" changes. Feed-forward exchanges nothing between words: every word is processed with the same weights, but on its own.` : "Move the slider and see which rows light up.";
+  if (changed.length) done("feed-forward");
+}
+$("ffSl").addEventListener("input", renderFF);
+
+/* Station 3 */
+const STEPS = [
+  { t: "Bigram (last character only)", l: 2.50, s: "Thy wousthe, ar hesot fay ble\nIn the meathe sto ane wor; amat" },
+  { t: "+ 1 attention head", l: 2.40, s: "Whent thik ond hand so hisen,\nAnd thee wis be the meer and" },
+  { t: "+ several heads (4 × 8)", l: 2.28, s: "Whe thy hast the bear my lord,\nAnd sot in me the son of wear" },
+  { t: "+ feed-forward", l: 2.24, s: "What thou hast the heart of men,\nAnd so the lord be stand to me" },
+  { t: "+ 3 blocks with residual connections", l: 2.08, s: "KING: What say you to the duke?\nI will not speak, and so the time" },
+  { t: "+ LayerNorm", l: 2.06, s: "KING: What say you to the duke?\nI will not speak; and yet the time" },
+  { t: "Scaled up: 6 blocks, 6 heads, width 384, dropout", l: 1.48, s: "DUKE VINCENTIO:\nWhy, then, my lord, the time is come\nThat you should speak the thing you know." }
+];
+let upto = 0;
+function renderLadder() {
+  $("ladder").innerHTML = STEPS.map((s, i) => `<button aria-pressed="${i <= upto}" ${i > upto + 1 ? "disabled" : ""} data-i="${i}"><span>${s.t}</span><span class="l">${i <= upto ? fmt(s.l, 2) : "?"}</span></button>`).join("");
+  $("lossV").textContent = fmt(STEPS[upto].l, 2); $("gainV").textContent = fmt(STEPS[0].l - STEPS[upto].l, 2);
+  $("sample").textContent = STEPS[upto].s;
+  if (upto === STEPS.length - 1) done("stack");
+}
+$("ladder").addEventListener("click", e => { const b = e.target.closest("button"); if (!b || b.disabled) return; upto = +b.dataset.i; renderLadder(); ptf.event("experienced", { station: "stack", data: { step: upto, loss: STEPS[upto].l } }); });
+
+function simSnapshot() { return `Feed-forward slider ${$("ffSl").value}. Model ladder at step ${upto + 1}/${STEPS.length} (${STEPS[upto].t}, loss ${STEPS[upto].l})`; }
+renderFF(); renderLadder(); initChoices();
+</script>
+</body>
+</html>

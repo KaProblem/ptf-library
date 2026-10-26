@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The whole machine</title>
+<style>
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
+  --accent:#0E6E68; --accent-soft:#D5ECEA; --warn:#C2410C; --warn-soft:#FBE3D6;
+  --f-display:"Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.3rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+header{display:flex;flex-direction:column;gap:12px}
+.levels{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start;background:var(--surface);max-width:100%}
+.levels button{font:600 1rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:10px 16px;min-height:44px;cursor:pointer}
+.levels button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.station{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.station .num{font:600 .8rem var(--f-mono);color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:600 .95rem var(--f-body);min-height:44px;padding:8px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--accent)}
+button.btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-height:44px;min-width:0}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+label{color:var(--muted);font-size:.95rem}
+.note{color:var(--muted);font-size:.95rem}
+.stat{font:600 1.5rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:24px}
+.stats div{display:flex;flex-direction:column}
+.scroll{overflow-x:auto;max-width:100%}
+.out{font:.95rem/1.5 var(--f-mono);white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px}
+.feedback{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:4px}
+.feedback.bad{border-color:var(--warn);background:var(--warn-soft)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices button{text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.choices button.right{border-color:var(--accent);background:var(--accent-soft)}
+.choices button.wrong{border-color:var(--warn);background:var(--warn-soft)}
+.choices button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
+.choices button:disabled{cursor:default}
+table.grid{border-collapse:collapse;font:.85rem var(--f-mono);font-variant-numeric:tabular-nums}
+table.grid th{color:var(--muted);font-weight:600;padding:4px 6px}
+table.grid td{width:46px;height:40px;text-align:center;border:1px solid var(--line);padding:0}
+table.grid td button{width:100%;height:100%;min-height:40px;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.bars{display:flex;flex-direction:column;gap:4px;font:.9rem var(--f-mono)}
+.bar{display:grid;grid-template-columns:5.5em 1fr 4em;gap:8px;align-items:center}
+.bar .fill{height:18px;background:var(--accent);border-radius:3px;min-width:2px}
+.bar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.tok{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:4px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font:1rem var(--f-mono);color:var(--ink);cursor:pointer}
+.tok[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+svg text{font-family:var(--f-mono)}
+details summary{cursor:pointer;font-weight:600;min-height:32px}
+footer{color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+html:not([lang="de"]) i-de,html[lang="de"] i-en{display:none!important}
+i-en,i-de{font-style:inherit}
+.focus-nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;bottom:0;background:var(--bg);padding:10px 0;border-top:1px solid var(--line)}
+.focus-nav #focusAll{margin-left:auto}
+.focus-nav button:disabled{opacity:.4;cursor:default}
+body.focused header > :not(.row){display:none}
+body.focused #focusStart{display:none}
+body.focused footer{display:none}
+
+.stages{display:flex;flex-direction:column;gap:8px}
+.stage{display:flex;align-items:center;gap:10px;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.stage .n{font:600 .85rem var(--f-mono);color:var(--muted);min-width:1.6em}
+.stage.on{border-color:var(--accent);background:var(--accent-soft)}
+.stage.done{opacity:.6}
+.pool{display:flex;flex-wrap:wrap;gap:8px}
+.pool button{font:1rem var(--f-body);min-height:44px;padding:8px 12px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;text-align:left}
+.pool button:disabled{opacity:.35;cursor:default}
+.shape{font:600 .9rem var(--f-mono);color:var(--accent);margin-left:auto;white-space:nowrap}
+.vec{display:inline-grid;grid-template-columns:repeat(8,14px);gap:2px;vertical-align:middle}
+.vec i{width:14px;height:14px;border-radius:2px;display:block}
+.toks{display:flex;flex-wrap:wrap;gap:6px}
+.toks .tok{flex-direction:column;cursor:default;min-width:48px}
+.toks .tok small{font-size:.72rem;color:var(--muted)}
+.win{font:1.15rem/1.7 var(--f-mono);letter-spacing:.06em;word-break:break-all}
+.win .old{color:var(--muted);text-decoration:line-through;opacity:.6}
+.win .ctx{background:var(--accent-soft);border-radius:3px}
+.win .new{color:var(--accent);font-weight:700}
+.parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+.parts .part{display:flex;flex-direction:column;gap:6px;padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.parts .part .row button{min-height:44px}
+.parts .part.right{border-color:var(--accent)}
+.parts .part.wrong{border-color:var(--warn)}
+select{font:1rem var(--f-mono);min-height:44px;padding:6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);max-width:100%}
+.qrow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+@media (max-width:520px){.qrow{grid-template-columns:1fr}.shape{margin-left:0}.stage{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow">How GPT works · The whole picture</span>
+  <h1>The whole machine</h1>
+  <p>You have met every part on its own: tokens, embeddings, attention, blocks, softmax, sampling. Here they come together. Follow one prediction from text to the next character, put the parts in order yourself, and watch the model write within its fixed context window.</p>
+  <div class="levels" role="group" aria-label="Level">
+    <button data-level="1" aria-pressed="true">High school</button><button data-level="2" aria-pressed="false">College</button><button data-level="3" aria-pressed="false">Expert</button>
+  </div>
+</header>
+
+<section class="station" data-station="trace" data-show="1 2 3">
+  <span class="num">Station 1 · Follow the data</span>
+  <h2>One prediction, stage by stage</h2>
+  <p>The model has read "<span class="mono">to be or no</span>" and has to predict the next character. Step through the stages and see what the data looks like at each one.</p>
+  <p><b>Guess first:</b> Which character is the model most likely to predict after "to be or no"?</p>
+  <div class="choices gate" data-gate="trace">
+    <button data-ok data-fb-en="Right, and you used the whole context to get there. The model has to do the same.">"t", as in "not"</button>
+    <button data-fb-en="Possible, but you probably thought of "not".">"e", as in "noe"</button>
+    <button data-fb-en=""no" can end a word, but "to be or not" is far more likely.">A space</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div data-gated="trace" hidden style="display:flex;flex-direction:column;gap:14px">
+  <div class="stages" id="trStages"></div>
+  <div class="out" id="trView" aria-live="polite"></div>
+  <div class="row"><button class="btn ghost" id="trBack">Back</button><button class="btn" id="trNext">Next stage</button></div>
+  <p class="note" data-show="2 3">Shapes for one sequence of T = 11 characters, with C = 32 numbers per vector and a vocabulary of V = 65. In training, B sequences run side by side, so every shape gets a leading B.</p>
+  </div>
+</section>
+
+<section class="station" data-station="order" data-show="1 2 3">
+  <span class="num">Station 2 · Assemble</span>
+  <h2>Put the parts in order</h2>
+  <p>A GPT turns text into the next character. Tap the parts in the order the data flows through them.</p>
+  <div class="pool" id="ordPool" role="group" aria-label="Parts"></div>
+  <div class="stages" id="ordList"></div>
+  <div class="row"><button class="btn ghost" id="ordReset">Start over</button></div>
+  <p class="feedback" id="ordFb" hidden></p>
+</section>
+
+<section class="station" data-station="shapes" data-show="2 3">
+  <span class="num">Station 3 · Shapes</span>
+  <h2>What shape is the tensor?</h2>
+  <p>A training batch has B = 4 sequences of T = 8 characters. Each vector has C = 32 numbers, there are 4 heads of size 8, and the vocabulary has V = 65 characters. Pick the shape at each point.</p>
+  <div id="shQs" style="display:flex;flex-direction:column;gap:10px"></div>
+  <p class="note" id="shNote"></p>
+</section>
+
+<section class="station" data-station="window" data-show="1 2 3">
+  <span class="num">Station 4 · Writing in a window</span>
+  <h2>The context window</h2>
+  <p>Generation repeats the whole pipeline once per character: predict, append, repeat. But the model has only a fixed number of position embeddings, here 8. Everything before the last 8 characters falls out of view. Write a few characters and watch the window slide.</p>
+  <div class="srow" style="display:grid;grid-template-columns:8em 1fr 3em;gap:10px;align-items:center"><label for="wnSize">Context length</label><input type="range" id="wnSize" min="2" max="16" value="8"><span class="mono" id="wnSizeV"></span></div>
+  <div class="win" id="wnText" aria-live="polite"></div>
+  <div class="row"><button class="btn" id="wnNext">Next character</button><button class="btn ghost" id="wnReset">Start over</button></div>
+  <p class="note" id="wnNote"></p>
+</section>
+
+<section class="station" data-station="learned" data-show="1 2 3">
+  <span class="num">Station 5 · What learns?</span>
+  <h2>Learned or fixed?</h2>
+  <p>Training only changes numbers that the model owns: its parameters. Which parts have them, and which are fixed rules that never change? Decide for each part.</p>
+  <div class="parts" id="lnParts"></div>
+  <p class="note" id="lnNote"></p>
+</section>
+
+<section class="station" data-station="check" data-show="1 2 3">
+  <span class="num">Check yourself</span>
+  <h2>Short questions</h2>
+  <p>To write 100 characters, how often does the model run through all its blocks?</p>
+  <div class="choices">
+    <button data-ok data-fb-en="Right. Every new character needs a full pass: the model only ever predicts one next token at a time.">100 times, once per character</button>
+    <button data-mis="generates-all-at-once" data-fb-en="No. A GPT predicts one next token per pass, appends it and runs again. It never plans the whole text in one go.">Once, it writes all 100 at the same time</button>
+    <button data-fb-en="No. The number of blocks is fixed by the model; the number of passes depends on how much text you want.">As often as it has blocks</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <p>The prompt is longer than the context window. What does the model do with the beginning?</p>
+  <div class="choices">
+    <button data-ok data-fb-en="Right. Only the last block_size tokens go in. The rest has no effect on the prediction at all.">Nothing: it is cut off and never seen</button>
+    <button data-mis="model-remembers-everything" data-fb-en="No. A GPT has no memory beyond its context window. What falls out of the window is gone for that prediction.">It keeps a summary of it in memory</button>
+    <button data-fb-en="No, nothing is compressed. The input is simply cropped to the last block_size tokens.">It compresses the beginning into fewer tokens</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div data-show="2 3">
+    <p>Which part turns the final vectors into one score per vocabulary entry?</p>
+    <div class="choices">
+      <button data-ok data-fb-en="Right. The final linear layer (lm_head) maps C numbers to V scores (logits); softmax comes after it.">The final linear layer (lm_head)</button>
+      <button data-fb-en="No. Softmax turns scores into probabilities, but it does not change how many numbers there are: V in, V out.">Softmax</button>
+      <button data-fb-en="No. The token embedding goes the other way: from a token id to a vector of C numbers.">The token embedding table</button>
+    </div>
+    <p class="feedback" hidden></p>
+  </div>
+</section>
+<footer>Simulator "The whole machine" · Personal Tutor Format</footer>
+</div>
+
+<script src="ptf-sim.js"></script>
+<script>
+const SIM_ID = "ptf:sim/gpt-pipeline", SIM_VERSION = "1.1.0";
+const SIM_LOCALES = ["en"];
+const PTF_LEVELS = {"1": "highschool", "2": "college", "3": "expert"};
+/* Shared PTF glue: levels, stations, snapshot (SIMULATOR-SPEC.md §4) */
+function setLevel(l){
+  document.querySelectorAll(".levels button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.level===l));
+  CURRENT_LEVEL=l;
+  if (FOCUS && !stationsAtLevel().includes(FOCUS)) FOCUS = stationsAtLevel()[0] || null;
+  applyVisibility();
+}
+const stationsAtLevel = () => [...document.querySelectorAll("section[data-station]")].filter(s => s.dataset.show.split(" ").includes(CURRENT_LEVEL)).map(s => s.dataset.station);
+/* Focus mode (SIMULATOR-SPEC.md §4.7): one station at a time with Back / Next. */
+let FOCUS = null;
+function applyVisibility() {
+  document.querySelectorAll("[data-show]").forEach(s => {
+    const lvl = s.dataset.show.split(" ").includes(CURRENT_LEVEL);
+    s.hidden = !lvl || (FOCUS !== null && s.matches("section[data-station]") && s.dataset.station !== FOCUS);
+  });
+  document.body.classList.toggle("focused", FOCUS !== null);
+  const nav = document.getElementById("focusNav");
+  if (!nav) return;
+  nav.hidden = FOCUS === null;
+  if (FOCUS === null) return;
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS);
+  document.getElementById("focusBack").disabled = i <= 0;
+  document.getElementById("focusNext").disabled = i >= list.length - 1;
+  document.getElementById("focusPos").textContent = `${i + 1} / ${list.length}`;
+}
+function setFocus(id) { FOCUS = id; applyVisibility(); }
+function moveFocus(step) {
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS), next = list[i + step];
+  if (!next) return;
+  setFocus(next);
+  ptf.event("experienced", { station: next, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: next } });
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+(function buildFocusNav() {
+  const nav = document.createElement("nav");
+  nav.id = "focusNav"; nav.className = "focus-nav"; nav.hidden = true;
+  nav.setAttribute("aria-label", "Stations");
+  nav.innerHTML = `<button class="btn ghost" id="focusBack"><i-en>Back</i-en><i-de>Zurück</i-de></button><span class="mono note" id="focusPos"></span><button class="btn" id="focusNext"><i-en>Next</i-en><i-de>Weiter</i-de></button><button class="btn ghost" id="focusAll"><i-en>Show all</i-en><i-de>Alles zeigen</i-de></button>`;
+  const footer = document.querySelector(".wrap > footer");
+  footer ? footer.before(nav) : document.querySelector(".wrap").append(nav);
+  nav.querySelector("#focusBack").onclick = () => moveFocus(-1);
+  nav.querySelector("#focusNext").onclick = () => moveFocus(1);
+  nav.querySelector("#focusAll").onclick = () => setFocus(null);
+  const start = document.createElement("button");
+  start.id = "focusStart"; start.className = "btn ghost";
+  start.innerHTML = "<i-en>Step by step</i-en><i-de>Schritt für Schritt</i-de>";
+  start.onclick = () => { setFocus(stationsAtLevel()[0]); ptf.event("experienced", { station: FOCUS, data: { focus: FOCUS } }); };
+  const levels = document.querySelector("header .levels");
+  const row = document.createElement("div"); row.className = "row";
+  levels.before(row); row.append(levels, start);
+})();
+let CURRENT_LEVEL="1", LOCALE="en", READY=false;
+/* UI language (en, de): static text as <i-en>/<i-de> pairs, dynamic text via L(en, de). */
+const L = (en, de) => LOCALE === "de" ? de : en;
+const fmt = (x, d = 2) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+/* Each simulator declares SIM_LOCALES (matching "lang" in sim.json); unsupported locales fall back to English. */
+function setLocale(loc) {
+  LOCALE = /^de/i.test(loc || "") && SIM_LOCALES.includes("de") ? "de" : "en";
+  document.documentElement.lang = LOCALE;
+  if (READY && typeof rerender === "function") rerender();
+}
+setLocale(navigator.language);
+const completed=new Set();
+const ptf = PTF.connect({
+  id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS["1"],
+  onInit(ctx) {
+    if (ctx.locale) setLocale(ctx.locale);
+    const lvl = (ctx.state && ctx.state.level) || ctx.level;
+    if (lvl) applyLevel(lvl);
+    if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus === true });
+  },
+  onSetLevel: applyLevel,
+  onGoto: gotoStation,
+  snapshot() {
+    const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `UI language: ${LOCALE}`, `Visible stations: ${shown.join(", ")}`];
+    if (FOCUS) parts.push(`Focus mode on station: ${FOCUS}`);
+    if (completed.size) parts.push(`Completed: ${[...completed].join(", ")}`);
+    if (typeof simSnapshot === "function") parts.push(simSnapshot());
+    return parts.join(". ");
+  }
+});
+function applyLevel(level) {
+  const n = Object.keys(PTF_LEVELS).find(k => PTF_LEVELS[k] === level);
+  if (n) setLevel(n);
+}
+function gotoStation(id, opts) {
+  const s = id ? document.querySelector(`section[data-station="${id}"]`) : null;
+  if (opts && opts.focus === false) setFocus(null);
+  if (!s) return;
+  if (!s.dataset.show.split(" ").includes(CURRENT_LEVEL)) setLevel(s.dataset.show.split(" ")[0]);
+  if (opts && opts.focus === true) { setFocus(id); window.scrollTo({ top: 0, behavior: "auto" }); return; }
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", () => {
+  setLevel(b.dataset.level);
+  const level = PTF_LEVELS[b.dataset.level];
+  ptf.event("level_changed", { level });
+  ptf.saveState({ level });
+}));
+function answered(station, correct, misconception, response) {
+  const result = { correct };
+  if (misconception && !correct) result.misconception = misconception;
+  if (response !== undefined) result.response = String(response);
+  ptf.event("answered", { station, level: PTF_LEVELS[CURRENT_LEVEL], result });
+}
+function done(station) {
+  if (completed.has(station)) return;
+  completed.add(station);
+  ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
+}
+/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb-en / data-fb-de,
+   followed by <p class="feedback" hidden>. A station completes when all its visible boxes are answered correctly. Call initChoices() once the DOM is built. */
+/* Predict, observe, explain (SIMULATOR-SPEC.md §7 rule 5): a .choices.gate box is a prediction. Picking an option only
+   records it and shows the hidden part [data-gated="<its data-gate>"]. The prediction is judged and reported as answered
+   at the learner's first use of a control there (or of one matching its data-judge-on), once the result is in view, and it never completes the station. */
+function initGuess(box) {
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { if (!box.dataset.judged) pickGuess(box, b); }));
+  document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => ["click", "input"].forEach(t =>
+    el.addEventListener(t, e => { if (e.target.closest(el.dataset.judgeOn || "button, input, select")) judgeGuess(box); })));
+}
+function pickGuess(box, b) {
+  box.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  box.dataset.pick = [...box.querySelectorAll("button")].indexOf(b);
+  document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => { el.hidden = false; });
+}
+function judgeGuess(box, restoring) {
+  const b = box.dataset.pick === undefined ? null : box.querySelectorAll("button")[+box.dataset.pick];
+  if (!b || box.dataset.judged) return;
+  box.dataset.judged = "1";
+  const ok = b.hasAttribute("data-ok"), fb = box.nextElementSibling;
+  b.classList.add(ok ? "right" : "wrong");
+  box.querySelectorAll("button").forEach(x => { x.disabled = true; });
+  if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+  if (!restoring) answered(box.closest("[data-station]").dataset.station, ok, b.dataset.mis, (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim());
+  if (typeof onGuess === "function") onGuess(box.dataset.gate, ok);
+}
+function initChoices() {
+document.querySelectorAll("[data-station] .choices").forEach(box => {
+  const sec = box.closest("[data-station]"), station = sec.dataset.station, fb = box.nextElementSibling;
+  if (box.dataset.gate) return initGuess(box);
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    const ok = b.hasAttribute("data-ok");
+    box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
+    b.classList.add(ok ? "right" : "wrong");
+    if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+    answered(station, ok, b.dataset.mis, (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim());
+    if (ok) box.dataset.solved = "1";
+    const graded = [...sec.querySelectorAll(".choices:not(.gate)")].filter(x => !x.closest("[hidden]"));
+    if (graded.length && graded.every(x => x.dataset.solved)) done(station);
+  }));
+});
+}
+setLevel("1");
+
+const $ = id => document.getElementById(id);
+const EXPERT = () => CURRENT_LEVEL !== "1";
+
+/* Station 1: order */
+const STAGES = [
+  { id: "tok", name: "Tokenizer: text → token ids" },
+  { id: "emb", name: "Token + position embeddings" },
+  { id: "blocks", name: "Transformer blocks (attention, feed-forward) × N" },
+  { id: "head", name: "Final layer norm and linear layer → scores" },
+  { id: "softmax", name: "Softmax → probabilities" },
+  { id: "sample", name: "Sample one token, append, repeat" },
+];
+let seed = 11;
+function rng() { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }
+const SHUFFLED = [3, 0, 5, 2, 4, 1].map(i => STAGES[i]);
+let ordPicked = [];
+function renderOrder() {
+  $("ordPool").innerHTML = SHUFFLED.map(s => `<button data-s="${s.id}" ${ordPicked.includes(s.id) ? "disabled" : ""}>${s.name}</button>`).join("");
+  $("ordPool").querySelectorAll("button").forEach(b => b.onclick = () => pickStage(b.dataset.s));
+  $("ordList").innerHTML = ordPicked.map((id, k) => `<div class="stage ${STAGES[k].id === id ? "on" : ""}"><span class="n">${k + 1}</span>${STAGES.find(s => s.id === id).name}</div>`).join("");
+}
+function pickStage(id) {
+  const k = ordPicked.length, ok = STAGES[k].id === id, fb = $("ordFb");
+  fb.hidden = false; fb.classList.toggle("bad", !ok);
+  if (!ok) {
+    const hints = { emb: "Before vectors can be mixed, characters have to become vectors.", blocks: "The blocks work on vectors, so they come after the embeddings.",
+      head: "Scores for the next character only make sense once the blocks have mixed in the context.", softmax: "Softmax needs scores to turn into probabilities.",
+      sample: "Sampling needs probabilities first.", tok: "The tokenizer is the very first step: text has to become numbers." };
+    fb.textContent = "Not yet. " + (hints[STAGES[k].id] || "");
+    answered("order", false, id === "softmax" && k < 3 ? "softmax-before-blocks" : undefined, id);
+    return;
+  }
+  ordPicked.push(id); renderOrder();
+  fb.textContent = ordPicked.length === STAGES.length ? "That is the whole machine. Text goes in, one character comes out, and the loop runs again for the next one." : "Right. What comes next?";
+  if (ordPicked.length === STAGES.length) { answered("order", true); done("order"); }
+}
+$("ordReset").onclick = () => { ordPicked = []; $("ordFb").hidden = true; renderOrder(); };
+
+/* Station 2: trace */
+const PROMPT = "to be or no";
+const VOCAB = "\n !$&',-.3:;?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+const ids = [...PROMPT].map(c => VOCAB.indexOf(c));
+const color = x => `color-mix(in srgb, ${x >= 0 ? "var(--accent)" : "var(--warn)"} ${Math.min(100, Math.abs(x) * 70).toFixed(0)}%, transparent)`;
+const vecHtml = v => `<span class="vec" aria-hidden="true">${v.map(x => `<i style="background:${color(x)}"></i>`).join("")}</span>`;
+seed = 3; const EMB = ids.map(() => Array.from({ length: 8 }, () => rng() * 2 - 1));
+const MIXED = EMB.map((v, t) => v.map((x, k) => .4 * x + .6 * Math.sin(t * .7 + k)));
+const TOP = [["t", .62], [" ", .11], ["n", .07], ["w", .05], ["r", .03]];
+const show = c => c === " " ? "␣" : c === "\n" ? "↵" : c;
+let trAt = 0;
+function trViews() {
+  const T = PROMPT.length;
+  return [
+    { s: "tok", shape: `(${T})`, html: `<div class="toks">${[...PROMPT].map((c, k) => `<span class="tok">${show(c)}<small>${ids[k]}</small></span>`).join("")}</div><p class="note">Every character becomes its number in the vocabulary of 65 characters.</p>` },
+    { s: "emb", shape: `(${T}, 32)`, html: [...PROMPT].map((c, k) => `<div>${show(c)} ${vecHtml(EMB[k])}</div>`).join("") + `<p class="note">Each id is looked up in the token table and gets a vector, plus a second vector for its position (first, second, …). From now on each character is a list of numbers. Shown: 8 of the 32.</p>` },
+    { s: "blocks", shape: `(${T}, 32)`, html: [...PROMPT].map((c, k) => `<div>${show(c)} ${vecHtml(MIXED[k])}</div>`).join("") + `<p class="note">In each block, attention lets every position gather from the positions before it, then the feed-forward layer works on each position alone. The shape stays the same; the content changes. The last vector, for "o", now carries what it learned from "to be or n".</p>` },
+    { s: "head", shape: `(${T}, 65) → last row (65)`, html: TOP.map(([c, p]) => `<div class="bar"><span>${show(c)}</span><div><div class="fill" style="width:${(Math.log(p * 100) / Math.log(62) * 100).toFixed(0)}%"></div></div><span class="v">${fmt(Math.log(p) + 3, 1)}</span></div>`).join("") + `<p class="note">A linear layer turns each vector into 65 scores (logits), one per character. Only the last position matters for the next character. Shown: the five highest scores.</p>` },
+    { s: "softmax", shape: "(65)", html: TOP.map(([c, p]) => `<div class="bar"><span>${show(c)}</span><div><div class="fill" style="width:${(p * 100).toFixed(0)}%"></div></div><span class="v">${fmt(p * 100, 0)} %</span></div>`).join("") + `<p class="note">Softmax turns the scores into probabilities that add up to 100 %. "t" is the favourite: "to be or not".</p>` },
+    { s: "sample", shape: "(1)", html: `<p class="win">to be or no<span class="new">t</span></p><p class="note">A weighted die picks "t" (it could have picked another one). It is appended, and the whole pipeline runs again on "to be or not" for the character after that.</p>` },
+  ];
+}
+function renderTrace() {
+  const v = trViews();
+  $("trStages").innerHTML = STAGES.map((s, k) => `<div class="stage ${k === trAt ? "on" : k < trAt ? "done" : ""}"><span class="n">${k + 1}</span>${s.name}${EXPERT() ? `<span class="shape">${v[k].shape}</span>` : ""}</div>`).join("");
+  $("trView").innerHTML = v[trAt].html;
+  $("trBack").disabled = trAt === 0; $("trNext").disabled = trAt === STAGES.length - 1;
+  if (trAt === STAGES.length - 1) done("trace");
+}
+$("trNext").onclick = () => { trAt = Math.min(STAGES.length - 1, trAt + 1); renderTrace(); ptf.event("experienced", { station: "trace", data: { stage: STAGES[trAt].id } }); };
+$("trBack").onclick = () => { trAt = Math.max(0, trAt - 1); renderTrace(); };
+
+/* Station 3: shapes */
+const SHQ = [
+  { q: "Token ids of the batch (input xb)", a: "(4, 8)", opts: ["(4, 8)", "(4, 8, 32)", "(8, 32)"] },
+  { q: "After token + position embedding", a: "(4, 8, 32)", opts: ["(4, 8)", "(4, 8, 32)", "(4, 32)"] },
+  { q: "Attention weights of one head", a: "(4, 8, 8)", opts: ["(4, 8, 8)", "(4, 8, 32)", "(8, 8)"] },
+  { q: "Output of one head", a: "(4, 8, 8)", opts: ["(4, 8, 32)", "(4, 8, 8)", "(4, 8)"] },
+  { q: "After concatenating all 4 heads", a: "(4, 8, 32)", opts: ["(4, 8, 32)", "(4, 32, 8)", "(16, 8, 8)"] },
+  { q: "Logits after lm_head", a: "(4, 8, 65)", opts: ["(4, 65)", "(4, 8, 65)", "(4, 8, 32)"] },
+];
+const shAns = {};
+function renderShapes() {
+  $("shQs").innerHTML = SHQ.map((s, k) => `<div class="qrow"><label for="sh${k}">${s.q}</label><select id="sh${k}"><option value="">choose…</option>${s.opts.map(o => `<option ${shAns[k] === o ? "selected" : ""}>${o}</option>`).join("")}</select></div>`).join("");
+  SHQ.forEach((s, k) => $("sh" + k).onchange = e => {
+    shAns[k] = e.target.value; const ok = e.target.value === s.a;
+    answered("shapes", ok, !ok && k === 2 ? "attention-weights-shape" : undefined, `${s.q}: ${e.target.value}`);
+    noteShapes();
+  });
+  noteShapes();
+}
+function noteShapes() {
+  const right = SHQ.filter((s, k) => shAns[k] === s.a).length, wrong = SHQ.filter((s, k) => shAns[k] && shAns[k] !== s.a);
+  $("shNote").textContent = wrong.length ? `Check again: ${wrong.map(s => s.q.toLowerCase()).join("; ")}. Hint: attention weights compare every position with every position (T × T); a head outputs head_size numbers per position.` :
+    right === SHQ.length ? "All right. B and T never change inside the model; only the last dimension does: ids → C → per-head sizes → C → V." : `${right} of ${SHQ.length} done.`;
+  if (right === SHQ.length) done("shapes");
+}
+
+/* Station 4: window */
+const CONT = "to be or not to be, that is the question";
+let wnLen = 11;
+function renderWindow() {
+  const T = +$("wnSize").value; $("wnSizeV").textContent = T;
+  const text = CONT.slice(0, wnLen), start = Math.max(0, text.length - T);
+  $("wnText").innerHTML = `<span class="old">${text.slice(0, start).replace(/ /g, "␣")}</span><span class="ctx">${text.slice(start, -1).replace(/ /g, "␣")}</span><span class="ctx new">${show(text.at(-1))}</span>`;
+  $("wnNote").textContent = start === 0 ? `The whole text still fits into the window of ${T}.` :
+    `The model sees only "${text.slice(start)}". The first ${start} character${start > 1 ? "s" : ""} no longer exist for it.` + (wnLen >= 30 ? " A real GPT has a much longer window (thousands of tokens), but the rule is the same." : "");
+  if (wnLen >= 20 && start > 0) done("window");
+}
+$("wnNext").onclick = () => { if (wnLen < CONT.length) wnLen++; renderWindow(); ptf.event("experienced", { station: "window", data: { length: wnLen, context: +$("wnSize").value } }); };
+$("wnReset").onclick = () => { wnLen = 11; renderWindow(); };
+$("wnSize").oninput = renderWindow;
+
+/* Station 5: learned or fixed */
+const PARTS = [
+  { id: "tokenizer", name: "Tokenizer (character → id)", learned: false, why: "A fixed lookup, decided before training." },
+  { id: "tok-emb", name: "Token embedding table", learned: true, why: "One learned vector per token." },
+  { id: "pos-emb", name: "Position embedding table", learned: true, why: "One learned vector per position." },
+  { id: "qkv", name: "Query, key and value layers", learned: true, why: "Learned matrices: what to look for, what to offer, what to pass on." },
+  { id: "mask", name: "Causal mask", learned: false, why: "A fixed rule: no peeking at the future." },
+  { id: "ffwd", name: "Feed-forward layers", learned: true, why: "Learned matrices; most of the parameters live here." },
+  { id: "ln", name: "Layer norm", learned: true, why: "The normalising is a rule, but each layer norm has a learned scale and shift." },
+  { id: "softmax", name: "Softmax", learned: false, why: "A fixed formula." },
+  { id: "sampling", name: "Sampling", learned: false, why: "A weighted die; temperature is a setting you choose, not learned." },
+];
+const lnAns = {};
+function renderParts() {
+  $("lnParts").innerHTML = PARTS.map(p => {
+    const a = lnAns[p.id], cls = a === undefined ? "" : a === p.learned ? "right" : "wrong";
+    return `<div class="part ${cls}"><b>${p.name}</b><div class="row"><button class="btn ghost" data-p="${p.id}" data-v="1" aria-pressed="${a === true}">Learned</button><button class="btn ghost" data-p="${p.id}" data-v="0" aria-pressed="${a === false}">Fixed</button></div>${a !== undefined ? `<span class="note">${a === p.learned ? "Right." : "Not quite."} ${p.why}</span>` : ""}</div>`;
+  }).join("");
+  $("lnParts").querySelectorAll("button").forEach(b => b.onclick = () => {
+    const p = PARTS.find(x => x.id === b.dataset.p), v = b.dataset.v === "1"; lnAns[p.id] = v;
+    answered("learned", v === p.learned, v !== p.learned && p.id === "mask" ? "mask-is-learned" : undefined, `${p.id}: ${v ? "learned" : "fixed"}`);
+    renderParts();
+  });
+  const right = PARTS.filter(p => lnAns[p.id] === p.learned).length;
+  $("lnNote").textContent = right === PARTS.length ? "All right. Training changes only the tables and matrices. Tokenizer, mask, softmax and sampling are rules that stay the same." : `${right} of ${PARTS.length} right.`;
+  if (right === PARTS.length) done("learned");
+}
+
+function simSnapshot() {
+  return `Order picked: ${ordPicked.join(" > ") || "none"}. Trace at stage ${STAGES[trAt].id}. Shapes answered: ${Object.keys(shAns).length}/${SHQ.length}. Window: ${wnLen} characters, context ${$("wnSize").value}. Learned/fixed answered: ${Object.keys(lnAns).length}/${PARTS.length}`;
+}
+function rerender() { renderOrder(); renderTrace(); renderShapes(); renderWindow(); renderParts(); }
+rerender(); initChoices(); READY = true;
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", renderTrace));
+</script>
+</body>
+</html>
