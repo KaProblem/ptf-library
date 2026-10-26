@@ -16,12 +16,12 @@ leads_to:
   - ptf:el/gravity/curved-spacetime
 duration_min: { child: 10, highschool: 20, college: 20, expert: 15 }
 simulators:
-  - ref: ptf:sim/newton-einstein@^1.0.0
+  - ref: ptf:sim/newton-einstein@^1.1.0
     station: cannon
     levels: [child, highschool, college, expert]
     role: explore
     note: Fire at 4 km/s first, then let the learner find the speed that never lands; ask what this says about astronauts.
-  - ref: ptf:sim/newton-einstein@^1.0.0
+  - ref: ptf:sim/newton-einstein@^1.1.0
     station: moon
     levels: [highschool, college, expert]
     role: explore
@@ -35,7 +35,7 @@ sources:
     title: "The Feynman Lectures on Physics, Vol. I, ch. 7: The Theory of Gravitation"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.1
+version: 0.1.2
 license: CC-BY-SA-4.0
 ---
 

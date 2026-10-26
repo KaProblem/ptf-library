@@ -13,6 +13,7 @@
 - CI pins every tool: ptf-spec by commit (`PTF_SPEC_REF`), GitHub Actions by commit SHA, the runner image, Node, Python, Playwright and PyTorch by exact version.
 
 ### Added
+- Simulators `falling-tower`, `inclined-plane` and `newton-einstein` 1.1.0: predict before you try (every experiment stays locked until a prediction is picked, and the prediction is judged and reported as `answered` only after the result), start at station 1 with a progress row for direct go-to, an illustrated leaning tower and Earth, canvas colours resolved through the browser so host theme tokens no longer turn drawings black, canvases no longer stretched on wide screens. Bundle `gravity` 0.1.2 uses them.
 - Wikidata subject anchors (`about`, ptf-spec SPEC.md §6.6) for 16 of 17 learning elements, looked up and verified against Wikidata (`causal-mask` has no matching item). `llm-basics` 0.3.1, `gravity` 0.1.1, element patch versions bumped. CI verifies all IDs with `ptf-wikidata verify`.
 - CONTRIBUTING.md and pull request template: contributors are responsible for their content and its legal compliance, license contributions under the repository's licenses, and confirm a contributor statement in every PR.
 - Bundle `gravity` 0.1.0: learning elements free fall, air resistance, inclined plane, rolling, universal gravitation and curved spacetime (all four levels where it fits, misconceptions, 37 question blocks, `# Further reading`); learning path `pisa-to-einstein`; lockfile.
