@@ -89,7 +89,7 @@
     "human:stefan",
     "claude/opus"
   ],
-  "derived_from": null,
+  "derived_from": "ptf:sim/inclined-plane@1.0.0",
   "changelog": "Predict first: experiment controls stay locked until the learner has chosen a prediction, which is judged only after the result is shown. Starts in focus mode with a progress row for direct go-to. Theme colours resolved for canvas, so host tokens such as light-dark() no longer turn drawings black.",
   "integrity": "sha256-2FeRbJHiKUiFF1avdvvpQQ3poH+YJTFIYqHYsaf+JKE="
 }
