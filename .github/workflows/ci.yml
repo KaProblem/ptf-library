@@ -26,3 +26,14 @@ jobs:
           npm install --no-save --prefix .ptf-spec playwright
           npx --prefix .ptf-spec playwright install --with-deps chromium
           node .ptf-spec/tools/ptf-selftest.mjs sims/*/*/
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Code lab smoke tests
+        run: |
+          if [ ! -f .ptf-spec/tools/ptf-codetest.mjs ]; then
+            echo "::warning::ptf-spec main has no ptf-codetest.mjs yet (added in KaProblem/ptf-spec#3); skipping code lab smoke tests"
+            exit 0
+          fi
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.1"
+          node .ptf-spec/tools/ptf-codetest.mjs code/*/*/

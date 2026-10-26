@@ -8,6 +8,7 @@ lang: en
 levels: [child, highschool, college]
 tags: [llm, tokenizer, vocabulary]
 leads_to:
+  - ptf:el/llm-basics/training-examples
   - ptf:el/llm-basics/softmax
 duration_min: { child: 5, highschool: 10, college: 15 }
 simulators:
@@ -20,13 +21,18 @@ simulators:
     station: tokenizer
     levels: [highschool, college]
     role: explore
+code:
+  - ref: ptf:code/gpt-from-scratch@^1.0.0
+    step: tokenizer
+    levels: [college, expert]
+    note: Run it on the learner's own text and compare vocabulary sizes.
 sources:
   - id: karpathy-gpt
     resource: https://www.youtube.com/watch?v=kCc8FmEb1nY
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.1.0
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
 
@@ -161,6 +167,12 @@ in tokens limits how much text fits into the context window.
   "explanation": "IDs index rows in a table. All structure the model uses is learned from data."
 }
 ```
+
+# Further reading
+
+Optional deep dive after the lesson; the element does not depend on it.
+
+- [Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY&t=0s): Andrej Karpathy introduces next-token prediction, the Tiny Shakespeare dataset and character-level vs. sub-word tokenizers (video, 0:00–0:13; highschool, college).
 
 # Sources
 
