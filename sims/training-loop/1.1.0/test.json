@@ -6,10 +6,15 @@
       }
     },
     {
-      "expectText": "Look up a row"
+      "expectStations": [
+        "lookup"
+      ]
     },
     {
-      "click": "[data-gate='lookup'] button[data-ok]"
+      "click": "#focusAll"
+    },
+    {
+      "expectText": "Look up a row"
     },
     {
       "click": "#lkTokens button[data-i='2']"
@@ -31,12 +36,6 @@
     },
     {
       "expectText": "the right answer went up"
-    },
-    {
-      "click": "[data-gate='train'] button[data-ok]"
-    },
-    {
-      "expectText": "Try all three"
     },
     {
       "click": "#tr100"
@@ -72,16 +71,68 @@
       "click": "#focusStart"
     },
     {
+      "expectStations": [
+        "lookup"
+      ]
+    },
+    {
       "click": "#focusNext"
+    },
+    {
+      "expectStations": [
+        "nudge"
+      ]
     },
     {
       "expectText": "Nudge the numbers"
     },
     {
-      "goto": "check"
+      "goto": {
+        "station": "check",
+        "focus": true
+      }
     },
     {
-      "snapshot": true
+      "expectStations": [
+        "check"
+      ]
+    },
+    {
+      "click": "[data-station='check'] .choices button[data-mis='training-stores-text']"
+    },
+    {
+      "expectEvent": {
+        "verb": "answered",
+        "station": "check"
+      }
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "Training: 10 steps at learning rate 40",
+          "Nudge example",
+          "after 2 steps",
+          "Quiz: question 1 wrong"
+        ]
+      }
+    },
+    {
+      "click": "#focusBack"
+    },
+    {
+      "reload": true
+    },
+    {
+      "expectStations": [
+        "generate"
+      ]
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "Training: 10 steps at learning rate 40"
+        ]
+      }
     },
     {
       "expectNoError": true

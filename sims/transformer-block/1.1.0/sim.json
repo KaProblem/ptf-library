@@ -75,6 +75,6 @@
     "claude/opus"
   ],
   "derived_from": "ptf:sim/transformer-block@1.0.0",
-  "changelog": "Station stack asks which change lowers the loss most before the ladder is shown (PEDAGOGY.md: predict, then reveal).",
-  "integrity": "sha256-9cBLgn9HFsa8jCpccwgaT+e8ldmQ/6Bt1dCgz0vPGuw="
+  "changelog": "Station stack asks which change lowers the loss most before the ladder is shown (PEDAGOGY.md: predict, then reveal). The guess is only recorded when picked and judged at the first use of the revealed controls (SIMULATOR-SPEC §7 rule 5).",
+  "integrity": "sha256-TsFcpqrkxoHHzP+Jsu48NzRmAHTq0zC9qaoyJiYSUhM="
 }

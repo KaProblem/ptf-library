@@ -1,0 +1,115 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/newton-einstein",
+  "version": "1.1.0",
+  "title": "Newton and Einstein",
+  "description": "Newton's cannon and the Moon test, a 3D picture of curved space, satellite clocks that run fast, and Mercury's turning orbit.",
+  "lang": [
+    "en",
+    "de"
+  ],
+  "concepts": [
+    "universal-gravitation",
+    "inverse-square-law",
+    "orbit",
+    "free-fall",
+    "weightlessness",
+    "general-relativity",
+    "spacetime-curvature",
+    "gravitational-time-dilation",
+    "gps",
+    "perihelion-precession"
+  ],
+  "levels": [
+    "child",
+    "highschool",
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "cannon",
+      "title": "The cannon on the mountain (orbit = falling around)",
+      "levels": [
+        "child",
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "moon",
+      "title": "The apple and the Moon (inverse square)",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "spacetime",
+      "title": "Mass bends space (3D picture and its limits)",
+      "levels": [
+        "child",
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "clocks",
+      "title": "Clocks up high run fast (GPS)",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "mercury",
+      "title": "Mercury's turning ellipse",
+      "levels": [
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "check",
+      "title": "Two short questions",
+      "levels": [
+        "child",
+        "highschool",
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "entry": "index.html",
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "events": [
+    "answered",
+    "experienced",
+    "station_completed",
+    "level_changed"
+  ],
+  "capabilities": [],
+  "vendor": [
+    {
+      "build": "three-core@0.170.0",
+      "path": "vendor/three-core-0.170.0.min.js",
+      "sha256": "b3c33d2ad2dc57c8351586787203b58c9401cd80bd0a0bce715f05fbcd972a2b",
+      "license": "MIT"
+    }
+  ],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "derived_from": "ptf:sim/newton-einstein@1.0.0",
+  "changelog": "Predict first: experiment controls stay locked until the learner has chosen a prediction, which is judged only after the result is shown. Starts in focus mode with a progress row for direct go-to. Theme colours resolved for canvas, so host tokens such as light-dark() no longer turn drawings black.",
+  "integrity": "sha256-uODvkoRaK+4JxniziesYBJ9VWRPXegDf89b6V3zNeqU="
+}

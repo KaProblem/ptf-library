@@ -42,10 +42,10 @@
       "click": "[data-gate='trace'] button[data-ok]"
     },
     {
-      "expectText": "you used the whole context"
+      "click": "#trNext"
     },
     {
-      "click": "#trNext"
+      "expectText": "you used the whole context"
     },
     {
       "click": "#trNext"

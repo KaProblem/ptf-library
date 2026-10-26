@@ -7,6 +7,11 @@ description: One chunk of text holds many training examples at once; the context
 lang: en
 levels: [highschool, college, expert]
 tags: [llm, training, context-window, block-size, batch]
+about:
+  - wikidata: Q125619872
+    label: context window
+  - wikidata: Q7617819
+    label: stochastic gradient descent
 requires:
   - ptf:el/llm-basics/tokenizer
 leads_to:
@@ -28,7 +33,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.2.0
+version: 0.2.1
 license: CC-BY-SA-4.0
 ---
 

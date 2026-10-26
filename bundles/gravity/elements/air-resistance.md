@@ -7,18 +7,23 @@ description: Air pushes back harder the faster an object moves; a falling object
 lang: en
 levels: [highschool, college, expert]
 tags: [physics, mechanics, drag, terminal-velocity, numerical-integration]
+about:
+  - wikidata: Q206621
+    label: drag
+  - wikidata: Q614981
+    label: terminal velocity
 requires:
   - ptf:el/gravity/free-fall
 leads_to:
   - ptf:el/gravity/universal-gravitation
 duration_min: { highschool: 15, college: 20, expert: 15 }
 simulators:
-  - ref: ptf:sim/falling-tower@^1.0.0
+  - ref: ptf:sim/falling-tower@^1.1.0
     station: drag
     levels: [highschool, college, expert]
     role: explore
     note: Start with the flat and the crumpled sheet of paper (same mass); ask which lands first before dropping.
-  - ref: ptf:sim/falling-tower@^1.0.0
+  - ref: ptf:sim/falling-tower@^1.1.0
     station: model
     levels: [college, expert]
     role: practice
@@ -32,7 +37,7 @@ sources:
     title: "The Feynman Lectures on Physics, Vol. I, ch. 9: Newton's Laws of Dynamics"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.0
+version: 0.1.2
 license: CC-BY-SA-4.0
 ---
 

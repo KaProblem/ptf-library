@@ -87,6 +87,6 @@
     "claude/opus"
   ],
   "derived_from": "ptf:sim/training-loop@1.0.0",
-  "changelog": "Stations lookup and train ask for a guess first (untrained probability; which learning rate is fastest) (PEDAGOGY.md: predict, then reveal).",
-  "integrity": "sha256-VNFlatwfujvqChpMTdNfiklG91Pl9/aoZafIO2u6LRE="
+  "changelog": "Resume: the full experiment (looked-up rows, nudged example and learning rate, training steps and learning rate, generated text, quiz answers, completed stations, focus) is saved via ptf/state and restored on reload; training is replayed from the step count. Starts in focus mode at the first station; the snapshot reports the nudge result and quiz answers.",
+  "integrity": "sha256-D90ntklKs4AV2vOP08+SRtDyG7+xe/s5DEbXE9psXX8="
 }

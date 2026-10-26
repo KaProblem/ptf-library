@@ -93,6 +93,6 @@
     "claude/opus"
   ],
   "derived_from": "ptf:sim/attention-lab@1.0.0",
-  "changelog": "Station scaling asks what happens to softmax without scaling before showing it (PEDAGOGY.md: predict, then reveal).",
-  "integrity": "sha256-CBLUf/gt28UP/xV6d1Z7Rz2utJ3TbTZybP4M6oBmpNM="
+  "changelog": "Station scaling asks what happens to softmax without scaling before showing it (PEDAGOGY.md: predict, then reveal). The guess is only recorded when picked and judged at the first use of the revealed controls (SIMULATOR-SPEC §7 rule 5).",
+  "integrity": "sha256-zoWZEbu6uNRuwlwXbyN041Wu3T++7p4cWQFoSnr/Azk="
 }

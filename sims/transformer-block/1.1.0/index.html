@@ -56,6 +56,8 @@ label{color:var(--muted);font-size:.95rem}
 .choices button{text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
 .choices button.right{border-color:var(--accent);background:var(--accent-soft)}
 .choices button.wrong{border-color:var(--warn);background:var(--warn-soft)}
+.choices button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
+.choices button:disabled{cursor:default}
 table.grid{border-collapse:collapse;font:.85rem var(--f-mono);font-variant-numeric:tabular-nums}
 table.grid th{color:var(--muted);font-weight:600;padding:4px 6px}
 table.grid td{width:46px;height:40px;text-align:center;border:1px solid var(--line);padding:0}
@@ -145,8 +147,8 @@ table.ff tr.changed td{background:var(--warn-soft)}
   <p>A small model learns to write text in the style of Shakespeare (about 1 million characters of training text). The loss measures how surprised it is by real text: lower is better. Add the components in this order.</p>
   <p><b>Guess first:</b> Which change will lower the loss the most?</p>
   <div class="choices gate" data-gate="stack">
-    <button data-mis="one-head-is-enough" data-fb-en="It helps (2.40 → 2.28), but it is not the biggest step. Build the ladder and compare.">Several heads instead of one</button>
-    <button data-fb-en="Layer norm helps only a little here (2.08 → 2.06). Build the ladder and compare.">Adding layer norm</button>
+    <button data-mis="one-head-is-enough" data-fb-en="It helps (2.40 → 2.28), but it is not the biggest step.">Several heads instead of one</button>
+    <button data-fb-en="Layer norm helps only a little here (2.08 → 2.06).">Adding layer norm</button>
     <button data-ok data-fb-en="Right: 2.06 → 1.48, by far the biggest jump. But scaling only works because residuals and layer norm make the deep model trainable.">Scaling the model up</button>
   </div>
   <p class="feedback" hidden></p>
@@ -306,21 +308,41 @@ function done(station) {
 }
 /* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb-en / data-fb-de,
    followed by <p class="feedback" hidden>. A station completes when all its visible boxes are answered correctly. Call initChoices() once the DOM is built. */
+/* Predict, observe, explain (SIMULATOR-SPEC.md §7 rule 5): a .choices.gate box is a prediction. Picking an option only
+   records it and shows the hidden part [data-gated="<its data-gate>"]. The prediction is judged and reported as answered
+   at the learner's first use of a control there (or of one matching its data-judge-on), once the result is in view, and it never completes the station. */
+function initGuess(box) {
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { if (!box.dataset.judged) pickGuess(box, b); }));
+  document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => ["click", "input"].forEach(t =>
+    el.addEventListener(t, e => { if (e.target.closest(el.dataset.judgeOn || "button, input, select")) judgeGuess(box); })));
+}
+function pickGuess(box, b) {
+  box.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  box.dataset.pick = [...box.querySelectorAll("button")].indexOf(b);
+  document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => { el.hidden = false; });
+}
+function judgeGuess(box, restoring) {
+  const b = box.dataset.pick === undefined ? null : box.querySelectorAll("button")[+box.dataset.pick];
+  if (!b || box.dataset.judged) return;
+  box.dataset.judged = "1";
+  const ok = b.hasAttribute("data-ok"), fb = box.nextElementSibling;
+  b.classList.add(ok ? "right" : "wrong");
+  box.querySelectorAll("button").forEach(x => { x.disabled = true; });
+  if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+  if (!restoring) answered(box.closest("[data-station]").dataset.station, ok, b.dataset.mis, (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim());
+  if (typeof onGuess === "function") onGuess(box.dataset.gate, ok);
+}
 function initChoices() {
 document.querySelectorAll("[data-station] .choices").forEach(box => {
   const sec = box.closest("[data-station]"), station = sec.dataset.station, fb = box.nextElementSibling;
+  if (box.dataset.gate) return initGuess(box);
   box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
     const ok = b.hasAttribute("data-ok");
-    if (box.dataset.gate && box.dataset.answered) return;
-    box.dataset.answered = "1";
     box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
     b.classList.add(ok ? "right" : "wrong");
     if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
     answered(station, ok, b.dataset.mis, (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim());
     if (ok) box.dataset.solved = "1";
-    /* Predict, then reveal (PEDAGOGY.md §5): a .choices.gate box unhides [data-gated="<its data-gate>"] after any answer and never completes the station. */
-    if (box.dataset.gate) document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => { el.hidden = false; });
-    if (typeof onGuess === "function" && box.dataset.gate) onGuess(box.dataset.gate, ok);
     const graded = [...sec.querySelectorAll(".choices:not(.gate)")].filter(x => !x.closest("[hidden]"));
     if (graded.length && graded.every(x => x.dataset.solved)) done(station);
   }));

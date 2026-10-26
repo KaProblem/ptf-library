@@ -108,21 +108,12 @@ pre.code{font:.85rem/1.5 var(--f-mono);background:var(--bg);border:1px solid var
 <section class="station" data-station="lookup" data-show="1 2 3">
   <span class="num">Station 1 · The model is a table</span>
   <h2>Look up a row</h2>
-  <p>The text uses five characters (␣ is the space). Tap a character: the model looks up its row of scores, and softmax turns the scores into probabilities for the next character. The table has not been trained yet.</p>
-  <p><b>Guess first:</b> In the text, "b" is always followed by "a". What probability does the untrained table give "a" after "b"?</p>
-  <div class="choices gate" data-gate="lookup">
-    <button data-mis="training-stores-text" data-fb-en="Not yet: the model has not learned anything from the text so far. Look it up below.">100 %</button>
-    <button data-ok data-fb-en="Right: with all scores at 0, softmax shares equally among the five characters. Look it up below.">20 %, like every other character</button>
-    <button data-fb-en="No. Softmax never gives exactly 0; with all scores equal, every character gets the same share.">0 %</button>
-  </div>
-  <p class="feedback" hidden></p>
-  <div data-gated="lookup" hidden style="display:flex;flex-direction:column;gap:14px">
+  <p>The text uses five characters (␣ is the space). Tap a character: the model looks up its row of scores, and softmax turns the scores into probabilities for the next character. The table has not been trained yet. What do you expect?</p>
   <div class="row" id="lkTokens" role="group" aria-label="Current character"></div>
   <div class="bars" id="lkScores"></div>
   <div class="bars" id="lkProbs"></div>
   <p class="note" id="lkNote"></p>
   <p class="note" data-show="2 3">In code this table is <span class="mono">nn.Embedding(vocab_size, vocab_size)</span>: looking up row i is the same as multiplying a one-hot vector by the table.</p>
-  </div>
 </section>
 
 <section class="station" data-station="nudge" data-show="1 2 3">
@@ -142,14 +133,6 @@ pre.code{font:.85rem/1.5 var(--f-mono);background:var(--bg);border:1px solid var
   <span class="num">Station 3 · Many steps</span>
   <h2>The training loop</h2>
   <p>Now all 23 examples of the text at once: compute the average loss, nudge every row, repeat. Choose a step size (learning rate) and train. The dashed line is the best any bigram table can reach on this text.</p>
-  <p><b>Guess first:</b> You will try step sizes 0.1, 5 and 40. Which one reaches a low loss fastest?</p>
-  <div class="choices gate" data-gate="train">
-    <button data-mis="bigger-lr-faster" data-fb-en="Try it: huge steps overshoot, and the loss jumps around instead of settling.">40: the biggest steps</button>
-    <button data-ok data-fb-en="Right. Try all three and watch the curve.">5: medium steps</button>
-    <button data-fb-en="Small steps are safe but slow. Try all three and watch the curve.">0.1: small and careful</button>
-  </div>
-  <p class="feedback" hidden></p>
-  <div data-gated="train" hidden style="display:flex;flex-direction:column;gap:14px">
   <div class="row" role="group" aria-label="Learning rate">
     <button class="btn ghost" data-lr="0.1" aria-pressed="false">Tiny steps (0.1)</button><button class="btn ghost" data-lr="5" aria-pressed="true">Good steps (5)</button><button class="btn ghost" data-lr="40" aria-pressed="false">Huge steps (40)</button>
   </div>
@@ -167,7 +150,6 @@ pre.code{font:.85rem/1.5 var(--f-mono);background:var(--bg);border:1px solid var
     optimizer.zero_grad(set_to_none=True)
     loss.backward()                     # 2. which direction lowers the loss?
     optimizer.step()                    # 3. move every number a little</pre>
-  </div>
 </section>
 
 <section class="station" data-station="generate" data-show="1 2 3">
@@ -222,6 +204,7 @@ function setLevel(l){
   CURRENT_LEVEL=l;
   if (FOCUS && !stationsAtLevel().includes(FOCUS)) FOCUS = stationsAtLevel()[0] || null;
   applyVisibility();
+  persist();
 }
 const stationsAtLevel = () => [...document.querySelectorAll("section[data-station]")].filter(s => s.dataset.show.split(" ").includes(CURRENT_LEVEL)).map(s => s.dataset.station);
 /* Focus mode (SIMULATOR-SPEC.md §4.7): one station at a time with Back / Next. */
@@ -241,7 +224,7 @@ function applyVisibility() {
   document.getElementById("focusNext").disabled = i >= list.length - 1;
   document.getElementById("focusPos").textContent = `${i + 1} / ${list.length}`;
 }
-function setFocus(id) { FOCUS = id; applyVisibility(); }
+function setFocus(id) { FOCUS = id; applyVisibility(); persist(); }
 function moveFocus(step) {
   const list = stationsAtLevel(), i = list.indexOf(FOCUS), next = list[i + step];
   if (!next) return;
@@ -285,7 +268,9 @@ const ptf = PTF.connect({
     if (ctx.locale) setLocale(ctx.locale);
     const lvl = (ctx.state && ctx.state.level) || ctx.level;
     if (lvl) applyLevel(lvl);
-    if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus === true });
+    restore(ctx.state);
+    if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus !== false });
+    RESTORED = true;
   },
   onSetLevel: applyLevel,
   onGoto: gotoStation,
@@ -315,7 +300,6 @@ document.querySelectorAll(".levels button").forEach(b => b.addEventListener("cli
   setLevel(b.dataset.level);
   const level = PTF_LEVELS[b.dataset.level];
   ptf.event("level_changed", { level });
-  ptf.saveState({ level });
 }));
 function answered(station, correct, misconception, response) {
   const result = { correct };
@@ -330,23 +314,22 @@ function done(station) {
 }
 /* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb-en / data-fb-de,
    followed by <p class="feedback" hidden>. A station completes when all its visible boxes are answered correctly. Call initChoices() once the DOM is built. */
+function markChoice(box, b) {
+  const ok = b.hasAttribute("data-ok"), fb = box.nextElementSibling;
+  box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
+  b.classList.add(ok ? "right" : "wrong");
+  if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+  box.dataset.choice = [...box.querySelectorAll("button")].indexOf(b);
+  if (ok) box.dataset.solved = "1"; else delete box.dataset.solved;
+  return ok;
+}
 function initChoices() {
 document.querySelectorAll("[data-station] .choices").forEach(box => {
   const sec = box.closest("[data-station]"), station = sec.dataset.station, fb = box.nextElementSibling;
   box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
-    const ok = b.hasAttribute("data-ok");
-    if (box.dataset.gate && box.dataset.answered) return;
-    box.dataset.answered = "1";
-    box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
-    b.classList.add(ok ? "right" : "wrong");
-    if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+    const ok = markChoice(box, b);
     answered(station, ok, b.dataset.mis, (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim());
-    if (ok) box.dataset.solved = "1";
-    /* Predict, then reveal (PEDAGOGY.md §5): a .choices.gate box unhides [data-gated="<its data-gate>"] after any answer and never completes the station. */
-    if (box.dataset.gate) document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => { el.hidden = false; });
-    if (typeof onGuess === "function" && box.dataset.gate) onGuess(box.dataset.gate, ok);
-    const graded = [...sec.querySelectorAll(".choices:not(.gate)")].filter(x => !x.closest("[hidden]"));
-    if (graded.length && graded.every(x => x.dataset.solved)) done(station);
+    if ([...sec.querySelectorAll(".choices")].filter(x => !x.closest("[hidden]")).every(x => x.dataset.solved)) done(station);
   }));
 });
 }
@@ -410,13 +393,16 @@ $("ndLr").oninput = renderNudge;
 
 /* Station 3: full training */
 let trW = zeros(), trHist = [lossOf(trW)], trLr = 5;
-function trainSteps(n) {
+function trainRaw(n) {
   for (let s = 0; s < n; s++) {
     const G = zeros();
     PAIRS.forEach(([i, j]) => softmax(trW[i]).forEach((pk, k) => G[i][k] += (pk - (k === j ? 1 : 0)) / PAIRS.length));
     for (let i = 0; i < N; i++) for (let k = 0; k < N; k++) trW[i][k] -= trLr * G[i][k];
     trHist.push(lossOf(trW));
   }
+}
+function trainSteps(n) {
+  trainRaw(n);
   renderTrain(); renderGen();
   ptf.event("experienced", { station: "train", data: { steps: trHist.length - 1, lr: trLr, loss: +trHist.at(-1).toFixed(3) } });
 }
@@ -474,10 +460,56 @@ $("gnUntrained").onclick = () => { gnTrained = false; renderGen(); };
 $("gnTrained").onclick = () => { gnTrained = true; renderGen(); };
 
 function simSnapshot() {
-  return `Lookup row: ${lkRow === null ? "none" : show(V[lkRow])}. Nudge example ${NDP[ndPair]} after ${ndSteps} steps. Training: ${trHist.length - 1} steps at learning rate ${trLr}, loss ${trHist.at(-1).toFixed(3)} (best possible ${FLOOR.toFixed(3)}). Generated (${gnTrained ? "trained" : "untrained"}): "${gnText}"`;
+  const quiz = [...document.querySelectorAll("[data-station] .choices")].filter(b => b.dataset.choice !== undefined && !b.closest("div[data-show][hidden]"))
+    .map((b, k) => `question ${k + 1} ${b.dataset.solved ? "right" : "wrong"}`);
+  return (quiz.length ? `Quiz: ${quiz.join(", ")}. ` : "") + `Lookup row: ${lkRow === null ? "none" : show(V[lkRow])}. Nudge example ${NDP[ndPair]} at learning rate ${LRS[+$("ndLr").value]} after ${ndSteps} steps, right answer ${(softmax(ndW[NDP[ndPair].split(",")[0]])[+NDP[ndPair].split(",")[1]] * 100).toFixed(0)} %. Training: ${trHist.length - 1} steps at learning rate ${trLr}, loss ${trHist.at(-1).toFixed(3)} (best possible ${FLOOR.toFixed(3)}). Generated (${gnTrained ? "trained" : "untrained"}): "${gnText}"`;
 }
 function rerender() { renderLookup(); renderNudge(); renderTrain(); renderGen(); }
+
+/* Resume state (ptf/state): the whole experiment, so a reload continues where the learner stopped.
+   Training is deterministic, so the state keeps the number of steps and replays them instead of storing the table. */
+var RESTORED = false;   /* var: hoisted, setLevel runs before this line */
+function persist() {
+  if (!RESTORED) return;
+  const quiz = [...document.querySelectorAll("[data-station] .choices")].map(b => b.dataset.choice === undefined ? null : +b.dataset.choice);
+  ptf.saveState({ level: PTF_LEVELS[CURRENT_LEVEL], focus: FOCUS, completed: [...completed], lookup: { row: lkRow, seen: [...lkSeen] },
+    nudge: { pair: ndPair, lr: +$("ndLr").value, W: ndW, steps: ndSteps, last: ndLast },
+    train: { lr: trLr, steps: trHist.length - 1 }, gen: { trained: gnTrained, text: gnText, seed, count: gnCount }, quiz });
+}
+let persistTimer = null;
+["click", "input", "change"].forEach(t => document.addEventListener(t, () => { clearTimeout(persistTimer); persistTimer = setTimeout(persist, 50); }));
+function restore(st) {
+  if (!st || typeof st !== "object") return;
+  const num = x => Number.isFinite(x), mat = W => Array.isArray(W) && W.length === N && W.every(r => Array.isArray(r) && r.length === N && r.every(num));
+  if (st.lookup) { if (num(st.lookup.row) && st.lookup.row >= 0 && st.lookup.row < N) lkRow = st.lookup.row; (st.lookup.seen || []).filter(num).forEach(i => lkSeen.add(i)); }
+  if (st.nudge) {
+    if (num(st.nudge.pair) && NDP[st.nudge.pair]) { ndPair = st.nudge.pair; $("ndPair").value = ndPair; }
+    if (num(st.nudge.lr) && LRS[st.nudge.lr] !== undefined) $("ndLr").value = st.nudge.lr;
+    if (mat(st.nudge.W)) ndW = st.nudge.W;
+    if (num(st.nudge.steps)) ndSteps = st.nudge.steps;
+    ndLast = Array.isArray(st.nudge.last) && st.nudge.last.length === N && st.nudge.last.every(num) ? st.nudge.last : null;
+  }
+  if (st.train && num(st.train.lr) && document.querySelector(`[data-lr="${st.train.lr}"]`)) {
+    trLr = st.train.lr; trW = zeros(); trHist = [lossOf(trW)];
+    if (num(st.train.steps)) trainRaw(Math.min(st.train.steps, 5000));
+  }
+  if (st.gen) {
+    gnTrained = st.gen.trained !== false;
+    if (typeof st.gen.text === "string" && st.gen.text && [...st.gen.text].every(c => V.includes(c))) gnText = st.gen.text.slice(-60);
+    if (num(st.gen.seed)) seed = st.gen.seed;
+    if (num(st.gen.count)) gnCount = st.gen.count;
+  }
+  if (Array.isArray(st.quiz)) document.querySelectorAll("[data-station] .choices").forEach((box, k) => {
+    const b = num(st.quiz[k]) && box.querySelectorAll("button")[st.quiz[k]];
+    if (b) markChoice(box, b);
+  });
+  if (Array.isArray(st.completed)) st.completed.forEach(id => { if (document.querySelector(`section[data-station="${id}"]`)) completed.add(id); });
+  rerender();
+  if (st.focus === null || stationsAtLevel().includes(st.focus)) setFocus(st.focus);
+}
 rerender(); initChoices(); READY = true;
+/* Start with one station at a time (SIMULATOR-SPEC.md §4.7); Show all opens everything for review. */
+setFocus(stationsAtLevel()[0] || null);
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawCurve);
 </script>
 </body>

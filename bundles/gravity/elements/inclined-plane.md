@@ -7,18 +7,21 @@ description: A ramp passes on only the part g sin θ of gravity along the slope,
 lang: en
 levels: [highschool, college, expert]
 tags: [physics, mechanics, inclined-plane, force-components, uniform-acceleration]
+about:
+  - wikidata: Q161462
+    label: inclined plane
 requires:
   - ptf:el/gravity/free-fall
 leads_to:
   - ptf:el/gravity/rolling
 duration_min: { highschool: 15, college: 15, expert: 10 }
 simulators:
-  - ref: ptf:sim/inclined-plane@^1.0.0
+  - ref: ptf:sim/inclined-plane@^1.1.0
     station: bells
     levels: [highschool, college, expert]
     role: explore
     note: Play equal spacing first and ask what the learner hears; then let them find the spacing that gives an even rhythm.
-  - ref: ptf:sim/inclined-plane@^1.0.0
+  - ref: ptf:sim/inclined-plane@^1.1.0
     station: angle
     levels: [highschool, college, expert]
     role: explore
@@ -32,7 +35,7 @@ sources:
     title: "OpenStax University Physics Volume 1, 6.2 Solving Problems with Newton's Laws"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.0
+version: 0.1.2
 license: CC-BY-SA-4.0
 ---
 
@@ -104,6 +107,7 @@ for sliding without friction; for rolling bodies the factor 1 / (1 + k)
 - **steeper-faster-at-bottom**: A steeper ramp gives a higher speed at the bottom → without friction the speed at the bottom depends only on the height dropped; the steeper ramp only gets there sooner.
 - **equal-distances-equal-times**: Equal distances take equal times → while speeding up, each equal stretch takes less time; equal times need growing distances (1 : 3 : 5 : 7).
 - **ramp-changes-gravity**: The ramp makes gravity weaker → gravity is unchanged; the ramp takes up the part m g cos θ, only m g sin θ is left along the slope.
+- **steeper-than-free-fall**: A steep ramp can make something faster than falling → the ramp only passes on the part g sin θ of gravity; at 90° that is g itself, never more.
 
 # Questions
 

@@ -61,13 +61,13 @@
       "click": "[data-gate='scaling'] button[data-ok]"
     },
     {
-      "expectText": "Prüf es unten"
-    },
-    {
       "type": {
         "selector": "#dSl",
         "text": "128"
       }
+    },
+    {
+      "expectText": "fast alles einer Stelle"
     },
     {
       "expectEvent": "station_completed"

@@ -1,0 +1,67 @@
+{
+  "ptf_sim": "0.1",
+  "lang": [
+    "de"
+  ],
+  "entry": "index.html",
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "integrity": "sha256-mdmM8Uh7laR4aEGXwstUyrOT/7fUH4OWzu9zxlVar9Q=",
+  "id": "ptf:sim/loss-lens",
+  "version": "1.1.0",
+  "title": "Loss lens",
+  "description": "Cross-entropy loss up close: surprise per character, averaging over a sentence, and distributing probability yourself.",
+  "concepts": [
+    "cross-entropy",
+    "negative-log-likelihood",
+    "average-loss"
+  ],
+  "levels": [
+    "highschool"
+  ],
+  "stations": [
+    {
+      "id": "surprise",
+      "title": "Measuring surprise",
+      "levels": [
+        "highschool"
+      ]
+    },
+    {
+      "id": "average",
+      "title": "From one character to the average",
+      "levels": [
+        "highschool"
+      ]
+    },
+    {
+      "id": "distribute",
+      "title": "Distribute the probability",
+      "levels": [
+        "highschool"
+      ]
+    },
+    {
+      "id": "quiz",
+      "title": "Three short questions",
+      "levels": [
+        "highschool"
+      ]
+    }
+  ],
+  "events": [
+    "experienced",
+    "answered",
+    "station_completed"
+  ],
+  "derived_from": "ptf:sim/loss-lens@1.0.0",
+  "changelog": "Tutor contract: every station reports what the learner tried (experienced with p, text, distribution and loss), the quiz became checkable multiple choice with answered events and misconception IDs, stations emit station_completed, the snapshot describes the current values, the full experiment state is saved and restored, and the simulator starts in focus mode with Back/Next, a progress row and goto { focus } support."
+}

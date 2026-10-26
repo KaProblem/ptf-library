@@ -93,6 +93,6 @@
     "claude/opus"
   ],
   "derived_from": "ptf:sim/gpt-pipeline@1.0.0",
-  "changelog": "Station trace comes first and asks for the learner's own prediction after \"to be or no\"; ordering the parts is now station 2 (PEDAGOGY.md: familiar first, predict, then reveal).",
-  "integrity": "sha256-nqrUeUOtE9O6+5I3VdxHaY+AaUvniFVu2FBrllCNdlo="
+  "changelog": "Station trace comes first and asks for the learner's own prediction after \"to be or no\"; ordering the parts is now station 2 (PEDAGOGY.md: familiar first, predict, then reveal). The guess is only recorded when picked and judged at the first use of the revealed controls (SIMULATOR-SPEC §7 rule 5).",
+  "integrity": "sha256-hxpwJzyQ0NSoQH2NTIJF0UYrIkWaipbZ/PvCvJBZgBU="
 }

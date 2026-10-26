@@ -7,6 +7,11 @@ description: A language model never sees letters or words, only numbers; the tok
 lang: en
 levels: [child, highschool, college]
 tags: [llm, tokenizer, vocabulary]
+about:
+  - wikidata: Q2438971
+    label: tokenization
+  - wikidata: Q2143407
+    label: lexical token
 leads_to:
   - ptf:el/llm-basics/training-examples
   - ptf:el/llm-basics/softmax
@@ -32,7 +37,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.2.0
+version: 0.2.1
 license: CC-BY-SA-4.0
 ---
 

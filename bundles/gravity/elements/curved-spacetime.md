@@ -7,21 +7,30 @@ description: In Einstein's theory gravity is not a force but the curvature of sp
 lang: en
 levels: [child, highschool, college, expert]
 tags: [physics, gravity, general-relativity, einstein, time-dilation, gps, equivalence-principle]
+about:
+  - wikidata: Q4240689
+    label: spacetime curvature
+  - wikidata: Q11452
+    label: general relativity
+  - wikidata: Q1188682
+    label: gravitational time dilation
+  - wikidata: Q210546
+    label: equivalence principle
 requires:
   - ptf:el/gravity/universal-gravitation
 duration_min: { child: 10, highschool: 20, college: 25, expert: 20 }
 simulators:
-  - ref: ptf:sim/newton-einstein@^1.0.0
+  - ref: ptf:sim/newton-einstein@^1.1.0
     station: spacetime
     levels: [child, highschool, college, expert]
     role: explore
     note: Use the funnel as a picture, then discuss right away why the trampoline analogy is circular (station text).
-  - ref: ptf:sim/newton-einstein@^1.0.0
+  - ref: ptf:sim/newton-einstein@^1.1.0
     station: clocks
     levels: [highschool, college, expert]
     role: explore
     note: Ask first whether a clock on a satellite should run faster or slower; most learners only know the speed effect.
-  - ref: ptf:sim/newton-einstein@^1.0.0
+  - ref: ptf:sim/newton-einstein@^1.1.0
     station: mercury
     levels: [college, expert]
     role: practice
@@ -38,7 +47,7 @@ sources:
     title: "Albert Einstein: The Foundation of the General Theory of Relativity (1916), English translation"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.0
+version: 0.1.2
 license: CC-BY-SA-4.0
 ---
 
@@ -135,6 +144,10 @@ correction of up to about 46 ns.
 - **relativity-only-for-extremes**: General relativity matters only near black holes → it changes GPS clocks by 38 µs per day, which would be an 11 km daily error, and it explains Mercury's orbit.
 - **newton-wrong**: Einstein proved Newton wrong, so Newton's law is useless → Newton's law is the weak-field, slow-motion limit of general relativity and is accurate enough for almost all engineering and spaceflight.
 - **satellite-clocks-slower-only**: A fast satellite's clock only runs slow → speed slows it, height speeds it up; for GPS the height effect wins, so the clock runs fast overall.
+- **gravity-needs-contact**: A body only feels a mass it touches → a marble passing at a distance is steered by the curved space (in Newton's picture, pulled), so its path bends.
+- **mass-repels**: Paths can bend away from a mass → gravity only attracts; free paths always bend towards the mass.
+- **newton-orbits-turn**: Every orbit slowly turns, even with Newton's law alone → for a single planet Newton's law gives a closed ellipse; turning comes from other planets or from relativity.
+- **orbits-decay**: Planets slowly spiral into the Sun → without friction nothing takes energy away; the ellipse keeps its size.
 
 # Questions
 

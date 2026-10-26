@@ -85,6 +85,6 @@
     "claude/opus"
   ],
   "derived_from": "ptf:sim/residual-stream@1.0.0",
-  "changelog": "Station deep-signal asks for a guess (how much signal survives 40 layers) before showing the sliders (PEDAGOGY.md: predict, then reveal).",
-  "integrity": "sha256-NBglbAXf0L2tZuxXEkzW1pHnIpelX6CiUSiPMgO/CA0="
+  "changelog": "Station deep-signal asks for a guess (how much signal survives 40 layers) before showing the sliders (PEDAGOGY.md: predict, then reveal). The guess is only recorded when picked and judged at the first use of the revealed controls (SIMULATOR-SPEC §7 rule 5).",
+  "integrity": "sha256-NGQc/canVAZ6+deoExuwYY9vDIQK7jpFA6Gvsih0pyQ="
 }

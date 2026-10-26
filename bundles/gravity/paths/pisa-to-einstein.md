@@ -15,7 +15,7 @@ steps:
   - element: ptf:el/gravity/universal-gravitation
   - element: ptf:el/gravity/curved-spacetime
 status: draft
-version: 0.1.0
+version: 0.1.1
 license: CC-BY-SA-4.0
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 sources:
@@ -46,7 +46,7 @@ pull by curved spacetime.
 
 # Tutor notes
 
-- Show one station at a time in focus mode (SIMULATOR-SPEC.md §4.7), always after asking for a guess. The guess stations (tower, ball against ring, cannon) are built for exactly that.
+- Open one station at a time in focus mode (SIMULATOR-SPEC.md §4.7); the progress row lets the learner jump between stations. Every experiment is locked until the learner has picked a prediction in the simulator, and only the result reveals whether it was right (predict, observe, explain). Do not give the answer before; afterwards, ask the learner to explain what they saw.
 - For a child, a short path works on its own: free fall (guess, vacuum) → rolling (race) → universal gravitation (cannon) → curved spacetime (spacetime). Skip formulas; keep the "lazier heavy ball" and "falling around the Earth" pictures.
 - At highschool level steps 1 to 4 fit one session of about 60 minutes, steps 5 and 6 a second one.
 - The numbers in the simulators are computed (RK4 or closed form) and checked in their self-tests; use them as facts: iron vs. wood from 56 m is 0.17 s and about 5 m apart, not "a hand's width".

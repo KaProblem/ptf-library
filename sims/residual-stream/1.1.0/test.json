@@ -12,13 +12,13 @@
       "click": "[data-gate='deep-signal'] button[data-ok]"
     },
     {
-      "expectText": "0.8 to the power of 40"
-    },
-    {
       "type": {
         "selector": "#depth",
         "text": "40"
       }
+    },
+    {
+      "expectText": "0.8 to the power of 40"
     },
     {
       "expectText": "arrives after 40 layers"
