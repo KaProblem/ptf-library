@@ -1,0 +1,205 @@
+{
+  "steps": [
+    {
+      "init": {
+        "level": "highschool"
+      }
+    },
+    {
+      "expectStations": [
+        "surprise"
+      ]
+    },
+    {
+      "expectText": "Überraschung messen"
+    },
+    {
+      "click": "[data-gate='one-percent'] button[data-mis='loss-linear-in-p']"
+    },
+    {
+      "expectEvent": {
+        "verb": "experienced",
+        "station": "surprise"
+      }
+    },
+    {
+      "type": {
+        "selector": "#pSl",
+        "text": "5"
+      }
+    },
+    {
+      "expectEvent": {
+        "verb": "experienced",
+        "station": "surprise"
+      }
+    },
+    {
+      "expectEvent": {
+        "verb": "answered",
+        "station": "surprise"
+      }
+    },
+    {
+      "expectText": "fast siebenmal so viel"
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "p = 5 %",
+          "loss 3.00"
+        ]
+      }
+    },
+    {
+      "type": {
+        "selector": "#pSl",
+        "text": "95"
+      }
+    },
+    {
+      "expectEvent": {
+        "verb": "station_completed",
+        "station": "surprise"
+      }
+    },
+    {
+      "click": "#focusNext"
+    },
+    {
+      "expectStations": [
+        "average"
+      ]
+    },
+    {
+      "click": "[data-gate='steps'] button[data-ok]"
+    },
+    {
+      "type": {
+        "selector": "#wIn",
+        "text": "hear me"
+      }
+    },
+    {
+      "expectEvent": {
+        "verb": "station_completed",
+        "station": "average"
+      }
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "text \"hear me\", 6 steps"
+        ]
+      }
+    },
+    {
+      "goto": {
+        "station": "distribute",
+        "focus": true
+      }
+    },
+    {
+      "expectStations": [
+        "distribute"
+      ]
+    },
+    {
+      "click": "[data-gate='best-distribution'] button[data-ok]"
+    },
+    {
+      "click": "#c3All"
+    },
+    {
+      "expectEvent": {
+        "verb": "experienced",
+        "station": "distribute"
+      }
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "infinite"
+        ]
+      }
+    },
+    {
+      "click": "#c3Real"
+    },
+    {
+      "expectEvent": {
+        "verb": "station_completed",
+        "station": "distribute"
+      }
+    },
+    {
+      "goto": {
+        "station": "quiz",
+        "focus": true
+      }
+    },
+    {
+      "click": "[data-q='zero'] button[data-mis]"
+    },
+    {
+      "expectEvent": "answered"
+    },
+    {
+      "click": "[data-q='zero'] button[data-ok]"
+    },
+    {
+      "click": "[data-q='compare'] button[data-ok]"
+    },
+    {
+      "click": "[data-q='validation'] button[data-ok]"
+    },
+    {
+      "expectEvent": {
+        "verb": "station_completed",
+        "station": "quiz"
+      }
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "Predictions: one-percent \"Etwa doppelt so groß\" (wrong); steps \"4\" (right); best-distribution \"Genau die echten Häufigkeiten\" (right)"
+        ]
+      }
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "Quiz: zero right, compare right, validation right",
+          "Completed: surprise, average, distribute, quiz"
+        ]
+      }
+    },
+    {
+      "reload": true
+    },
+    {
+      "expectStations": [
+        "quiz"
+      ]
+    },
+    {
+      "goto": {
+        "focus": false
+      }
+    },
+    {
+      "expectText": "Was du hier entdecken kannst"
+    },
+    {
+      "expectStations": [
+        "surprise",
+        "average",
+        "distribute",
+        "quiz"
+      ]
+    },
+    {
+      "expectNoError": true
+    }
+  ]
+}

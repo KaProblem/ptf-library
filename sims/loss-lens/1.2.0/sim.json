@@ -1,0 +1,67 @@
+{
+  "ptf_sim": "0.1",
+  "lang": [
+    "de"
+  ],
+  "entry": "index.html",
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "integrity": "sha256-SaWunTbekxYLDlTDk/iaJY10+m0Fudz7I5vAFeQDPXY=",
+  "id": "ptf:sim/loss-lens",
+  "version": "1.2.0",
+  "title": "Loss lens",
+  "description": "Cross-entropy loss up close: surprise per character, averaging over a sentence, and distributing probability yourself.",
+  "concepts": [
+    "cross-entropy",
+    "negative-log-likelihood",
+    "average-loss"
+  ],
+  "levels": [
+    "highschool"
+  ],
+  "stations": [
+    {
+      "id": "surprise",
+      "title": "Measuring surprise",
+      "levels": [
+        "highschool"
+      ]
+    },
+    {
+      "id": "average",
+      "title": "From one character to the average",
+      "levels": [
+        "highschool"
+      ]
+    },
+    {
+      "id": "distribute",
+      "title": "Distribute the probability",
+      "levels": [
+        "highschool"
+      ]
+    },
+    {
+      "id": "quiz",
+      "title": "Three short questions",
+      "levels": [
+        "highschool"
+      ]
+    }
+  ],
+  "events": [
+    "experienced",
+    "answered",
+    "station_completed"
+  ],
+  "derived_from": "ptf:sim/loss-lens@1.1.0",
+  "changelog": "Predict first (SIMULATOR-SPEC §7 rule 5): stations surprise, average and distribute ask for a prediction (penalty at 1 %, number of steps in a word, best distribution) before they show their controls; the prediction is judged and reported as answered at the first use of the revealed controls, explanations that give the answer away stay hidden until then, and predictions are saved, restored and reported in the snapshot. Canvas colours are resolved through a probe element (§4.5) and redrawn on theme changes."
+}

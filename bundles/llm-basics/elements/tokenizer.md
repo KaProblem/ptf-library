@@ -17,12 +17,12 @@ leads_to:
   - ptf:el/llm-basics/softmax
 duration_min: { child: 5, highschool: 10, college: 15 }
 simulators:
-  - ref: ptf:sim/next-char-lab@^2.0.0
+  - ref: ptf:sim/next-char-basics@^1.0.0
     station: guess
-    levels: [highschool]
+    levels: [highschool, college]
     role: explore
     note: Let the learner be the model first, before any terminology.
-  - ref: ptf:sim/next-char-lab@^2.0.0
+  - ref: ptf:sim/next-char-basics@^1.0.0
     station: tokenizer
     levels: [highschool, college]
     role: explore
@@ -37,7 +37,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.2.1
+version: 0.2.2
 license: CC-BY-SA-4.0
 ---
 

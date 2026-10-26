@@ -18,7 +18,7 @@ leads_to:
   - ptf:el/llm-basics/softmax
 duration_min: { highschool: 10, college: 15, expert: 10 }
 simulators:
-  - ref: ptf:sim/next-char-lab@^2.0.0
+  - ref: ptf:sim/next-char-basics@^1.0.0
     station: context-window
     levels: [highschool, college, expert]
     role: explore
@@ -33,7 +33,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.2.1
+version: 0.2.2
 license: CC-BY-SA-4.0
 ---
 

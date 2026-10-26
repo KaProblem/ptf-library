@@ -20,7 +20,7 @@ steps:
   - element: ptf:el/llm-basics/gpt-end-to-end
   - element: ptf:el/llm-basics/from-babbler-to-assistant
 status: draft
-version: 0.3.0
+version: 0.3.1
 license: CC-BY-SA-4.0
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 sources:
@@ -40,10 +40,10 @@ transformer that looks at the whole context.
 
 | # | Goal | Element | Simulator | Code step |
 | --- | --- | --- | --- | --- |
-| 1 | A language model predicts the next token; text becomes numbers | [Tokenizer](../elements/tokenizer.md) | next-char-lab: guess, tokenizer | tokenizer |
-| 2 | One chunk of text holds many examples; context length and batches | [Training examples](../elements/training-examples.md) | next-char-lab: context-window | batches |
-| 3 | Scores become probabilities; sampling and temperature | [Softmax](../elements/softmax.md) | next-char-lab: counted-probabilities, temperature | bigram |
-| 4 | Measuring how good a prediction is | [Cross-entropy loss](../elements/cross-entropy.md) | loss-lens; next-char-lab: loss, training-curve | bigram |
+| 1 | A language model predicts the next token; text becomes numbers | [Tokenizer](../elements/tokenizer.md) | next-char-basics: guess, tokenizer | tokenizer |
+| 2 | One chunk of text holds many examples; context length and batches | [Training examples](../elements/training-examples.md) | next-char-basics: context-window | batches |
+| 3 | Scores become probabilities; sampling and temperature | [Softmax](../elements/softmax.md) | next-char-basics: counted-probabilities, generate; bigram-lab: temperature | bigram |
+| 4 | Measuring how good a prediction is | [Cross-entropy loss](../elements/cross-entropy.md) | loss-lens; bigram-lab: loss, training-curve | bigram |
 | 5 | How a model learns: gradient steps, learning rate, the training loop, generation | [A first model that learns](../elements/bigram-model.md) | training-loop | bigram |
 | 6 | Averaging over the past with a triangular mask | [Causal mask](../elements/causal-mask.md) | causal-mask | averaging |
 | 7 | Self-attention: query, key, value, masking, scaling by 1/√d | [Self-attention](../elements/self-attention.md) | attention-lab | self-attention |

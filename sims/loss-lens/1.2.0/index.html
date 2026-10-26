@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loss-Lupe</title>
+<style>
+/* Layout: ein Laborheft, eine Spalte; Stufen-Umschalter oben, jedes Experiment ist eine Station */
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
+  --accent:#0E6E68; --accent-soft:#D5ECEA; --heat:#C2410C; --heat-soft:#FBE3D6;
+  --f-display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --heat:#FB8B55; --heat-soft:#3A2218; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --heat:#FB8B55; --heat-soft:#3A2218; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.3rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+header{display:flex;flex-direction:column;gap:12px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 16px;color:var(--muted);font-size:.95rem}
+.badge{font:600 .75rem var(--f-mono);border:1px solid var(--line);border-radius:4px;padding:2px 6px;color:var(--muted)}
+.levels{display:flex;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start;background:var(--surface)}
+.levels button{font:600 1rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:10px 16px;min-height:44px;cursor:pointer}
+.levels button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+.levels button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.station{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.station .num{font:600 .8rem var(--f-mono);color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+input[type=text],textarea,select{max-width:100%;font:1rem var(--f-mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;min-height:44px}
+input[type=text]{flex:1 1 220px;min-width:0}
+textarea{width:100%;min-height:160px;resize:vertical}
+button.btn{font:600 .95rem var(--f-body);min-height:44px;padding:8px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--accent)}
+input[type=range]{accent-color:var(--accent);flex:1 1 200px;min-height:44px}
+label{color:var(--muted);font-size:.95rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:flex;flex-direction:column;align-items:center;min-width:34px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);cursor:pointer;font-family:var(--f-mono)}
+.chip b{font-size:1.05rem;font-weight:600}
+.chip small{font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft)}
+.chip.bad{border-color:var(--heat);background:var(--heat-soft)}
+.bars{display:flex;flex-direction:column;gap:4px;font-family:var(--f-mono);font-size:.9rem}
+.bar{display:grid;grid-template-columns:2.2em 1fr 4.2em;gap:8px;align-items:center}
+.bar .fill{height:18px;background:var(--accent);border-radius:3px;min-width:2px}
+.bar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.out{font:1rem/1.5 var(--f-mono);white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px;min-height:5.5em;max-height:18em;overflow:auto}
+.out .new{background:var(--accent-soft)}
+.note{color:var(--muted);font-size:.95rem}
+.stat{font:600 1.6rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:24px}
+.stats div{display:flex;flex-direction:column}
+canvas{display:block;max-width:100%}
+.scroll{overflow-x:auto}
+details.quiz{border-top:1px solid var(--line);padding-top:10px}
+details.quiz summary{cursor:pointer;font-weight:600;min-height:32px}
+.lossline span{border-radius:3px;padding:1px 0}
+.pairs{font:.9rem/1.7 var(--f-mono);display:flex;flex-direction:column}
+.pairs .last{background:var(--accent-soft);border-radius:3px}
+.pairs .tgt{color:var(--heat);font-weight:600}
+pre.code{font:.85rem/1.5 var(--f-mono);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px;overflow-x:auto;margin:0}
+.tip{font:.85rem var(--f-mono);color:var(--muted);min-height:1.4em}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+table.steps{border-collapse:collapse;width:100%;font:.9rem var(--f-mono);min-width:420px}
+table.steps th{text-align:left;color:var(--muted);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line)}
+table.steps td{padding:6px 8px;border-bottom:1px solid var(--line)}
+table.steps td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.lbar{height:12px;background:var(--heat);border-radius:2px;min-width:2px}
+.sliders{display:flex;flex-direction:column;gap:6px}
+.srow{display:grid;grid-template-columns:7.5em 1fr 3.5em;gap:10px;align-items:center}
+.srow .pct{text-align:right;font-variant-numeric:tabular-nums}
+.feedback{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:4px}
+.feedback.bad{border-color:var(--heat);background:var(--heat-soft)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices button{text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.choices button.right{border-color:var(--accent);background:var(--accent-soft)}
+.choices button.wrong{border-color:var(--heat);background:var(--heat-soft)}
+.choices button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
+.choices button:disabled{cursor:default}
+.gated{display:flex;flex-direction:column;gap:14px}
+.focus-nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;bottom:0;background:var(--bg);padding:10px 0;border-top:1px solid var(--line)}
+.focus-nav #focusAll{margin-left:auto}
+.focus-nav button:disabled{opacity:.4;cursor:default}
+body.focused header > p, body.focused header > .meta{display:none}
+body.focused #focusStart{display:none}
+body.focused footer{display:none}
+.stepper{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.stepper .step{min-width:44px;min-height:44px;border-radius:22px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:600 1rem var(--f-mono);cursor:pointer}
+.stepper .step.done{border-color:var(--accent);color:var(--accent)}
+.stepper .step[aria-current="step"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+footer{color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow">Wie GPT funktioniert · Lektion 1 · Vertiefung</span>
+  <h1>Loss-Lupe</h1>
+  <p>Ein Sprachmodell braucht eine einzige Zahl, die sagt, wie gut es gerade ist. Diese Zahl heißt Loss. Hier schaust du ihr in drei Schritten unter die Haube: erst ein Zeichen, dann ein ganzes Wort, dann bist du selbst das Modell.</p>
+  <div class="meta"><span class="badge">v1.2</span><span id="corpusInfo" class="mono"></span></div>
+  <div class="row" id="headRow"></div>
+</header>
+
+<section class="station" data-station="surprise" data-show="1">
+  <span class="num">Schritt 1 · Ein Zeichen</span>
+  <h2>Überraschung messen</h2>
+  <p>Das Modell gibt dem Zeichen, das tatsächlich kommt, eine Wahrscheinlichkeit p. Der Loss dieses Schritts ist −ln(p). Schieb den Regler und beobachte, wie stark kleine Wahrscheinlichkeiten bestraft werden.</p>
+  <p><b>Erst raten:</b> Bei p = 50 % ist die Strafe 0,69. Wie groß ist sie, wenn das Modell dem richtigen Zeichen nur 1 % gegeben hat?</p>
+  <div class="choices gate" data-gate="one-percent">
+    <button data-mis="loss-linear-in-p" data-fb="Viel mehr. Der Logarithmus bestraft kleine Wahrscheinlichkeiten immer stärker: −ln(0,01) ≈ 4,6, fast siebenmal so viel wie 0,69.">Etwa doppelt so groß</button>
+    <button data-ok data-fb="Richtig: −ln(0,01) ≈ 4,6, fast siebenmal so viel wie bei 50 %. Je unwahrscheinlicher, desto steiler steigt die Strafe.">Etwa siebenmal so groß (rund 4,6)</button>
+    <button data-mis="loss-proportional-to-1-over-p" data-fb="Weniger. 50-mal unwahrscheinlicher heißt nicht 50-mal mehr Strafe: Der Logarithmus macht daraus nur gut das Siebenfache, −ln(0,01) ≈ 4,6.">50-mal so groß</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="gated" data-gated="one-percent" hidden>
+  <div class="row"><label for="pSl">p für das richtige Zeichen</label><input type="range" id="pSl" min="1" max="100" value="50"><span class="mono" id="pVal"></span></div>
+  <div class="scroll"><canvas id="lnCurve" width="780" height="260" aria-label="Kurve −ln p"></canvas></div>
+  <div class="stats"><div><span class="note">Loss für diesen Schritt</span><span class="stat" id="pLoss"></span></div></div>
+  <p class="note" data-after="one-percent" hidden>Merkpunkte: 100 % ergibt 0 (keine Überraschung). 50 % ergibt 0,69. Blind raten unter 48 Zeichen (≈ 2 %) ergibt 3,87. Bei 1 % sind es schon 4,6. Warum der Logarithmus? Er macht aus „wie unwahrscheinlich“ eine Strafe, die man über viele Schritte einfach addieren kann.</p>
+  </div>
+</section>
+
+<section class="station" data-station="average" data-show="1">
+  <span class="num">Schritt 2 · Ein Wort</span>
+  <h2>Vom Zeichen zum Durchschnitt</h2>
+  <p>Für einen ganzen Text macht man das für jeden Übergang und nimmt den Mittelwert. Tipp ein Wort oder einen Satz ein. Die Wahrscheinlichkeiten kommen vom Bigramm-Modell aus der Lektion, das nur das vorige Zeichen kennt.</p>
+  <p><b>Erst raten:</b> Das Wort „speak“ hat 5 Zeichen. Über wie viele Schritte wird sein Loss gemittelt?</p>
+  <div class="choices gate" data-gate="steps">
+    <button data-fb="Fast: Das erste Zeichen hat keinen Vorgänger, es wird nicht vorhergesagt. Es sind 4 Schritte.">5</button>
+    <button data-ok data-fb="Richtig: s→p, p→e, e→a, a→k. Das erste Zeichen hat keinen Vorgänger und wird nicht vorhergesagt.">4</button>
+    <button data-mis="loss-per-word" data-fb="Nein. Der Loss wird nicht pro Wort berechnet, sondern für jeden Übergang von einem Zeichen zum nächsten: hier 4.">1, ein Wort ist ein Schritt</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="gated" data-gated="steps" hidden>
+  <div class="row"><input type="text" id="wIn" value="speak" aria-label="Wort oder Satz"></div>
+  <div class="scroll"><table class="steps" id="wTab"></table></div>
+  <div class="out mono" id="wSum"></div>
+  <p class="note">Tipp jetzt ein eigenes Wort oder einen Satz ein.</p>
+  </div>
+</section>
+
+<section class="station" data-station="distribute" data-show="1">
+  <span class="num">Schritt 3 · Du bist das Modell</span>
+  <h2>Verteil die Wahrscheinlichkeit</h2>
+  <p id="c3Intro"></p>
+  <p><b>Erst raten:</b> Welche Verteilung nach „e“ ergibt den kleinsten Loss?</p>
+  <div class="choices gate" data-gate="best-distribution">
+    <button data-mis="all-in-on-favourite" data-fb="Nein. Alles auf den Favoriten ist riskant: Jedes Mal, wenn etwas anderes kommt, ist p winzig und die Strafe riesig.">Alles auf das häufigste Zeichen</button>
+    <button data-fb="Nein. Gleichmäßig verschenkt Wahrscheinlichkeit an Zeichen, die selten kommen; das ist kaum besser als blind raten.">Alle Zeichen gleich wahrscheinlich</button>
+    <button data-ok data-fb="Richtig. Der Loss ist am kleinsten, wenn deine Verteilung den echten Häufigkeiten entspricht. Genau deshalb lernt ein Modell beim Senken des Loss die echten Häufigkeiten.">Genau die echten Häufigkeiten</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="gated" data-gated="best-distribution" hidden>
+  <div class="sliders" id="c3Sl"></div>
+  <div class="stats">
+    <div><span class="note">Dein Loss</span><span class="stat" id="c3Mine"></span></div>
+    <div><span class="note">Gezähltes Modell</span><span class="stat" id="c3Count"></span></div>
+    <div><span class="note">Blind raten</span><span class="stat" id="c3Uni"></span></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="c3All">Alles auf den Favoriten</button><button class="btn ghost" id="c3Even">Gleichmäßig</button><button class="btn ghost" id="c3Real">Echte Häufigkeiten</button></div>
+  <p class="note" id="c3Note"></p>
+  <details class="quiz" data-after="best-distribution" hidden><summary>Was du hier entdecken kannst</summary><p>Der Loss ist am kleinsten, wenn deine Verteilung den echten Häufigkeiten entspricht. Alles auf ein Zeichen zu setzen ist riskant: Jedes Mal, wenn etwas anderes kommt, ist p winzig und die Strafe riesig. Genau deshalb „lernt“ ein Modell beim Senken des Loss die echten Häufigkeiten. Training ist nichts anderes als dieser Schieberegler-Job, nur automatisch und für Millionen Regler gleichzeitig.</p></details>
+  </div>
+</section>
+
+<section class="station" data-station="quiz" data-show="1">
+  <span class="num">Prüf dich</span>
+  <h2>Drei kurze Fragen</h2>
+  <p>Ein Modell hat auf einem Text Loss 0. Was bedeutet das?</p>
+  <div class="choices" data-q="zero">
+    <button data-ok data-fb="Richtig. Es hat jedem tatsächlich folgenden Zeichen 100 % gegeben, also alles perfekt vorhergesagt. Bei echter Sprache passiert das praktisch nie. Wenn doch, hat es den Text meist nur auswendig gelernt.">Es hat jedem Zeichen, das wirklich kam, 100 % gegeben</button>
+    <button data-mis="loss-counts-errors" data-fb="Nicht ganz. Der Loss zählt keine Fehler. Er misst, wie viel Wahrscheinlichkeit das richtige Zeichen bekommen hat. Loss 0 heißt: immer 100 % auf das richtige Zeichen, nicht nur „meistens richtig getippt“.">Es hat bei keinem Zeichen falsch getippt, egal wie sicher es war</button>
+    <button data-fb="Nein. Ein Modell, das nichts gelernt hat, rät blind und hat einen hohen Loss, unter 48 Zeichen etwa 3,87.">Es hat noch gar nichts gelernt</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <p>Modell A hat Loss 2,5, Modell B 1,5. Was heißt das anschaulich?</p>
+  <div class="choices" data-q="compare">
+    <button data-ok data-fb="Richtig. e^2,5 ≈ 12 und e^1,5 ≈ 4,5. A ist im Schnitt so unsicher, als würde es zwischen etwa 12 gleich guten Kandidaten raten, B nur noch zwischen etwa 4 bis 5.">A rät im Schnitt wie zwischen etwa 12 Kandidaten, B wie zwischen etwa 4 bis 5</button>
+    <button data-mis="loss-counts-errors" data-fb="Nein. Der Loss ist kein Fehleranteil. Er ist der Durchschnitt von −ln p; anschaulich wird er über e^Loss, die Zahl der Kandidaten, zwischen denen das Modell gefühlt rät.">B macht 40 % weniger Fehler als A</button>
+    <button data-fb="Nein. Kleiner ist besser: Loss misst die Überraschung, und B ist weniger überrascht.">A ist besser, weil die Zahl größer ist</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <p>Warum misst man den Loss auf Text, den das Modell beim Training nicht gesehen hat?</p>
+  <div class="choices" data-q="validation">
+    <button data-ok data-fb="Richtig. Man will wissen, ob es Sprache allgemein gelernt hat und nicht nur den Trainingstext auswendig kann. Dieser zurückgehaltene Teil heißt Validierungsdaten.">Damit man sieht, ob es Sprache allgemein gelernt hat und nicht nur auswendig</button>
+    <button data-mis="training-loss-enough" data-fb="Nicht ganz. Ein sinkender Trainings-Loss kann auch heißen, dass das Modell den Text auswendig lernt. Erst Text, den es nie gesehen hat, zeigt, ob es verallgemeinert.">Das ist nicht nötig, der Trainings-Loss sagt dasselbe</button>
+    <button data-fb="Nein. Rechnen ist auf beiden Texten gleich schnell. Es geht darum, Auswendiglernen zu erkennen.">Weil der Loss auf neuem Text schneller zu berechnen ist</button>
+  </div>
+  <p class="feedback" hidden></p>
+</section>
+<footer>Teil der Lektion „Nächstes-Zeichen-Labor“. Trainingstext: Auszug aus Shakespeares „Coriolanus“.</footer>
+</div>
+
+<script>
+const SHAKESPEARE=`First Citizen:
+Before we proceed any further, hear me speak.
+
+All:
+Speak, speak.
+
+First Citizen:
+You are all resolved rather to die than to famish?
+
+All:
+Resolved. resolved.
+
+First Citizen:
+First, you know Caius Marcius is chief enemy to the people.
+
+All:
+We know't, we know't.
+
+First Citizen:
+Let us kill him, and we'll have corn at our own price.
+Is't a verdict?
+
+All:
+No more talking on't; let it be done: away, away!
+
+Second Citizen:
+One word, good citizens.
+
+First Citizen:
+We are accounted poor citizens, the patricians good.
+What authority surfeits on would relieve us: if they
+would yield us but the superfluity, while it were
+wholesome, we might guess they relieved us humanely;
+but they think we are too dear: the leanness that
+afflicts us, the object of our misery, is as an
+inventory to particularise their abundance; our
+sufferance is a gain to them Let us revenge this with
+our pikes, ere we become rakes: for the gods know I
+speak this in hunger for bread, not in thirst for revenge.
+
+Second Citizen:
+Would you proceed especially against Caius Marcius?
+
+All:
+Against him first: he's a very dog to the commonalty.
+
+Second Citizen:
+Consider you what services he has done for his country?
+
+First Citizen:
+Very well; and could be content to give him good
+report fort, but that he pays himself with being proud.
+
+Second Citizen:
+Nay, but speak not maliciously.
+
+First Citizen:
+I say unto you, what he hath done famously, he did
+it to that end: though soft-conscienced men can be
+content to say it was for his country he did it to
+please his mother and to be partly proud; which he
+is, even till the altitude of his virtue.
+`;
+const ALPHA=0.1,$=id=>document.getElementById(id);
+const disp=c=>c==="\n"?"↵":c===" "?"␣":c;
+/* Theme tokens for canvas (SIMULATOR-SPEC.md §4.5): a host may set a token to light-dark(), var() or color-mix(), which a 2D context
+   cannot parse, so resolve it to a plain colour or font list through a hidden probe element first. */
+const tokenProbe=document.createElement("i");tokenProbe.hidden=true;document.body.append(tokenProbe);
+function css(n){const font=n.startsWith("--f-");tokenProbe.style[font?"fontFamily":"color"]=`var(${n})`;return getComputedStyle(tokenProbe)[font?"fontFamily":"color"];}
+const fmt=(x,d=2)=>x.toLocaleString("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d});
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const T=SHAKESPEARE,chars=[...new Set(T)].sort(),V=chars.length,stoi={};chars.forEach((c,i)=>stoi[c]=i);
+const cnt=Array.from({length:V},()=>new Float64Array(V)),row=new Float64Array(V);
+for(let i=0;i+1<T.length;i++){cnt[stoi[T[i]]][stoi[T[i+1]]]++;row[stoi[T[i]]]++;}
+const P=(a,b)=>(cnt[a][b]+ALPHA)/(row[a]+ALPHA*V);
+$("corpusInfo").textContent=`Trainingstext: ${T.length.toLocaleString("de-DE")} Zeichen · ${V} verschiedene`;
+
+/* Schritt 1 */
+function drawLn(){
+  const cv=$("lnCurve"),g=cv.getContext("2d"),W=cv.width,H=cv.height,L=44,R=24,Tp=28,B=34,p=$("pSl").value/100;
+  const X=x=>L+(W-L-R)*x,Y=y=>Tp+(H-Tp-B)*(1-y/5);g.clearRect(0,0,W,H);
+  g.font="12px "+css("--f-mono");g.fillStyle=css("--muted");g.strokeStyle=css("--line");g.lineWidth=1;
+  for(let y=0;y<=5;y++){g.beginPath();g.moveTo(L,Y(y));g.lineTo(W-R,Y(y));g.stroke();g.fillText(String(y),L-18,Y(y)+4);}
+  [0,.25,.5,.75,1].forEach(x=>{g.textAlign=x===1?"right":x===0?"left":"center";g.fillText(Math.round(x*100)+" %",X(x)+(x===1?8:0),H-12);});g.textAlign="left";
+  g.fillText("Loss = −ln p",L,14);
+  g.strokeStyle=css("--accent");g.lineWidth=2.5;g.beginPath();
+  for(let i=1;i<=200;i++){const x=i/200,y=Math.min(5,-Math.log(x));i===1?g.moveTo(X(x),Y(y)):g.lineTo(X(x),Y(y));}g.stroke();
+  [[1/V,"raten"],[.5,"Münzwurf"]].forEach(([x,t])=>{g.fillStyle=css("--muted");g.beginPath();g.arc(X(x),Y(-Math.log(x)),3.5,0,7);g.fill();g.fillText(t,X(x)+8,Y(-Math.log(x))-6);});
+  const y=-Math.log(p);g.fillStyle=css("--heat");g.beginPath();g.arc(X(p),Y(Math.min(5,y)),6,0,7);g.fill();
+  $("pVal").textContent=`${Math.round(p*100)} %`;$("pLoss").textContent=fmt(y);
+}
+$("pSl").addEventListener("input",drawLn);
+$("pSl").addEventListener("change",()=>{const p=$("pSl").value/100;if(p<=.1)tried.low=true;if(p>=.9)tried.high=true;
+  report("surprise",{p,loss:+(-Math.log(p)).toFixed(3)});if(tried.low&&tried.high)done("surprise");});
+
+/* Schritt 2 */
+function wordLoss(){const s=$("wIn").value;let sum=0,n=0;
+  for(let i=1;i<s.length;i++){const a=stoi[s[i-1]],b=stoi[s[i]];if(a===undefined||b===undefined)continue;sum+=-Math.log(P(a,b));n++;}
+  return {n,loss:n?sum/n:0};}
+function renderWord(){
+  const s=$("wIn").value;let rows="",terms=[];
+  for(let i=1;i<s.length;i++){const a=stoi[s[i-1]],b=stoi[s[i]];
+    if(a===undefined||b===undefined){rows+=`<tr><td>${esc(disp(s[i-1]))} → ${esc(disp(s[i]))}</td><td colspan="3" class="note">Zeichen kommt im Trainingstext nicht vor, übersprungen</td></tr>`;continue;}
+    const p=P(a,b),l=-Math.log(p);terms.push(l);
+    rows+=`<tr><td>nach „${esc(disp(s[i-1]))}“ kommt „${esc(disp(s[i]))}“</td><td class="num">${fmt(p*100,1)} %</td><td class="num">${fmt(l)}</td><td><div class="lbar" style="width:${Math.min(100,l/6*100).toFixed(0)}%"></div></td></tr>`;}
+  $("wTab").innerHTML=`<tr><th>Schritt</th><th>p</th><th>−ln p</th><th>Strafe</th></tr>`+rows;
+  if(!terms.length){$("wSum").textContent="Mindestens zwei bekannte Zeichen eingeben.";return;}
+  const sum=terms.reduce((a,b)=>a+b,0),shown=terms.length<=8?terms.map(x=>fmt(x)).join(" + "):terms.slice(0,4).map(x=>fmt(x)).join(" + ")+" + … + "+fmt(terms[terms.length-1]);
+  $("wSum").textContent=`Summe = ${shown} = ${fmt(sum)}\nLoss  = Summe / ${terms.length} Schritte = ${fmt(sum/terms.length)}`;
+}
+let wTimer=null;
+$("wIn").addEventListener("input",()=>{renderWord();clearTimeout(wTimer);wTimer=setTimeout(()=>{const r=wordLoss();
+  report("average",{text:$("wIn").value.slice(0,80),steps:r.n,loss:r.n?+r.loss.toFixed(3):null});if(r.n)done("average");},400);});
+
+/* Schritt 3 */
+const ctx="e",ci=stoi[ctx],follow=[];for(let i=0;i+1<T.length;i++)if(T[i]===ctx)follow.push(T[i+1]);
+const freq={};follow.forEach(c=>freq[c]=(freq[c]||0)+1);
+const favs=Object.keys(freq).sort((a,b)=>freq[b]-freq[a]).slice(0,3),cands=[...favs,"rest"];
+let w={};cands.forEach(c=>w[c]=25);
+$("c3Intro").innerHTML=`Im Trainingstext steht ${follow.length}-mal ein „e“. Du entscheidest, welche Wahrscheinlichkeit dein Modell nach „e“ welchem Zeichen gibt. Die Regler werden automatisch auf 100 % normiert. „Alles andere“ wird gleichmäßig auf die übrigen ${V-3} Zeichen verteilt. Dann wird dein Loss über alle ${follow.length} echten Fälle gemittelt.`;
+$("c3Sl").innerHTML=cands.map(c=>`<div class="srow"><label for="sl_${encodeURIComponent(c)}" class="mono">${c==="rest"?"alles andere":"„"+disp(c)+"“"}</label><input type="range" min="0" max="100" value="25" id="sl_${encodeURIComponent(c)}" data-c="${encodeURIComponent(c)}"><span class="mono pct"></span></div>`).join("");
+function q(c){const tot=Object.values(w).reduce((a,b)=>a+b,0)||1;
+  if(favs.includes(c))return w[c]/tot;return (w.rest/tot)/(V-3);}
+function c3Losses(){let mine=0,zero=false;follow.forEach(c=>{const p=q(c);if(p<=0)zero=true;mine+=-Math.log(Math.max(p,1e-9));});mine/=follow.length;
+  let cm=0;follow.forEach(c=>cm+=-Math.log(P(ci,stoi[c])));cm/=follow.length;return {mine,cm,zero};}
+/* Lowest loss these four sliders can reach: the real frequencies of the favourites, the rest spread evenly. */
+const c3Best=(()=>{const fav=favs.reduce((a,c)=>a+freq[c],0),rest=(1-fav/follow.length)/(V-3);
+  return follow.reduce((a,c)=>a-Math.log(favs.includes(c)?freq[c]/follow.length:rest),0)/follow.length;})();
+function c3Report(){const {mine,cm,zero}=c3Losses(),tot=Object.values(w).reduce((a,b)=>a+b,0)||1,dist={};
+  cands.forEach(c=>dist[c]=Math.round(w[c]/tot*100));
+  report("distribute",{after:ctx,distribution:dist,loss:zero?null:+mine.toFixed(3),infinite:zero,best:+c3Best.toFixed(3),counted:+cm.toFixed(3)});
+  if(!zero&&mine<=c3Best+.05)done("distribute");}
+function renderC3(){
+  const tot=Object.values(w).reduce((a,b)=>a+b,0)||1;
+  document.querySelectorAll("#c3Sl input").forEach(el=>{const c=decodeURIComponent(el.dataset.c);el.value=w[c];el.nextElementSibling.textContent=fmt(w[c]/tot*100,0)+" %";});
+  const {mine,cm,zero}=c3Losses();
+  $("c3Mine").textContent=zero?"∞":fmt(mine);$("c3Count").textContent=fmt(cm);$("c3Uni").textContent=fmt(Math.log(V));
+  $("c3Note").textContent=zero?"Unendlich: Du hast einem Zeichen 0 % gegeben, das tatsächlich vorkommt. −ln(0) ist unendlich groß, das Modell wäre „unendlich überrascht“.":
+    `Echte Verteilung nach „e“: ${favs.map(c=>`„${disp(c)}“ ${fmt(freq[c]/follow.length*100,0)} %`).join(", ")}, alles andere ${fmt((1-favs.reduce((a,c)=>a+freq[c],0)/follow.length)*100,0)} %.`;
+}
+$("c3Sl").addEventListener("input",e=>{const c=decodeURIComponent(e.target.dataset.c);w[c]=+e.target.value;renderC3();});
+$("c3Sl").addEventListener("change",c3Report);
+$("c3All").onclick=()=>{cands.forEach(c=>w[c]=0);w[favs[0]]=100;renderC3();c3Report();};
+$("c3Even").onclick=()=>{cands.forEach(c=>w[c]=25);renderC3();c3Report();};
+$("c3Real").onclick=()=>{let s=0;favs.forEach(c=>{w[c]=Math.round(freq[c]/follow.length*100);s+=w[c];});w.rest=100-s;renderC3();c3Report();};
+
+const tried={low:false,high:false};
+drawLn();renderWord();renderC3();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",drawLn);
+</script>
+<script src="ptf-sim.js"></script>
+<script>
+/* PTF integration (SIMULATOR-SPEC.md §4). UI is German only; snapshots and events are English (§4.6). */
+const SIM_ID = "ptf:sim/loss-lens", SIM_VERSION = "1.2.0";
+const PTF_LEVELS = {"1": "highschool"};
+let CURRENT_LEVEL = "1";
+const stationsAtLevel = () => [...document.querySelectorAll("section[data-station]")].filter(s => s.dataset.show.split(" ").includes(CURRENT_LEVEL)).map(s => s.dataset.station);
+/* Focus mode (SIMULATOR-SPEC.md §4.7): one station at a time with Back / Next. */
+let FOCUS = null;
+var completed = new Set();   /* var: hoisted, so applyVisibility can run before this line */
+function applyVisibility() {
+  document.querySelectorAll("[data-show]").forEach(s => {
+    const lvl = s.dataset.show.split(" ").includes(CURRENT_LEVEL);
+    s.hidden = !lvl || (FOCUS !== null && s.matches("section[data-station]") && s.dataset.station !== FOCUS);
+  });
+  document.body.classList.toggle("focused", FOCUS !== null);
+  renderStepper();
+  const nav = document.getElementById("focusNav");
+  if (!nav) return;
+  nav.hidden = FOCUS === null;
+  if (FOCUS === null) return;
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS);
+  document.getElementById("focusBack").disabled = i <= 0;
+  document.getElementById("focusNext").disabled = i >= list.length - 1;
+  document.getElementById("focusPos").textContent = `${i + 1} / ${list.length}`;
+}
+/* Progress: one numbered step per station; done steps get a tick, any step can be opened directly. */
+function renderStepper() {
+  const nav = document.getElementById("stepper");
+  if (!nav) return;
+  nav.innerHTML = "";
+  stationsAtLevel().forEach((id, i) => {
+    const h = document.querySelector(`section[data-station="${id}"] h2`), title = h ? h.textContent.trim() : id;
+    const b = document.createElement("button");
+    b.className = "step" + (completed.has(id) ? " done" : "");
+    b.textContent = completed.has(id) ? "✓" : String(i + 1);
+    b.title = title; b.setAttribute("aria-label", `${i + 1}. ${title}${completed.has(id) ? " (erledigt)" : ""}`);
+    if (id === FOCUS) b.setAttribute("aria-current", "step");
+    b.onclick = () => { setFocus(id); ptf.event("experienced", { station: id, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: id } }); window.scrollTo({ top: 0, behavior: "auto" }); };
+    nav.append(b);
+  });
+}
+function setFocus(id) { FOCUS = id; applyVisibility(); persist(); }
+function moveFocus(step) {
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS), next = list[i + step];
+  if (!next) return;
+  setFocus(next);
+  ptf.event("experienced", { station: next, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: next } });
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+(function buildFocusNav() {
+  const nav = document.createElement("nav");
+  nav.id = "focusNav"; nav.className = "focus-nav"; nav.hidden = true;
+  nav.setAttribute("aria-label", "Stationen");
+  nav.innerHTML = `<button class="btn ghost" id="focusBack">Zurück</button><span class="mono note" id="focusPos"></span><button class="btn" id="focusNext">Weiter</button><button class="btn ghost" id="focusAll">Alles zeigen</button>`;
+  document.querySelector(".wrap > footer").before(nav);
+  nav.querySelector("#focusBack").onclick = () => moveFocus(-1);
+  nav.querySelector("#focusNext").onclick = () => moveFocus(1);
+  nav.querySelector("#focusAll").onclick = () => setFocus(null);
+  const start = document.createElement("button");
+  start.id = "focusStart"; start.className = "btn ghost"; start.textContent = "Schritt für Schritt";
+  start.onclick = () => { setFocus(stationsAtLevel()[0]); ptf.event("experienced", { station: FOCUS, data: { focus: FOCUS } }); };
+  document.getElementById("headRow").append(start);
+  const stepper = document.createElement("nav");
+  stepper.id = "stepper"; stepper.className = "stepper"; stepper.setAttribute("aria-label", "Fortschritt");
+  document.querySelector(".wrap > header").after(stepper);
+})();
+
+/* Events: every experiment reports what the learner tried, so the tutor can talk about it. */
+function report(station, data) { ptf.event("experienced", { station, level: PTF_LEVELS[CURRENT_LEVEL], data }); persist(); }
+function done(station) {
+  if (completed.has(station)) return;
+  completed.add(station);
+  ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
+  renderStepper(); persist();
+}
+/* Quiz: <div class="choices" data-q> with buttons carrying data-ok / data-mis / data-fb, followed by <p class="feedback" hidden>. */
+const quiz = {};
+function markChoice(box, b) {
+  const ok = b.hasAttribute("data-ok"), fb = box.nextElementSibling;
+  box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
+  b.classList.add(ok ? "right" : "wrong");
+  fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = b.dataset.fb;
+  quiz[box.dataset.q] = { choice: [...box.querySelectorAll("button")].indexOf(b), correct: ok };
+  return ok;
+}
+document.querySelectorAll("[data-station] .choices[data-q]").forEach(box => {
+  const station = box.closest("[data-station]").dataset.station;
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    const ok = markChoice(box, b), result = { correct: ok, response: b.textContent.trim() };
+    if (!ok && b.dataset.mis) result.misconception = b.dataset.mis;
+    ptf.event("answered", { station, level: PTF_LEVELS[CURRENT_LEVEL], data: { question: box.dataset.q }, result });
+    persist();
+    if ([...document.querySelectorAll(`[data-station="${station}"] .choices[data-q]`)].every(x => quiz[x.dataset.q] && quiz[x.dataset.q].correct)) done(station);
+  }));
+});
+
+/* Predict, observe, explain (SIMULATOR-SPEC.md §7 rule 5): a .choices.gate box is a prediction. Picking an option only records it
+   and shows [data-gated="<gate>"]; the prediction is judged and reported as answered at the first use of a control there, once the
+   result is in view. Explanations marked data-after="<gate>" stay hidden until then. A prediction never completes a station. */
+const guesses = {};
+function pickGuess(box, b) {
+  box.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  guesses[box.dataset.gate] = { pick: [...box.querySelectorAll("button")].indexOf(b), judged: false };
+  document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => { el.hidden = false; });
+  drawLn();
+}
+function judgeGuess(box, restoringNow) {
+  const g = guesses[box.dataset.gate], b = g && box.querySelectorAll("button")[g.pick];
+  if (!b || box.dataset.judged) return;
+  box.dataset.judged = "1"; g.judged = true;
+  const ok = b.hasAttribute("data-ok"), fb = box.nextElementSibling;
+  b.classList.add(ok ? "right" : "wrong");
+  box.querySelectorAll("button").forEach(x => { x.disabled = true; });
+  fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = b.dataset.fb;
+  document.querySelectorAll(`[data-after="${box.dataset.gate}"]`).forEach(el => { el.hidden = false; });
+  if (restoringNow) return;
+  const result = { correct: ok, response: b.textContent.trim() };
+  if (!ok && b.dataset.mis) result.misconception = b.dataset.mis;
+  ptf.event("answered", { station: box.closest("[data-station]").dataset.station, level: PTF_LEVELS[CURRENT_LEVEL], data: { prediction: box.dataset.gate }, result });
+  persist();
+}
+document.querySelectorAll("[data-station] .choices.gate").forEach(box => {
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    if (box.dataset.judged) return;
+    pickGuess(box, b);
+    ptf.event("experienced", { station: box.closest("[data-station]").dataset.station, level: PTF_LEVELS[CURRENT_LEVEL], data: { prediction: b.textContent.trim() } });
+    persist();
+  }));
+  document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => ["click", "input"].forEach(t =>
+    el.addEventListener(t, e => { if (e.target.closest("button, input")) setTimeout(() => judgeGuess(box)); })));
+});
+
+/* Resume state (ptf/state): everything the learner set, so a reload shows the same experiment. */
+let restoring = false;
+function persist() {
+  if (restoring || typeof ptf === "undefined") return;
+  ptf.saveState({ level: PTF_LEVELS[CURRENT_LEVEL], focus: FOCUS, p: +$("pSl").value, tried, word: $("wIn").value, weights: w, quiz, guesses, completed: [...completed] });
+}
+function restore(st) {
+  if (!st || typeof st !== "object") return;
+  restoring = true;
+  try {
+    if (Number.isFinite(st.p)) $("pSl").value = st.p;
+    if (st.tried) { tried.low = !!st.tried.low; tried.high = !!st.tried.high; }
+    if (typeof st.word === "string") $("wIn").value = st.word;
+    if (st.weights && typeof st.weights === "object") cands.forEach(c => { if (Number.isFinite(st.weights[c])) w[c] = st.weights[c]; });
+    if (st.quiz && typeof st.quiz === "object") document.querySelectorAll(".choices[data-q]").forEach(box => {
+      const a = st.quiz[box.dataset.q], b = a && box.querySelectorAll("button")[a.choice];
+      if (b) markChoice(box, b);
+    });
+    if (st.guesses && typeof st.guesses === "object") document.querySelectorAll(".choices.gate").forEach(box => {
+      const g = st.guesses[box.dataset.gate], b = g && Number.isInteger(g.pick) && box.querySelectorAll("button")[g.pick];
+      if (!b) return;
+      pickGuess(box, b);
+      if (g.judged) judgeGuess(box, true);
+    });
+    if (Array.isArray(st.completed)) st.completed.forEach(id => { if (stationsAtLevel().includes(id)) completed.add(id); });
+    drawLn(); renderWord(); renderC3();
+    if (st.focus === null || stationsAtLevel().includes(st.focus)) setFocus(st.focus);
+  } finally { restoring = false; }
+}
+
+const pct = x => `${Math.round(x)} %`;
+function simSnapshot() {
+  const p = $("pSl").value / 100, r = wordLoss(), { mine, cm, zero } = c3Losses(), tot = Object.values(w).reduce((a, b) => a + b, 0) || 1;
+  const dist = cands.map(c => `${c === "rest" ? "everything else" : JSON.stringify(c)} ${pct(w[c] / tot * 100)}`).join(", ");
+  const parts = [
+    `Surprise: p = ${pct(p * 100)} for the right character, loss ${(-Math.log(p)).toFixed(2)}`,
+    `Average: text ${JSON.stringify($("wIn").value)}, ${r.n} steps, loss ${r.n ? r.loss.toFixed(2) : "none"}`,
+    `Distribute after "e": ${dist}; learner's loss ${zero ? "infinite (a real character got 0 %)" : mine.toFixed(2)}, best possible with these sliders ${c3Best.toFixed(2)}, counted model ${cm.toFixed(2)}, blind guessing ${Math.log(V).toFixed(2)}`
+  ];
+  const preds = Object.entries(guesses).map(([k, g]) => { const b = document.querySelector(`.choices[data-gate="${k}"]`).querySelectorAll("button")[g.pick];
+    return `${k} ${JSON.stringify(b.textContent.trim())}${g.judged ? (b.hasAttribute("data-ok") ? " (right)" : " (wrong)") : " (not yet judged)"}`; });
+  if (preds.length) parts.push(`Predictions: ${preds.join("; ")}`);
+  const answers = Object.entries(quiz).map(([k, a]) => `${k} ${a.correct ? "right" : "wrong"}`);
+  if (answers.length) parts.push(`Quiz: ${answers.join(", ")}`);
+  return parts.join(". ");
+}
+const ptf = PTF.connect({
+  id: SIM_ID, version: SIM_VERSION, defaultLevel: "highschool",
+  onInit(ctx) {
+    restore(ctx.state);
+    if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus !== false });
+  },
+  onSetLevel() { /* one level only */ },
+  onTheme() { drawLn(); },
+  onGoto: gotoStation,
+  snapshot() {
+    const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `Visible stations: ${shown.join(", ")}`];
+    if (FOCUS) parts.push(`Focus mode on station: ${FOCUS}`);
+    if (completed.size) parts.push(`Completed: ${stationsAtLevel().filter(id => completed.has(id)).join(", ")}`);
+    parts.push(simSnapshot());
+    return parts.join(". ");
+  }
+});
+function gotoStation(id, opts) {
+  const s = id ? document.querySelector(`section[data-station="${id}"]`) : null;
+  if (opts && opts.focus === false) setFocus(null);
+  if (!s) return;
+  if (opts && opts.focus === true) { setFocus(id); window.scrollTo({ top: 0, behavior: "auto" }); return; }
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+/* Start with one station at a time (SIMULATOR-SPEC.md §4.7); "Alles zeigen" opens everything for review. */
+restoring = true; setFocus(stationsAtLevel()[0] || null); restoring = false;
+</script>
+</body>
+</html>

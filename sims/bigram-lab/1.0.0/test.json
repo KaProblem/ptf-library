@@ -1,0 +1,178 @@
+{
+  "steps": [
+    {
+      "init": {
+        "level": "college",
+        "locale": "en"
+      }
+    },
+    {
+      "expectStations": [
+        "loss"
+      ]
+    },
+    {
+      "expectText": "averaged over the text"
+    },
+    {
+      "click": "[data-gate='lower-loss'] button[data-ok]"
+    },
+    {
+      "click": "#lossPlay"
+    },
+    {
+      "expectEvent": {
+        "verb": "answered",
+        "station": "loss"
+      }
+    },
+    {
+      "expectText": "even scores worse than blind guessing"
+    },
+    {
+      "click": "#lossSalad"
+    },
+    {
+      "expectEvent": {
+        "verb": "station_completed",
+        "station": "loss"
+      }
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "loss 4.39",
+          "blind guessing loss ln V = 3.87"
+        ]
+      }
+    },
+    {
+      "click": "#focusNext"
+    },
+    {
+      "expectStations": [
+        "training-curve"
+      ]
+    },
+    {
+      "click": "[data-gate='start-loss'] button[data-ok]"
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "0 characters read, validation loss 3.87"
+        ]
+      }
+    },
+    {
+      "type": {
+        "selector": "#trainK",
+        "text": "40"
+      }
+    },
+    {
+      "expectEvent": {
+        "verb": "answered",
+        "station": "training-curve"
+      }
+    },
+    {
+      "expectEvent": {
+        "verb": "station_completed",
+        "station": "training-curve"
+      }
+    },
+    {
+      "goto": {
+        "station": "temperature",
+        "focus": true
+      }
+    },
+    {
+      "click": "[data-gate='cold'] button[data-mis]"
+    },
+    {
+      "click": "#tgen"
+    },
+    {
+      "expectEvent": {
+        "verb": "answered",
+        "station": "temperature"
+      }
+    },
+    {
+      "type": {
+        "selector": "#temp",
+        "text": "2.5"
+      }
+    },
+    {
+      "click": "#tgen"
+    },
+    {
+      "expectEvent": {
+        "verb": "station_completed",
+        "station": "temperature"
+      }
+    },
+    {
+      "goto": {
+        "station": "bigram-table",
+        "focus": true
+      }
+    },
+    {
+      "click": "[data-gate='table-size'] button[data-ok]"
+    },
+    {
+      "click": "#heat"
+    },
+    {
+      "expectEvent": {
+        "verb": "answered",
+        "station": "bigram-table"
+      }
+    },
+    {
+      "reload": true
+    },
+    {
+      "expectStations": [
+        "bigram-table"
+      ]
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "table-size",
+          "Temperature 2.5"
+        ]
+      }
+    },
+    {
+      "click": "[data-level='3']"
+    },
+    {
+      "expectEvent": "level_changed"
+    },
+    {
+      "expectText": "nn.Embedding(vocab_size, vocab_size)"
+    },
+    {
+      "goto": {
+        "focus": false
+      }
+    },
+    {
+      "expectStations": [
+        "loss",
+        "training-curve",
+        "temperature",
+        "bigram-table"
+      ]
+    },
+    {
+      "expectNoError": true
+    }
+  ]
+}

@@ -20,14 +20,14 @@ simulators:
     station: surprise
     levels: [highschool]
     role: explore
-    note: Use when the learner did not get the loss from next-char-lab ("explain differently").
-  - ref: ptf:sim/next-char-lab@^2.0.0
+    note: Use when the learner did not get the loss from bigram-lab ("explain differently").
+  - ref: ptf:sim/bigram-lab@^1.0.0
     station: loss
-    levels: [college]
+    levels: [college, expert]
     role: explore
-  - ref: ptf:sim/next-char-lab@^2.0.0
+  - ref: ptf:sim/bigram-lab@^1.0.0
     station: training-curve
-    levels: [college]
+    levels: [college, expert]
     role: practice
 code:
   - ref: ptf:code/gpt-from-scratch@^1.0.0
@@ -40,7 +40,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.2.1
+version: 0.2.2
 license: CC-BY-SA-4.0
 ---
 

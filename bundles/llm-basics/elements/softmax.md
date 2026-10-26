@@ -16,14 +16,19 @@ leads_to:
   - ptf:el/llm-basics/cross-entropy
 duration_min: { highschool: 10, college: 20, expert: 15 }
 simulators:
-  - ref: ptf:sim/next-char-lab@^2.0.0
+  - ref: ptf:sim/next-char-basics@^1.0.0
     station: counted-probabilities
     levels: [highschool]
     role: explore
     note: Shows probabilities from counting; good bridge before introducing scores and softmax.
-  - ref: ptf:sim/next-char-lab@^2.0.0
+  - ref: ptf:sim/next-char-basics@^1.0.0
+    station: generate
+    levels: [highschool]
+    role: explore
+    note: Sampling from counted probabilities; the learner predicts what the text will look like first.
+  - ref: ptf:sim/bigram-lab@^1.0.0
     station: temperature
-    levels: [college]
+    levels: [college, expert]
     role: explore
 code:
   - ref: ptf:code/gpt-from-scratch@^1.0.0
@@ -36,7 +41,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.2.1
+version: 0.2.2
 license: CC-BY-SA-4.0
 ---
 

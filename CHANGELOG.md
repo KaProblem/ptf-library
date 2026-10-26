@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Changed
+- `next-char-lab` (11 stations) is split into two small simulators, following PEDAGOGY.md §5 (at most about seven stations): `next-char-basics` 1.0.0 (guess the next character, tokenizer, counted probabilities, generating, training examples, your own text) and `bigram-lab` 1.0.0 (loss of a line against letter salad, validation curve, temperature, the V×V table). Both have an English and a German UI, ask for a prediction before every experiment and judge it after the result (SIMULATOR-SPEC §7 rule 5), start in focus mode with a progress row, emit `station_completed` for every station, save and restore their state, and resolve canvas colours through a probe element (§4.5). `next-char-lab` is no longer referenced; its published versions stay unchanged.
+- `loss-lens` 1.2.0: predict first in the stations surprise, average and distribute; explanations that give the answer away stay hidden until the prediction is judged; canvas colours resolved through a probe element.
+- `llm-basics` 0.3.4: tokenizer, training-examples, softmax and cross-entropy point to the new simulators (softmax also uses the generate station), path `gpt-from-scratch` 0.3.1, lockfile.
+
 ### Fixed
 - `loss-lens` 1.1.0: the simulator now tells the tutor what the learner did. Every station emits `experienced` with the tried values (p, text, distribution, loss), the quiz is checkable multiple choice with `answered` and misconception IDs, stations emit `station_completed`, the snapshot describes the current values instead of only the visible stations, the whole experiment is saved via `ptf/state` and restored, and the simulator supports focus mode (starts at station 1, Back/Next, progress row, `goto { focus }`).
 - `next-char-lab` 2.1.0: follows `goto { focus }` and starts in focus mode, so a path step shows one station instead of six; own texts with emoji no longer break the lab (vocabulary, counting and slicing all split text into code points); every station reports `experienced` and `station_completed`; richer snapshot; full state incl. a custom corpus up to 30,000 characters is saved and restored; the source reference in the footer is gone (lessons are self-contained).
