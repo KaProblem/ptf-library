@@ -1,0 +1,193 @@
+{
+  "ptf_code": "0.1",
+  "id": "ptf:code/gpt-from-scratch",
+  "version": "1.0.0",
+  "title": "GPT from scratch",
+  "description": "Build a character-level GPT in eight runnable steps: tokenizer, batches, a bigram model that learns, the averaging trick, one attention head, transformer blocks, the full GPT, and generation from the saved model.",
+  "lang": "en",
+  "language": "python",
+  "requires": {
+    "runtime": "python>=3.10",
+    "packages": [
+      "torch>=2.1"
+    ]
+  },
+  "setup": "python3 -m pip install -r requirements.txt",
+  "concepts": [
+    "tokenizer",
+    "batch",
+    "bigram",
+    "training-loop",
+    "causal-mask",
+    "self-attention",
+    "multi-head-attention",
+    "feed-forward",
+    "residual",
+    "layer-norm",
+    "dropout",
+    "generation",
+    "temperature"
+  ],
+  "levels": [
+    "college",
+    "expert"
+  ],
+  "steps": [
+    {
+      "id": "tokenizer",
+      "title": "Turn text into numbers",
+      "file": "steps/01_tokenizer.py",
+      "run": "python3 steps/01_tokenizer.py",
+      "concepts": [
+        "tokenizer"
+      ],
+      "minutes": 0.1,
+      "expect": "vocabulary \\(\\d+ characters\\)",
+      "try": [
+        "Run it on your own text with --data. How big is your vocabulary?",
+        "Write a word-level tokenizer instead (split on spaces). How many tokens does the vocabulary have now, and how long is the encoded text?"
+      ]
+    },
+    {
+      "id": "batches",
+      "title": "One chunk of text is many training examples",
+      "file": "steps/02_batches.py",
+      "run": "python3 steps/02_batches.py",
+      "concepts": [
+        "batch",
+        "block-size"
+      ],
+      "minutes": 0.1,
+      "expect": "inputs xb: shape \\(4, 8\\)",
+      "try": [
+        "Change --block-size to 3. How many examples does one chunk hold now?",
+        "Print a batch from the validation split instead of the training split."
+      ]
+    },
+    {
+      "id": "bigram",
+      "title": "A bigram model that learns",
+      "file": "steps/03_bigram.py",
+      "run": "python3 steps/03_bigram.py",
+      "concepts": [
+        "bigram",
+        "training-loop",
+        "cross-entropy",
+        "sampling"
+      ],
+      "minutes": 1,
+      "expect": "step\\s+\\d+: train loss [\\d.]+, val loss [\\d.]+",
+      "try": [
+        "Try --lr 1 and --lr 1e-4. Which one learns, which one jumps around, which one barely moves?",
+        "Before training the loss is about 4.7, above the -ln(1/65) = 4.17 of uniform guessing. Why is a randomly initialised model worse than guessing?",
+        "Look at model.token_embedding_table.weight after training: which character is most likely after 'q'?"
+      ]
+    },
+    {
+      "id": "averaging",
+      "title": "Averaging over the past with a triangular mask",
+      "file": "steps/04_averaging.py",
+      "run": "python3 steps/04_averaging.py",
+      "concepts": [
+        "causal-mask",
+        "softmax"
+      ],
+      "minutes": 0.1,
+      "expect": "loops == masked softmax:  True",
+      "try": [
+        "Change the scores in version 3 from zeros to random numbers. Do the rows still sum to 1? Is the future still blocked?",
+        "Replace torch.tril by torch.ones: what does position 0 now average over?"
+      ]
+    },
+    {
+      "id": "self-attention",
+      "title": "One head of self-attention",
+      "file": "steps/05_self_attention.py",
+      "run": "python3 steps/05_self_attention.py",
+      "concepts": [
+        "self-attention",
+        "position-embedding"
+      ],
+      "minutes": 2,
+      "expect": "step\\s+\\d+: train loss",
+      "try": [
+        "Run with --no-mask. The loss drops far below 2.4 (to about 0.4), yet the generated text is garbage. Why?",
+        "Run with --no-scale and a larger --n-embd 128. What happens to training?",
+        "Remove pos_emb from the sum. Can the model still tell 'dog bites man' from 'man bites dog'?"
+      ]
+    },
+    {
+      "id": "transformer-block",
+      "title": "Multi-head attention and feed-forward make a block",
+      "file": "steps/06_transformer_block.py",
+      "run": "python3 steps/06_transformer_block.py",
+      "concepts": [
+        "multi-head-attention",
+        "feed-forward"
+      ],
+      "minutes": 3,
+      "expect": "step\\s+\\d+: train loss",
+      "try": [
+        "Compare --n-head 1, 4 and 8 at the same --n-embd 32.",
+        "Run with --n-layer 4. Is the loss better than with one block? Keep the number for step 7."
+      ]
+    },
+    {
+      "id": "gpt",
+      "title": "The complete GPT: residuals, layer norm, dropout",
+      "file": "steps/07_gpt.py",
+      "run": "python3 steps/07_gpt.py",
+      "concepts": [
+        "residual",
+        "layer-norm",
+        "dropout",
+        "scaling"
+      ],
+      "minutes": 8,
+      "expect": "saved the model to",
+      "try": [
+        "Run --preset tiny with and without --no-residual. How much do residual connections help?",
+        "Train on your own text with --data. What does the model pick up first: spelling, word lengths, line breaks?",
+        "Raise --dropout to 0.3 and compare the gap between train and val loss."
+      ]
+    },
+    {
+      "id": "generate",
+      "title": "Generate text from the trained model",
+      "file": "steps/08_generate.py",
+      "run": "python3 steps/08_generate.py --prompt \"ROMEO:\"",
+      "concepts": [
+        "generation",
+        "sampling",
+        "temperature",
+        "top-k"
+      ],
+      "minutes": 0.2,
+      "expect": "generated \\d+ tokens",
+      "try": [
+        "Use --explain 10 with --temperature 0.5 and 1.5. How do the probabilities change?",
+        "Use --top-k 1. Why does the text start repeating itself?",
+        "Give a prompt longer than the context. What does the model actually see?"
+      ]
+    }
+  ],
+  "data": [
+    {
+      "path": "data/input.txt",
+      "title": "Tiny Shakespeare: about 1.1 million characters of Shakespeare's plays",
+      "license": "public domain",
+      "source": "https://github.com/karpathy/char-rnn/tree/master/data/tinyshakespeare"
+    }
+  ],
+  "smoke": {
+    "env": {
+      "PTF_SMOKE": "1"
+    },
+    "timeout_s": 180
+  },
+  "license": "MIT",
+  "authors": [
+    "claude/opus"
+  ],
+  "integrity": "sha256-NoKj3z1sE4caB3iamm4hAQlfPW0Ec8bm4i7KL7C3PeY="
+}

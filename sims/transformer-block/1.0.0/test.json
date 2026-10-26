@@ -1,0 +1,66 @@
+{
+  "steps": [
+    {
+      "init": {
+        "level": "highschool"
+      }
+    },
+    {
+      "click": "#focusStart"
+    },
+    {
+      "click": "#focusNext"
+    },
+    {
+      "expectText": "Feed-forward: thinking alone"
+    },
+    {
+      "expectEvent": "experienced"
+    },
+    {
+      "click": "#focusAll"
+    },
+    {
+      "expectText": "Three heads, three questions"
+    },
+    {
+      "click": "[data-station='heads'] .choices button[data-ok]"
+    },
+    {
+      "expectEvent": "answered"
+    },
+    {
+      "type": {
+        "selector": "#ffSl",
+        "text": "-1.5"
+      }
+    },
+    {
+      "expectText": "Only \"cat\" changes"
+    },
+    {
+      "click": "#ladder button[data-i='1']"
+    },
+    {
+      "click": "#ladder button[data-i='2']"
+    },
+    {
+      "expectText": "several heads"
+    },
+    {
+      "click": "[data-level='2']"
+    },
+    {
+      "expectEvent": "level_changed"
+    },
+    {
+      "goto": "check"
+    },
+    {
+      "snapshot": true
+    },
+    {
+      "expectNoError": true
+    }
+  ]
+}

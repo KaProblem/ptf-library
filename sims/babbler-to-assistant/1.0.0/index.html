@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From babbler to assistant</title>
+<style>
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
+  --accent:#0E6E68; --accent-soft:#D5ECEA; --warn:#C2410C; --warn-soft:#FBE3D6;
+  --f-display:"Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.3rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+header{display:flex;flex-direction:column;gap:12px}
+.levels{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start;background:var(--surface);max-width:100%}
+.levels button{font:600 1rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:10px 16px;min-height:44px;cursor:pointer}
+.levels button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.station{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.station .num{font:600 .8rem var(--f-mono);color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:600 .95rem var(--f-body);min-height:44px;padding:8px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--accent)}
+button.btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-height:44px;min-width:0}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+label{color:var(--muted);font-size:.95rem}
+.note{color:var(--muted);font-size:.95rem}
+.stat{font:600 1.5rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:24px}
+.stats div{display:flex;flex-direction:column}
+.scroll{overflow-x:auto;max-width:100%}
+.out{font:.95rem/1.5 var(--f-mono);white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px}
+.feedback{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:4px}
+.feedback.bad{border-color:var(--warn);background:var(--warn-soft)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices button{text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.choices button.right{border-color:var(--accent);background:var(--accent-soft)}
+.choices button.wrong{border-color:var(--warn);background:var(--warn-soft)}
+table.grid{border-collapse:collapse;font:.85rem var(--f-mono);font-variant-numeric:tabular-nums}
+table.grid th{color:var(--muted);font-weight:600;padding:4px 6px}
+table.grid td{width:46px;height:40px;text-align:center;border:1px solid var(--line);padding:0}
+table.grid td button{width:100%;height:100%;min-height:40px;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.bars{display:flex;flex-direction:column;gap:4px;font:.9rem var(--f-mono)}
+.bar{display:grid;grid-template-columns:5.5em 1fr 4em;gap:8px;align-items:center}
+.bar .fill{height:18px;background:var(--accent);border-radius:3px;min-width:2px}
+.bar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.tok{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:4px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font:1rem var(--f-mono);color:var(--ink);cursor:pointer}
+.tok[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+svg text{font-family:var(--f-mono)}
+details summary{cursor:pointer;font-weight:600;min-height:32px}
+footer{color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+html:not([lang="de"]) i-de,html[lang="de"] i-en{display:none!important}
+i-en,i-de{font-style:inherit}
+.focus-nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;bottom:0;background:var(--bg);padding:10px 0;border-top:1px solid var(--line)}
+.focus-nav #focusAll{margin-left:auto}
+.focus-nav button:disabled{opacity:.4;cursor:default}
+body.focused header > :not(.row){display:none}
+body.focused #focusStart{display:none}
+body.focused footer{display:none}
+
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.card{border:1px solid var(--line);border-radius:8px;padding:12px;background:var(--bg);display:flex;flex-direction:column;gap:8px}
+.card .out{background:var(--surface)}
+.order{display:flex;flex-direction:column;gap:8px}
+.order button{display:grid;grid-template-columns:2em 1fr;gap:8px;text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.order button .n{font:600 1rem var(--f-mono);color:var(--accent)}
+.order button.placed{border-color:var(--accent);background:var(--accent-soft)}
+.order button.wrong{border-color:var(--warn);background:var(--warn-soft)}
+.modes{display:flex;flex-wrap:wrap;gap:8px}
+table.grid td{width:34px;height:30px}
+table.grid th{font-size:.75rem}
+.logbars .bar{grid-template-columns:9em 1fr 6em}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow">How GPT works · From model to assistant</span>
+  <h1>From babbler to assistant</h1>
+  <p>A language model that has only learned to continue text is not yet a helpful assistant. It babbles on in the style of its training text. Here you see what happens next, how big real models are, and which kinds of architecture exist.</p>
+  <div class="levels" role="group" aria-label="Level">
+    <button data-level="1" aria-pressed="true">Child</button><button data-level="2" aria-pressed="false">High school</button><button data-level="3" aria-pressed="false">College</button>
+  </div>
+</header>
+
+<section class="station" data-station="document-completer" data-show="1 2 3">
+  <span class="num">Station 1 · Guess first</span>
+  <h2>Who wrote this?</h2>
+  <p>Two models get the same start: <b>"How do I bake an apple pie?"</b> One has only learned to continue texts from the internet. The other was then trained to be an assistant. Which answer comes from the model that can only continue text?</p>
+  <div class="pair">
+    <div class="card"><b>Answer A</b><div class="out">How do I bake an apple pie? How long does yeast dough need to rise? Can you freeze apples? These and other questions are answered in our forum. Sign up now for free!</div></div>
+    <div class="card"><b>Answer B</b><div class="out">Sure! You need 4 apples, 200 g flour, 100 g butter, 100 g sugar and 2 eggs. 1. Knead the dough and press it into the tin. 2. Slice the apples and lay them on top. 3. Bake at 180 °C for about 45 minutes.</div></div>
+  </div>
+  <div class="choices">
+    <button data-ok data-fb-en="Right. The model that was only pretrained continues the text the way such texts often continue on the internet: with more questions from a forum page. It answers nothing; it completes a document.">Answer A</button>
+    <button data-mis="pretraining-makes-assistant" data-fb-en="Not quite. A helpful, direct answer is exactly what the assistant training teaches. A model that only continues text tends to write on like a web page.">Answer B</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <p class="note">Both texts are re-created examples.</p>
+</section>
+
+<section class="station" data-station="stages" data-show="1 2 3">
+  <span class="num">Station 2 · Order</span>
+  <h2>In which order does an assistant learn?</h2>
+  <p>Tap the steps in the order in which they happen.</p>
+  <div class="order" id="order"></div>
+  <p class="feedback" id="orderFb" hidden></p>
+  <div class="row"><button class="btn ghost" id="orderReset">Start over</button></div>
+</section>
+
+<section class="station" data-station="scale" data-show="1 2 3">
+  <span class="num">Station 3 · Estimate</span>
+  <h2>How much bigger?</h2>
+  <p>A small model that writes Shakespeare-like text has about 10 million parameters (adjustable numbers). GPT-3 has 175 billion. Roughly how much bigger is GPT-3?</p>
+  <div class="choices">
+    <button data-mis="scale-is-small" data-fb-en="Much more. 100 times would only be 1 billion parameters.">about 100 times</button>
+    <button data-mis="scale-is-small" data-fb-en="Still too few. 1,000 times would be 10 billion.">about 1,000 times</button>
+    <button data-ok data-fb-en="Right: 175,000,000,000 / 10,000,000 = 17,500. And GPT-3 read about 300 billion tokens during training, the small model only about 1 million characters.">about 17,500 times</button>
+    <button data-fb-en="Too many. A million times would be 10 trillion parameters.">about a million times</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="bars logbars" id="sizeBars"></div>
+  <p class="note" data-show="1">Imagine the small model is a single sheet of paper. Then GPT-3 would be a stack of 17,500 sheets: almost two metres high, taller than a grown-up.</p>
+  <p class="note" data-show="2 3">The bars are logarithmic: each step to the right means ten times more. The blueprint of both is almost the same, a decoder-only transformer. The difference is size, amount of data and compute.</p>
+</section>
+
+<section class="station" data-station="architectures" data-show="2 3">
+  <span class="num">Station 4 · Architectures</span>
+  <h2>Decoder, encoder, cross-attention</h2>
+  <p>The architecture shows in who may listen to whom. Rows listen to columns. Pick an architecture.</p>
+  <div class="modes" role="group" aria-label="Architecture">
+    <button class="btn ghost" data-mode="decoder" aria-pressed="true">Decoder (GPT)</button>
+    <button class="btn ghost" data-mode="encoder" aria-pressed="false">Encoder</button>
+    <button class="btn ghost" data-mode="cross" aria-pressed="false">Cross-attention</button>
+  </div>
+  <div class="scroll"><table class="grid" id="arch"></table></div>
+  <p class="note" id="archNote"></p>
+  <p><b>Question:</b> A model has to decide whether a product review is positive or negative. It does not have to write anything. Which architecture fits?</p>
+  <div class="choices">
+    <button data-ok data-fb-en="Right. There is nothing to predict that has to stay hidden, so all words may see each other.">Encoder: everyone listens to everyone</button>
+    <button data-mis="decoder-needed-everywhere" data-fb-en="That works too, but it is needlessly restricted. The mask is only needed when the model has to predict the next words.">Decoder: only into the past</button>
+    <button data-fb-en="No. Cross-attention needs a second source, such as the source text in a translation.">Cross-attention</button>
+  </div>
+  <p class="feedback" hidden></p>
+</section>
+<footer>Simulator "From babbler to assistant" · Personal Tutor Format</footer>
+</div>
+
+<script src="ptf-sim.js"></script>
+<script>
+const SIM_ID = "ptf:sim/babbler-to-assistant", SIM_VERSION = "1.0.0";
+const SIM_LOCALES = ["en"];
+const PTF_LEVELS = {"1": "child", "2": "highschool", "3": "college"};
+/* Shared PTF glue: levels, stations, snapshot (SIMULATOR-SPEC.md §4) */
+function setLevel(l){
+  document.querySelectorAll(".levels button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.level===l));
+  CURRENT_LEVEL=l;
+  if (FOCUS && !stationsAtLevel().includes(FOCUS)) FOCUS = stationsAtLevel()[0] || null;
+  applyVisibility();
+}
+const stationsAtLevel = () => [...document.querySelectorAll("section[data-station]")].filter(s => s.dataset.show.split(" ").includes(CURRENT_LEVEL)).map(s => s.dataset.station);
+/* Focus mode (SIMULATOR-SPEC.md §4.7): one station at a time with Back / Next. */
+let FOCUS = null;
+function applyVisibility() {
+  document.querySelectorAll("[data-show]").forEach(s => {
+    const lvl = s.dataset.show.split(" ").includes(CURRENT_LEVEL);
+    s.hidden = !lvl || (FOCUS !== null && s.matches("section[data-station]") && s.dataset.station !== FOCUS);
+  });
+  document.body.classList.toggle("focused", FOCUS !== null);
+  const nav = document.getElementById("focusNav");
+  if (!nav) return;
+  nav.hidden = FOCUS === null;
+  if (FOCUS === null) return;
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS);
+  document.getElementById("focusBack").disabled = i <= 0;
+  document.getElementById("focusNext").disabled = i >= list.length - 1;
+  document.getElementById("focusPos").textContent = `${i + 1} / ${list.length}`;
+}
+function setFocus(id) { FOCUS = id; applyVisibility(); }
+function moveFocus(step) {
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS), next = list[i + step];
+  if (!next) return;
+  setFocus(next);
+  ptf.event("experienced", { station: next, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: next } });
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+(function buildFocusNav() {
+  const nav = document.createElement("nav");
+  nav.id = "focusNav"; nav.className = "focus-nav"; nav.hidden = true;
+  nav.setAttribute("aria-label", "Stations");
+  nav.innerHTML = `<button class="btn ghost" id="focusBack"><i-en>Back</i-en><i-de>Zurück</i-de></button><span class="mono note" id="focusPos"></span><button class="btn" id="focusNext"><i-en>Next</i-en><i-de>Weiter</i-de></button><button class="btn ghost" id="focusAll"><i-en>Show all</i-en><i-de>Alles zeigen</i-de></button>`;
+  const footer = document.querySelector(".wrap > footer");
+  footer ? footer.before(nav) : document.querySelector(".wrap").append(nav);
+  nav.querySelector("#focusBack").onclick = () => moveFocus(-1);
+  nav.querySelector("#focusNext").onclick = () => moveFocus(1);
+  nav.querySelector("#focusAll").onclick = () => setFocus(null);
+  const start = document.createElement("button");
+  start.id = "focusStart"; start.className = "btn ghost";
+  start.innerHTML = "<i-en>Step by step</i-en><i-de>Schritt für Schritt</i-de>";
+  start.onclick = () => { setFocus(stationsAtLevel()[0]); ptf.event("experienced", { station: FOCUS, data: { focus: FOCUS } }); };
+  const levels = document.querySelector("header .levels");
+  const row = document.createElement("div"); row.className = "row";
+  levels.before(row); row.append(levels, start);
+})();
+let CURRENT_LEVEL="1", LOCALE="en", READY=false;
+/* UI language (en, de): static text as <i-en>/<i-de> pairs, dynamic text via L(en, de). */
+const L = (en, de) => LOCALE === "de" ? de : en;
+const fmt = (x, d = 2) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+/* Each simulator declares SIM_LOCALES (matching "lang" in sim.json); unsupported locales fall back to English. */
+function setLocale(loc) {
+  LOCALE = /^de/i.test(loc || "") && SIM_LOCALES.includes("de") ? "de" : "en";
+  document.documentElement.lang = LOCALE;
+  if (READY && typeof rerender === "function") rerender();
+}
+setLocale(navigator.language);
+const completed=new Set();
+const ptf = PTF.connect({
+  id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS["1"],
+  onInit(ctx) {
+    if (ctx.locale) setLocale(ctx.locale);
+    const lvl = (ctx.state && ctx.state.level) || ctx.level;
+    if (lvl) applyLevel(lvl);
+    if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus === true });
+  },
+  onSetLevel: applyLevel,
+  onGoto: gotoStation,
+  snapshot() {
+    const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `UI language: ${LOCALE}`, `Visible stations: ${shown.join(", ")}`];
+    if (FOCUS) parts.push(`Focus mode on station: ${FOCUS}`);
+    if (completed.size) parts.push(`Completed: ${[...completed].join(", ")}`);
+    if (typeof simSnapshot === "function") parts.push(simSnapshot());
+    return parts.join(". ");
+  }
+});
+function applyLevel(level) {
+  const n = Object.keys(PTF_LEVELS).find(k => PTF_LEVELS[k] === level);
+  if (n) setLevel(n);
+}
+function gotoStation(id, opts) {
+  const s = id ? document.querySelector(`section[data-station="${id}"]`) : null;
+  if (opts && opts.focus === false) setFocus(null);
+  if (!s) return;
+  if (!s.dataset.show.split(" ").includes(CURRENT_LEVEL)) setLevel(s.dataset.show.split(" ")[0]);
+  if (opts && opts.focus === true) { setFocus(id); window.scrollTo({ top: 0, behavior: "auto" }); return; }
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", () => {
+  setLevel(b.dataset.level);
+  const level = PTF_LEVELS[b.dataset.level];
+  ptf.event("level_changed", { level });
+  ptf.saveState({ level });
+}));
+function answered(station, correct, misconception, response) {
+  const result = { correct };
+  if (misconception && !correct) result.misconception = misconception;
+  if (response !== undefined) result.response = String(response);
+  ptf.event("answered", { station, level: PTF_LEVELS[CURRENT_LEVEL], result });
+}
+function done(station) {
+  if (completed.has(station)) return;
+  completed.add(station);
+  ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
+}
+/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb-en / data-fb-de,
+   followed by <p class="feedback" hidden>. A station completes when all its visible boxes are answered correctly. Call initChoices() once the DOM is built. */
+function initChoices() {
+document.querySelectorAll("[data-station] .choices").forEach(box => {
+  const sec = box.closest("[data-station]"), station = sec.dataset.station, fb = box.nextElementSibling;
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    const ok = b.hasAttribute("data-ok");
+    box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
+    b.classList.add(ok ? "right" : "wrong");
+    if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+    answered(station, ok, b.dataset.mis, (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim());
+    if (ok) box.dataset.solved = "1";
+    if ([...sec.querySelectorAll(".choices")].filter(x => !x.closest("[hidden]")).every(x => x.dataset.solved)) done(station);
+  }));
+});
+}
+setLevel("1");
+
+const $ = id => document.getElementById(id);
+
+/* Station 2 */
+const STAGES = [
+  { t: "Pretraining: read huge amounts of internet text and predict the next token", c: "Result: a model that can continue documents. This is the most expensive step." },
+  { t: "Fine-tuning on example conversations: a question and a good answer, written by people", c: "Result: the model learns the format \"question, then helpful answer\". Comparatively few examples are enough: thousands instead of billions." },
+  { t: "People compare several answers; a reward model learns from that", c: "Result: a second model that estimates which answer people prefer." },
+  { t: "Reinforcement learning: the model practises and is rewarded when the reward model is satisfied", c: "Result: the assistant. This step is often called RLHF (reinforcement learning from human feedback)." }
+];
+const SHUFFLED = [2, 0, 3, 1];
+let placed = [];
+function renderOrder() {
+  $("order").innerHTML = SHUFFLED.map(i => { const k = placed.indexOf(i); return `<button data-i="${i}" class="${k >= 0 ? "placed" : ""}" ${k >= 0 ? "disabled" : ""}><span class="n">${k >= 0 ? k + 1 : "·"}</span><span>${STAGES[i].t}</span></button>`; }).join("");
+}
+$("order").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b || b.disabled) return; const i = +b.dataset.i, fb = $("orderFb");
+  if (i === placed.length) {
+    placed.push(i); fb.hidden = false; fb.classList.remove("bad"); fb.textContent = STAGES[i].c; renderOrder();
+    if (placed.length === STAGES.length) { answered("stages", true, null, "order complete"); done("stages"); fb.textContent += " Done: that is the whole chain."; }
+  } else {
+    b.classList.add("wrong"); fb.hidden = false; fb.classList.add("bad");
+    fb.textContent = placed.length === 0 ? "Not yet. At the very beginning the model knows no language at all. How does it learn it?" : "Not yet. What do you need before this step is possible?";
+    answered("stages", false, placed.length === 0 && i !== 0 ? "pretraining-makes-assistant" : null, STAGES[i].t);
+  }
+});
+$("orderReset").onclick = () => { placed = []; $("orderFb").hidden = true; renderOrder(); };
+
+/* Station 3 */
+const SIZES = [["small model", 1.07e7], ["GPT-2 (small)", 1.24e8], ["GPT-3", 1.75e11]];
+$("sizeBars").innerHTML = SIZES.map(([n, v]) => `<div class="bar"><span>${n}</span><div><div class="fill" style="width:${((Math.log10(v) - 6) / 6 * 100).toFixed(1)}%"></div></div><span class="v">${v >= 1e9 ? fmt(v / 1e9, 0) + " B" : fmt(v / 1e6, 0) + " M"}</span></div>`).join("");
+
+/* Station 4 */
+const SRC = ["Ich", "mag", "Tee"], EN = ["I", "like", "tea"];
+let mode = "decoder";
+function renderArch() {
+  document.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === mode));
+  const rows = EN, cols = mode === "cross" ? SRC : EN;
+  let h = `<tr><th></th>${cols.map(c => `<th>${c}</th>`).join("")}</tr>`;
+  rows.forEach((r, i) => { h += `<tr><th>${r}</th>` + cols.map((_, j) => { const on = mode !== "decoder" || j <= i; return `<td style="${on ? "background:color-mix(in srgb, var(--accent) 55%, var(--bg))" : ""}">${on ? "✓" : ""}</td>`; }).join("") + "</tr>"; });
+  $("arch").innerHTML = h;
+  $("archNote").textContent = {
+    decoder: "Decoder: every word listens only to itself and the past. That way the model can write word by word. GPT consists only of such blocks.",
+    encoder: "Encoder: all words listen to all words, forwards too. Good for understanding a finished text, but not for continuing it.",
+    cross: "Cross-attention: the English words (rows) ask the questions; the answers come from the German sentence (columns), which an encoder has read before. This is how the original encoder-decoder translation model works."
+  }[mode];
+}
+document.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => { mode = b.dataset.mode; renderArch(); ptf.event("experienced", { station: "architectures", data: { mode } }); }));
+
+function simSnapshot() { return `Stages placed: ${placed.length}/4. Architecture view: ${mode}`; }
+renderOrder(); renderArch(); initChoices();
+</script>
+</body>
+</html>

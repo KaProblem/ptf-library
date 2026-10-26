@@ -1,0 +1,20 @@
+{
+  "steps": [
+    { "init": { "level": "child" } },
+    { "expectText": "Who wrote this?" },
+    { "click": "[data-station='document-completer'] .choices button[data-ok]" },
+    { "expectEvent": "answered" },
+    { "click": "#order button[data-i='0']" },
+    { "click": "#order button[data-i='1']" },
+    { "click": "#order button[data-i='2']" },
+    { "click": "#order button[data-i='3']" },
+    { "expectText": "that is the whole chain" },
+    { "expectEvent": "station_completed" },
+    { "click": "[data-level='3']" },
+    { "expectEvent": "level_changed" },
+    { "click": "[data-mode='cross']" },
+    { "expectText": "Cross-attention: the English words" },
+    { "snapshot": true },
+    { "expectNoError": true }
+  ]
+}

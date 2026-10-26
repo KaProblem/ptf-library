@@ -1,0 +1,82 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/babbler-to-assistant",
+  "version": "1.0.0",
+  "title": "From babbler to assistant",
+  "description": "A pretrained model only continues documents: spot it, order the training stages up to RLHF, estimate the scale gap to GPT-3, and compare decoder, encoder and cross-attention.",
+  "lang": [
+    "en"
+  ],
+  "concepts": [
+    "pretraining",
+    "fine-tuning",
+    "rlhf",
+    "reward-model",
+    "decoder-only",
+    "encoder-decoder",
+    "cross-attention",
+    "model-scale"
+  ],
+  "levels": [
+    "child",
+    "highschool",
+    "college"
+  ],
+  "stations": [
+    {
+      "id": "document-completer",
+      "title": "Who wrote this?",
+      "levels": [
+        "child",
+        "highschool",
+        "college"
+      ]
+    },
+    {
+      "id": "stages",
+      "title": "In which order does an assistant learn?",
+      "levels": [
+        "child",
+        "highschool",
+        "college"
+      ]
+    },
+    {
+      "id": "scale",
+      "title": "How much bigger?",
+      "levels": [
+        "child",
+        "highschool",
+        "college"
+      ]
+    },
+    {
+      "id": "architectures",
+      "title": "Decoder, encoder, cross-attention",
+      "levels": [
+        "highschool",
+        "college"
+      ]
+    }
+  ],
+  "entry": "index.html",
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "events": [
+    "answered",
+    "experienced",
+    "station_completed",
+    "level_changed"
+  ],
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "derived_from": null,
+  "changelog": "First version.",
+  "integrity": "sha256-EiZCfR+z5PtYCqNfXHyc85cSxCrOy8bZquMrj2pQuOg="
+}
