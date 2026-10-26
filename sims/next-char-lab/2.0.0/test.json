@@ -1,0 +1,45 @@
+{
+  "steps": [
+    {
+      "init": {
+        "level": "highschool"
+      }
+    },
+    {
+      "expectText": "Rate das nächste Zeichen"
+    },
+    {
+      "type": {
+        "selector": "#g0In",
+        "text": "e"
+      }
+    },
+    {
+      "click": "#g0Check"
+    },
+    {
+      "expectEvent": "answered"
+    },
+    {
+      "click": "[data-level='2']"
+    },
+    {
+      "expectEvent": "level_changed"
+    },
+    {
+      "expectText": "Der Loss"
+    },
+    {
+      "goto": "bigram-table"
+    },
+    {
+      "expectText": "V×V-Tabelle"
+    },
+    {
+      "snapshot": true
+    },
+    {
+      "expectNoError": true
+    }
+  ]
+}

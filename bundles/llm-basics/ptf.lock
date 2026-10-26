@@ -1,0 +1,13 @@
+{
+  "lockfileVersion": 1,
+  "simulators": {
+    "ptf:sim/loss-lens": {
+      "version": "1.0.0",
+      "integrity": "sha256-Zx08du0SuZD6MiRByNgkQwvtSVwv1dScbIZFxTFfMWI="
+    },
+    "ptf:sim/next-char-lab": {
+      "version": "2.0.0",
+      "integrity": "sha256-1u8swSvmFR2YMASlf7PtEOCqy3y2RhMSmFBXQ5cBkKc="
+    }
+  }
+}
