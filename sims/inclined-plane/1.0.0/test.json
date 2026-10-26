@@ -1,0 +1,94 @@
+{
+  "steps": [
+    {
+      "init": {
+        "level": "highschool",
+        "locale": "en"
+      }
+    },
+    {
+      "expectText": "Ball against ring"
+    },
+    {
+      "click": "#raceBox button[data-ok]"
+    },
+    {
+      "expectEvent": "answered"
+    },
+    {
+      "click": "#go1"
+    },
+    {
+      "click": "#skip1"
+    },
+    {
+      "expectText": "1. Solid ball: 2.56 s"
+    },
+    {
+      "expectText": "2. Ring: 3.06 s"
+    },
+    {
+      "expectEvent": "station_completed"
+    },
+    {
+      "click": "#preset2 button[data-p='odd']"
+    },
+    {
+      "click": "#sound2"
+    },
+    {
+      "click": "#go2"
+    },
+    {
+      "click": "#skip2"
+    },
+    {
+      "expectText": "Even rhythm."
+    },
+    {
+      "type": {
+        "selector": "#ang3",
+        "text": "90"
+      }
+    },
+    {
+      "expectText": "acceleration 9.81 m/s² (100 % of g)"
+    },
+    {
+      "click": "[data-level='3']"
+    },
+    {
+      "expectEvent": "level_changed"
+    },
+    {
+      "expectText": "Rolling costs spin"
+    },
+    {
+      "expectText": "a = 3.504 m/s²"
+    },
+    {
+      "type": {
+        "selector": "#mu4",
+        "text": "0.1"
+      }
+    },
+    {
+      "expectText": "It slips"
+    },
+    {
+      "goto": {
+        "station": "check",
+        "focus": true
+      }
+    },
+    {
+      "expectText": "Two short questions"
+    },
+    {
+      "snapshot": true
+    },
+    {
+      "expectNoError": true
+    }
+  ]
+}

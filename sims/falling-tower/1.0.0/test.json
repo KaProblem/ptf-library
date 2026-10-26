@@ -1,0 +1,29 @@
+{
+  "steps": [
+    { "init": { "level": "highschool", "locale": "en" } },
+    { "expectText": "Which ball lands first?" },
+    { "click": "#guessBox button[data-ok]" },
+    { "expectEvent": "answered" },
+    { "click": "#drop1" },
+    { "click": "#skip1" },
+    { "expectText": "Iron ball (10 cm, 4.1 kg): 3.40 s" },
+    { "expectText": "Wooden ball (10 cm, 0.37 kg): 3.57 s" },
+    { "expectEvent": "station_completed" },
+    { "click": "#env2 button[data-env='vacuum']" },
+    { "click": "#drop2" },
+    { "click": "#skip2" },
+    { "expectText": "Feather (0.5 g): 3.38 s" },
+    { "expectText": "Both land at the same moment." },
+    { "click": "#drop3" },
+    { "click": "#skip3" },
+    { "expectText": "terminal speed 1.0 m/s" },
+    { "click": "[data-level='2']" },
+    { "expectEvent": "level_changed" },
+    { "expectText": "How the computer lets things fall" },
+    { "expectText": "7.9015 s" },
+    { "goto": { "station": "check", "focus": true } },
+    { "expectText": "Two short questions" },
+    { "snapshot": true },
+    { "expectNoError": true }
+  ]
+}

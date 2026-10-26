@@ -1,0 +1,27 @@
+{
+  "steps": [
+    { "init": { "level": "highschool", "locale": "en" } },
+    { "expectText": "The cannon on the mountain" },
+    { "click": "#cannonBox button[data-ok]" },
+    { "expectEvent": "answered" },
+    { "click": "[data-station='cannon'] [data-v='7.7']" },
+    { "click": "#skip1" },
+    { "expectText": "once around the Earth in 93 min" },
+    { "expectEvent": "station_completed" },
+    { "type": { "selector": "#r2", "text": "60" } },
+    { "expectText": "exactly how far the Moon falls" },
+    { "click": "#go3" },
+    { "expectEvent": "experienced" },
+    { "click": "[data-station='clocks'] [data-h='20200']" },
+    { "expectText": "gains 38.5 µs per day" },
+    { "click": "[data-level='3']" },
+    { "expectEvent": "level_changed" },
+    { "click": "#go5" },
+    { "click": "#skip5" },
+    { "expectText": "(first-order formula: 2.8756°)" },
+    { "goto": { "station": "check", "focus": true } },
+    { "expectText": "Two short questions" },
+    { "snapshot": true },
+    { "expectNoError": true }
+  ]
+}

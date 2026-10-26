@@ -14,11 +14,15 @@ the questions. The content is open; the explanation is personal.
 | Bundle | Topic | Elements |
 | --- | --- | --- |
 | [llm-basics](bundles/llm-basics/index.md) | How large language models work | tokenizer, softmax, cross-entropy (+ 5 planned steps) |
+| [gravity](bundles/gravity/index.md) | Gravity, from the leaning tower to curved spacetime | free fall, air resistance, inclined plane, rolling, universal gravitation, curved spacetime |
 
 | Simulator | Versions | UI language | Concepts |
 | --- | --- | --- | --- |
 | [next-char-lab](sims/next-char-lab/) | 1.0.0 (deprecated), 2.0.0 | de | tokenizer, bigram, softmax, loss, sampling, temperature |
 | [loss-lens](sims/loss-lens/) | 1.0.0 | de | cross-entropy, negative log-likelihood |
+| [falling-tower](sims/falling-tower/) | 1.0.0 | en, de | free fall, drag, terminal speed, numerical integration |
+| [inclined-plane](sims/inclined-plane/) | 1.0.0 | en, de | inclined plane, t² law, force components, rolling, moment of inertia |
+| [newton-einstein](sims/newton-einstein/) | 1.0.0 | en, de | orbits, inverse-square law, spacetime curvature (3D, three.js), GPS clocks, perihelion precession |
 
 ## Layout
 
