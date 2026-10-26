@@ -1,0 +1,142 @@
+{
+  "steps": [
+    {
+      "init": {
+        "level": "highschool",
+        "locale": "en"
+      }
+    },
+    {
+      "expectText": "Ball against ring"
+    },
+    {
+      "click": "#raceBox button[data-ok]"
+    },
+    {
+      "click": "#go1"
+    },
+    {
+      "click": "#skip1"
+    },
+    {
+      "expectText": "1. Solid ball: 2.56 s"
+    },
+    {
+      "expectText": "2. Ring: 3.06 s"
+    },
+    {
+      "expectEvent": "answered"
+    },
+    {
+      "expectEvent": "station_completed"
+    },
+    {
+      "goto": {
+        "station": "bells",
+        "focus": true
+      }
+    },
+    {
+      "click": "#bellBox button[data-ok]"
+    },
+    {
+      "click": "#sound2"
+    },
+    {
+      "click": "#go2"
+    },
+    {
+      "click": "#skip2"
+    },
+    {
+      "expectText": "Uneven: the rings come faster and faster"
+    },
+    {
+      "expectText": "Now the real task"
+    },
+    {
+      "click": "#preset2 button[data-p='odd']"
+    },
+    {
+      "click": "#go2"
+    },
+    {
+      "click": "#skip2"
+    },
+    {
+      "expectText": "Even rhythm."
+    },
+    {
+      "goto": {
+        "station": "angle",
+        "focus": true
+      }
+    },
+    {
+      "click": "#angleBox button[data-ok]"
+    },
+    {
+      "type": {
+        "selector": "#ang3",
+        "text": "90"
+      }
+    },
+    {
+      "expectText": "acceleration 9.81 m/s² (100 % of g)"
+    },
+    {
+      "click": "[data-level='3']"
+    },
+    {
+      "expectEvent": "level_changed"
+    },
+    {
+      "goto": {
+        "station": "rolling",
+        "focus": true
+      }
+    },
+    {
+      "expectText": "Rolling costs spin"
+    },
+    {
+      "click": "#rollBox button[data-ok]"
+    },
+    {
+      "click": "#go4"
+    },
+    {
+      "click": "#skip4"
+    },
+    {
+      "expectText": "a = 3.504 m/s²"
+    },
+    {
+      "expectText": "Right: 2/7, about 29 %"
+    },
+    {
+      "type": {
+        "selector": "#mu4",
+        "text": "0.1"
+      }
+    },
+    {
+      "expectText": "It slips"
+    },
+    {
+      "goto": {
+        "station": "check",
+        "focus": true
+      }
+    },
+    {
+      "expectText": "Two short questions"
+    },
+    {
+      "snapshot": true
+    },
+    {
+      "expectNoError": true
+    }
+  ]
+}

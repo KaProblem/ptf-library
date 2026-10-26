@@ -12,12 +12,12 @@ leads_to:
   - ptf:el/gravity/inclined-plane
 duration_min: { child: 10, highschool: 15, college: 15, expert: 10 }
 simulators:
-  - ref: ptf:sim/falling-tower@^1.0.0
+  - ref: ptf:sim/falling-tower@^1.1.0
     station: guess
     levels: [child, highschool, college, expert]
     role: explore
     note: Ask for the guess before anything else; most learners expect the heavy ball to win clearly.
-  - ref: ptf:sim/falling-tower@^1.0.0
+  - ref: ptf:sim/falling-tower@^1.1.0
     station: vacuum
     levels: [child, highschool, college, expert]
     role: explore
@@ -34,7 +34,7 @@ sources:
     title: "NASA NSSDCA: The Apollo 15 Hammer-Feather Drop"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.0
+version: 0.1.1
 license: CC-BY-SA-4.0
 ---
 
@@ -123,6 +123,7 @@ against Aristotle and Galileo's inclined-plane measurements of s ∝ t².
 - **no-gravity-on-moon**: There is no gravity on the Moon, so things float → the Moon's gravity is about one sixth of the Earth's; things fall slowly, and all together because there is no air.
 - **constant-fall-speed**: A falling object falls at a constant speed → without air it speeds up by about 9.8 m/s every second; a constant speed is only reached with air resistance.
 - **gravity-depends-on-shape**: Gravity pulls differently on objects of different shape → gravity depends only on mass; shape matters only for air resistance.
+- **no-gravity-without-air**: Without air nothing holds a feather down, so it floats → gravity does not need air; in a vacuum a feather falls exactly like a hammer.
 
 # Questions
 

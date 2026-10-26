@@ -11,12 +11,12 @@ requires:
   - ptf:el/gravity/inclined-plane
 duration_min: { child: 10, highschool: 15, college: 20, expert: 15 }
 simulators:
-  - ref: ptf:sim/inclined-plane@^1.0.0
+  - ref: ptf:sim/inclined-plane@^1.1.0
     station: race
     levels: [child, highschool, college, expert]
     role: explore
     note: Ball against ring first; add the ice block and the hollow ball afterwards for a full ranking.
-  - ref: ptf:sim/inclined-plane@^1.0.0
+  - ref: ptf:sim/inclined-plane@^1.1.0
     station: rolling
     levels: [college, expert]
     role: practice
@@ -30,7 +30,7 @@ sources:
     title: "The Feynman Lectures on Physics, Vol. I, ch. 19: Center of Mass; Moment of Inertia"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.0
+version: 0.1.1
 license: CC-BY-SA-4.0
 ---
 
@@ -116,6 +116,8 @@ worth it only when the interaction between many bodies is the point.
 - **heavier-falls-faster**: The heavier ball rolls faster → mass cancels; only the distribution of mass (k) matters.
 - **small-rolls-faster**: A small ball rolls faster because it spins faster → it spins faster, but its forward speed v = ω r is the same as that of a large ball of the same shape.
 - **friction-always-wastes-energy**: Friction always turns energy into heat → static friction during pure rolling does no work; only slipping (and rolling resistance) dissipates energy.
+- **spin-costs-nothing**: Rolling is free, all the energy goes into moving forward → a rolling body must also be spun up; a solid ball puts 2/7 (29 %) of its energy into spin, a ring half.
+- **spin-takes-half**: Every rolling body puts half its energy into spin → the share is k/(1+k) and depends on how the mass is spread: 29 % for a solid ball, 50 % only for a ring.
 
 # Questions
 

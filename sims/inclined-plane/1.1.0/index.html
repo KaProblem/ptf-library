@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The inclined plane</title>
+<style>
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
+  --accent:#0E6E68; --accent-soft:#D5ECEA; --warn:#C2410C; --warn-soft:#FBE3D6;
+  --f-display:"Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.3rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+header{display:flex;flex-direction:column;gap:12px}
+.levels{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start;background:var(--surface);max-width:100%}
+.levels button{font:600 1rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:10px 16px;min-height:44px;cursor:pointer}
+.levels button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.station{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.station .num{font:600 .8rem var(--f-mono);color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:600 .95rem var(--f-body);min-height:44px;padding:8px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--accent)}
+button.btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-height:44px;min-width:0}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+label{color:var(--muted);font-size:.95rem}
+.note{color:var(--muted);font-size:.95rem}
+.stat{font:600 1.5rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:24px}
+.stats div{display:flex;flex-direction:column}
+.scroll{overflow-x:auto;max-width:100%}
+.out{font:.95rem/1.5 var(--f-mono);white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px}
+.feedback{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:4px}
+.feedback.bad{border-color:var(--warn);background:var(--warn-soft)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices button{text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.choices button.right{border-color:var(--accent);background:var(--accent-soft)}
+.choices button.wrong{border-color:var(--warn);background:var(--warn-soft)}
+table.grid{border-collapse:collapse;font:.85rem var(--f-mono);font-variant-numeric:tabular-nums}
+table.grid th{color:var(--muted);font-weight:600;padding:4px 6px}
+table.grid td{width:46px;height:40px;text-align:center;border:1px solid var(--line);padding:0}
+table.grid td button{width:100%;height:100%;min-height:40px;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.bars{display:flex;flex-direction:column;gap:4px;font:.9rem var(--f-mono)}
+.bar{display:grid;grid-template-columns:5.5em 1fr 4em;gap:8px;align-items:center}
+.bar .fill{height:18px;background:var(--accent);border-radius:3px;min-width:2px}
+.bar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.tok{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:4px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font:1rem var(--f-mono);color:var(--ink);cursor:pointer}
+.tok[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+svg text{font-family:var(--f-mono)}
+details summary{cursor:pointer;font-weight:600;min-height:32px}
+footer{color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+html:not([lang="de"]) i-de,html[lang="de"] i-en{display:none!important}
+i-en,i-de{font-style:inherit}
+.focus-nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;bottom:0;background:var(--bg);padding:10px 0;border-top:1px solid var(--line)}
+.focus-nav #focusAll{margin-left:auto}
+.focus-nav button:disabled{opacity:.4;cursor:default}
+body.focused header > :not(.row):not(.eyebrow){display:none}
+body.focused #focusStart{display:none}
+body.focused footer{display:none}
+.stepper{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.stepper .step{min-width:44px;min-height:44px;border-radius:22px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:600 1rem var(--f-mono);cursor:pointer}
+.stepper .step.done{border-color:var(--accent);color:var(--accent)}
+.stepper .step[aria-current="step"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.choices button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
+.choices button:disabled{cursor:default}
+.choices button:disabled:not(.right):not(.wrong){opacity:.6}
+button.btn:disabled{opacity:.4;cursor:default}
+.explain:not(.shown){display:none}
+.out:empty{display:none}
+
+canvas.ramp{display:block;width:100%;max-width:704px;margin:0 auto;height:auto;aspect-ratio:8/5;background:var(--bg);border:1px solid var(--line);border-radius:8px}
+canvas.strip{width:100%;height:auto;aspect-ratio:8/2;background:var(--bg);border:1px solid var(--line);border-radius:8px}
+.checks{display:flex;flex-wrap:wrap;gap:6px 18px}
+.checks label{display:flex;align-items:center;gap:8px;min-height:44px;color:var(--ink)}
+.seg{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface);align-self:flex-start}
+.seg button{font:600 .95rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:8px 12px;min-height:44px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+.result{font:.95rem/1.5 var(--f-mono);white-space:pre-wrap;font-variant-numeric:tabular-nums}
+.sliders{display:flex;flex-direction:column;gap:4px}
+.sliders .row label{min-width:5.5em}
+.sliders .row .mono{min-width:5em;text-align:right}
+select{font:1rem var(--f-body);min-height:44px;padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%}
+.ebars{display:flex;flex-direction:column;gap:6px;font:.9rem var(--f-mono)}
+.ebar{display:grid;grid-template-columns:9em 1fr 4em;gap:8px;align-items:center}
+.ebar .fill{height:18px;border-radius:3px;min-width:2px;background:var(--c,var(--accent))}
+.ebar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow"><i-en>Gravity · The inclined plane</i-en><i-de>Gravitation · Die schiefe Ebene</i-de></span>
+  <h1><i-en>Slowing down a fall</i-en><i-de>Einen Fall verlangsamen</i-de></h1>
+  <p><i-en>Free fall is over in a few seconds, far too fast to measure with a water clock or a pulse. A ramp slows the fall down without changing its nature: the ball still speeds up steadily, just less. Here you race bodies down a ramp, listen for a rhythm and find out why a ring always loses.</i-en><i-de>Ein freier Fall ist nach wenigen Sekunden vorbei, viel zu schnell, um ihn mit einer Wasseruhr oder dem Puls zu messen. Eine Rampe verlangsamt den Fall, ohne sein Wesen zu ändern: Die Kugel wird immer noch gleichmäßig schneller, nur weniger. Hier lässt du Körper eine Rampe hinunter um die Wette laufen, hörst auf einen Rhythmus und findest heraus, warum ein Ring immer verliert.</i-de></p>
+  <div class="levels" role="group" aria-label="Level">
+    <button data-level="0" aria-pressed="false"><i-en>Child</i-en><i-de>Kind</i-de></button><button data-level="1" aria-pressed="true"><i-en>High school</i-en><i-de>Schule</i-de></button><button data-level="2" aria-pressed="false"><i-en>College</i-en><i-de>Studium</i-de></button><button data-level="3" aria-pressed="false"><i-en>Expert</i-en><i-de>Experte</i-de></button>
+  </div>
+</header>
+
+<section class="station" data-station="race" data-show="0 1 2 3">
+  <span class="num"><i-en>Station 1 · Guess</i-en><i-de>Station 1 · Raten</i-de></span>
+  <h2><i-en>Ball against ring</i-en><i-de>Kugel gegen Ring</i-de></h2>
+  <p><i-en>A solid ball and a ring (like a bangle) have the same mass and the same radius. They are released side by side at the top of the same ramp. Which one reaches the bottom first?</i-en><i-de>Eine Vollkugel und ein Ring (wie ein Armreif) haben dieselbe Masse und denselben Radius. Sie werden oben auf derselben Rampe nebeneinander losgelassen. Wer ist zuerst unten?</i-de></p>
+  <div class="choices" id="raceBox" data-predict="go1 skip1 who1">
+    <button data-ok data-fb-en="Right. The ball wins clearly, although both have the same mass and the same size." data-fb-de="Richtig. Die Kugel gewinnt deutlich, obwohl beide gleich schwer und gleich groß sind."><i-en>The ball</i-en><i-de>Die Kugel</i-de></button>
+    <button data-mis="ring-faster" data-fb-en="Many think the ring rolls more easily, but it loses clearly. All its mass sits far out, so getting it spinning takes more of the energy." data-fb-de="Viele denken, der Ring rollt leichter, aber er verliert deutlich. Seine ganze Masse sitzt weit außen, darum kostet das Andrehen mehr von der Energie."><i-en>The ring</i-en><i-de>Der Ring</i-de></button>
+    <button data-mis="all-roll-equally" data-fb-en="In free fall that would be true, but rolling is different: the ball wins clearly. How the mass is spread out decides, not how much there is." data-fb-de="Beim freien Fall wäre das so, aber Rollen ist anders: Die Kugel gewinnt deutlich. Entscheidend ist, wie die Masse verteilt ist, nicht wie viel es ist."><i-en>Both at the same time: same mass, same size</i-en><i-de>Beide gleichzeitig: gleiche Masse, gleiche Größe</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="checks" id="who1" role="group" aria-label="Racers"></div>
+  <canvas class="ramp" id="cv1" width="800" height="500" role="img" aria-label="Ramp with racing bodies"></canvas>
+  <div class="row"><button class="btn" id="go1"><i-en>Release</i-en><i-de>Loslassen</i-de></button><button class="btn ghost" id="skip1"><i-en>Skip to the end</i-en><i-de>Zum Ende springen</i-de></button></div>
+  <div class="out result" id="res1" aria-live="polite"></div>
+  <p class="note explain" data-show="0"><i-en>The ring has all its weight far out at the edge. Getting it spinning takes a lot of effort, so less is left for rolling forward.</i-en><i-de>Beim Ring sitzt das ganze Gewicht weit außen am Rand. Ihn in Drehung zu bringen kostet viel Kraft, darum bleibt weniger fürs Vorwärtsrollen.</i-de></p>
+</section>
+
+<section class="station" data-station="bells" data-show="1 2 3">
+  <span class="num"><i-en>Station 2 · Listen</i-en><i-de>Station 2 · Hinhören</i-de></span>
+  <h2><i-en>Bells on the ramp</i-en><i-de>Glöckchen an der Rampe</i-de></h2>
+  <p><i-en>Without a good clock you can still hear time: hang little bells along the ramp, and the ball rings each one as it passes. First hang them at equal distances.</i-en><i-de>Auch ohne gute Uhr kann man Zeit hören: Häng kleine Glöckchen an die Rampe, und die Kugel läutet jedes, an dem sie vorbeirollt. Häng sie zuerst in gleichen Abständen auf.</i-de></p>
+  <p><i-en>Bells at equal distances: what will you hear?</i-en><i-de>Glöckchen in gleichen Abständen: Was wirst du hören?</i-de></p>
+  <div class="choices" id="bellBox" data-predict="go2 skip2 preset2">
+    <button data-mis="equal-distances-equal-times" data-fb-en="The rings come faster and faster: the ball keeps speeding up, so it needs less and less time for the same distance." data-fb-de="Die Töne kommen immer schneller: Die Kugel wird ständig schneller und braucht für dieselbe Strecke immer weniger Zeit."><i-en>An even rhythm, like a metronome</i-en><i-de>Einen gleichmäßigen Rhythmus, wie ein Metronom</i-de></button>
+    <button data-ok data-fb-en="Right. The ball keeps speeding up, so it needs less and less time for each equal distance." data-fb-de="Richtig. Die Kugel wird ständig schneller und braucht für jede gleiche Strecke immer weniger Zeit."><i-en>Faster and faster</i-en><i-de>Immer schneller</i-de></button>
+    <button data-mis="constant-fall-speed" data-fb-en="The opposite: the rings come faster and faster, because the ball speeds up all the way down." data-fb-de="Umgekehrt: Die Töne kommen immer schneller, weil die Kugel bis ganz unten schneller wird."><i-en>Slower and slower</i-en><i-de>Immer langsamer</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <p class="explain"><i-en>Now the real task: where must the bells hang so that they ring in an even rhythm, like a metronome?</i-en><i-de>Jetzt die eigentliche Aufgabe: Wo müssen die Glöckchen hängen, damit sie in gleichmäßigem Rhythmus läuten, wie ein Metronom?</i-de></p>
+  <div class="seg" id="preset2" role="group" aria-label="Bell spacing">
+    <button data-p="equal" aria-pressed="true"><i-en>Equal distances</i-en><i-de>Gleiche Abstände</i-de></button><button data-p="odd" aria-pressed="false"><i-en>Distances 1 : 3 : 5 : 7</i-en><i-de>Abstände 1 : 3 : 5 : 7</i-de></button><button data-p="own" aria-pressed="false"><i-en>Place them yourself</i-en><i-de>Selbst platzieren</i-de></button>
+  </div>
+  <div class="sliders" id="bellSliders"></div>
+  <canvas class="ramp" id="cv2" width="800" height="500" role="img" aria-label="Ramp with bells"></canvas>
+  <canvas class="strip" id="strip2" width="800" height="200" role="img" aria-label="When each bell rings"></canvas>
+  <div class="row"><button class="btn" id="go2"><i-en>Roll and listen</i-en><i-de>Rollen und hinhören</i-de></button><button class="btn ghost" id="skip2"><i-en>Skip to the end</i-en><i-de>Zum Ende springen</i-de></button><label><input type="checkbox" id="sound2" checked> <i-en>Sound</i-en><i-de>Ton</i-de></label></div>
+  <div class="out result" id="res2" aria-live="polite"></div>
+  <p class="note explain"><i-en>Even rhythm means equal time steps. The distances then grow like the odd numbers 1, 3, 5, 7, so the total distance after 1, 2, 3, 4 time steps is 1, 4, 9, 16: distance grows with the square of the time.</i-en><i-de>Gleichmäßiger Rhythmus heißt gleiche Zeitschritte. Die Abstände wachsen dann wie die ungeraden Zahlen 1, 3, 5, 7, die Gesamtstrecke nach 1, 2, 3, 4 Zeitschritten ist also 1, 4, 9, 16: Die Strecke wächst mit dem Quadrat der Zeit.</i-de></p>
+</section>
+
+<section class="station" data-station="angle" data-show="1 2 3">
+  <span class="num"><i-en>Station 3 · Steeper and steeper</i-en><i-de>Station 3 · Immer steiler</i-de></span>
+  <h2><i-en>From ramp to free fall</i-en><i-de>Von der Rampe zum freien Fall</i-de></h2>
+  <p><i-en>Gravity pulls the block straight down. The ramp holds part of that pull, only the part along the slope makes it move. Make the ramp steeper and watch the two parts. What happens at 90°?</i-en><i-de>Die Schwerkraft zieht den Klotz senkrecht nach unten. Einen Teil davon hält die Rampe, nur der Teil entlang des Hangs bringt ihn in Bewegung. Mach die Rampe steiler und beobachte die beiden Teile. Was passiert bei 90°?</i-de></p>
+  <div class="choices" id="angleBox" data-predict="ang3 go3">
+    <button data-ok data-fb-en="Right. At 90° the ramp holds nothing back: the block falls freely with the full g = 9.81 m/s²." data-fb-de="Richtig. Bei 90° hält die Rampe nichts mehr zurück: Der Klotz fällt frei mit dem vollen g = 9,81 m/s²."><i-en>It falls freely, as if there were no ramp</i-en><i-de>Er fällt frei, als gäbe es keine Rampe</i-de></button>
+    <button data-mis="ramp-changes-gravity" data-fb-en="A vertical wall cannot hold anything up: without friction the block falls freely with the full g." data-fb-de="Eine senkrechte Wand kann nichts halten: Ohne Reibung fällt der Klotz frei mit dem vollen g."><i-en>It hardly moves, the ramp still holds it</i-en><i-de>Er bewegt sich kaum, die Rampe hält ihn noch</i-de></button>
+    <button data-mis="steeper-than-free-fall" data-fb-en="No ramp makes anything faster than free fall: at 90° the block reaches exactly g, never more." data-fb-de="Keine Rampe macht etwas schneller als den freien Fall: Bei 90° erreicht der Klotz genau g, nie mehr."><i-en>Faster than free fall, the ramp pushes it</i-en><i-de>Schneller als im freien Fall, die Rampe schiebt ihn</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="row"><label for="ang3"><i-en>Angle</i-en><i-de>Winkel</i-de></label><input type="range" id="ang3" min="0" max="90" step="1" value="20"><span class="mono" id="ang3v"></span></div>
+  <canvas class="ramp" id="cv3" width="800" height="500" role="img" aria-label="Block on a ramp with force arrows"></canvas>
+  <div class="row"><button class="btn" id="go3"><i-en>Let it slide (no friction)</i-en><i-de>Rutschen lassen (ohne Reibung)</i-de></button></div>
+  <div class="out result" id="res3" aria-live="polite"></div>
+  <p class="note explain" data-show="2 3"><i-en>Along the slope: a = g · sin θ. Into the ramp: g · cos θ, cancelled by the normal force. At 90° sin θ = 1 and the block falls freely with g.</i-en><i-de>Entlang des Hangs: a = g · sin θ. In die Rampe hinein: g · cos θ, aufgehoben durch die Normalkraft. Bei 90° ist sin θ = 1, und der Klotz fällt frei mit g.</i-de></p>
+</section>
+
+<section class="station" data-station="rolling" data-show="2 3">
+  <span class="num"><i-en>Station 4 · Where the energy goes</i-en><i-de>Station 4 · Wohin die Energie geht</i-de></span>
+  <h2><i-en>Rolling costs spin</i-en><i-de>Rollen kostet Drehung</i-de></h2>
+  <p><i-en>A rolling body must speed up its forward motion and its spin at the same time. The falling height pays for both. How much goes into spin depends only on how the mass is spread out: I = k · m · r². Pick a body and a friction value and compare the energy at the bottom.</i-en><i-de>Ein rollender Körper muss gleichzeitig seine Vorwärtsbewegung und seine Drehung beschleunigen. Die Fallhöhe bezahlt beides. Wie viel in die Drehung geht, hängt nur davon ab, wie die Masse verteilt ist: I = k · m · r². Wähl einen Körper und eine Reibung und vergleiche die Energie unten.</i-de></p>
+  <p><i-en>A solid ball rolls down without slipping. How much of its energy at the bottom is spin?</i-en><i-de>Eine Vollkugel rollt hinunter, ohne zu rutschen. Wie viel ihrer Energie unten steckt in der Drehung?</i-de></p>
+  <div class="choices" id="rollBox" data-predict="body4 ang4 mu4 go4 skip4">
+    <button data-mis="spin-costs-nothing" data-fb-en="Spinning is not free: for a solid ball about 29 % of the energy goes into spin, so less is left for moving forward." data-fb-de="Drehen ist nicht umsonst: Bei einer Vollkugel gehen etwa 29 % der Energie in die Drehung, darum bleibt weniger für die Vorwärtsbewegung."><i-en>None, it all goes into moving forward</i-en><i-de>Nichts, alles geht in die Vorwärtsbewegung</i-de></button>
+    <button data-ok data-fb-en="Right: 2/7, about 29 %. A ring would put half its energy into spin." data-fb-de="Richtig: 2/7, etwa 29 %. Ein Ring würde die Hälfte seiner Energie in die Drehung stecken."><i-en>About a third</i-en><i-de>Etwa ein Drittel</i-de></button>
+    <button data-mis="spin-takes-half" data-fb-en="Half is the ring, which has all its mass at the edge. A solid ball keeps its mass closer to the axis: about 29 % goes into spin." data-fb-de="Die Hälfte gilt für den Ring, dessen Masse ganz am Rand sitzt. Eine Vollkugel hat ihre Masse näher an der Achse: etwa 29 % gehen in die Drehung."><i-en>Half</i-en><i-de>Die Hälfte</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="row">
+    <label for="body4"><i-en>Body</i-en><i-de>Körper</i-de></label><select id="body4"></select>
+  </div>
+  <div class="row"><label for="ang4"><i-en>Angle</i-en><i-de>Winkel</i-de></label><input type="range" id="ang4" min="2" max="60" step="1" value="30"><span class="mono" id="ang4v"></span></div>
+  <div class="row"><label for="mu4"><i-en>Friction μ</i-en><i-de>Reibung μ</i-de></label><input type="range" id="mu4" min="0" max="1" step="0.01" value="0.5"><span class="mono" id="mu4v"></span></div>
+  <canvas class="ramp" id="cv4" width="800" height="500" role="img" aria-label="Body rolling down a ramp"></canvas>
+  <div class="row"><button class="btn" id="go4"><i-en>Release</i-en><i-de>Loslassen</i-de></button><button class="btn ghost" id="skip4"><i-en>Skip to the end</i-en><i-de>Zum Ende springen</i-de></button></div>
+  <div class="ebars" id="ebars4"></div>
+  <div class="out result" id="res4" aria-live="polite"></div>
+  <p class="note"><i-en>Rolling without slipping: a = g sin θ / (1 + k). Solid ball k = 2/5 → a = 5/7 g sin θ; solid cylinder 1/2 → 2/3; hollow ball 2/3 → 3/5; ring 1 → 1/2. Mass and radius cancel: a big heavy ball and a small marble arrive together.</i-en><i-de>Rollen ohne Rutschen: a = g sin θ / (1 + k). Vollkugel k = 2/5 → a = 5/7 g sin θ; Vollzylinder 1/2 → 2/3; Hohlkugel 2/3 → 3/5; Ring 1 → 1/2. Masse und Radius kürzen sich: Eine große schwere Kugel und eine kleine Murmel kommen gleichzeitig an.</i-de></p>
+  <p class="note" data-show="3"><i-en>Rolling needs static friction f = k/(1+k) · m g sin θ. If μ m g cos θ is smaller (μ &lt; k/(1+k) · tan θ), the body slips: it slides with a = g (sin θ − μ cos θ) while friction spins it up, and the friction work turns into heat. A 2D physics engine that models a "ball" as a disc uses k = 1/2, not 2/5: an easy way for a simulation to be off by 7 %.</i-en><i-de>Rollen braucht Haftreibung f = k/(1+k) · m g sin θ. Ist μ m g cos θ kleiner (μ &lt; k/(1+k) · tan θ), rutscht der Körper: Er gleitet mit a = g (sin θ − μ cos θ), während die Reibung ihn andreht, und die Reibungsarbeit wird zu Wärme. Eine 2D-Physik-Engine, die eine „Kugel“ als Scheibe rechnet, nimmt k = 1/2 statt 2/5: so liegt eine Simulation schnell 7 % daneben.</i-de></p>
+</section>
+
+<section class="station" data-station="check" data-show="0 1 2 3">
+  <span class="num"><i-en>Check yourself</i-en><i-de>Prüf dich</i-de></span>
+  <h2><i-en>Two short questions</i-en><i-de>Zwei kurze Fragen</i-de></h2>
+  <p><i-en>A heavy bowling ball and a small glass marble roll down the same ramp side by side. Both are solid balls. Which is first at the bottom?</i-en><i-de>Eine schwere Bowlingkugel und eine kleine Glasmurmel rollen nebeneinander dieselbe Rampe hinunter. Beide sind Vollkugeln. Wer ist zuerst unten?</i-de></p>
+  <div class="choices">
+    <button data-mis="heavier-falls-faster" data-fb-en="Its weight pulls harder, but it is also harder to speed up and to spin. That cancels out." data-fb-de="Ihr Gewicht zieht stärker, aber sie ist auch schwerer zu beschleunigen und zu drehen. Das gleicht sich aus."><i-en>The bowling ball</i-en><i-de>Die Bowlingkugel</i-de></button>
+    <button data-ok data-fb-en="Right. Same shape means the same share of energy goes into spin, whatever the mass or size (ignoring air)." data-fb-de="Richtig. Gleiche Form heißt, derselbe Anteil der Energie geht in die Drehung, egal welche Masse oder Größe (Luft vernachlässigt)."><i-en>Both together</i-en><i-de>Beide gleichzeitig</i-de></button>
+    <button data-mis="small-rolls-faster" data-fb-en="The small marble spins faster, but it also has a smaller radius. Its forward speed is the same." data-fb-de="Die kleine Murmel dreht sich schneller, hat aber auch einen kleineren Radius. Ihre Vorwärtsgeschwindigkeit ist gleich."><i-en>The marble: it spins faster</i-en><i-de>Die Murmel: Sie dreht sich schneller</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <p><i-en>A block slides down a ramp without friction. The ramp is made steeper. What happens to its acceleration?</i-en><i-de>Ein Klotz rutscht ohne Reibung eine Rampe hinunter. Die Rampe wird steiler gemacht. Was passiert mit seiner Beschleunigung?</i-de></p>
+  <div class="choices">
+    <button data-ok data-fb-en="Yes. The part of gravity along the slope grows with the angle, up to the full g at 90°." data-fb-de="Ja. Der Anteil der Schwerkraft entlang des Hangs wächst mit dem Winkel, bis zum vollen g bei 90°."><i-en>It grows, up to g when the ramp is vertical</i-en><i-de>Sie wächst, bis g, wenn die Rampe senkrecht steht</i-de></button>
+    <button data-mis="constant-speed-on-slope" data-fb-en="On a ramp the block does not move at a constant speed: it keeps speeding up, and more so on a steeper ramp." data-fb-de="Auf einer Rampe fährt der Klotz nicht gleichmäßig schnell: Er wird immer schneller, und auf einer steileren Rampe stärker."><i-en>It stays the same, only the speed changes</i-en><i-de>Sie bleibt gleich, nur die Geschwindigkeit ändert sich</i-de></button>
+    <button data-fb-en="No: without a push, nothing on a ramp speeds up faster than in free fall." data-fb-de="Nein: Ohne Schubs wird auf einer Rampe nichts schneller als im freien Fall."><i-en>It can become larger than g</i-en><i-de>Sie kann größer als g werden</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+</section>
+<footer><i-en>Simulator "The inclined plane" · ramp 4 m long, g = 9.81 m/s², no air</i-en><i-de>Simulator „Die schiefe Ebene“ · Rampe 4 m lang, g = 9,81 m/s², ohne Luft</i-de> · Personal Tutor Format</footer>
+</div>
+
+<script src="ptf-sim.js"></script>
+<script>
+const SIM_ID = "ptf:sim/inclined-plane", SIM_VERSION = "1.1.0";
+const SIM_LOCALES = ["en", "de"];
+const PTF_LEVELS = {"0": "child", "1": "highschool", "2": "college", "3": "expert"};
+const START_LEVEL = "1";
+/* Shared PTF glue: levels, stations, snapshot (SIMULATOR-SPEC.md §4) */
+function setLevel(l){
+  document.querySelectorAll(".levels button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.level===l));
+  CURRENT_LEVEL=l;
+  if (FOCUS && !stationsAtLevel().includes(FOCUS)) FOCUS = stationsAtLevel()[0] || null;
+  applyVisibility();
+}
+const stationsAtLevel = () => [...document.querySelectorAll("section[data-station]")].filter(s => s.dataset.show.split(" ").includes(CURRENT_LEVEL)).map(s => s.dataset.station);
+/* Focus mode (SIMULATOR-SPEC.md §4.7): one station at a time with Back / Next. */
+let FOCUS = null;
+function applyVisibility() {
+  document.querySelectorAll("[data-show]").forEach(s => {
+    const lvl = s.dataset.show.split(" ").includes(CURRENT_LEVEL);
+    s.hidden = !lvl || (FOCUS !== null && s.matches("section[data-station]") && s.dataset.station !== FOCUS);
+  });
+  document.body.classList.toggle("focused", FOCUS !== null);
+  const nav = document.getElementById("focusNav");
+  if (completed) renderStepper();
+  if (!nav) return;
+  nav.hidden = FOCUS === null;
+  if (FOCUS === null) return;
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS);
+  document.getElementById("focusBack").disabled = i <= 0;
+  document.getElementById("focusNext").disabled = i >= list.length - 1;
+  document.getElementById("focusPos").textContent = `${i + 1} / ${list.length}`;
+}
+/* Progress: one numbered step per station at the current level; done steps get a tick, any step can be opened directly. */
+function renderStepper() {
+  const nav = document.getElementById("stepper");
+  if (!nav) return;
+  nav.innerHTML = "";
+  stationsAtLevel().forEach((id, i) => {
+    const sec = document.querySelector(`section[data-station="${id}"]`), h = sec.querySelector("h2");
+    const title = h ? (h.querySelector(LOCALE === "de" ? "i-de" : "i-en") || h).textContent.trim() : id;
+    const b = document.createElement("button");
+    b.className = "step" + (completed.has(id) ? " done" : "");
+    b.textContent = completed.has(id) ? "✓" : String(i + 1);
+    b.title = title; b.setAttribute("aria-label", `${i + 1}. ${title}${completed.has(id) ? L(" (done)", " (erledigt)") : ""}`);
+    if (id === FOCUS) b.setAttribute("aria-current", "step");
+    b.onclick = () => { setFocus(id); ptf.event("experienced", { station: id, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: id } }); window.scrollTo({ top: 0, behavior: "auto" }); };
+    nav.append(b);
+  });
+}
+function setFocus(id) { FOCUS = id; applyVisibility(); }
+function moveFocus(step) {
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS), next = list[i + step];
+  if (!next) return;
+  setFocus(next);
+  ptf.event("experienced", { station: next, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: next } });
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+(function buildFocusNav() {
+  const nav = document.createElement("nav");
+  nav.id = "focusNav"; nav.className = "focus-nav"; nav.hidden = true;
+  nav.setAttribute("aria-label", "Stations");
+  nav.innerHTML = `<button class="btn ghost" id="focusBack"><i-en>Back</i-en><i-de>Zurück</i-de></button><span class="mono note" id="focusPos"></span><button class="btn" id="focusNext"><i-en>Next</i-en><i-de>Weiter</i-de></button><button class="btn ghost" id="focusAll"><i-en>Show all</i-en><i-de>Alles zeigen</i-de></button>`;
+  const footer = document.querySelector(".wrap > footer");
+  footer ? footer.before(nav) : document.querySelector(".wrap").append(nav);
+  nav.querySelector("#focusBack").onclick = () => moveFocus(-1);
+  nav.querySelector("#focusNext").onclick = () => moveFocus(1);
+  nav.querySelector("#focusAll").onclick = () => setFocus(null);
+  const start = document.createElement("button");
+  start.id = "focusStart"; start.className = "btn ghost";
+  start.innerHTML = "<i-en>Step by step</i-en><i-de>Schritt für Schritt</i-de>";
+  start.onclick = () => { setFocus(stationsAtLevel()[0]); ptf.event("experienced", { station: FOCUS, data: { focus: FOCUS } }); };
+  const stepper = document.createElement("nav");
+  stepper.id = "stepper"; stepper.className = "stepper"; stepper.setAttribute("aria-label", "Progress");
+  document.querySelector(".wrap > header").after(stepper);
+  const levels = document.querySelector("header .levels");
+  const row = document.createElement("div"); row.className = "row";
+  levels.before(row); row.append(levels, start);
+})();
+let CURRENT_LEVEL=START_LEVEL, LOCALE="en", READY=false;
+/* UI language (en, de): static text as <i-en>/<i-de> pairs, dynamic text via L(en, de). */
+const L = (en, de) => LOCALE === "de" ? de : en;
+const fmt = (x, d = 2) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+/* Each simulator declares SIM_LOCALES (matching "lang" in sim.json); unsupported locales fall back to English. */
+function setLocale(loc) {
+  LOCALE = /^de/i.test(loc || "") && SIM_LOCALES.includes("de") ? "de" : "en";
+  document.documentElement.lang = LOCALE;
+  if (READY && typeof rerender === "function") rerender();
+}
+setLocale(navigator.language);
+var completed = new Set();   /* var: hoisted, so applyVisibility can run before this line */
+const ptf = PTF.connect({
+  id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS[START_LEVEL],
+  onInit(ctx) {
+    if (ctx.locale) setLocale(ctx.locale);
+    const lvl = (ctx.state && ctx.state.level) || ctx.level;
+    if (lvl) applyLevel(lvl);
+    if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus !== false });
+  },
+  onSetLevel: applyLevel,
+  onGoto: gotoStation,
+  snapshot() {
+    const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `UI language: ${LOCALE}`, `Visible stations: ${shown.join(", ")}`];
+    if (FOCUS) parts.push(`Focus mode on station: ${FOCUS}`);
+    if (completed.size) parts.push(`Completed: ${[...completed].join(", ")}`);
+    if (typeof simSnapshot === "function") parts.push(simSnapshot());
+    return parts.join(". ");
+  }
+});
+function applyLevel(level) {
+  const n = Object.keys(PTF_LEVELS).find(k => PTF_LEVELS[k] === level);
+  if (n) setLevel(n);
+}
+function gotoStation(id, opts) {
+  const s = id ? document.querySelector(`section[data-station="${id}"]`) : null;
+  if (opts && opts.focus === false) setFocus(null);
+  if (!s) return;
+  if (!s.dataset.show.split(" ").includes(CURRENT_LEVEL)) setLevel(s.dataset.show.split(" ")[0]);
+  if (opts && opts.focus === true) { setFocus(id); window.scrollTo({ top: 0, behavior: "auto" }); return; }
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", () => {
+  setLevel(b.dataset.level);
+  const level = PTF_LEVELS[b.dataset.level];
+  ptf.event("level_changed", { level });
+  ptf.saveState({ level });
+}));
+function answered(station, correct, misconception, response) {
+  const result = { correct };
+  if (misconception && !correct) result.misconception = misconception;
+  if (response !== undefined) result.response = String(response);
+  ptf.event("answered", { station, level: PTF_LEVELS[CURRENT_LEVEL], result });
+}
+function done(station) {
+  if (completed.has(station)) return;
+  completed.add(station);
+  ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
+  renderStepper();
+}
+/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb-en / data-fb-de,
+   followed by <p class="feedback" hidden>. A station completes when all its visible boxes are answered correctly. Call initChoices() once the DOM is built. */
+/* Predict, observe, explain (SIMULATOR-SPEC.md §7 rule 5): a box with data-predict="<button ids>" is a prediction.
+   Picking an option only records the guess and unlocks those buttons; whether it was right is shown by reveal(box)
+   once the experiment has run. */
+function reveal(box) {
+  if (typeof box === "string") box = document.getElementById(box);
+  const b = box && box.querySelector("button[aria-pressed='true']");
+  if (!b || box.dataset.revealed) return;
+  box.dataset.revealed = "1";
+  judge(box, b);
+  box.querySelectorAll("button").forEach(x => x.disabled = true);
+  box.closest("[data-station]").querySelectorAll(".explain").forEach(e => e.classList.add("shown"));
+}
+function judge(box, b) {
+  const station = box.closest("[data-station]").dataset.station, fb = box.nextElementSibling;
+  const ok = b.hasAttribute("data-ok");
+  box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
+  b.classList.add(ok ? "right" : "wrong");
+  if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+  answered(station, ok, b.dataset.mis, (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim());
+  if (ok) box.dataset.solved = "1";
+}
+function initChoices() {
+document.querySelectorAll("[data-station] .choices[data-predict]").forEach(box => {
+  const gated = box.dataset.predict.split(" ").map(id => document.getElementById(id)).filter(Boolean)
+    .flatMap(el => el.matches("button, input, select") ? [el] : [...el.querySelectorAll("button, input, select")]);
+  const hint = document.createElement("p");
+  hint.className = "note predict-hint";
+  hint.innerHTML = "<i-en>First decide what you expect. Then try it.</i-en><i-de>Entscheide dich zuerst, was du erwartest. Dann probier es aus.</i-de>";
+  const fb = box.nextElementSibling;
+  (fb && fb.classList.contains("feedback") ? fb : box).after(hint);
+  gated.forEach(g => g.disabled = true);
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    if (box.dataset.revealed) return;
+    box.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    gated.forEach(g => g.disabled = false);
+    hint.hidden = true;
+    ptf.event("experienced", { station: box.closest("[data-station]").dataset.station, level: PTF_LEVELS[CURRENT_LEVEL], data: { prediction: (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim() } });
+  }));
+});
+document.querySelectorAll("[data-station] .choices:not([data-predict])").forEach(box => {
+  const sec = box.closest("[data-station]");
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    judge(box, b);
+    if ([...sec.querySelectorAll(".choices:not([data-predict])")].filter(x => !x.closest("[hidden]")).every(x => x.dataset.solved)) done(sec.dataset.station);
+  }));
+});
+}
+setLevel(START_LEVEL);
+/* Start with one station at a time (SIMULATOR-SPEC.md §4.7); Show all opens everything for review. */
+setFocus(stationsAtLevel()[0] || null);
+/* Theme tokens for canvas and WebGL. A host may set a token to anything CSS accepts (light-dark(), var(), color-mix()),
+   which a 2D context cannot parse, so resolve it to a plain colour or font list through the browser first. */
+const tokenProbe = document.createElement("i");
+tokenProbe.hidden = true; document.body.append(tokenProbe);
+function css(name) {
+  const font = name.startsWith("--f-");
+  tokenProbe.style[font ? "fontFamily" : "color"] = `var(${name})`;
+  return getComputedStyle(tokenProbe)[font ? "fontFamily" : "color"];
+}
+
+
+const $ = id => document.getElementById(id);
+const G = 9.81, LEN = 4;   // ramp length in metres
+/* k = I / (m r²): how much of the mass sits far from the axis */
+const BODIES = {
+  block:    { k: 0,     slides: true, en: "Block on ice (sliding)", de: "Klotz auf Eis (gleitet)", col: "#64748B" },
+  ball:     { k: 2 / 5, en: "Solid ball",    de: "Vollkugel",  col: "#0E7490" },
+  cylinder: { k: 1 / 2, en: "Solid cylinder", de: "Vollzylinder", col: "#7C3AED" },
+  hollow:   { k: 2 / 3, en: "Hollow ball",   de: "Hohlkugel",  col: "#CA8A04" },
+  ring:     { k: 1,     en: "Ring",          de: "Ring",       col: "#C2410C" }
+};
+const bname = k => L(BODIES[k].en, BODIES[k].de);
+const rad = d => d * Math.PI / 180;
+const fmtNum = (x, d) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Exact motion on a ramp (constant acceleration). mu = friction coefficient (static = kinetic, simplified).
+   Returns a: acceleration along the slope, aSpin: surface acceleration of the spin (equal to a when rolling), slips. */
+function motion(key, deg, mu = Infinity) {
+  const b = BODIES[key], s = Math.sin(rad(deg)), c = Math.cos(rad(deg));
+  if (b.slides) { const a = mu === Infinity ? G * s : Math.max(0, G * (s - mu * c)); return { a, aSpin: 0, slips: true }; }
+  const roll = G * s / (1 + b.k), need = b.k / (1 + b.k) * s;   // friction needed, in units of g
+  if (mu === Infinity || mu * c >= need - 1e-12) return { a: roll, aSpin: roll, slips: false };
+  return { a: G * (s - mu * c), aSpin: mu * G * c / b.k, slips: true };
+}
+const timeFor = (a, d) => a > 0 ? Math.sqrt(2 * d / a) : Infinity;
+
+/* Ramp drawing in an oblique projection; lanes run from the back (index 0 drawn last = front). */
+function Ramp(canvas) {
+  const ctx = canvas.getContext("2d"), W = canvas.width, Hh = canvas.height;
+  const depth = { x: 22, y: -16 };
+  function geom(deg, lanes) {
+    const th = rad(deg), c = Math.cos(th), s = Math.sin(th);
+    const pad = 50, back = (lanes - 1) * depth.x;
+    const Lpx = Math.min((W - 2 * pad - back) / Math.max(c, 0.05), (Hh - 2 * pad - 30 + (lanes - 1) * depth.y) / Math.max(s, 0.05), 900);
+    const x0 = pad, yb = Hh - pad;   // bottom-left corner of the front lane
+    const top = { x: x0, y: yb - Lpx * s }, bot = { x: x0 + Lpx * c, y: yb };
+    return { th, c, s, Lpx, top, bot, scale: Lpx / LEN };
+  }
+  function draw(deg, lanes, bodies, opts = {}) {
+    const g = geom(deg, Math.max(lanes, 1)), n = Math.max(lanes, 1);
+    ctx.clearRect(0, 0, W, Hh);
+    const line = css("--line"), surf = css("--surface"), muted = css("--muted"), ink = css("--ink");
+    const off = i => ({ x: (n - 1 - i) * depth.x, y: (n - 1 - i) * depth.y });
+    /* top surface, front face, ground */
+    const ob = off(0), of = off(n - 1);
+    ctx.fillStyle = css("--accent-soft"); ctx.fillRect(0, g.bot.y, W, Hh - g.bot.y);
+    ctx.fillStyle = surf; ctx.strokeStyle = line; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(g.top.x + ob.x, g.top.y + ob.y); ctx.lineTo(g.bot.x + ob.x, g.bot.y + ob.y); ctx.lineTo(g.bot.x + of.x, g.bot.y + of.y); ctx.lineTo(g.top.x + of.x, g.top.y + of.y); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = css("--line");
+    ctx.beginPath(); ctx.moveTo(g.top.x, g.top.y); ctx.lineTo(g.bot.x, g.bot.y); ctx.lineTo(g.top.x, g.bot.y); ctx.closePath(); ctx.fill();
+    for (let i = 0; i < n; i++) { const o = off(i); ctx.strokeStyle = muted; ctx.lineWidth = 1; ctx.setLineDash([4, 6]);
+      ctx.beginPath(); ctx.moveTo(g.top.x + o.x, g.top.y + o.y); ctx.lineTo(g.bot.x + o.x, g.bot.y + o.y); ctx.stroke(); ctx.setLineDash([]); }
+    /* angle label */
+    ctx.fillStyle = ink; ctx.font = "600 22px " + css("--f-mono"); ctx.textAlign = "right";
+    ctx.fillText(fmtNum(deg, 0) + "°", g.bot.x - 40, g.bot.y - 10);
+    if (opts.under) opts.under(ctx, g, off);
+    /* bodies: { key, s (m along slope), phi (rad), lane } */
+    bodies.slice().sort((a, b) => a.lane - b.lane).forEach(bd => {
+      const o = off(bd.lane), b = BODIES[bd.key], r = 18;
+      const px = g.top.x + o.x + bd.s * g.scale * g.c, py = g.top.y + o.y + bd.s * g.scale * g.s;
+      ctx.save(); ctx.translate(px + g.s * r, py - g.c * r); ctx.fillStyle = b.col; ctx.strokeStyle = ink; ctx.lineWidth = 2;
+      if (b.slides) { ctx.rotate(g.th); ctx.fillRect(-r, -r, 2 * r, 2 * r); ctx.strokeRect(-r, -r, 2 * r, 2 * r); }
+      else if (bd.key === "ring") { ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.lineWidth = 7; ctx.strokeStyle = b.col; ctx.stroke(); ctx.lineWidth = 2; ctx.strokeStyle = ink; ctx.beginPath(); ctx.arc(0, 0, r + 3.5, 0, 7); ctx.stroke(); ctx.beginPath(); ctx.arc(0, 0, r - 3.5, 0, 7); ctx.stroke(); }
+      else { ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill(); ctx.stroke(); }
+      if (!b.slides) { ctx.rotate(bd.phi || 0); ctx.strokeStyle = surf; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -r + 2); ctx.stroke(); }
+      ctx.restore();
+    });
+    if (opts.over) opts.over(ctx, g, off);
+    if (opts.t !== undefined) { ctx.fillStyle = ink; ctx.font = "600 24px " + css("--f-mono"); ctx.textAlign = "left"; ctx.fillText("t = " + fmtNum(opts.t, 2) + " s", 16, 32); }
+    return g;
+  }
+  return { draw, geom };
+}
+/* Animate f(t) from 0 to T in real time (or jump to T with reduced motion). */
+function animate(T, f, end) {
+  let raf = 0, t0 = performance.now(), stopped = false;
+  const tick = now => { if (stopped) return; const t = Math.min((now - t0) / 1000, T); f(t); if (t < T) raf = requestAnimationFrame(tick); else { stopped = true; end(); } };
+  if (reduceMotion()) { f(T); end(); return { skip() {} }; }
+  raf = requestAnimationFrame(tick);
+  return { skip() { if (stopped) return; stopped = true; cancelAnimationFrame(raf); f(T); end(); } };
+}
+const last = {};
+
+/* Station 1: race */
+const racers = new Set(["ball", "ring"]);
+const ramp1 = Ramp($("cv1")); let anim1 = null; const RACE_DEG = 10;
+function drawRace(t) {
+  const keys = Object.keys(BODIES).filter(k => racers.has(k));
+  const bodies = keys.map((k, i) => { const m = motion(k, RACE_DEG), sl = Math.min(LEN, 0.5 * m.a * t * t); return { key: k, s: sl, phi: sl * ramp1.geom(RACE_DEG, keys.length).scale / 18, lane: i }; });
+  ramp1.draw(RACE_DEG, keys.length, bodies, { t });
+}
+function renderWho() {
+  $("who1").innerHTML = Object.keys(BODIES).map(k => `<label><input type="checkbox" value="${k}" ${racers.has(k) ? "checked" : ""}> <span style="color:${BODIES[k].col}">●</span> ${bname(k)}</label>`).join("");
+}
+$("who1").addEventListener("change", e => { const v = e.target.value; e.target.checked ? racers.add(v) : racers.delete(v); if (!racers.size) { racers.add(v); e.target.checked = true; } drawRace(0); $("res1").textContent = ""; });
+function raceResult() {
+  const keys = Object.keys(BODIES).filter(k => racers.has(k)).map(k => [k, timeFor(motion(k, RACE_DEG).a, LEN)]).sort((a, b) => a[1] - b[1]);
+  last.race = keys;
+  return keys.map(([k, t], i) => `${i + 1}. ${bname(k)}: ${fmtNum(t, 2)} s`).join("\n");
+}
+$("go1").onclick = () => {
+  const keys = [...racers], T = Math.max(...keys.map(k => timeFor(motion(k, RACE_DEG).a, LEN)));
+  $("res1").textContent = ""; ptf.event("experienced", { station: "race", data: { racers: keys } });
+  anim1 = animate(T, drawRace, () => { $("res1").textContent = raceResult(); if (racers.has("ball") && racers.has("ring")) { reveal("raceBox"); done("race"); } });
+};
+$("skip1").onclick = () => anim1 && anim1.skip();
+
+/* Station 2: bells */
+const BELL_DEG = 3, ramp2 = Ramp($("cv2"));
+const PRESETS = { equal: [1, 2, 3, 4].map(i => i * LEN / 4), odd: [1, 4, 9, 16].map(i => i * LEN / 16) };
+let bells = PRESETS.equal.slice(), preset2 = "equal", anim2 = null, rang = [];
+function renderBellSliders() {
+  $("bellSliders").hidden = preset2 !== "own";
+  $("bellSliders").innerHTML = bells.map((b, i) => `<div class="row"><label for="bell${i}">${L("Bell", "Glocke")} ${i + 1}</label><input type="range" id="bell${i}" data-i="${i}" min="0.05" max="${LEN}" step="0.05" value="${b}"><span class="mono">${fmtNum(b, 2)} m</span></div>`).join("");
+}
+$("bellSliders").addEventListener("input", e => { const i = e.target.dataset.i; if (i === undefined) return; bells[+i] = +e.target.value; e.target.nextElementSibling.textContent = fmtNum(bells[+i], 2) + " m"; drawBells(0, []); drawStrip([]); });
+$("preset2").addEventListener("click", e => { const b = e.target.closest("button[data-p]"); if (!b) return; preset2 = b.dataset.p;
+  $("preset2").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  if (PRESETS[preset2]) bells = PRESETS[preset2].slice(); renderBellSliders(); drawBells(0, []); drawStrip([]); $("res2").textContent = ""; });
+const a2 = () => motion("ball", BELL_DEG).a;
+function drawBells(t, rung) {
+  const sl = Math.min(LEN, 0.5 * a2() * t * t);
+  ramp2.draw(BELL_DEG, 1, [{ key: "ball", s: sl, phi: sl * ramp2.geom(BELL_DEG, 1).scale / 18, lane: 0 }], { t, over(ctx, g) {
+    bells.forEach((b, i) => { const x = g.top.x + b * g.scale * g.c, y = g.top.y + b * g.scale * g.s - 70;
+      ctx.strokeStyle = css("--muted"); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + 30); ctx.stroke();
+      ctx.fillStyle = rung.includes(i) ? css("--warn") : css("--accent"); ctx.beginPath(); ctx.arc(x, y + 38, 10, Math.PI, 0); ctx.lineTo(x + 12, y + 42); ctx.lineTo(x - 12, y + 42); ctx.fill();
+      ctx.fillStyle = css("--ink"); ctx.font = "16px " + css("--f-mono"); ctx.textAlign = "center"; ctx.fillText(String(i + 1), x, y - 6); });
+  } });
+}
+function bellTimes() { return bells.slice().sort((a, b) => a - b).map(b => timeFor(a2(), b)); }
+function drawStrip(times) {
+  const c = $("strip2"), ctx = c.getContext("2d"), W = c.width, Hh = c.height, pad = 40;
+  ctx.clearRect(0, 0, W, Hh);
+  const all = bellTimes(), Tm = Math.max(...all) * 1.05, X = t => pad + t / Tm * (W - 2 * pad);
+  ctx.strokeStyle = css("--line"); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(0), Hh / 2); ctx.lineTo(X(Tm), Hh / 2); ctx.stroke();
+  ctx.fillStyle = css("--muted"); ctx.font = "18px " + css("--f-mono"); ctx.textAlign = "center";
+  for (let s = 0; s <= Tm; s += 1) { ctx.fillRect(X(s) - 1, Hh / 2 - 6, 2, 12); ctx.fillText(fmtNum(s, 0) + " s", X(s), Hh / 2 + 32); }
+  ctx.textAlign = "left"; ctx.fillText(L("rings:", "Töne:"), pad, 30);
+  times.forEach(t => { ctx.fillStyle = css("--warn"); ctx.beginPath(); ctx.arc(X(t), Hh / 2, 11, 0, 7); ctx.fill(); });
+}
+let audio = null;
+function ding(i) {
+  if (!$("sound2").checked) return;
+  try {
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audio.createOscillator(), gn = audio.createGain(), t = audio.currentTime;
+    o.frequency.value = 660 + 110 * i; gn.gain.setValueAtTime(0.2, t); gn.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+    o.connect(gn).connect(audio.destination); o.start(t); o.stop(t + 0.45);
+  } catch (e) { /* no audio available: the strip still shows the rhythm */ }
+}
+function bellResult() {
+  const ts = bellTimes(), gaps = ts.map((t, i) => t - (i ? ts[i - 1] : 0));
+  const spread = (Math.max(...gaps) - Math.min(...gaps)) / (gaps.reduce((a, b) => a + b) / gaps.length);
+  last.bells = { positions: bells.slice().sort((a, b) => a - b), gaps };
+  const even = spread < 0.1;
+  if (preset2 === "equal") reveal("bellBox");
+  ptf.event("answered", { station: "bells", result: { correct: even, response: preset2 } });
+  if (even) done("bells");
+  return L(`Time between rings: ${gaps.map(g => fmtNum(g, 2) + " s").join(", ")}\n`, `Zeit zwischen den Tönen: ${gaps.map(g => fmtNum(g, 2) + " s").join(", ")}\n`) +
+    (even ? L("Even rhythm. The bells hang at 1, 4, 9 and 16 units from the start.", "Gleichmäßiger Rhythmus. Die Glöckchen hängen bei 1, 4, 9 und 16 Einheiten vom Start.")
+          : L("Uneven: the rings come faster and faster, because the ball keeps speeding up.", "Ungleichmäßig: Die Töne kommen immer schneller, weil die Kugel immer schneller wird."));
+}
+$("go2").onclick = () => {
+  const ts = bellTimes(); rang = []; $("res2").textContent = "";
+  const sorted = bells.map((b, i) => [b, i]).sort((a, b) => a[0] - b[0]);
+  anim2 = animate(ts[ts.length - 1] + 0.3, t => {
+    sorted.forEach(([b, i], j) => { if (t >= ts[j] && !rang.includes(i)) { rang.push(i); if (!reduceMotion()) ding(j); } });
+    drawBells(t, rang); drawStrip(ts.filter(x => x <= t));
+  }, () => { $("res2").textContent = bellResult(); });
+};
+
+$("skip2").onclick = () => anim2 && anim2.skip();
+
+/* Station 3: angle and force parts */
+const ramp3 = Ramp($("cv3")); let anim3 = null; const tried3 = new Set();
+function drawAngle(t) {
+  const deg = +$("ang3").value, a = motion("block", deg).a, s3 = Math.min(LEN, 0.5 * a * t * t);
+  ramp3.draw(Math.max(deg, 0.5), 1, [{ key: "block", s: s3, lane: 0 }], { t, over(ctx, g) {
+    const r = 18, px = g.top.x + s3 * g.scale * g.c + g.s * r, py = g.top.y + s3 * g.scale * g.s - g.c * r, F = 150;
+    const arrow = (dx, dy, col, label, align = "left") => { if (Math.hypot(dx, dy) < 3) return; ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + dx, py + dy); ctx.stroke();
+      const an = Math.atan2(dy, dx); ctx.beginPath(); ctx.moveTo(px + dx, py + dy); ctx.lineTo(px + dx - 12 * Math.cos(an - 0.4), py + dy - 12 * Math.sin(an - 0.4)); ctx.lineTo(px + dx - 12 * Math.cos(an + 0.4), py + dy - 12 * Math.sin(an + 0.4)); ctx.fill();
+      ctx.font = "600 20px " + css("--f-mono"); ctx.textAlign = "left"; const tw = ctx.measureText(label).width; let lx = align === "left" ? px + dx + 8 : px + dx - 8 - tw; lx = Math.max(4, Math.min(lx, ctx.canvas.width - tw - 4)); ctx.fillText(label, lx, py + dy + 18); };
+    arrow(0, F, css("--ink"), L("weight", "Gewicht"));
+    arrow(F * g.s * g.c, F * g.s * g.s, css("--accent"), L("along", "entlang"));
+    arrow(-F * g.c * g.s, F * g.c * g.c, css("--muted"), L("into ramp", "in Rampe"), "right");
+  } });
+  $("ang3v").textContent = deg + "°";
+}
+function angleText() {
+  const deg = +$("ang3").value, a = motion("block", deg).a;
+  return L(`Angle ${deg}°: sin θ = ${fmtNum(Math.sin(rad(deg)), 3)}, acceleration ${fmtNum(a, 2)} m/s² (${fmtNum(a / G * 100, 0)} % of g). 4 m take ${a > 0 ? fmtNum(timeFor(a, LEN), 2) + " s" : "forever"}.`,
+           `Winkel ${deg}°: sin θ = ${fmtNum(Math.sin(rad(deg)), 3)}, Beschleunigung ${fmtNum(a, 2)} m/s² (${fmtNum(a / G * 100, 0)} % von g). 4 m dauern ${a > 0 ? fmtNum(timeFor(a, LEN), 2) + " s" : "ewig"}.`);
+}
+$("ang3").addEventListener("input", () => { drawAngle(0); $("res3").textContent = angleText(); });
+$("go3").onclick = () => {
+  const deg = +$("ang3").value, a = motion("block", deg).a; tried3.add(deg);
+  ptf.event("experienced", { station: "angle", data: { angle: deg } });
+  last.angle = deg;
+  anim3 = animate(a > 0 ? timeFor(a, LEN) : 0, drawAngle, () => { $("res3").textContent = angleText(); if (deg >= 80) reveal("angleBox"); if (tried3.size >= 2 && [...tried3].some(d => d >= 80)) done("angle"); });
+};
+
+/* Station 4: energy */
+const ramp4 = Ramp($("cv4")); let anim4 = null;
+function rollState(t) {
+  const key = $("body4").value, deg = +$("ang4").value, mu = +$("mu4").value, m = motion(key, deg, mu);
+  const T = timeFor(m.a, LEN), tt = Math.min(t, T);
+  return { key, deg, mu, m, T, s: 0.5 * m.a * tt * tt, spin: 0.5 * m.aSpin * tt * tt, tt };
+}
+function drawRoll(t) {
+  const st = rollState(t), g = ramp4.geom(st.deg, 1);
+  ramp4.draw(st.deg, 1, [{ key: st.key, s: Math.min(LEN, st.s), phi: st.spin * g.scale / 18, lane: 0 }], { t: st.tt });
+  /* energies per unit mass at time t (J/kg) */
+  const b = BODIES[st.key], h = st.s * Math.sin(rad(st.deg)), v = st.m.a * st.tt, w = st.m.aSpin * st.tt;
+  const E0 = G * LEN * Math.sin(rad(st.deg)), Et = 0.5 * v * v, Er = 0.5 * b.k * w * w, Ep = E0 - G * h, heat = Math.max(0, E0 - Ep - Et - Er);
+  const row = (lab, val, c) => `<div class="ebar"><span>${lab}</span><div class="fill" style="width:${Math.max(0, val / E0 * 100)}%;--c:${c}"></div><span class="v">${fmtNum(val / E0 * 100, 0)} %</span></div>`;
+  $("ebars4").innerHTML = row(L("height", "Höhe"), Ep, "var(--muted)") + row(L("forward", "vorwärts"), Et, "var(--accent)") + row(L("spin", "Drehung"), Er, "#7C3AED") + row(L("heat", "Wärme"), heat, "var(--warn)");
+  return { Et, Er, heat, E0 };
+}
+function rollText() {
+  const st = rollState(0), b = BODIES[st.key];
+  last.rolling = { body: st.key, angle: st.deg, mu: st.mu, a: st.m.a, slips: st.m.slips };
+  const base = L(`${bname(st.key)}, ${st.deg}°, μ = ${fmtNum(st.mu, 2)}: a = ${fmtNum(st.m.a, 3)} m/s², bottom after ${fmtNum(st.T, 2)} s.`,
+                 `${bname(st.key)}, ${st.deg}°, μ = ${fmtNum(st.mu, 2)}: a = ${fmtNum(st.m.a, 3)} m/s², unten nach ${fmtNum(st.T, 2)} s.`);
+  if (b.slides) return base + L(st.mu > 0 ? " Friction turns part of the energy into heat." : " Nothing spins, so all the energy goes into forward motion.", st.mu > 0 ? " Reibung macht einen Teil der Energie zu Wärme." : " Nichts dreht sich, also geht alle Energie in die Vorwärtsbewegung.");
+  return base + (st.m.slips ? L(` It slips: friction cannot spin it up fast enough (it would need μ ≥ ${fmtNum(b.k / (1 + b.k) * Math.tan(rad(st.deg)), 2)}).`, ` Er rutscht: Die Reibung kann ihn nicht schnell genug andrehen (nötig wäre μ ≥ ${fmtNum(b.k / (1 + b.k) * Math.tan(rad(st.deg)), 2)}).`)
+    : L(` Rolls without slipping: ${fmtNum(b.k / (1 + b.k) * 100, 0)} % of the energy goes into spin.`, ` Rollt ohne zu rutschen: ${fmtNum(b.k / (1 + b.k) * 100, 0)} % der Energie gehen in die Drehung.`));
+}
+const roll4 = new Set();
+function updateRoll() { $("ang4v").textContent = $("ang4").value + "°"; $("mu4v").textContent = fmtNum(+$("mu4").value, 2); drawRoll(0); if (roll4.size) $("res4").textContent = rollText(); }
+["body4", "ang4", "mu4"].forEach(id => $(id).addEventListener("input", updateRoll));
+$("go4").onclick = () => {
+  const st = rollState(0); roll4.add(st.key);
+  ptf.event("experienced", { station: "rolling", data: { body: st.key, angle: st.deg, mu: st.mu } });
+  anim4 = animate(st.T, drawRoll, () => { $("res4").textContent = rollText(); if (st.key === "ball" && !st.m.slips) reveal("rollBox"); if (roll4.size >= 2) done("rolling"); });
+};
+$("skip4").onclick = () => anim4 && anim4.skip();
+
+function simSnapshot() {
+  const p = [];
+  if (last.race) p.push(`Race at ${RACE_DEG} deg: ${last.race.map(([k, t]) => k + " " + t.toFixed(2) + " s").join(", ")}`);
+  if (last.bells) p.push(`Bells at ${last.bells.positions.map(x => x.toFixed(2)).join(", ")} m, gaps ${last.bells.gaps.map(x => x.toFixed(2)).join(", ")} s`);
+  if (last.angle !== undefined) p.push(`Angle station: last slide at ${last.angle} deg`);
+  if (last.rolling) p.push(`Rolling: ${last.rolling.body}, ${last.rolling.angle} deg, mu ${last.rolling.mu}, a ${last.rolling.a.toFixed(3)} m/s2${last.rolling.slips ? ", slipping" : ""}`);
+  return p.join(". ") || "Nothing released yet";
+}
+function rerender() {
+  renderWho(); drawRace(0); if (last.race) $("res1").textContent = raceResult();
+  renderBellSliders(); drawBells(0, []); drawStrip([]);
+  drawAngle(0); $("res3").textContent = angleText();
+  const keep = $("body4").value || "ball";
+  $("body4").innerHTML = Object.keys(BODIES).map(k => `<option value="${k}">${bname(k)}</option>`).join(""); $("body4").value = keep;
+  updateRoll();
+}
+rerender(); initChoices(); READY = true;
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", rerender);
+new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "style"] });
+</script>
+</body>
+</html>

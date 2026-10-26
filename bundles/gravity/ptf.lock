@@ -2,16 +2,16 @@
   "lockfileVersion": 1,
   "simulators": {
     "ptf:sim/falling-tower": {
-      "version": "1.0.0",
-      "integrity": "sha256-pathmICIN0STxq6/ueZbq/Ivv3RLD8kzJwnDWdNZUgE="
+      "version": "1.1.0",
+      "integrity": "sha256-Hc01xnzEpekrNCFUgtDERPXANbELPsR8lUmawS4/dyo="
     },
     "ptf:sim/inclined-plane": {
-      "version": "1.0.0",
-      "integrity": "sha256-v63/UlpKIBwsqOYrObPUweU803qdIl9a3oik0OYsXx4="
+      "version": "1.1.0",
+      "integrity": "sha256-2FeRbJHiKUiFF1avdvvpQQ3poH+YJTFIYqHYsaf+JKE="
     },
     "ptf:sim/newton-einstein": {
-      "version": "1.0.0",
-      "integrity": "sha256-opao6S8W6kBtM7q2OkZIFQxDYvHKBxQQOn89Xzfq8qA="
+      "version": "1.1.0",
+      "integrity": "sha256-uODvkoRaK+4JxniziesYBJ9VWRPXegDf89b6V3zNeqU="
     }
   }
 }

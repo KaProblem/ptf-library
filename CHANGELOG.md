@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- Simulators `falling-tower`, `inclined-plane` and `newton-einstein` 1.1.0: predict before you try (every experiment stays locked until a prediction is picked, and the prediction is judged and reported as `answered` only after the result), start at station 1 with a progress row for direct go-to, an illustrated leaning tower and Earth, canvas colours resolved through the browser so host theme tokens no longer turn drawings black, canvases no longer stretched on wide screens. Bundle `gravity` 0.1.1 uses them.
 - CONTRIBUTING.md and pull request template: contributors are responsible for their content and its legal compliance, license contributions under the repository's licenses, and confirm a contributor statement in every PR.
 - Bundle `gravity` 0.1.0: learning elements free fall, air resistance, inclined plane, rolling, universal gravitation and curved spacetime (all four levels where it fits, misconceptions, 37 question blocks, `# Further reading`); learning path `pisa-to-einstein`; lockfile.
 - Simulators `falling-tower`, `inclined-plane` and `newton-einstein` 1.0.0 (English and German UI, focus mode, self-tests that check computed physics values against closed-form results). `newton-einstein` is the pilot for vendored libraries (SIMULATOR-SPEC §8 proposal): its spacetime station uses the allowlisted `three-core@0.170.0` build and falls back to text without WebGL.
