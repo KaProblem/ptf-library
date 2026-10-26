@@ -7,6 +7,11 @@ description: All parts of a GPT in one picture, from text to the next token, wha
 lang: en
 levels: [highschool, college, expert]
 tags: [llm, gpt, transformer, generation, context-window, parameters, summary]
+about:
+  - wikidata: Q116777014
+    label: generative pre-trained transformer
+  - wikidata: Q125619872
+    label: context window
 requires:
   - ptf:el/llm-basics/residual-stream
 leads_to:
@@ -48,7 +53,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T14:30:00Z }
 status: draft
-version: 0.1.0
+version: 0.1.1
 license: CC-BY-SA-4.0
 ---
 

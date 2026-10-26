@@ -7,6 +7,13 @@ description: The bigram model is a table of scores, one row per token. Training 
 lang: en
 levels: [highschool, college, expert]
 tags: [llm, bigram, training-loop, gradient-descent, learning-rate, generation]
+about:
+  - wikidata: Q2773912
+    label: bigram
+  - wikidata: Q1199743
+    label: gradient descent
+  - wikidata: Q65121812
+    label: learning rate
 requires:
   - ptf:el/llm-basics/cross-entropy
 leads_to:
@@ -40,7 +47,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T14:30:00Z }
 status: draft
-version: 0.1.0
+version: 0.1.1
 license: CC-BY-SA-4.0
 ---
 

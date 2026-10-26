@@ -7,6 +7,13 @@ description: A pretrained decoder-only transformer only continues documents; fin
 lang: en
 levels: [child, highschool, college, expert]
 tags: [llm, pretraining, fine-tuning, rlhf, decoder-only, encoder-decoder, scale]
+about:
+  - wikidata: Q117286419
+    label: fine-tuning
+  - wikidata: Q115570683
+    label: reinforcement learning from human feedback
+  - wikidata: Q115305900
+    label: large language model
 requires:
   - ptf:el/llm-basics/gpt-end-to-end
 duration_min: { child: 10, highschool: 15, college: 20, expert: 15 }
@@ -33,7 +40,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.2.0
+version: 0.2.1
 license: CC-BY-SA-4.0
 ---
 

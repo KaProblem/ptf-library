@@ -7,6 +7,11 @@ description: A rolling body has to spin up as well as speed up, so it is slower 
 lang: en
 levels: [child, highschool, college, expert]
 tags: [physics, mechanics, rolling, moment-of-inertia, energy, friction]
+about:
+  - wikidata: Q2192732
+    label: rolling
+  - wikidata: Q165618
+    label: moment of inertia
 requires:
   - ptf:el/gravity/inclined-plane
 duration_min: { child: 10, highschool: 15, college: 20, expert: 15 }
@@ -30,7 +35,7 @@ sources:
     title: "The Feynman Lectures on Physics, Vol. I, ch. 19: Center of Mass; Moment of Inertia"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.0
+version: 0.1.1
 license: CC-BY-SA-4.0
 ---
 
