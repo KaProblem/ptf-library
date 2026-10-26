@@ -1,0 +1,96 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/falling-tower",
+  "version": "1.0.0",
+  "title": "The falling tower",
+  "description": "Drop two objects from a 56 m leaning tower, with air, without air and on the Moon; speed graphs, terminal speed and the numerical method behind it.",
+  "lang": [
+    "en",
+    "de"
+  ],
+  "concepts": [
+    "free-fall",
+    "gravitational-acceleration",
+    "air-resistance",
+    "drag",
+    "terminal-velocity",
+    "equivalence-of-falling",
+    "numerical-integration",
+    "runge-kutta"
+  ],
+  "levels": [
+    "child",
+    "highschool",
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "guess",
+      "title": "Which ball lands first?",
+      "levels": [
+        "child",
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "vacuum",
+      "title": "Feather and hammer (take the air away)",
+      "levels": [
+        "child",
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "drag",
+      "title": "Speed over time: drag and terminal speed",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "model",
+      "title": "Inside the simulation: Euler, RK4 and the exact formula",
+      "levels": [
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "check",
+      "title": "Two short questions",
+      "levels": [
+        "child",
+        "highschool",
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "entry": "index.html",
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "events": [
+    "answered",
+    "experienced",
+    "station_completed",
+    "level_changed"
+  ],
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "derived_from": null,
+  "changelog": "First version. Vanilla canvas, own RK4 integrator for 1D fall with quadratic drag, checked against the closed-form solution. UI in English and German.",
+  "integrity": "sha256-pathmICIN0STxq6/ueZbq/Ivv3RLD8kzJwnDWdNZUgE="
+}

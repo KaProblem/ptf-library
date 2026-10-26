@@ -1,0 +1,95 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/inclined-plane",
+  "version": "1.0.0",
+  "title": "The inclined plane",
+  "description": "Race balls, cylinders, rings and a sliding block down a ramp; hear the square law with bells; see how the slope splits gravity and where rolling energy goes.",
+  "lang": [
+    "en",
+    "de"
+  ],
+  "concepts": [
+    "inclined-plane",
+    "uniform-acceleration",
+    "distance-time-squared",
+    "force-components",
+    "rolling",
+    "moment-of-inertia",
+    "rotational-energy",
+    "static-friction"
+  ],
+  "levels": [
+    "child",
+    "highschool",
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "race",
+      "title": "Ball against ring",
+      "levels": [
+        "child",
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "bells",
+      "title": "Bells on the ramp (distance grows with time squared)",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "angle",
+      "title": "From ramp to free fall (a = g sin θ)",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "rolling",
+      "title": "Rolling costs spin: energy split and slipping",
+      "levels": [
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "check",
+      "title": "Two short questions",
+      "levels": [
+        "child",
+        "highschool",
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "entry": "index.html",
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "events": [
+    "answered",
+    "experienced",
+    "station_completed",
+    "level_changed"
+  ],
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "derived_from": null,
+  "changelog": "First version. Vanilla canvas; closed-form constant-acceleration motion (rolling with k = I/(m r²), slipping with Coulomb friction), no physics engine. UI in English and German.",
+  "integrity": "sha256-v63/UlpKIBwsqOYrObPUweU803qdIl9a3oik0OYsXx4="
+}

@@ -1,0 +1,115 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/newton-einstein",
+  "version": "1.0.0",
+  "title": "Newton and Einstein",
+  "description": "Newton's cannon and the Moon test, a 3D picture of curved space, satellite clocks that run fast, and Mercury's turning orbit.",
+  "lang": [
+    "en",
+    "de"
+  ],
+  "concepts": [
+    "universal-gravitation",
+    "inverse-square-law",
+    "orbit",
+    "free-fall",
+    "weightlessness",
+    "general-relativity",
+    "spacetime-curvature",
+    "gravitational-time-dilation",
+    "gps",
+    "perihelion-precession"
+  ],
+  "levels": [
+    "child",
+    "highschool",
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "cannon",
+      "title": "The cannon on the mountain (orbit = falling around)",
+      "levels": [
+        "child",
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "moon",
+      "title": "The apple and the Moon (inverse square)",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "spacetime",
+      "title": "Mass bends space (3D picture and its limits)",
+      "levels": [
+        "child",
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "clocks",
+      "title": "Clocks up high run fast (GPS)",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "mercury",
+      "title": "Mercury's turning ellipse",
+      "levels": [
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "check",
+      "title": "Two short questions",
+      "levels": [
+        "child",
+        "highschool",
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "entry": "index.html",
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "events": [
+    "answered",
+    "experienced",
+    "station_completed",
+    "level_changed"
+  ],
+  "capabilities": [],
+  "vendor": [
+    {
+      "build": "three-core@0.170.0",
+      "path": "vendor/three-core-0.170.0.min.js",
+      "sha256": "b3c33d2ad2dc57c8351586787203b58c9401cd80bd0a0bce715f05fbcd972a2b",
+      "license": "MIT"
+    }
+  ],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "derived_from": null,
+  "changelog": "First version. Orbits with an own RK4 integrator; the spacetime station uses the vendored three-core build of three.js 0.170.0 (pilot for SIMULATOR-SPEC §8) and falls back to text without WebGL. UI in English and German.",
+  "integrity": "sha256-opao6S8W6kBtM7q2OkZIFQxDYvHKBxQQOn89Xzfq8qA="
+}

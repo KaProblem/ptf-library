@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Newton and Einstein</title>
+<style>
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
+  --accent:#0E6E68; --accent-soft:#D5ECEA; --warn:#C2410C; --warn-soft:#FBE3D6;
+  --f-display:"Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.3rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+header{display:flex;flex-direction:column;gap:12px}
+.levels{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start;background:var(--surface);max-width:100%}
+.levels button{font:600 1rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:10px 16px;min-height:44px;cursor:pointer}
+.levels button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.station{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.station .num{font:600 .8rem var(--f-mono);color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:600 .95rem var(--f-body);min-height:44px;padding:8px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--accent)}
+button.btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-height:44px;min-width:0}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+label{color:var(--muted);font-size:.95rem}
+.note{color:var(--muted);font-size:.95rem}
+.stat{font:600 1.5rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:24px}
+.stats div{display:flex;flex-direction:column}
+.scroll{overflow-x:auto;max-width:100%}
+.out{font:.95rem/1.5 var(--f-mono);white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px}
+.feedback{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:4px}
+.feedback.bad{border-color:var(--warn);background:var(--warn-soft)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices button{text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.choices button.right{border-color:var(--accent);background:var(--accent-soft)}
+.choices button.wrong{border-color:var(--warn);background:var(--warn-soft)}
+table.grid{border-collapse:collapse;font:.85rem var(--f-mono);font-variant-numeric:tabular-nums}
+table.grid th{color:var(--muted);font-weight:600;padding:4px 6px}
+table.grid td{width:46px;height:40px;text-align:center;border:1px solid var(--line);padding:0}
+table.grid td button{width:100%;height:100%;min-height:40px;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.bars{display:flex;flex-direction:column;gap:4px;font:.9rem var(--f-mono)}
+.bar{display:grid;grid-template-columns:5.5em 1fr 4em;gap:8px;align-items:center}
+.bar .fill{height:18px;background:var(--accent);border-radius:3px;min-width:2px}
+.bar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.tok{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:4px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font:1rem var(--f-mono);color:var(--ink);cursor:pointer}
+.tok[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+svg text{font-family:var(--f-mono)}
+details summary{cursor:pointer;font-weight:600;min-height:32px}
+footer{color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+html:not([lang="de"]) i-de,html[lang="de"] i-en{display:none!important}
+i-en,i-de{font-style:inherit}
+.focus-nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;bottom:0;background:var(--bg);padding:10px 0;border-top:1px solid var(--line)}
+.focus-nav #focusAll{margin-left:auto}
+.focus-nav button:disabled{opacity:.4;cursor:default}
+body.focused header > :not(.row){display:none}
+body.focused #focusStart{display:none}
+body.focused footer{display:none}
+
+canvas.view{width:100%;height:auto;aspect-ratio:1/1;max-height:520px;background:var(--bg);border:1px solid var(--line);border-radius:8px;display:block;margin:0 auto}
+canvas.wide{width:100%;height:auto;aspect-ratio:16/9;max-height:360px;background:var(--bg);border:1px solid var(--line);border-radius:8px}
+canvas.space{width:100%;height:auto;aspect-ratio:4/3;max-height:480px;background:var(--bg);border:1px solid var(--line);border-radius:8px;touch-action:pan-y;cursor:grab}
+.result{font:.95rem/1.5 var(--f-mono);white-space:pre-wrap;font-variant-numeric:tabular-nums}
+.sliders .row label{min-width:5em}
+.sliders .row .mono{min-width:5em;text-align:right}
+.sliders .row input[type=range]{flex:1 1 120px}
+.big{font:700 clamp(1.4rem,5vw,2rem)/1.2 var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:20px}
+.stats > div{display:flex;flex-direction:column;gap:2px;min-width:9em}
+.marks{display:flex;flex-wrap:wrap;gap:8px}
+.fallback{padding:16px;border:1px dashed var(--line);border-radius:8px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow"><i-en>Gravity · Newton and Einstein</i-en><i-de>Gravitation · Newton und Einstein</i-de></span>
+  <h1><i-en>Two ideas of gravity</i-en><i-de>Zwei Ideen von Schwerkraft</i-de></h1>
+  <p><i-en>Newton said: every mass pulls on every other mass, weaker with distance. That explains falling apples, the Moon and the planets. Einstein said: mass bends space and time, and things simply follow the straightest path through that bent spacetime. Both give almost the same answers, until you measure very precisely.</i-en><i-de>Newton sagte: Jede Masse zieht an jeder anderen Masse, schwächer mit dem Abstand. Das erklärt fallende Äpfel, den Mond und die Planeten. Einstein sagte: Masse krümmt Raum und Zeit, und die Dinge folgen einfach dem geradesten Weg durch diese gekrümmte Raumzeit. Beide liefern fast dieselben Antworten, bis man sehr genau misst.</i-de></p>
+  <div class="levels" role="group" aria-label="Level">
+    <button data-level="0" aria-pressed="false"><i-en>Child</i-en><i-de>Kind</i-de></button><button data-level="1" aria-pressed="true"><i-en>High school</i-en><i-de>Schule</i-de></button><button data-level="2" aria-pressed="false"><i-en>College</i-en><i-de>Studium</i-de></button><button data-level="3" aria-pressed="false"><i-en>Expert</i-en><i-de>Experte</i-de></button>
+  </div>
+</header>
+
+<section class="station" data-station="cannon" data-show="0 1 2 3">
+  <span class="num"><i-en>Station 1 · Newton · Guess</i-en><i-de>Station 1 · Newton · Raten</i-de></span>
+  <h2><i-en>The cannon on the mountain</i-en><i-de>Die Kanone auf dem Berg</i-de></h2>
+  <p><i-en>Imagine a mountain so tall that it sticks out of the air, 400 km high. A cannon on top fires a ball straight ahead, sideways to the ground. The faster the ball, the farther it flies before it lands. What happens if it is very fast, about 8 km per second?</i-en><i-de>Stell dir einen Berg vor, so hoch, dass er aus der Luft herausragt: 400 km. Eine Kanone oben schießt eine Kugel geradeaus, parallel zum Boden. Je schneller die Kugel, desto weiter fliegt sie, bevor sie landet. Was passiert, wenn sie sehr schnell ist, etwa 8 km pro Sekunde?</i-de></p>
+  <div class="choices" id="cannonBox">
+    <button data-ok data-fb-en="Yes. It keeps falling, but the ground curves away beneath it just as fast. That is what an orbit is. Try it." data-fb-de="Ja. Sie fällt die ganze Zeit, aber der Boden krümmt sich unter ihr genauso schnell weg. Genau das ist eine Umlaufbahn. Probier es aus."><i-en>It falls all the way around the Earth and never lands</i-en><i-de>Sie fällt einmal ganz um die Erde herum und landet nie</i-de></button>
+    <button data-mis="fast-escapes-gravity" data-fb-en="Not at 8 km/s. Gravity still bends its path. Only at about 11 km/s does it escape. Try both." data-fb-de="Nicht bei 8 km/s. Die Schwerkraft biegt ihre Bahn noch. Erst bei etwa 11 km/s entkommt sie. Probier beides aus."><i-en>It flies straight off into space</i-en><i-de>Sie fliegt geradeaus ins All</i-de></button>
+    <button data-mis="no-gravity-in-orbit" data-fb-en="Gravity does not stop up there: at 400 km it is still about 90 % as strong as on the ground. Try it." data-fb-de="Die Schwerkraft hört da oben nicht auf: In 400 km Höhe ist sie noch etwa 90 % so stark wie am Boden. Probier es aus."><i-en>It floats, because there is no gravity up there</i-en><i-de>Sie schwebt, weil es da oben keine Schwerkraft gibt</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="sliders"><div class="row"><label for="v1"><i-en>Speed</i-en><i-de>Geschwindigkeit</i-de></label><input type="range" id="v1" min="0.5" max="12" step="0.1" value="4"><span class="mono" id="v1v"></span></div></div>
+  <div class="marks"><button class="btn ghost" data-v="4">4 km/s</button><button class="btn ghost" data-v="7.7">7.7 km/s</button><button class="btn ghost" data-v="9.5">9.5 km/s</button><button class="btn ghost" data-v="11">11 km/s</button></div>
+  <canvas class="view" id="cv1" width="700" height="700" role="img" aria-label="Earth with a mountain and the path of the cannonball"></canvas>
+  <div class="row"><button class="btn" id="fire1"><i-en>Fire</i-en><i-de>Feuer</i-de></button><button class="btn ghost" id="skip1"><i-en>Skip to the end</i-en><i-de>Zum Ende springen</i-de></button></div>
+  <div class="out result" id="res1" aria-live="polite"></div>
+  <p class="note" data-show="1 2 3"><i-en>An astronaut in the space station is not weightless because gravity is missing. The station and everything in it fall together, all the time, around the Earth.</i-en><i-de>Eine Astronautin in der Raumstation ist nicht schwerelos, weil die Schwerkraft fehlt. Die Station und alles darin fallen gemeinsam, die ganze Zeit, um die Erde herum.</i-de></p>
+</section>
+
+<section class="station" data-station="moon" data-show="1 2 3">
+  <span class="num"><i-en>Station 2 · Newton · The Moon test</i-en><i-de>Station 2 · Newton · Der Mondtest</i-de></span>
+  <h2><i-en>The apple and the Moon</i-en><i-de>Der Apfel und der Mond</i-de></h2>
+  <p><i-en>An apple falls 4.9 m in its first second. The Moon also falls towards the Earth all the time, which is what bends its path into a circle. Newton guessed that gravity gets weaker with the square of the distance. The Moon is about 60 Earth radii away. Move the apple out there and compare.</i-en><i-de>Ein Apfel fällt in der ersten Sekunde 4,9 m. Auch der Mond fällt ständig zur Erde hin, nur dadurch wird seine Bahn zum Kreis. Newton vermutete: Die Schwerkraft wird mit dem Quadrat des Abstands schwächer. Der Mond ist etwa 60 Erdradien entfernt. Schieb den Apfel dorthin und vergleiche.</i-de></p>
+  <div class="sliders"><div class="row"><label for="r2"><i-en>Distance</i-en><i-de>Abstand</i-de></label><input type="range" id="r2" min="1" max="61" step="0.1" value="1"><span class="mono" id="r2v"></span></div></div>
+  <canvas class="wide" id="cv2" width="800" height="450" role="img" aria-label="Gravity against distance"></canvas>
+  <div class="stats">
+    <div><span class="note"><i-en>pull (acceleration)</i-en><i-de>Zug (Beschleunigung)</i-de></span><span class="big" id="g2"></span></div>
+    <div><span class="note"><i-en>fall in the first second</i-en><i-de>Fall in der ersten Sekunde</i-de></span><span class="big" id="f2"></span></div>
+    <div><span class="note"><i-en>the real Moon falls</i-en><i-de>der echte Mond fällt</i-de></span><span class="big" id="m2"></span></div>
+  </div>
+  <p class="note" id="note2"></p>
+  <p class="note" data-show="2 3"><i-en>F = G m₁ m₂ / r². The Moon's fall comes from its orbit alone: a = v² / r = (2π r / T)² / r with r = 384 400 km and T = 27.3 days gives 2.72 mm/s², and 9.81 m/s² / 60.3² gives 2.70 mm/s². One law for the apple and the sky.</i-en><i-de>F = G m₁ m₂ / r². Der Fall des Mondes folgt allein aus seiner Bahn: a = v² / r = (2π r / T)² / r mit r = 384 400 km und T = 27,3 Tagen ergibt 2,72 mm/s², und 9,81 m/s² / 60,3² ergibt 2,70 mm/s². Ein Gesetz für den Apfel und den Himmel.</i-de></p>
+</section>
+
+<section class="station" data-station="spacetime" data-show="0 1 2 3">
+  <span class="num"><i-en>Station 3 · Einstein · Picture it</i-en><i-de>Station 3 · Einstein · Vorstellen</i-de></span>
+  <h2><i-en>Mass bends space</i-en><i-de>Masse krümmt den Raum</i-de></h2>
+  <p><i-en>Einstein's picture: a mass does not pull. It bends the space (and time) around it, a bit like a heavy ball on a trampoline. A small marble rolling past follows the bend. Make the mass heavier, change the marble's speed and launch it. Drag sideways on the picture to turn it.</i-en><i-de>Einsteins Bild: Eine Masse zieht nicht. Sie krümmt den Raum (und die Zeit) um sich herum, ein bisschen wie eine schwere Kugel auf einem Trampolin. Eine kleine Murmel, die vorbeirollt, folgt der Krümmung. Mach die Masse schwerer, ändere die Geschwindigkeit der Murmel und schick sie los. Zieh seitlich über das Bild, um es zu drehen.</i-de></p>
+  <div class="sliders">
+    <div class="row"><label for="m3"><i-en>Mass</i-en><i-de>Masse</i-de></label><input type="range" id="m3" min="0.2" max="2" step="0.1" value="1"><span class="mono" id="m3v"></span></div>
+    <div class="row"><label for="s3"><i-en>Marble speed</i-en><i-de>Murmel-Tempo</i-de></label><input type="range" id="s3" min="0.2" max="1.6" step="0.05" value="0.8"><span class="mono" id="s3v"></span></div>
+  </div>
+  <canvas class="space" id="cv3" width="800" height="600" role="img" aria-label="Curved grid around a mass with a marble path"></canvas>
+  <p class="fallback" id="fb3" hidden><i-en>The 3D view needs WebGL, which this device or browser does not offer. The idea: the grid sinks into a funnel around the mass, and the marble's path curves around it.</i-en><i-de>Die 3D-Ansicht braucht WebGL, das dieses Gerät oder dieser Browser nicht bietet. Die Idee: Das Gitter sinkt um die Masse zu einem Trichter ein, und die Bahn der Murmel krümmt sich darum herum.</i-de></p>
+  <div class="row"><button class="btn" id="go3"><i-en>Launch marble</i-en><i-de>Murmel losschicken</i-de></button><button class="btn ghost" id="left3" aria-label="Turn left">◀</button><button class="btn ghost" id="right3" aria-label="Turn right">▶</button></div>
+  <div class="out result" id="res3" aria-live="polite"></div>
+  <p class="note" data-show="1 2 3"><i-en>Careful with the trampoline: a real marble on a real trampoline rolls into the dip because the Earth pulls it down, so the picture secretly uses gravity to explain gravity. In Einstein's theory nothing pulls. Mostly it is time that is bent: clocks closer to a mass run slower, and that alone makes free paths curve towards it (station 4).</i-en><i-de>Vorsicht mit dem Trampolin: Eine echte Murmel auf einem echten Trampolin rollt in die Mulde, weil die Erde sie nach unten zieht. Das Bild erklärt Schwerkraft also heimlich mit Schwerkraft. In Einsteins Theorie zieht nichts. Gekrümmt ist vor allem die Zeit: Uhren nahe an einer Masse gehen langsamer, und allein das lässt freie Bahnen zu ihr hin abbiegen (Station 4).</i-de></p>
+  <p class="note" data-show="2 3"><i-en>The grid shows the Newtonian potential Φ = −GM/r (softened near the centre); the marble's path is computed from Newton's law, which is what general relativity reduces to for weak fields and slow speeds. In that limit the time-time part of the metric is g₀₀ ≈ −(1 + 2Φ/c²).</i-en><i-de>Das Gitter zeigt das Newton-Potenzial Φ = −GM/r (nahe der Mitte geglättet); die Bahn der Murmel wird mit Newtons Gesetz berechnet, auf das die Allgemeine Relativitätstheorie für schwache Felder und langsame Bewegungen hinausläuft. In dieser Näherung ist der Zeit-Zeit-Anteil der Metrik g₀₀ ≈ −(1 + 2Φ/c²).</i-de></p>
+</section>
+
+<section class="station" data-station="clocks" data-show="1 2 3">
+  <span class="num"><i-en>Station 4 · Einstein · Measured every day</i-en><i-de>Station 4 · Einstein · Täglich gemessen</i-de></span>
+  <h2><i-en>Clocks up high run fast</i-en><i-de>Uhren in der Höhe gehen vor</i-de></h2>
+  <p><i-en>Your phone finds its position from satellite clocks: a time error of one microsecond means about 300 m of error. Newton's theory says a clock ticks the same everywhere. Einstein's says: higher up, farther from the Earth's mass, a clock runs faster; and a fast-moving clock runs slower. Move a satellite up and see what its clock does.</i-en><i-de>Dein Handy bestimmt seine Position mit den Uhren von Satelliten: Ein Zeitfehler von einer Mikrosekunde bedeutet etwa 300 m Fehler. Nach Newtons Theorie tickt eine Uhr überall gleich. Nach Einstein geht eine Uhr weiter oben, weiter weg von der Erdmasse, schneller; und eine schnell bewegte Uhr geht langsamer. Schieb einen Satelliten nach oben und schau, was seine Uhr macht.</i-de></p>
+  <div class="sliders"><div class="row"><label for="h4"><i-en>Altitude</i-en><i-de>Höhe</i-de></label><input type="range" id="h4" min="0" max="36000" step="100" value="400"><span class="mono" id="h4v"></span></div></div>
+  <div class="marks"><button class="btn ghost" data-h="400"><i-en>Space station</i-en><i-de>Raumstation</i-de></button><button class="btn ghost" data-h="20200"><i-en>GPS</i-en><i-de>GPS</i-de></button><button class="btn ghost" data-h="35800"><i-en>Geostationary</i-en><i-de>Geostationär</i-de></button></div>
+  <canvas class="wide" id="cv4" width="800" height="450" role="img" aria-label="Clock rate against altitude"></canvas>
+  <div class="stats">
+    <div><span class="note"><i-en>height effect</i-en><i-de>Höhen-Effekt</i-de></span><span class="big" id="hg4"></span></div>
+    <div><span class="note"><i-en>speed effect</i-en><i-de>Tempo-Effekt</i-de></span><span class="big" id="hv4"></span></div>
+    <div><span class="note"><i-en>together, per day</i-en><i-de>zusammen, pro Tag</i-de></span><span class="big" id="hn4"></span></div>
+  </div>
+  <div class="out result" id="res4" aria-live="polite"></div>
+  <p class="note" data-show="2 3"><i-en>Per day: height effect = (GM/c²)(1/R − 1/r) · 86 400 s, speed effect = v²/(2c²) · 86 400 s with the orbital speed v = √(GM/r). The ground clock is treated as resting (the Earth's rotation adds less than 0.1 µs/day). The two effects cancel at r = 1.5 R, about 3 200 km up.</i-en><i-de>Pro Tag: Höhen-Effekt = (GM/c²)(1/R − 1/r) · 86 400 s, Tempo-Effekt = v²/(2c²) · 86 400 s mit der Bahngeschwindigkeit v = √(GM/r). Die Bodenuhr gilt als ruhend (die Erddrehung macht weniger als 0,1 µs/Tag aus). Beide Effekte heben sich bei r = 1,5 R auf, etwa 3 200 km Höhe.</i-de></p>
+</section>
+
+<section class="station" data-station="mercury" data-show="2 3">
+  <span class="num"><i-en>Station 5 · Einstein · The orbit that turns</i-en><i-de>Station 5 · Einstein · Die Bahn, die sich dreht</i-de></span>
+  <h2><i-en>Mercury's turning ellipse</i-en><i-de>Merkurs wandernde Ellipse</i-de></h2>
+  <p><i-en>With Newton's law alone, a single planet goes round the same ellipse forever. Mercury's ellipse slowly turns: the pull of the other planets explains most of it, but 43 arcseconds per century were left over for 60 years. Einstein's theory adds a tiny extra pull close to the Sun. The real effect is far too small to see, so turn it up and watch the ellipse turn.</i-en><i-de>Mit Newtons Gesetz allein läuft ein einzelner Planet für immer auf derselben Ellipse. Merkurs Ellipse dreht sich langsam: Den Großteil erklärt der Zug der anderen Planeten, aber 43 Bogensekunden pro Jahrhundert blieben 60 Jahre lang übrig. Einsteins Theorie fügt nahe der Sonne einen winzigen Zusatz hinzu. Der echte Effekt ist viel zu klein zum Sehen, also dreh ihn hoch und schau, wie sich die Ellipse dreht.</i-de></p>
+  <div class="sliders"><div class="row"><label for="k5"><i-en>Relativity ×</i-en><i-de>Relativität ×</i-de></label><input type="range" id="k5" min="0" max="6" step="1" value="5"><span class="mono" id="k5v"></span></div></div>
+  <canvas class="view" id="cv5" width="700" height="700" role="img" aria-label="Mercury's orbit around the Sun"></canvas>
+  <div class="row"><button class="btn" id="go5"><i-en>Run 12 orbits</i-en><i-de>12 Umläufe rechnen</i-de></button><button class="btn ghost" id="skip5"><i-en>Skip to the end</i-en><i-de>Zum Ende springen</i-de></button></div>
+  <div class="out result" id="res5" aria-live="polite"></div>
+  <p class="note" data-show="3"><i-en>Model: a = −GM r̂ / r² · (1 + 3 h² / (c² r²)), the first relativistic correction for a test body (h = angular momentum per unit mass), integrated with RK4 in units GM = 1, a = 1, e = 0.2056. Prediction per orbit: Δφ = 6π GM / (c² a (1 − e²)) = 5.0 · 10⁻⁷ rad for Mercury; times 415 orbits per century = 43″.</i-en><i-de>Modell: a = −GM r̂ / r² · (1 + 3 h² / (c² r²)), die erste relativistische Korrektur für einen Testkörper (h = Drehimpuls pro Masse), integriert mit RK4 in Einheiten GM = 1, a = 1, e = 0,2056. Vorhersage pro Umlauf: Δφ = 6π GM / (c² a (1 − e²)) = 5,0 · 10⁻⁷ rad für Merkur; mal 415 Umläufe pro Jahrhundert = 43″.</i-de></p>
+</section>
+
+<section class="station" data-station="check" data-show="0 1 2 3">
+  <span class="num"><i-en>Check yourself</i-en><i-de>Prüf dich</i-de></span>
+  <h2><i-en>Two short questions</i-en><i-de>Zwei kurze Fragen</i-de></h2>
+  <p><i-en>Why do astronauts float inside the space station?</i-en><i-de>Warum schweben Astronautinnen und Astronauten in der Raumstation?</i-de></p>
+  <div class="choices">
+    <button data-mis="no-gravity-in-orbit" data-fb-en="At 400 km gravity is still about 90 % as strong as on the ground. Without it the station would fly off in a straight line." data-fb-de="In 400 km Höhe ist die Schwerkraft noch etwa 90 % so stark wie am Boden. Ohne sie würde die Station geradeaus davonfliegen."><i-en>There is no gravity in space</i-en><i-de>Im All gibt es keine Schwerkraft</i-de></button>
+    <button data-ok data-fb-en="Right. Station and astronauts fall around the Earth together, so nothing presses them against the floor." data-fb-de="Richtig. Station und Crew fallen gemeinsam um die Erde, darum drückt sie nichts auf den Boden."><i-en>They and the station are falling together</i-en><i-de>Sie und die Station fallen gemeinsam</i-de></button>
+    <button data-fb-en="The station is far from the Moon; the Moon's pull on it is tiny." data-fb-de="Die Station ist weit vom Mond entfernt; sein Zug auf sie ist winzig."><i-en>The Moon pulls them up</i-en><i-de>Der Mond zieht sie nach oben</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <p><i-en>GPS satellites are built with clocks that are set to tick slightly slower than ground clocks before launch. Why?</i-en><i-de>GPS-Satelliten bekommen Uhren, die vor dem Start etwas langsamer gestellt werden als Bodenuhren. Warum?</i-de></p>
+  <div class="choices">
+    <button data-ok data-fb-en="Yes. Up there, weaker gravity makes them gain about 46 µs a day and their speed makes them lose about 7 µs, so they would run fast by about 38 µs a day." data-fb-de="Ja. Da oben gewinnen sie durch die schwächere Schwerkraft etwa 46 µs pro Tag und verlieren durch ihr Tempo etwa 7 µs, sie würden also etwa 38 µs pro Tag vorgehen."><i-en>In orbit they would run fast, as Einstein's theory predicts</i-en><i-de>In der Umlaufbahn würden sie vorgehen, wie Einsteins Theorie vorhersagt</i-de></button>
+    <button data-mis="newton-clocks-absolute" data-fb-en="The cold changes nothing here. The difference is real, measured every day, and comes from gravity and speed." data-fb-de="Die Kälte ändert hier nichts. Der Unterschied ist echt, wird täglich gemessen und kommt von Schwerkraft und Tempo."><i-en>Because it is cold in space</i-en><i-de>Weil es im All kalt ist</i-de></button>
+    <button data-mis="newton-clocks-absolute" data-fb-en="No. Clocks are adjusted because they really would tick at a different rate up there." data-fb-de="Nein. Die Uhren werden angepasst, weil sie da oben wirklich anders ticken würden."><i-en>It is just a tradition, time is the same everywhere</i-en><i-de>Das ist nur Tradition, Zeit ist überall gleich</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+</section>
+<footer><i-en>Simulator "Newton and Einstein" · 3D view: three.js (MIT), vendored</i-en><i-de>Simulator „Newton und Einstein“ · 3D-Ansicht: three.js (MIT), eingebunden</i-de> · Personal Tutor Format</footer>
+</div>
+
+<script src="ptf-sim.js"></script>
+<script src="vendor/three-core-0.170.0.min.js"></script>
+<script>
+const SIM_ID = "ptf:sim/newton-einstein", SIM_VERSION = "1.0.0";
+const SIM_LOCALES = ["en", "de"];
+const PTF_LEVELS = {"0": "child", "1": "highschool", "2": "college", "3": "expert"};
+const START_LEVEL = "1";
+/* Shared PTF glue: levels, stations, snapshot (SIMULATOR-SPEC.md §4) */
+function setLevel(l){
+  document.querySelectorAll(".levels button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.level===l));
+  CURRENT_LEVEL=l;
+  if (FOCUS && !stationsAtLevel().includes(FOCUS)) FOCUS = stationsAtLevel()[0] || null;
+  applyVisibility();
+}
+const stationsAtLevel = () => [...document.querySelectorAll("section[data-station]")].filter(s => s.dataset.show.split(" ").includes(CURRENT_LEVEL)).map(s => s.dataset.station);
+/* Focus mode (SIMULATOR-SPEC.md §4.7): one station at a time with Back / Next. */
+let FOCUS = null;
+function applyVisibility() {
+  document.querySelectorAll("[data-show]").forEach(s => {
+    const lvl = s.dataset.show.split(" ").includes(CURRENT_LEVEL);
+    s.hidden = !lvl || (FOCUS !== null && s.matches("section[data-station]") && s.dataset.station !== FOCUS);
+  });
+  document.body.classList.toggle("focused", FOCUS !== null);
+  const nav = document.getElementById("focusNav");
+  if (!nav) return;
+  nav.hidden = FOCUS === null;
+  if (FOCUS === null) return;
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS);
+  document.getElementById("focusBack").disabled = i <= 0;
+  document.getElementById("focusNext").disabled = i >= list.length - 1;
+  document.getElementById("focusPos").textContent = `${i + 1} / ${list.length}`;
+}
+function setFocus(id) { FOCUS = id; applyVisibility(); }
+function moveFocus(step) {
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS), next = list[i + step];
+  if (!next) return;
+  setFocus(next);
+  ptf.event("experienced", { station: next, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: next } });
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+(function buildFocusNav() {
+  const nav = document.createElement("nav");
+  nav.id = "focusNav"; nav.className = "focus-nav"; nav.hidden = true;
+  nav.setAttribute("aria-label", "Stations");
+  nav.innerHTML = `<button class="btn ghost" id="focusBack"><i-en>Back</i-en><i-de>Zurück</i-de></button><span class="mono note" id="focusPos"></span><button class="btn" id="focusNext"><i-en>Next</i-en><i-de>Weiter</i-de></button><button class="btn ghost" id="focusAll"><i-en>Show all</i-en><i-de>Alles zeigen</i-de></button>`;
+  const footer = document.querySelector(".wrap > footer");
+  footer ? footer.before(nav) : document.querySelector(".wrap").append(nav);
+  nav.querySelector("#focusBack").onclick = () => moveFocus(-1);
+  nav.querySelector("#focusNext").onclick = () => moveFocus(1);
+  nav.querySelector("#focusAll").onclick = () => setFocus(null);
+  const start = document.createElement("button");
+  start.id = "focusStart"; start.className = "btn ghost";
+  start.innerHTML = "<i-en>Step by step</i-en><i-de>Schritt für Schritt</i-de>";
+  start.onclick = () => { setFocus(stationsAtLevel()[0]); ptf.event("experienced", { station: FOCUS, data: { focus: FOCUS } }); };
+  const levels = document.querySelector("header .levels");
+  const row = document.createElement("div"); row.className = "row";
+  levels.before(row); row.append(levels, start);
+})();
+let CURRENT_LEVEL=START_LEVEL, LOCALE="en", READY=false;
+/* UI language (en, de): static text as <i-en>/<i-de> pairs, dynamic text via L(en, de). */
+const L = (en, de) => LOCALE === "de" ? de : en;
+const fmt = (x, d = 2) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+/* Each simulator declares SIM_LOCALES (matching "lang" in sim.json); unsupported locales fall back to English. */
+function setLocale(loc) {
+  LOCALE = /^de/i.test(loc || "") && SIM_LOCALES.includes("de") ? "de" : "en";
+  document.documentElement.lang = LOCALE;
+  if (READY && typeof rerender === "function") rerender();
+}
+setLocale(navigator.language);
+const completed=new Set();
+const ptf = PTF.connect({
+  id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS[START_LEVEL],
+  onInit(ctx) {
+    if (ctx.locale) setLocale(ctx.locale);
+    const lvl = (ctx.state && ctx.state.level) || ctx.level;
+    if (lvl) applyLevel(lvl);
+    if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus === true });
+  },
+  onSetLevel: applyLevel,
+  onGoto: gotoStation,
+  snapshot() {
+    const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `UI language: ${LOCALE}`, `Visible stations: ${shown.join(", ")}`];
+    if (FOCUS) parts.push(`Focus mode on station: ${FOCUS}`);
+    if (completed.size) parts.push(`Completed: ${[...completed].join(", ")}`);
+    if (typeof simSnapshot === "function") parts.push(simSnapshot());
+    return parts.join(". ");
+  }
+});
+function applyLevel(level) {
+  const n = Object.keys(PTF_LEVELS).find(k => PTF_LEVELS[k] === level);
+  if (n) setLevel(n);
+}
+function gotoStation(id, opts) {
+  const s = id ? document.querySelector(`section[data-station="${id}"]`) : null;
+  if (opts && opts.focus === false) setFocus(null);
+  if (!s) return;
+  if (!s.dataset.show.split(" ").includes(CURRENT_LEVEL)) setLevel(s.dataset.show.split(" ")[0]);
+  if (opts && opts.focus === true) { setFocus(id); window.scrollTo({ top: 0, behavior: "auto" }); return; }
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", () => {
+  setLevel(b.dataset.level);
+  const level = PTF_LEVELS[b.dataset.level];
+  ptf.event("level_changed", { level });
+  ptf.saveState({ level });
+}));
+function answered(station, correct, misconception, response) {
+  const result = { correct };
+  if (misconception && !correct) result.misconception = misconception;
+  if (response !== undefined) result.response = String(response);
+  ptf.event("answered", { station, level: PTF_LEVELS[CURRENT_LEVEL], result });
+}
+function done(station) {
+  if (completed.has(station)) return;
+  completed.add(station);
+  ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
+}
+/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb-en / data-fb-de,
+   followed by <p class="feedback" hidden>. A station completes when all its visible boxes are answered correctly. Call initChoices() once the DOM is built. */
+function initChoices() {
+document.querySelectorAll("[data-station] .choices").forEach(box => {
+  const sec = box.closest("[data-station]"), station = sec.dataset.station, fb = box.nextElementSibling;
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    const ok = b.hasAttribute("data-ok");
+    box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
+    b.classList.add(ok ? "right" : "wrong");
+    if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+    answered(station, ok, b.dataset.mis, (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim());
+    if (ok) box.dataset.solved = "1";
+    if ([...sec.querySelectorAll(".choices")].filter(x => !x.closest("[hidden]")).every(x => x.dataset.solved)) done(station);
+  }));
+});
+}
+setLevel(START_LEVEL);
+
+
+const $ = id => document.getElementById(id);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+const fmtNum = (x, d) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+const GM_E = 3.986004e14, R_E = 6.371e6, C = 299792458, DAY = 86400;
+const last = {};
+/* RK4 for a planar central-force problem: state [x, y, vx, vy], acc(x, y, vx, vy) -> [ax, ay] */
+function rk4(s, dt, acc) {
+  const f = q => { const a = acc(q[0], q[1], q[2], q[3]); return [q[2], q[3], a[0], a[1]]; };
+  const add = (q, k, h) => q.map((v, i) => v + k[i] * h);
+  const k1 = f(s), k2 = f(add(s, k1, dt / 2)), k3 = f(add(s, k2, dt / 2)), k4 = f(add(s, k3, dt));
+  return s.map((v, i) => v + (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) * dt / 6);
+}
+function animate(T, f, end) {
+  let raf = 0, t0 = performance.now(), stopped = false;
+  const tick = now => { if (stopped) return; const t = Math.min((now - t0) / 1000, T); f(t); if (t < T) raf = requestAnimationFrame(tick); else { stopped = true; end(); } };
+  if (reduceMotion()) { f(T); end(); return { skip() {} }; }
+  raf = requestAnimationFrame(tick);
+  return { skip() { if (stopped) return; stopped = true; cancelAnimationFrame(raf); f(T); end(); } };
+}
+
+/* ---------- Station 1: Newton's cannon ---------- */
+const H1 = 400e3;
+function cannonRun(vkm) {
+  let s = [0, R_E + H1, vkm * 1000, 0], t = 0; const pts = [[s[0], s[1], 0]];
+  const acc = (x, y) => { const r = Math.hypot(x, y), k = -GM_E / (r * r * r); return [k * x, k * y]; };
+  let ang = 0, prev = Math.atan2(s[0], s[1]), outcome = "orbit";
+  const dt = 4;
+  while (t < 6 * 3600) {
+    s = rk4(s, dt, acc); t += dt;
+    const r = Math.hypot(s[0], s[1]), a = Math.atan2(s[0], s[1]);
+    let d = a - prev; if (d > Math.PI) d -= 2 * Math.PI; if (d < -Math.PI) d += 2 * Math.PI; ang += d; prev = a;
+    pts.push([s[0], s[1], t]);
+    if (r < R_E) { outcome = "landed"; break; }
+    if (r > 6 * R_E) { outcome = "escaped"; break; }
+    if (ang >= 2 * Math.PI) { outcome = "orbit"; break; }
+  }
+  return { pts, outcome, T: t, ang };
+}
+let run1 = null, anim1 = null;
+function drawCannon(frac) {
+  const c = $("cv1"), ctx = c.getContext("2d"), W = c.width, Hh = c.height;
+  const sc = Hh / (5.0 * R_E), cx = W / 2, cy = 1.3 * R_E * sc;
+  const X = x => cx + x * sc, Y = y => cy - y * sc;
+  ctx.clearRect(0, 0, W, Hh);
+  ctx.fillStyle = css("--accent-soft"); ctx.beginPath(); ctx.arc(cx, cy, (R_E + 100e3) * sc + 4, 0, 7); ctx.fill();
+  ctx.fillStyle = css("--surface"); ctx.strokeStyle = css("--muted"); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, R_E * sc, 0, 7); ctx.fill(); ctx.stroke();
+  /* mountain (to scale: 400 km) */
+  ctx.fillStyle = css("--muted"); ctx.beginPath(); ctx.moveTo(X(-500e3), Y(R_E - 20e3)); ctx.lineTo(X(0), Y(R_E + H1)); ctx.lineTo(X(500e3), Y(R_E - 20e3)); ctx.fill();
+  if (run1) {
+    const n = Math.max(1, Math.floor(run1.pts.length * frac));
+    ctx.strokeStyle = css("--accent"); ctx.lineWidth = 3; ctx.beginPath();
+    for (let i = 0; i < n; i++) { const p = run1.pts[i]; i ? ctx.lineTo(X(p[0]), Y(p[1])) : ctx.moveTo(X(p[0]), Y(p[1])); }
+    ctx.stroke();
+    const p = run1.pts[n - 1]; ctx.fillStyle = css("--warn"); ctx.beginPath(); ctx.arc(X(p[0]), Y(p[1]), 7, 0, 7); ctx.fill();
+    ctx.fillStyle = css("--ink"); ctx.font = "600 24px " + css("--f-mono"); ctx.textAlign = "left";
+    ctx.fillText(`t = ${fmtNum(p[2] / 60, 0)} min`, 16, 34);
+  }
+}
+function cannonText() {
+  const v = +$("v1").value, r = run1;
+  const t = fmtNum(r.T / 60, 0);
+  if (r.outcome === "landed") return L(`${fmtNum(v, 1)} km/s: lands after ${t} min, ${fmtNum(r.ang * R_E / 1000, 0)} km away.`, `${fmtNum(v, 1)} km/s: landet nach ${t} min, ${fmtNum(r.ang * R_E / 1000, 0)} km entfernt.`);
+  if (r.outcome === "escaped") return L(`${fmtNum(v, 1)} km/s: escapes. It slows down but never comes back.`, `${fmtNum(v, 1)} km/s: entkommt. Sie wird langsamer, kommt aber nie zurück.`);
+  return L(`${fmtNum(v, 1)} km/s: once around the Earth in ${t} min, and it would go on forever. It never stops falling; it just keeps missing the ground.`,
+           `${fmtNum(v, 1)} km/s: einmal um die Erde in ${t} min, und das ginge ewig so weiter. Sie hört nie auf zu fallen; sie verfehlt nur ständig den Boden.`);
+}
+const outcomes1 = new Set();
+function fire1() {
+  run1 = cannonRun(+$("v1").value); $("res1").textContent = "";
+  ptf.event("experienced", { station: "cannon", data: { speed_km_s: +$("v1").value, outcome: run1.outcome } });
+  anim1 = animate(Math.min(5, 1 + run1.T / 1300), t => drawCannon(t / Math.min(5, 1 + run1.T / 1300)), () => {
+    $("res1").textContent = cannonText(); outcomes1.add(run1.outcome); last.cannon = { speed: +$("v1").value, outcome: run1.outcome };
+    if (outcomes1.has("orbit")) done("cannon");
+  });
+}
+$("v1").addEventListener("input", () => { $("v1v").textContent = fmtNum(+$("v1").value, 1) + " km/s"; });
+document.querySelectorAll("[data-station='cannon'] [data-v]").forEach(b => b.onclick = () => { $("v1").value = b.dataset.v; $("v1v").textContent = fmtNum(+b.dataset.v, 1) + " km/s"; fire1(); });
+$("fire1").onclick = fire1;
+$("skip1").onclick = () => anim1 && anim1.skip();
+
+/* ---------- Station 2: the Moon test ---------- */
+const MOON_R = 60.3, MOON_A = (2 * Math.PI * 384400e3 / (27.3217 * DAY)) ** 2 / 384400e3;
+function drawMoon() {
+  const r = +$("r2").value, g = 9.81 / (r * r);
+  const c = $("cv2"), ctx = c.getContext("2d"), W = c.width, Hh = c.height, pad = 60;
+  ctx.clearRect(0, 0, W, Hh);
+  /* log-log plot of g against distance */
+  const X = d => pad + Math.log10(d) / Math.log10(64) * (W - 2 * pad), Y = a => Hh - pad - (Math.log10(a) + 3) / 4 * (Hh - 2 * pad);
+  ctx.strokeStyle = css("--line"); ctx.fillStyle = css("--muted"); ctx.font = "18px " + css("--f-mono"); ctx.lineWidth = 1;
+  [1, 2, 5, 10, 20, 60].forEach(d => { ctx.beginPath(); ctx.moveTo(X(d), Y(1e-3)); ctx.lineTo(X(d), Y(10)); ctx.stroke(); ctx.textAlign = "center"; ctx.fillText(String(d), X(d), Hh - pad + 24); });
+  [0.001, 0.01, 0.1, 1, 10].forEach(a => { ctx.beginPath(); ctx.moveTo(X(1), Y(a)); ctx.lineTo(X(64), Y(a)); ctx.stroke(); ctx.textAlign = "right"; ctx.fillText(fmtNum(a, a < 1 ? 3 : 0), X(1) - 6, Y(a) + 6); });
+  ctx.textAlign = "center"; ctx.fillText(L("distance from the Earth's centre (Earth radii, log scale)", "Abstand vom Erdmittelpunkt (Erdradien, log. Skala)"), W / 2, Hh - 10);
+  ctx.save(); ctx.translate(16, Hh / 2); ctx.rotate(-Math.PI / 2); ctx.fillText("m/s²", 0, 0); ctx.restore();
+  ctx.strokeStyle = css("--accent"); ctx.lineWidth = 3; ctx.beginPath();
+  for (let d = 1; d <= 64; d *= 1.05) { const a = 9.81 / (d * d); d === 1 ? ctx.moveTo(X(d), Y(a)) : ctx.lineTo(X(d), Y(a)); } ctx.stroke();
+  /* the real Moon */
+  ctx.fillStyle = css("--muted"); ctx.beginPath(); ctx.arc(X(MOON_R), Y(MOON_A), 14, 0, 7); ctx.fill();
+  ctx.fillStyle = css("--ink"); ctx.textAlign = "right"; ctx.fillText(L("Moon", "Mond"), X(MOON_R) - 20, Y(MOON_A) - 14);
+  /* the apple */
+  ctx.fillStyle = css("--warn"); ctx.beginPath(); ctx.arc(X(r), Y(g), 10, 0, 7); ctx.fill();
+  ctx.textAlign = "left"; ctx.fillText(L("apple", "Apfel"), X(r) + 14, Y(g) - 12);
+  $("r2v").textContent = fmtNum(r, 1) + " R";
+  $("g2").textContent = g >= 0.1 ? fmtNum(g, 2) + " m/s²" : fmtNum(g * 1000, 2) + " mm/s²";
+  const f = 0.5 * g; $("f2").textContent = f >= 0.1 ? fmtNum(f, 2) + " m" : fmtNum(f * 1000, 2) + " mm";
+  $("m2").textContent = fmtNum(0.5 * MOON_A * 1000, 2) + " mm";
+  $("note2").textContent = r < 59
+    ? L(`At ${fmtNum(r, 1)} Earth radii the pull is ${fmtNum(r * r, 0)} times weaker than on the ground (${fmtNum(r, 1)}²).`, `In ${fmtNum(r, 1)} Erdradien ist der Zug ${fmtNum(r * r, 0)}-mal schwächer als am Boden (${fmtNum(r, 1)}²).`)
+    : L(`At the Moon's distance, 60² ≈ 3600 times weaker: the apple would fall about 1.4 mm in the first second, and that is exactly how far the Moon falls towards us each second. The same gravity holds the Moon.`,
+        `Im Mondabstand 60² ≈ 3600-mal schwächer: Der Apfel fiele in der ersten Sekunde etwa 1,4 mm, und genau so weit fällt der Mond jede Sekunde zu uns hin. Dieselbe Schwerkraft hält den Mond.`);
+  last.moon = r;
+  if (r >= 59) done("moon");
+}
+$("r2").addEventListener("input", drawMoon);
+
+/* ---------- Station 3: spacetime picture (three.js) ---------- */
+const space = { ok: false };
+function depth(x, z, m) { return -2.2 * m / Math.sqrt(x * x + z * z + 0.9); }   /* softened −GM/r, a picture of the potential */
+function initSpace() {
+  if (typeof THREE === "undefined") return spaceFallback();
+  const probe = document.createElement("canvas");
+  if (!(probe.getContext("webgl2") || probe.getContext("webgl"))) return spaceFallback();
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({ canvas: $("cv3"), antialias: true }); }
+  catch (e) { return spaceFallback(); }
+  if (!renderer.getContext()) return spaceFallback();
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(40, 4 / 3, 0.1, 200);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 1.6));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.8); sun.position.set(4, 10, 6); scene.add(sun);
+  const gridMat = new THREE.LineBasicMaterial({ transparent: true, opacity: 0.7 });
+  const grid = new THREE.LineSegments(new THREE.BufferGeometry(), gridMat); scene.add(grid);
+  const planet = new THREE.Mesh(new THREE.SphereGeometry(0.6, 32, 16), new THREE.MeshStandardMaterial({ roughness: 0.6 })); scene.add(planet);
+  const marble = new THREE.Mesh(new THREE.SphereGeometry(0.16, 20, 10), new THREE.MeshStandardMaterial({ roughness: 0.3 })); scene.add(marble);
+  const trailMat = new THREE.LineBasicMaterial();
+  const trail = new THREE.Line(new THREE.BufferGeometry(), trailMat); scene.add(trail);
+  Object.assign(space, { ok: true, renderer, scene, camera, grid, gridMat, planet, marble, trail, trailMat, az: 0.6, el: 0.75, path: [], shown: 0 });
+  const canvas = $("cv3"); let drag = null;
+  canvas.addEventListener("pointerdown", e => { drag = { x: e.clientX, az: space.az }; canvas.setPointerCapture(e.pointerId); });
+  canvas.addEventListener("pointermove", e => { if (!drag) return; space.az = drag.az - (e.clientX - drag.x) / 150; renderSpace(); });
+  canvas.addEventListener("pointerup", () => { drag = null; });
+  canvas.addEventListener("pointercancel", () => { drag = null; });
+  buildGrid(); themeSpace(); renderSpace();
+}
+function spaceFallback() { $("cv3").hidden = true; $("fb3").hidden = false; $("left3").hidden = $("right3").hidden = true; }
+function buildGrid() {
+  if (!space.ok) return;
+  const m = +$("m3").value, N = 24, S = 8, step = 2 * S / N, pts = [];
+  for (let i = 0; i <= N; i++) {
+    const a = -S + i * step;
+    for (let j = 0; j < N * 3; j++) {
+      const b0 = -S + j * step / 3, b1 = b0 + step / 3;
+      pts.push(a, depth(a, b0, m), b0, a, depth(a, b1, m), b1);
+      pts.push(b0, depth(b0, a, m), a, b1, depth(b1, a, m), a);
+    }
+  }
+  space.grid.geometry.dispose(); space.grid.geometry = new THREE.BufferGeometry(); space.grid.geometry.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
+  space.planet.position.set(0, depth(0, 0, m) + 0.6, 0); space.planet.scale.setScalar(0.6 + 0.4 * m);
+  placeMarble(space.path.length ? space.path[Math.min(space.shown, space.path.length - 1)] : [-6, 3.2]);
+}
+function placeMarble(p) { space.marble.position.set(p[0], depth(p[0], p[1], +$("m3").value) + 0.16, p[1]); }
+function themeSpace() {
+  if (!space.ok) return;
+  space.scene.background = new THREE.Color(css("--bg"));
+  space.gridMat.color = new THREE.Color(css("--muted"));
+  space.planet.material.color = new THREE.Color(css("--warn"));
+  space.marble.material.color = new THREE.Color(css("--accent"));
+  space.trailMat.color = new THREE.Color(css("--accent"));
+  renderSpace();
+}
+function renderSpace() {
+  if (!space.ok) return;
+  const d = 17, { az, el, camera } = space;
+  camera.position.set(d * Math.cos(el) * Math.sin(az), d * Math.sin(el), d * Math.cos(el) * Math.cos(az)); camera.lookAt(0, -1, 0);
+  space.renderer.setSize(800, 600, false);
+  space.renderer.render(space.scene, camera);
+}
+/* The marble's path: Newton's law with the same GM the funnel is drawn from (units of the picture). */
+function marblePath(m, speed) {
+  let s = [-6, 3.2, speed, 0]; const pts = [[s[0], s[1]]], GM = 2.2 * m;
+  const acc = (x, y) => { const r2 = x * x + y * y + 0.9, k = -GM / (r2 * Math.sqrt(r2)); return [k * x, k * y]; };
+  let outcome = "flyby";
+  for (let i = 0; i < 4000; i++) {
+    s = rk4(s, 0.01, acc); if (i % 4 === 3) pts.push([s[0], s[1]]);
+    if (Math.hypot(s[0], s[1]) < 0.7) { outcome = "hit"; break; }
+    if (Math.abs(s[0]) > 8 || Math.abs(s[1]) > 8) { outcome = "flyby"; break; }
+  }
+  if (Math.abs(s[0]) <= 8 && Math.abs(s[1]) <= 8 && outcome !== "hit") outcome = "captured";
+  return { pts, outcome };
+}
+let anim3 = null; const outcomes3 = new Set();
+function launch3() {
+  const m = +$("m3").value, v = +$("s3").value, r = marblePath(m, v);
+  space.path = r.pts; space.shown = 0; $("res3").textContent = "";
+  ptf.event("experienced", { station: "spacetime", data: { mass: m, speed: v, outcome: r.outcome } });
+  const n = r.pts.length, T = Math.min(6, n / 90);
+  const show = t => {
+    space.shown = Math.max(1, Math.floor(n * t / T));
+    if (!space.ok) return;
+    const pts = []; for (let i = 0; i < space.shown; i++) { const p = r.pts[i]; pts.push(p[0], depth(p[0], p[1], m) + 0.04, p[1]); }
+    space.trail.geometry.dispose(); space.trail.geometry = new THREE.BufferGeometry(); space.trail.geometry.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
+    placeMarble(r.pts[space.shown - 1]); renderSpace();
+  };
+  anim3 = animate(T, show, () => {
+    outcomes3.add(r.outcome); last.spacetime = { mass: m, speed: v, outcome: r.outcome };
+    $("res3").textContent = r.outcome === "hit" ? L("Too slow: the marble spirals into the dip and hits the mass.", "Zu langsam: Die Murmel läuft in die Mulde und trifft die Masse.")
+      : r.outcome === "captured" ? L("Captured: the marble keeps circling in the dip, like a moon.", "Eingefangen: Die Murmel kreist weiter in der Mulde, wie ein Mond.")
+      : L("Fly-by: the path bends around the mass, and the marble rolls on.", "Vorbeiflug: Die Bahn biegt sich um die Masse, und die Murmel rollt weiter.");
+    if (outcomes3.size >= 2) done("spacetime");
+  });
+}
+$("go3").onclick = launch3;
+["m3", "s3"].forEach(id => $(id).addEventListener("input", () => { $("m3v").textContent = "× " + fmtNum(+$("m3").value, 1); $("s3v").textContent = fmtNum(+$("s3").value, 2); if (id === "m3") { space.path = []; if (space.ok) { space.trail.geometry.dispose(); space.trail.geometry = new THREE.BufferGeometry(); } buildGrid(); renderSpace(); } }));
+$("left3").onclick = () => { space.az -= 0.35; renderSpace(); };
+$("right3").onclick = () => { space.az += 0.35; renderSpace(); };
+
+/* ---------- Station 4: clocks ---------- */
+function clockRates(hkm) {
+  const r = R_E + hkm * 1000, grav = GM_E / (C * C) * (1 / R_E - 1 / r) * DAY * 1e6, speed = hkm > 0 ? GM_E / r / (2 * C * C) * DAY * 1e6 : 0;
+  return { grav, speed, net: grav - speed };
+}
+function drawClocks() {
+  const h = +$("h4").value, cr = clockRates(h);
+  const c = $("cv4"), ctx = c.getContext("2d"), W = c.width, Hh = c.height, pad = 60;
+  ctx.clearRect(0, 0, W, Hh);
+  const X = k => pad + k / 36000 * (W - 2 * pad), Y = us => Hh / 2 - us / 60 * (Hh / 2 - 30);
+  ctx.strokeStyle = css("--line"); ctx.fillStyle = css("--muted"); ctx.font = "18px " + css("--f-mono"); ctx.lineWidth = 1;
+  [-40, -20, 0, 20, 40].forEach(u => { ctx.beginPath(); ctx.moveTo(X(0), Y(u)); ctx.lineTo(X(36000), Y(u)); ctx.stroke(); ctx.textAlign = "right"; ctx.fillText((u > 0 ? "+" : "") + u, X(0) - 6, Y(u) + 6); });
+  [0, 10000, 20000, 30000].forEach(k => { ctx.textAlign = "center"; ctx.fillText(fmtNum(k / 1000, 0) + "k", X(k), Hh - 8); });
+  ctx.save(); ctx.translate(16, Hh / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = "center"; ctx.fillText(L("µs per day", "µs pro Tag"), 0, 0); ctx.restore();
+  const line = (f, col, w) => { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); for (let k = 100; k <= 36000; k += 100) { const y = Y(f(clockRates(k))); k > 100 ? ctx.lineTo(X(k), y) : ctx.moveTo(X(k), y); } ctx.stroke(); };
+  line(q => q.grav, css("--accent"), 2); line(q => -q.speed, css("--warn"), 2); line(q => q.net, css("--ink"), 3.5);
+  ctx.fillStyle = css("--ink"); ctx.beginPath(); ctx.arc(X(h), Y(cr.net), 8, 0, 7); ctx.fill();
+  ctx.textAlign = "left"; ctx.font = "16px " + css("--f-mono");
+  ctx.fillStyle = css("--accent"); ctx.fillText(L("height: faster", "Höhe: schneller"), X(24000), Y(clockRates(24000).grav) - 10);
+  ctx.fillStyle = css("--warn"); ctx.fillText(L("speed: slower", "Tempo: langsamer"), X(24000), Y(-clockRates(24000).speed) + 22);
+  $("h4v").textContent = fmtNum(h, 0) + " km";
+  const sgn = x => (x >= 0 ? "+" : "−") + fmtNum(Math.abs(x), 1) + " µs";
+  $("hg4").textContent = sgn(cr.grav); $("hv4").textContent = sgn(-cr.speed); $("hn4").textContent = sgn(cr.net);
+  const km = Math.abs(cr.net) * 1e-6 * C / 1000;
+  $("res4").textContent = h === 0 ? L("On the ground: the reference clock.", "Am Boden: die Vergleichsuhr.")
+    : L(`The satellite clock ${cr.net >= 0 ? "gains" : "loses"} ${fmtNum(Math.abs(cr.net), 1)} µs per day against the ground. Left uncorrected, positions computed from it would drift by about ${fmtNum(km, 1)} km per day.`,
+        `Die Satellitenuhr ${cr.net >= 0 ? "gewinnt" : "verliert"} gegenüber dem Boden ${fmtNum(Math.abs(cr.net), 1)} µs pro Tag. Unkorrigiert würden daraus berechnete Positionen um etwa ${fmtNum(km, 1)} km pro Tag wandern.`);
+  last.clocks = { altitude_km: h, net_us_per_day: +cr.net.toFixed(2) };
+  if (Math.abs(h - 20200) <= 600) done("clocks");
+}
+$("h4").addEventListener("input", drawClocks);
+document.querySelectorAll("[data-station='clocks'] [data-h]").forEach(b => b.onclick = () => { $("h4").value = b.dataset.h; drawClocks(); ptf.event("experienced", { station: "clocks", data: { altitude_km: +b.dataset.h } }); });
+
+/* ---------- Station 5: perihelion precession ---------- */
+const ECC = 0.2056, LAMBDA = 2.55e-8;   /* GM / (c² a) for Mercury */
+const MULTS = [0, 1, 10, 1e3, 1e4, 1e5, 1e6];
+function mercuryRun(mult, orbits = 12) {
+  const lam = LAMBDA * mult, rp = 1 - ECC, vp = Math.sqrt((1 + ECC) / (1 - ECC));
+  let s = [rp, 0, 0, vp]; const h = rp * vp, pts = [], peri = [];
+  const acc = (x, y) => { const r2 = x * x + y * y, r = Math.sqrt(r2), k = -(1 + 3 * lam * h * h / r2) / (r2 * r); return [k * x, k * y]; };
+  /* Perihelion direction from the Laplace-Runge-Lenz vector A = v × h − r̂ (GM = 1), read once per orbit near perihelion. */
+  const lrl = q => { const r = Math.hypot(q[0], q[1]), hh = q[0] * q[3] - q[1] * q[2]; return Math.atan2(-q[2] * hh - q[1] / r, q[3] * hh - q[0] / r); };
+  const dt = 2 * Math.PI / 2000; let prevR = rp, prevPrevR = rp + 1, prevS = s;
+  for (let i = 0; i < orbits * 2000 * 1.1; i++) {
+    const before = s; s = rk4(s, dt, acc); const r = Math.hypot(s[0], s[1]);
+    if (i % 5 === 0) pts.push([s[0], s[1]]);
+    if (prevR < prevPrevR && prevR < r && i > 10) peri.push(lrl(before));
+    prevPrevR = prevR; prevR = r;
+    if (peri.length >= orbits) break;
+  }
+  const unwrap = [peri[0]]; for (let i = 1; i < peri.length; i++) { let d = peri[i] - peri[i - 1]; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; unwrap.push(unwrap[i - 1] + d); }
+  const per = unwrap.length > 1 ? (unwrap[unwrap.length - 1] - unwrap[0]) / (unwrap.length - 1) : 0;
+  return { pts, per, theory: 6 * Math.PI * lam / (1 - ECC * ECC), mult };
+}
+let run5 = null, anim5 = null;
+function drawMercury(frac) {
+  const c = $("cv5"), ctx = c.getContext("2d"), W = c.width, Hh = c.height, sc = W / 2 / 1.45, cx = W / 2 + 0.2 * sc, cy = Hh / 2;
+  ctx.clearRect(0, 0, W, Hh);
+  ctx.fillStyle = css("--warn"); ctx.beginPath(); ctx.arc(cx, cy, 16, 0, 7); ctx.fill();
+  if (!run5) return;
+  const n = Math.max(1, Math.floor(run5.pts.length * frac));
+  ctx.strokeStyle = css("--accent"); ctx.lineWidth = 1.5; ctx.beginPath();
+  for (let i = 0; i < n; i++) { const p = run5.pts[i]; i ? ctx.lineTo(cx + p[0] * sc, cy - p[1] * sc) : ctx.moveTo(cx + p[0] * sc, cy - p[1] * sc); }
+  ctx.stroke();
+  const p = run5.pts[n - 1]; ctx.fillStyle = css("--ink"); ctx.beginPath(); ctx.arc(cx + p[0] * sc, cy - p[1] * sc, 7, 0, 7); ctx.fill();
+}
+function mercuryText() {
+  const r = run5, deg = r.per * 180 / Math.PI, th = r.theory * 180 / Math.PI, f = x => Math.abs(x) < 0.01 ? x.toExponential(2) : fmtNum(x, 4);
+  if (r.mult === 0) return L("Newton only: the ellipse closes on itself, orbit after orbit (turn per orbit: " + f(Math.abs(deg)) + "°, numerical noise).",
+                             "Nur Newton: Die Ellipse schließt sich, Umlauf für Umlauf (Drehung pro Umlauf: " + f(Math.abs(deg)) + "°, Rechenrauschen).");
+  return L(`Relativity × ${fmtNum(r.mult, 0)}: the ellipse turns ${f(deg)}° per orbit (first-order formula: ${f(th)}°). Without the boost, Mercury's ellipse turns only ${fmtNum(r.theory / r.mult * 206265, 3)}″ per orbit, which adds up to 43″ per century.` + (Math.abs(deg / th - 1) > 0.01 ? " At such a strong boost the correction is no longer small, so the first-order formula drifts off." : ""),
+           `Relativität × ${fmtNum(r.mult, 0)}: Die Ellipse dreht sich um ${f(deg)}° pro Umlauf (Formel erster Ordnung: ${f(th)}°). Ohne Verstärkung dreht sich Merkurs Ellipse nur um ${fmtNum(r.theory / r.mult * 206265, 3)}″ pro Umlauf, das ergibt 43″ pro Jahrhundert.` + (Math.abs(deg / th - 1) > 0.01 ? " Bei so starker Verstärkung ist die Korrektur nicht mehr klein, die Formel erster Ordnung weicht dann ab." : ""));
+}
+$("k5").addEventListener("input", () => { $("k5v").textContent = "× " + fmtNum(MULTS[+$("k5").value], 0); });
+$("go5").onclick = () => {
+  run5 = mercuryRun(MULTS[+$("k5").value]); $("res5").textContent = "";
+  ptf.event("experienced", { station: "mercury", data: { multiplier: run5.mult } });
+  anim5 = animate(5, t => drawMercury(t / 5), () => { $("res5").textContent = mercuryText(); last.mercury = { multiplier: run5.mult, deg_per_orbit: run5.per * 180 / Math.PI }; done("mercury"); });
+};
+$("skip5").onclick = () => anim5 && anim5.skip();
+
+function simSnapshot() {
+  const p = [];
+  if (last.cannon) p.push(`Cannon: ${last.cannon.speed} km/s, ${last.cannon.outcome}`);
+  if (last.moon) p.push(`Moon test: apple at ${last.moon} Earth radii`);
+  if (last.spacetime) p.push(`Spacetime picture: mass x${last.spacetime.mass}, marble speed ${last.spacetime.speed}, ${last.spacetime.outcome}${space.ok ? "" : " (no WebGL, text fallback)"}`);
+  if (last.clocks) p.push(`Clocks: satellite at ${last.clocks.altitude_km} km, ${last.clocks.net_us_per_day} microseconds per day vs ground`);
+  if (last.mercury) p.push(`Mercury: relativity x${last.mercury.multiplier}, ${last.mercury.deg_per_orbit.toFixed(4)} deg per orbit`);
+  return p.join(". ") || "Nothing tried yet";
+}
+function rerender() {
+  $("v1v").textContent = fmtNum(+$("v1").value, 1) + " km/s"; drawCannon(1); if (run1 && $("res1").textContent) $("res1").textContent = cannonText();
+  drawMoon();
+  $("m3v").textContent = "× " + fmtNum(+$("m3").value, 1); $("s3v").textContent = fmtNum(+$("s3").value, 2); themeSpace();
+  drawClocks();
+  $("k5v").textContent = "× " + fmtNum(MULTS[+$("k5").value], 0); drawMercury(1); if (run5 && $("res5").textContent) $("res5").textContent = mercuryText();
+}
+initSpace();
+rerender(); initChoices(); READY = true;
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", rerender);
+new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+</script>
+</body>
+</html>

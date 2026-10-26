@@ -15,6 +15,7 @@ the questions. The content is open; the explanation is personal.
 | Bundle | Topic | Elements |
 | --- | --- | --- |
 | [llm-basics](bundles/llm-basics/index.md) | How large language models work | tokenizer, training examples, softmax, cross-entropy, bigram model, causal mask, self-attention, transformer block, residual stream, the whole machine, from babbler to assistant |
+| [gravity](bundles/gravity/index.md) | Gravity, from the leaning tower to curved spacetime | free fall, air resistance, inclined plane, rolling, universal gravitation, curved spacetime |
 
 | Simulator | Versions | UI language | Concepts |
 | --- | --- | --- | --- |
@@ -27,6 +28,9 @@ the questions. The content is open; the explanation is personal.
 | [babbler-to-assistant](sims/babbler-to-assistant/) | 1.0.0 | en | pretraining, fine-tuning, RLHF, encoder/decoder, scale |
 | [training-loop](sims/training-loop/) | 1.0.0 | en | bigram table, gradient step, learning rate, training loop, generation |
 | [gpt-pipeline](sims/gpt-pipeline/) | 1.0.0 | en | the whole GPT pipeline, tensor shapes, context window, learned vs. fixed parts |
+| [falling-tower](sims/falling-tower/) | 1.0.0 | en, de | free fall, drag, terminal speed, numerical integration |
+| [inclined-plane](sims/inclined-plane/) | 1.0.0 | en, de | inclined plane, t² law, force components, rolling, moment of inertia |
+| [newton-einstein](sims/newton-einstein/) | 1.0.0 | en, de | orbits, inverse-square law, spacetime curvature (3D, three.js), GPS clocks, perihelion precession |
 
 | Code lab | Versions | Language | Steps |
 | --- | --- | --- | --- |
