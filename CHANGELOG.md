@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- CONTRIBUTING.md and pull request template: contributors are responsible for their content and its legal compliance, license contributions under the repository's licenses, and confirm a contributor statement in every PR.
 - Code lab `gpt-from-scratch` 1.0.0 (CODE-SPEC.md): eight runnable Python/PyTorch steps from the character tokenizer to a trained GPT and text generation, each complete on its own, with `try` ideas, CPU-friendly defaults, a `--preset gpu` for the 10.8 M parameter model, the Tiny Shakespeare dataset and a smoke mode. CI runs the smoke test.
 - `llm-basics` 0.3.0: elements `bigram-model` (a first model that learns: table lookup, gradient step, learning rate, training loop, generation) and `gpt-end-to-end` (the whole pipeline, shapes, learned vs. fixed parts, context window); path `gpt-from-scratch` 0.3.0 with eleven steps; every element from the tokenizer to the residual stream links its code lab step (`code:`).
 - Simulators `training-loop` 1.0.0 (look up a row, nudge one example, train with three learning rates, generate) and `gpt-pipeline` 1.0.0 (order the parts, trace one prediction with shapes, shape quiz, context window, learned or fixed), both with focus mode and self-tests.

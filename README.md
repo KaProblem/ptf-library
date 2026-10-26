@@ -69,3 +69,5 @@ Rules:
 
 Content (bundles): [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 Simulators (`sims/`), code labs (`code/`) and tools: MIT. The Tiny Shakespeare text in `code/gpt-from-scratch/*/data/` is public domain. See [LICENSE](LICENSE).
+
+Contributions are licensed under the same terms; contributors are responsible for their content. See [CONTRIBUTING.md](CONTRIBUTING.md).
