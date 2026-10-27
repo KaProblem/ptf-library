@@ -18,12 +18,12 @@
       "integrity": "sha256-hxpwJzyQ0NSoQH2NTIJF0UYrIkWaipbZ/PvCvJBZgBU="
     },
     "ptf:sim/loss-lens": {
-      "version": "1.1.0",
-      "integrity": "sha256-mdmM8Uh7laR4aEGXwstUyrOT/7fUH4OWzu9zxlVar9Q="
+      "version": "1.2.0",
+      "integrity": "sha256-m+aNrf7AG0dgkUbYeDIqJ05TN3Fidx0p0eHcUP1bGf0="
     },
     "ptf:sim/next-char-lab": {
-      "version": "2.1.0",
-      "integrity": "sha256-m1+mpPmlKYH6MoEsTCbfjYfFOyuhzrCo4sXhkW81A9w="
+      "version": "2.2.0",
+      "integrity": "sha256-5bmOH1errlcAEQT83HExqb71baZGCr+6frFmh77g9+k="
     },
     "ptf:sim/residual-stream": {
       "version": "1.1.0",
