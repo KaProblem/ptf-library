@@ -6,6 +6,9 @@ title: Cross-entropy loss
 description: The loss measures how surprised the model is by the real next token; training means making that surprise smaller on average.
 lang: en
 levels: [highschool, college, expert]
+objectives:
+  - Explain the loss as the model's surprise at the real next token, and compute −ln p for an example.
+  - Explain why training means making the average loss smaller.
 tags: [llm, loss, cross-entropy, training]
 about:
   - wikidata: Q1685498
@@ -21,14 +24,17 @@ simulators:
     levels: [highschool]
     role: explore
     note: Use when the learner did not get the loss from next-char-lab ("explain differently").
+    use_when: the learner did not get the loss from numbers alone and needs another angle
   - ref: ptf:sim/next-char-lab@^2.0.0
     station: loss
     levels: [college]
     role: explore
+    use_when: the learner wants to see the loss computed on real text
   - ref: ptf:sim/next-char-lab@^2.0.0
     station: training-curve
     levels: [college]
     role: practice
+    use_when: the learner should watch the loss fall during training
 code:
   - ref: ptf:code/gpt-from-scratch@^1.0.0
     step: bigram
@@ -40,9 +46,15 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.2.1
+version: 0.3.0
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- To improve a model, we need one number that says how wrong it is.
+- That number is the loss, and it measures surprise.
+- Afterwards the learner can read a loss value, compare it with a random guess and explain what training lowers.
 
 # Core
 

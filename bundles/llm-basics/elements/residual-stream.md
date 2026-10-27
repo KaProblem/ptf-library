@@ -6,6 +6,9 @@ title: "Making depth trainable: residual connections, layer norm, dropout"
 description: Deep stacks of blocks only train well with residual connections (a highway for the learning signal), layer norm (keeps numbers in range) and dropout (against memorising); then the model can be scaled up.
 lang: en
 levels: [highschool, college, expert]
+objectives:
+  - Explain why deep stacks are hard to train and how residual connections help.
+  - Say in one sentence each what layer norm and dropout do.
 tags: [llm, residual, layer-norm, dropout, scaling, optimisation]
 about:
   - wikidata: Q43744058
@@ -25,18 +28,22 @@ simulators:
     levels: [highschool, college, expert]
     role: explore
     note: Have the learner set 40 layers with factor 0.8 before explaining; the collapse to almost nothing is the hook.
+    use_when: the learner should see a signal fade through many layers before hearing the fix
   - ref: ptf:sim/residual-stream@^1.0.0
     station: layer-norm
     levels: [highschool, college]
     role: explore
+    use_when: the learner wants to see numbers kept in range
   - ref: ptf:sim/residual-stream@^1.0.0
     station: dropout
     levels: [college, expert]
     role: explore
+    use_when: the learner asks how a model avoids memorising
   - ref: ptf:sim/residual-stream@^1.0.0
     station: scale-up
     levels: [highschool, college, expert]
     role: practice
+    use_when: the learner wants to compare model sizes
 code:
   - ref: ptf:code/gpt-from-scratch@^1.0.0
     step: gpt
@@ -48,9 +55,15 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.2.1
+version: 0.3.0
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- More layers should mean a smarter model, but naive deep stacks stop learning.
+- Three small tricks fix that and make large models possible.
+- Afterwards the learner can explain residual connections, layer norm and dropout.
 
 # Core
 
