@@ -6,6 +6,9 @@ title: Self-attention
 description: Each token sends a query, offers a key and hands over a value; query-key dot products decide how much of each earlier token's value it collects.
 lang: en
 levels: [child, highschool, college, expert]
+objectives:
+  - Explain query, key and value and how their match decides what a token collects.
+  - Explain why attention is learned from data and does not just look at the nearest word.
 tags: [llm, attention, transformer, query, key, value]
 about:
   - wikidata: Q103701642
@@ -21,22 +24,27 @@ simulators:
     levels: [highschool, college]
     role: explore
     note: Guess first. Most learners pick the nearest noun; that is the hook for "attention is learned, not distance".
+    use_when: the learner should guess which word matters before any mechanics
   - ref: ptf:sim/attention-lab@^1.0.0
     station: query-key
     levels: [highschool, college, expert]
     role: practice
+    use_when: the learner wants to see how a match score is computed
   - ref: ptf:sim/attention-lab@^1.0.0
     station: value
     levels: [college, expert]
     role: explore
+    use_when: the learner understands the weights but not what gets passed on
   - ref: ptf:sim/attention-lab@^1.0.0
     station: positions
     levels: [college, expert]
     role: explore
+    use_when: the learner asks how the model knows word order
   - ref: ptf:sim/attention-lab@^1.0.0
     station: scaling
     levels: [expert]
     role: explore
+    use_when: the learner wonders why the scores are divided by √d (college level and above)
 code:
   - ref: ptf:code/gpt-from-scratch@^1.0.0
     step: self-attention
@@ -51,9 +59,15 @@ sources:
     title: "Vaswani et al.: Attention Is All You Need"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.2.2
+version: 0.3.0
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- In "the animal did not cross the street because it was tired", what does "it" mean?
+- Self-attention is how a model lets each word look for the words that matter to it.
+- Afterwards the learner can explain query, key and value and why the weights are learned.
 
 # Core
 

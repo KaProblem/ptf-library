@@ -6,6 +6,10 @@ title: A first model that learns
 description: The bigram model is a table of scores, one row per token. Training nudges every number a little in the direction that lowers the loss, and generation samples one token at a time from the row of the last token.
 lang: en
 levels: [highschool, college, expert]
+objectives:
+  - Explain the bigram model as a table of scores, one row per token.
+  - "Describe one training step: loss, gradient, a small step, and what the learning rate does."
+  - Explain how the model generates text one token at a time.
 tags: [llm, bigram, training-loop, gradient-descent, learning-rate, generation]
 about:
   - wikidata: Q2773912
@@ -24,18 +28,22 @@ simulators:
     station: lookup
     levels: [highschool, college, expert]
     role: explore
+    use_when: the learner needs to see that the model is just a table lookup
   - ref: ptf:sim/training-loop@^1.0.0
     station: nudge
     levels: [highschool, college, expert]
     role: explore
+    use_when: the learner cannot picture what one gradient step changes
   - ref: ptf:sim/training-loop@^1.0.0
     station: train
     levels: [highschool, college, expert]
     role: practice
+    use_when: the learner should compare learning rates that are too small, good and too large
   - ref: ptf:sim/training-loop@^1.0.0
     station: generate
     levels: [highschool, college, expert]
     role: practice
+    use_when: the learner wants to see text come out of the trained table
 code:
   - ref: ptf:code/gpt-from-scratch@^1.0.0
     step: bigram
@@ -47,9 +55,15 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T14:30:00Z }
 status: draft
-version: 0.1.1
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- This is the first model that actually learns.
+- It is tiny, a table, but training and generating work exactly as in a large model.
+- Afterwards the learner can describe a training step and how text is generated.
 
 # Core
 

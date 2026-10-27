@@ -6,6 +6,10 @@ title: How GPT works, from scratch
 description: Eleven steps from "predict the next character" to a small transformer that writes Shakespeare-like text, with runnable code for every step.
 lang: en
 goal: Understand how a GPT-style model is trained and how it generates text, well enough to explain it to someone else.
+objectives:
+  - Explain how a GPT turns text into numbers and predicts the next token.
+  - Describe what training changes in the model and why, from a table of scores to a transformer.
+  - Explain what is still missing between such a model and a chat assistant.
 audience: [highschool, college]
 steps:
   - element: ptf:el/llm-basics/tokenizer
@@ -20,7 +24,7 @@ steps:
   - element: ptf:el/llm-basics/gpt-end-to-end
   - element: ptf:el/llm-basics/from-babbler-to-assistant
 status: draft
-version: 0.3.0
+version: 0.4.0
 license: CC-BY-SA-4.0
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 sources:
@@ -29,12 +33,17 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 ---
 
-# Overview
+# Introduction
 
 A language model does one thing over and over: given the text so far, estimate
 what comes next, pick something, append it, repeat. The path builds this up
 from the simplest possible model (it only looks at the last character) to a
 transformer that looks at the whole context.
+
+By the end the learner can explain, in their own words, one full prediction
+and one training step of a GPT, and what is still missing to turn it into a
+chat assistant. Each step takes about 10 to 20 minutes; the whole course fits
+three sessions of about an hour.
 
 # Steps
 
@@ -54,9 +63,10 @@ transformer that looks at the whole context.
 
 # Tutor notes
 
-- Show simulators one station at a time (focus mode, SIMULATOR-SPEC.md §4.7): open the station named in the element's `simulators` entry with focus, let the learner try it, talk about it, then move on with Next. Show the whole simulator only for review.
+- Open the course with its introduction: what a GPT does, what the learner will be able to explain at the end, and the three-session plan. In later sessions, say where the learner is in the course before the next step.
+- Simulators are aids: open a station when its `use_when` fits the learner, one station at a time (focus mode, SIMULATOR-SPEC.md §4.7). Say what to look for before, and talk about what the learner saw after. Show the whole simulator only for review.
 - Every element has an optional `# Further reading` section with the matching part of the source video and papers. Offer it after the step, as a deep dive, never as a prerequisite.
-- Start every session with step 1's guessing game, even for advanced learners: it anchors everything that follows.
+- Start the course with step 1's guessing game, even for advanced learners: it anchors everything that follows. In later sessions, recall it in one sentence instead of playing it again.
 - Typical pace at highschool level: steps 1 to 5 in one session of about an hour, steps 6 and 7 in a second session (self-attention is the core and deserves time), steps 8 to 11 in a third.
 - Code (college and above, or whenever the learner wants to program): steps 1 to 10 list a step of the code lab `ptf:code/gpt-from-scratch` under `code`. Offer it after the simulator, never before. Copy the lab once (MCP `copy_code_lab`) and keep working in that copy, so the learner's changes carry over from step to step. Let the learner run the code themselves; suggest one of the step's `try` ideas, and compare their numbers with the reference losses below. The code for steps 1 to 6 runs within a minute on a laptop; steps 7 to 10 take a few minutes each, so start the run, then talk while it trains.
 - Step 5 is where "learning" stops being magic: insist that the learner sees one nudge in the simulator before the full training loop. Learners who already program can skip the highschool text and go straight to the code step.

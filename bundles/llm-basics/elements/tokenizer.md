@@ -6,6 +6,9 @@ title: Tokenizer
 description: A language model never sees letters or words, only numbers; the tokenizer turns text into those numbers and back.
 lang: en
 levels: [child, highschool, college]
+objectives:
+  - Explain why a language model works with numbers instead of letters or words.
+  - Turn a short text into tokens and numbers and back, and say what the vocabulary is.
 tags: [llm, tokenizer, vocabulary]
 about:
   - wikidata: Q2438971
@@ -22,10 +25,12 @@ simulators:
     levels: [highschool]
     role: explore
     note: Let the learner be the model first, before any terminology.
+    use_when: the learner should feel what predicting the next character is like before any terms
   - ref: ptf:sim/next-char-lab@^2.0.0
     station: tokenizer
     levels: [highschool, college]
     role: explore
+    use_when: the learner wants to see their own text turned into numbers
 code:
   - ref: ptf:code/gpt-from-scratch@^1.0.0
     step: tokenizer
@@ -37,9 +42,15 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.2.1
+version: 0.3.0
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- A language model has one job: guess what comes next in a text.
+- Before it can do that, text has to become numbers; this step shows how.
+- Afterwards the learner can explain what a token is and why the choice of tokens matters.
 
 # Core
 

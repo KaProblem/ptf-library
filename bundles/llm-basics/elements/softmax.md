@@ -6,6 +6,9 @@ title: Softmax
 description: Turns the model's raw scores (logits) into probabilities that are all positive and add up to 1.
 lang: en
 levels: [highschool, college, expert]
+objectives:
+  - Turn a list of scores into probabilities and explain why they are all positive and add up to 1.
+  - Predict how raising one score or changing the temperature changes the distribution.
 tags: [llm, probability, softmax, sampling, temperature]
 about:
   - wikidata: Q7554146
@@ -21,10 +24,12 @@ simulators:
     levels: [highschool]
     role: explore
     note: Shows probabilities from counting; good bridge before introducing scores and softmax.
+    use_when: the learner needs a concrete feel for probabilities before scores and exponentials
   - ref: ptf:sim/next-char-lab@^2.0.0
     station: temperature
     levels: [college]
     role: explore
+    use_when: the learner wants to see how creative versus predictable text comes from one setting
 code:
   - ref: ptf:code/gpt-from-scratch@^1.0.0
     step: bigram
@@ -36,9 +41,15 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.2.1
+version: 0.3.0
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- A model gives each possible next token a raw score, but scores are not probabilities.
+- Softmax is the small step that turns them into a fair share for every option.
+- Afterwards the learner can compute softmax for a few numbers and explain what temperature does.
 
 # Core
 

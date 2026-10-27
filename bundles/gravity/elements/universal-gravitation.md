@@ -6,6 +6,9 @@ title: Universal gravitation
 description: Every mass attracts every other mass with a force that falls off with the square of the distance; the same law makes apples fall and keeps the Moon and satellites in orbit, which is falling around the Earth.
 lang: en
 levels: [child, highschool, college, expert]
+objectives:
+  - Explain that the same law makes an apple fall and keeps the Moon in orbit.
+  - Describe an orbit as falling while the ground curves away, and why gravity weakens with the square of the distance.
 tags: [physics, gravity, newton, orbit, inverse-square-law, weightlessness]
 about:
   - wikidata: Q134465
@@ -21,11 +24,13 @@ simulators:
     levels: [child, highschool, college, expert]
     role: explore
     note: Fire at 4 km/s first, then let the learner find the speed that never lands; ask what this says about astronauts.
+    use_when: the learner cannot picture an orbit as falling around the Earth
   - ref: ptf:sim/newton-einstein@^1.1.0
     station: moon
     levels: [highschool, college, expert]
     role: explore
     note: Ask the learner to predict how much weaker gravity is at 60 Earth radii before they move the slider.
+    use_when: the learner should predict how much weaker gravity is at the Moon's distance
 sources:
   - id: newton-principia
     resource: https://en.wikisource.org/wiki/The_Mathematical_Principles_of_Natural_Philosophy_(1846)
@@ -35,9 +40,15 @@ sources:
     title: "The Feynman Lectures on Physics, Vol. I, ch. 7: The Theory of Gravitation"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.2
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- Why does the Moon not fall onto the Earth, and why do astronauts float?
+- One law answers both, and it is the same law that pulls an apple down.
+- Afterwards the learner can explain orbits as a kind of fall and estimate how gravity weakens with distance.
 
 # Core
 

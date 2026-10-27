@@ -6,6 +6,9 @@ title: From babbler to assistant
 description: A pretrained decoder-only transformer only continues documents; fine-tuning on example dialogues and reinforcement learning from human feedback turn it into an assistant, at a scale thousands of times larger than a toy model.
 lang: en
 levels: [child, highschool, college, expert]
+objectives:
+  - Explain why a pretrained model continues documents instead of answering questions.
+  - Describe the training stages that turn it into an assistant, and how large real models are.
 tags: [llm, pretraining, fine-tuning, rlhf, decoder-only, encoder-decoder, scale]
 about:
   - wikidata: Q117286419
@@ -22,27 +25,37 @@ simulators:
     station: document-completer
     levels: [child, highschool, college]
     role: explore
+    use_when: the learner should see a pretrained model miss the point of a question
   - ref: ptf:sim/babbler-to-assistant@^1.0.0
     station: stages
     levels: [child, highschool, college]
     role: practice
+    use_when: the learner wants to put the training stages in order
   - ref: ptf:sim/babbler-to-assistant@^1.0.0
     station: scale
     levels: [child, highschool, college]
     role: explore
+    use_when: the learner asks how big real models are
   - ref: ptf:sim/babbler-to-assistant@^1.0.0
     station: architectures
     levels: [highschool, college]
     role: explore
+    use_when: the learner asks about other model types such as encoders
 sources:
   - id: karpathy-gpt
     resource: https://www.youtube.com/watch?v=kCc8FmEb1nY
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.2.1
+version: 0.3.0
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- The model built so far writes text that looks like what it read, but it is no assistant.
+- This step shows what is added to get from there to a chat assistant.
+- Afterwards the learner can name the stages of training and compare a toy model with a real one.
 
 # Core
 

@@ -6,6 +6,9 @@ title: Rolling down a slope
 description: A rolling body has to spin up as well as speed up, so it is slower than a sliding one; how much slower depends only on how its mass is spread, not on mass or size.
 lang: en
 levels: [child, highschool, college, expert]
+objectives:
+  - Predict which of a ball, a ring and a sliding block reaches the bottom of a ramp first.
+  - Explain that rolling is slower because energy also goes into spinning, and that only the mass distribution matters.
 tags: [physics, mechanics, rolling, moment-of-inertia, energy, friction]
 about:
   - wikidata: Q2192732
@@ -21,11 +24,13 @@ simulators:
     levels: [child, highschool, college, expert]
     role: explore
     note: Ball against ring first; add the ice block and the hollow ball afterwards for a full ranking.
+    use_when: the learner should guess the ranking of ball, ring and block before seeing it
   - ref: ptf:sim/inclined-plane@^1.1.0
     station: rolling
     levels: [college, expert]
     role: practice
     note: Compare ball and ring at the same angle, then lower μ until the ball slips and heat appears.
+    use_when: the learner wants to explore slipping and friction (college level and above)
 sources:
   - id: openstax-rolling
     resource: https://openstax.org/books/university-physics-volume-1/pages/11-1-rolling-motion
@@ -35,9 +40,15 @@ sources:
     title: "The Feynman Lectures on Physics, Vol. I, ch. 19: Center of Mass; Moment of Inertia"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.2
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- Two objects of the same mass and size can roll down a ramp at very different speeds.
+- The reason, energy that goes into spinning, explains wheels, flywheels and figure skaters.
+- Afterwards the learner can rank shapes by speed and say why mass and size do not matter.
 
 # Core
 

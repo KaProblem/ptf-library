@@ -6,6 +6,9 @@ title: "Looking back: the causal mask"
 description: Each position may gather information from itself and earlier positions only; a lower-triangular weight matrix does this in one matrix multiplication.
 lang: en
 levels: [highschool, college, expert]
+objectives:
+  - Explain why a position may only use earlier positions, never later ones.
+  - Describe how a lower-triangular weight matrix gathers the past in one step.
 tags: [llm, attention, causal-mask, matrix-multiplication]
 requires:
   - ptf:el/llm-basics/training-examples
@@ -19,15 +22,18 @@ simulators:
     levels: [highschool, college]
     role: explore
     note: Start here; the guess question makes the "no future" rule tangible.
+    use_when: the learner should feel the "no future" rule with a simple average
   - ref: ptf:sim/causal-mask@^1.0.0
     station: triangle
     levels: [highschool, college, expert]
     role: explore
     note: Let the learner open a future cell and see the leak before explaining why the mask exists.
+    use_when: the learner should see what leaks when the mask is broken
   - ref: ptf:sim/causal-mask@^1.0.0
     station: softmax-mask
     levels: [college, expert]
     role: practice
+    use_when: the learner is ready to connect the mask with softmax weights (college level and above)
 code:
   - ref: ptf:code/gpt-from-scratch@^1.0.0
     step: averaging
@@ -39,9 +45,15 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.2.0
+version: 0.3.0
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- When the model learns to predict the next token, the answer is right there in the text.
+- The causal mask stops it from peeking.
+- Afterwards the learner can explain the mask and read a lower-triangular weight table.
 
 # Core
 

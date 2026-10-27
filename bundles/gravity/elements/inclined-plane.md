@@ -6,6 +6,9 @@ title: The inclined plane
 description: A ramp passes on only the part g sin θ of gravity along the slope, which slows free fall down enough to measure that distance grows with the square of time.
 lang: en
 levels: [highschool, college, expert]
+objectives:
+  - Explain why a ramp slows a fall down and how the angle changes it (g sin θ).
+  - Show that the distance on a ramp still grows with the square of the time.
 tags: [physics, mechanics, inclined-plane, force-components, uniform-acceleration]
 about:
   - wikidata: Q161462
@@ -21,11 +24,13 @@ simulators:
     levels: [highschool, college, expert]
     role: explore
     note: Play equal spacing first and ask what the learner hears; then let them find the spacing that gives an even rhythm.
+    use_when: the learner should hear that equal distances do not take equal times
   - ref: ptf:sim/inclined-plane@^1.1.0
     station: angle
     levels: [highschool, college, expert]
     role: explore
     note: Ask what happens at 90° before they move the slider there.
+    use_when: the learner wants to see the link between a flat ramp, a steep ramp and free fall
 sources:
   - id: galileo-two-new-sciences
     resource: https://oll.libertyfund.org/titles/galilei-dialogues-concerning-two-new-sciences
@@ -35,9 +40,15 @@ sources:
     title: "OpenStax University Physics Volume 1, 6.2 Solving Problems with Newton's Laws"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.2
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- A free fall is too fast to measure by eye; a ramp turns it into slow motion.
+- That is how the law of falling was first measured, long before stopwatches.
+- Afterwards the learner can say which part of gravity acts along a slope and what stays the same as in free fall.
 
 # Core
 

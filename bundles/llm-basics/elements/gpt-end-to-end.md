@@ -6,6 +6,9 @@ title: The whole machine
 description: All parts of a GPT in one picture, from text to the next token, what training changes, and how generation repeats the whole pipeline once per token inside a fixed context window.
 lang: en
 levels: [highschool, college, expert]
+objectives:
+  - Trace one prediction through all parts of a GPT, from text to the next token.
+  - Say which parts are learned in training and which are fixed, and what the context window limits.
 tags: [llm, gpt, transformer, generation, context-window, parameters, summary]
 about:
   - wikidata: Q116777014
@@ -22,22 +25,27 @@ simulators:
     station: order
     levels: [highschool, college, expert]
     role: check
+    use_when: the learner should check whether they can put the parts in order
   - ref: ptf:sim/gpt-pipeline@^1.0.0
     station: trace
     levels: [highschool, college, expert]
     role: explore
+    use_when: the learner needs to follow one familiar sentence through the pipeline
   - ref: ptf:sim/gpt-pipeline@^1.0.0
     station: shapes
     levels: [college, expert]
     role: practice
+    use_when: the learner wants the exact sizes of the numbers at each stage (college level and above)
   - ref: ptf:sim/gpt-pipeline@^1.0.0
     station: window
     levels: [highschool, college, expert]
     role: explore
+    use_when: the learner asks why a model forgets the beginning of a long text
   - ref: ptf:sim/gpt-pipeline@^1.0.0
     station: learned
     levels: [highschool, college, expert]
     role: check
+    use_when: the learner should check which parts training changes
 code:
   - ref: ptf:code/gpt-from-scratch@^1.0.0
     step: gpt
@@ -53,9 +61,15 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T14:30:00Z }
 status: draft
-version: 0.1.1
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- All the pieces are in place; this step puts them into one picture.
+- It is the moment to check that the whole pipeline makes sense.
+- Afterwards the learner can explain how a GPT produces text, end to end.
 
 # Core
 
