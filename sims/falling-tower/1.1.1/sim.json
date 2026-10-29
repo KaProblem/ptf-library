@@ -1,0 +1,96 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/falling-tower",
+  "version": "1.1.1",
+  "title": "The falling tower",
+  "description": "Drop two objects from a 56 m leaning tower, with air, without air and on the Moon; speed graphs, terminal speed and the numerical method behind it.",
+  "lang": [
+    "en",
+    "de"
+  ],
+  "concepts": [
+    "free-fall",
+    "gravitational-acceleration",
+    "air-resistance",
+    "drag",
+    "terminal-velocity",
+    "equivalence-of-falling",
+    "numerical-integration",
+    "runge-kutta"
+  ],
+  "levels": [
+    "child",
+    "highschool",
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "guess",
+      "title": "Which ball lands first?",
+      "levels": [
+        "child",
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "vacuum",
+      "title": "Feather and hammer (take the air away)",
+      "levels": [
+        "child",
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "drag",
+      "title": "Speed over time: drag and terminal speed",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "model",
+      "title": "Inside the simulation: Euler, RK4 and the exact formula",
+      "levels": [
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "check",
+      "title": "Two short questions",
+      "levels": [
+        "child",
+        "highschool",
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "entry": "index.html",
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "events": [
+    "answered",
+    "experienced",
+    "station_completed",
+    "level_changed"
+  ],
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "derived_from": "ptf:sim/falling-tower@1.1.0",
+  "changelog": "Phone layout: the object pickers no longer push the page sideways on narrow screens (long option names made the selects wider than the screen). Compact spacing below 520 px (smaller paddings and gaps, title hidden in focus mode, level switch and navigation on one line).",
+  "integrity": "sha256-Qm9RS4MnQ4gY7+uhVYc+f+ADbpRtyaGvS3mF03fE850="
+}

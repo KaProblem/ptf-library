@@ -1,0 +1,306 @@
+{
+  "ptf_catalog": "0.1",
+  "id": "io.github.kaproblem.ptf-library",
+  "title": "PTF Library",
+  "publisher": "KaProblem",
+  "description": "Open courses for the Personal Tutor Format: how large language models work, gravity from Pisa to Einstein.",
+  "homepage": "https://github.com/KaProblem/ptf-library",
+  "auth": {
+    "type": "none"
+  },
+  "cache": "shared",
+  "snapshot": {
+    "url": "https://codeload.github.com/KaProblem/ptf-library/tar.gz/refs/heads/main",
+    "strip": 1
+  },
+  "packages": [
+    {
+      "kind": "bundle",
+      "id": "gravity",
+      "version": "0.2.1",
+      "title": "Gravity: from the leaning tower to curved spacetime",
+      "summary": "Why heavy and light things fall together, what air and ramps change, how one law holds apples and moons, and how Einstein replaced the pull with curved spacetime.",
+      "path": "bundles/gravity",
+      "digest": "sha256-ZzgzbzLa+4OOxh9+oT2qg86JSSM22/0dKNuAOwhTMtU="
+    },
+    {
+      "kind": "bundle",
+      "id": "llm-basics",
+      "version": "0.4.0",
+      "title": "How large language models work",
+      "summary": "From \"guess the next character\" to the transformer, built up step by step with hands-on simulators.",
+      "path": "bundles/llm-basics",
+      "digest": "sha256-869WbNVS12r5Tb5pJAdW534E06YfcIppWUos5qfF3Jg="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/attention-lab",
+      "version": "1.0.0",
+      "title": "Attention lab",
+      "summary": "Self-attention hands-on: guess who a word listens to, steer a query against keys, see what the values carry, why scores are scaled by 1/sqrt(d), and why attention needs positions.",
+      "path": "sims/attention-lab/1.0.0",
+      "digest": "sha256-ZGY3OkYZMn+m1bjKvYD387f6UCU78LAQ2fWvMR1n/6M="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/attention-lab",
+      "version": "1.1.0",
+      "title": "Attention lab",
+      "summary": "Self-attention hands-on: guess who a word listens to, steer a query against keys, see what the values carry, why scores are scaled by 1/sqrt(d), and why attention needs positions.",
+      "path": "sims/attention-lab/1.1.0",
+      "digest": "sha256-fePnRNdJxKqmDWiaycJcmKlvF/GMuEQJcNwmN3XFNV0="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/babbler-to-assistant",
+      "version": "1.0.0",
+      "title": "From babbler to assistant",
+      "summary": "A pretrained model only continues documents: spot it, order the training stages up to RLHF, estimate the scale gap to GPT-3, and compare decoder, encoder and cross-attention.",
+      "path": "sims/babbler-to-assistant/1.0.0",
+      "digest": "sha256-LxI9DOu1xXhYDT8MtR7AqVYWhIQS6rd5CccsXGVLpPY="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/causal-mask",
+      "version": "1.0.0",
+      "title": "Looking back: the causal mask",
+      "summary": "Averaging over the past, the lower-triangular mask as a weight table, and masked softmax as the bridge to self-attention.",
+      "path": "sims/causal-mask/1.0.0",
+      "digest": "sha256-ehkW1jnnJNDmJiT/ediaYaufvl5olZhIulCZXysbmv8="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/falling-tower",
+      "version": "1.0.0",
+      "title": "The falling tower",
+      "summary": "Drop two objects from a 56 m leaning tower, with air, without air and on the Moon; speed graphs, terminal speed and the numerical method behind it.",
+      "path": "sims/falling-tower/1.0.0",
+      "digest": "sha256-2s1fB/NQ34yawczlxt/3xw8jB7t1qaQHRgg4EPQCT5k="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/falling-tower",
+      "version": "1.1.0",
+      "title": "The falling tower",
+      "summary": "Drop two objects from a 56 m leaning tower, with air, without air and on the Moon; speed graphs, terminal speed and the numerical method behind it.",
+      "path": "sims/falling-tower/1.1.0",
+      "digest": "sha256-tTRiK8knxjYCD/Qled61Rs+oE1QoEiKkYyn9npoFRMc="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/falling-tower",
+      "version": "1.1.1",
+      "title": "The falling tower",
+      "summary": "Drop two objects from a 56 m leaning tower, with air, without air and on the Moon; speed graphs, terminal speed and the numerical method behind it.",
+      "path": "sims/falling-tower/1.1.1",
+      "digest": "sha256-yhKu3v7hs/4iGg1TYVHCFYVV4QSJ976kwTbol33wQjE="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/gpt-pipeline",
+      "version": "1.0.0",
+      "title": "The whole machine",
+      "summary": "All parts of a GPT together: put the stages in order, follow one prediction from text to the next character with tensor shapes, the context window during generation, and which parts are learned or fixed.",
+      "path": "sims/gpt-pipeline/1.0.0",
+      "digest": "sha256-Z7ilbyAXbYhuGPrWPUxPZNQOTzp9OkCGnwVOfoPnKN8="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/gpt-pipeline",
+      "version": "1.1.0",
+      "title": "The whole machine",
+      "summary": "All parts of a GPT together: put the stages in order, follow one prediction from text to the next character with tensor shapes, the context window during generation, and which parts are learned or fixed.",
+      "path": "sims/gpt-pipeline/1.1.0",
+      "digest": "sha256-SKMXJ0LmnhSYyPhVc6DFh6YOaaQSZdJ9Wuc6yxVe/Qw="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/inclined-plane",
+      "version": "1.0.0",
+      "title": "The inclined plane",
+      "summary": "Race balls, cylinders, rings and a sliding block down a ramp; hear the square law with bells; see how the slope splits gravity and where rolling energy goes.",
+      "path": "sims/inclined-plane/1.0.0",
+      "digest": "sha256-LMn8molkFtvBnC1e1bhSFQtDAMCpMg8lW8xUmmhKyz8="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/inclined-plane",
+      "version": "1.1.0",
+      "title": "The inclined plane",
+      "summary": "Race balls, cylinders, rings and a sliding block down a ramp; hear the square law with bells; see how the slope splits gravity and where rolling energy goes.",
+      "path": "sims/inclined-plane/1.1.0",
+      "digest": "sha256-2NZiRTHzlI63QvAloP9/dUZUtT5SnNGwN1NPU6T44UE="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/inclined-plane",
+      "version": "1.1.1",
+      "title": "The inclined plane",
+      "summary": "Race balls, cylinders, rings and a sliding block down a ramp; hear the square law with bells; see how the slope splits gravity and where rolling energy goes.",
+      "path": "sims/inclined-plane/1.1.1",
+      "digest": "sha256-4o0+IXOXD0R2Mvh5o9NbBJLL3ZZB476WaCfzlvnX7k8="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/loss-lens",
+      "version": "1.0.0",
+      "title": "Loss lens",
+      "summary": "Cross-entropy loss up close: surprise per character, averaging over a sentence, and distributing probability yourself.",
+      "path": "sims/loss-lens/1.0.0",
+      "digest": "sha256-uPtjm74FBiuMKIx61fbu7a/H+G6sd3sAQo+nCpspD+g="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/loss-lens",
+      "version": "1.1.0",
+      "title": "Loss lens",
+      "summary": "Cross-entropy loss up close: surprise per character, averaging over a sentence, and distributing probability yourself.",
+      "path": "sims/loss-lens/1.1.0",
+      "digest": "sha256-MRaWIYoIldJFqCAi59Exle8IRUuDok+Pne8bAb1MhwA="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/loss-lens",
+      "version": "1.2.0",
+      "title": "Loss lens",
+      "summary": "Cross-entropy loss up close: surprise per character, averaging over a sentence, and distributing probability yourself.",
+      "path": "sims/loss-lens/1.2.0",
+      "digest": "sha256-y1Zs30azxf5f4Lx3qK1SBycXb2Ff2l+g41jKNUtVqHI="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/newton-einstein",
+      "version": "1.0.0",
+      "title": "Newton and Einstein",
+      "summary": "Newton's cannon and the Moon test, a 3D picture of curved space, satellite clocks that run fast, and Mercury's turning orbit.",
+      "path": "sims/newton-einstein/1.0.0",
+      "digest": "sha256-IpivlJSsA9/ca8l10hrf8+I3M803HlxLFItV+HeQmXo="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/newton-einstein",
+      "version": "1.1.0",
+      "title": "Newton and Einstein",
+      "summary": "Newton's cannon and the Moon test, a 3D picture of curved space, satellite clocks that run fast, and Mercury's turning orbit.",
+      "path": "sims/newton-einstein/1.1.0",
+      "digest": "sha256-AfSJfi9i4scV3eOgLMnlo1gBOPMbgFYiNCdV/SzuUDc="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/newton-einstein",
+      "version": "1.1.1",
+      "title": "Newton and Einstein",
+      "summary": "Newton's cannon and the Moon test, a 3D picture of curved space, satellite clocks that run fast, and Mercury's turning orbit.",
+      "path": "sims/newton-einstein/1.1.1",
+      "digest": "sha256-xxJWBqphMellrGPxK9v68j+Q7BKQ8hwzrZmQUMUctSE="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/next-char-lab",
+      "version": "1.0.0",
+      "title": "Next-character lab",
+      "summary": "A bigram language model to play with: tokenizer, counting, sampling, loss, temperature and context windows, at three levels.",
+      "path": "sims/next-char-lab/1.0.0",
+      "digest": "sha256-gfjFzUn9x41bnKWCp78NlXKKSx7Gcw6CVRhbwaaMnU8="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/next-char-lab",
+      "version": "2.0.0",
+      "title": "Next-character lab",
+      "summary": "A bigram language model to play with: guess the next character yourself, then build the simplest model that does the same.",
+      "path": "sims/next-char-lab/2.0.0",
+      "digest": "sha256-3OfG+DMKYEZhzfFShD9vrbl6PUSF9m4PzTgv9R74318="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/next-char-lab",
+      "version": "2.1.0",
+      "title": "Next-character lab",
+      "summary": "A bigram language model to play with: guess the next character yourself, then build the simplest model that does the same.",
+      "path": "sims/next-char-lab/2.1.0",
+      "digest": "sha256-3oim3VDHb/nwa1fBu5ixrxjBr0ovb7C2dIBznErbllo="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/next-char-lab",
+      "version": "2.2.0",
+      "title": "Next-character lab",
+      "summary": "A bigram language model to play with: guess the next character yourself, then build the simplest model that does the same.",
+      "path": "sims/next-char-lab/2.2.0",
+      "digest": "sha256-FRznFACvBd9EqmJ7U5mWt6RdFqus8D+7eugKuBPJV2M="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/residual-stream",
+      "version": "1.0.0",
+      "title": "Residual highway",
+      "summary": "Why deep transformers train at all: vanishing signals with and without residual connections, layer norm, dropout against memorising, and a parameter counter from a small model to GPT-3.",
+      "path": "sims/residual-stream/1.0.0",
+      "digest": "sha256-WtKrxMcRfF5iKBP260CVJKpGA2Ynwq6QagPHQ4ve/Zc="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/residual-stream",
+      "version": "1.1.0",
+      "title": "Residual highway",
+      "summary": "Why deep transformers train at all: vanishing signals with and without residual connections, layer norm, dropout against memorising, and a parameter counter from a small model to GPT-3.",
+      "path": "sims/residual-stream/1.1.0",
+      "digest": "sha256-3N8vkfE+InpxwEK0r3G4Zk4a1a6k3uPrG7OStCzoqkY="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/training-loop",
+      "version": "1.0.0",
+      "title": "Learning by nudging",
+      "summary": "How a model learns: a bigram table of scores, one gradient step on one example, the training loop with too small, good and too large learning rates, and generating text from the trained table.",
+      "path": "sims/training-loop/1.0.0",
+      "digest": "sha256-AAl9zLytJhyGy2A3osQ2+H5E3pdHV7ZxSIs0ZIQeeyY="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/training-loop",
+      "version": "1.1.0",
+      "title": "Learning by nudging",
+      "summary": "How a model learns: a bigram table of scores, one gradient step on one example, the training loop with too small, good and too large learning rates, and generating text from the trained table.",
+      "path": "sims/training-loop/1.1.0",
+      "digest": "sha256-9ZlDnBuGM8xJ4Y0J7JFM5O1FUxYlQECPucGOO342R0E="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/training-loop",
+      "version": "1.2.0",
+      "title": "Learning by nudging",
+      "summary": "How a model learns: a bigram table of scores, one gradient step on one example, the training loop with too small, good and too large learning rates, and generating text from the trained table.",
+      "path": "sims/training-loop/1.2.0",
+      "digest": "sha256-lq9jQoazSSWxTeXKR9QdoIqMU8BZipFE0H0ia6Y50DE="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/transformer-block",
+      "version": "1.0.0",
+      "title": "Transformer block: listen, then think",
+      "summary": "Multi-head attention patterns, the per-token feed-forward layer, and a ladder that adds components one by one with real validation losses from a small Shakespeare model.",
+      "path": "sims/transformer-block/1.0.0",
+      "digest": "sha256-YG9yz0WPuCPY5eKqjPz4WdPT0FTwGUWKA9l9cVlsaVk="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/transformer-block",
+      "version": "1.1.0",
+      "title": "Transformer block: listen, then think",
+      "summary": "Multi-head attention patterns, the per-token feed-forward layer, and a ladder that adds components one by one with real validation losses from a small Shakespeare model.",
+      "path": "sims/transformer-block/1.1.0",
+      "digest": "sha256-TZE3Pl1WePRZpYjve+MmY7yATq5OLlN4jA4IaKpYFKE="
+    },
+    {
+      "kind": "code",
+      "id": "ptf:code/gpt-from-scratch",
+      "version": "1.0.0",
+      "title": "GPT from scratch",
+      "summary": "Build a character-level GPT in eight runnable steps: tokenizer, batches, a bigram model that learns, the averaging trick, one attention head, transformer blocks, the full GPT, and generation from the saved model.",
+      "path": "code/gpt-from-scratch/1.0.0",
+      "digest": "sha256-mf7fqNfYzuklhKE79nsNzhTbEBXK+jbEQF6lSQ8b6gM="
+    }
+  ]
+}

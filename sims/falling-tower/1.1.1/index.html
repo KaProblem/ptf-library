@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The falling tower</title>
+<style>
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
+  --accent:#0E6E68; --accent-soft:#D5ECEA; --warn:#C2410C; --warn-soft:#FBE3D6;
+  --f-display:"Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.3rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+header{display:flex;flex-direction:column;gap:12px}
+.levels{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start;background:var(--surface);max-width:100%}
+.levels button{font:600 1rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:10px 16px;min-height:44px;cursor:pointer}
+.levels button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.station{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.station .num{font:600 .8rem var(--f-mono);color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:600 .95rem var(--f-body);min-height:44px;padding:8px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--accent)}
+button.btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-height:44px;min-width:0}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+label{color:var(--muted);font-size:.95rem}
+.note{color:var(--muted);font-size:.95rem}
+.stat{font:600 1.5rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:24px}
+.stats div{display:flex;flex-direction:column}
+.scroll{overflow-x:auto;max-width:100%}
+.out{font:.95rem/1.5 var(--f-mono);white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px}
+.feedback{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:4px}
+.feedback.bad{border-color:var(--warn);background:var(--warn-soft)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices button{text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.choices button.right{border-color:var(--accent);background:var(--accent-soft)}
+.choices button.wrong{border-color:var(--warn);background:var(--warn-soft)}
+table.grid{border-collapse:collapse;font:.85rem var(--f-mono);font-variant-numeric:tabular-nums}
+table.grid th{color:var(--muted);font-weight:600;padding:4px 6px}
+table.grid td{width:46px;height:40px;text-align:center;border:1px solid var(--line);padding:0}
+table.grid td button{width:100%;height:100%;min-height:40px;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.bars{display:flex;flex-direction:column;gap:4px;font:.9rem var(--f-mono)}
+.bar{display:grid;grid-template-columns:5.5em 1fr 4em;gap:8px;align-items:center}
+.bar .fill{height:18px;background:var(--accent);border-radius:3px;min-width:2px}
+.bar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.tok{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:4px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font:1rem var(--f-mono);color:var(--ink);cursor:pointer}
+.tok[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+svg text{font-family:var(--f-mono)}
+details summary{cursor:pointer;font-weight:600;min-height:32px}
+footer{color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+html:not([lang="de"]) i-de,html[lang="de"] i-en{display:none!important}
+i-en,i-de{font-style:inherit}
+.focus-nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;bottom:0;background:var(--bg);padding:10px 0;border-top:1px solid var(--line)}
+.focus-nav #focusAll{margin-left:auto}
+.focus-nav button:disabled{opacity:.4;cursor:default}
+body.focused header > :not(.row):not(.eyebrow){display:none}
+body.focused #focusStart{display:none}
+body.focused footer{display:none}
+.stepper{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.stepper .step{min-width:44px;min-height:44px;border-radius:22px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:600 1rem var(--f-mono);cursor:pointer}
+.stepper .step.done{border-color:var(--accent);color:var(--accent)}
+.stepper .step[aria-current="step"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.choices button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
+.choices button:disabled{cursor:default}
+.choices button:disabled:not(.right):not(.wrong){opacity:.6}
+button.btn:disabled{opacity:.4;cursor:default}
+.explain:not(.shown){display:none}
+.out:empty{display:none}
+
+.drop-stage{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+canvas.tower{display:block;width:100%;max-width:560px;margin:0 auto;height:auto;aspect-ratio:760/720;background:var(--bg);border:1px solid var(--line);border-radius:8px;touch-action:manipulation}
+canvas.plot{display:block;width:100%;max-width:533px;margin:0 auto;height:auto;aspect-ratio:16/9;background:var(--bg);border:1px solid var(--line);border-radius:8px}
+.picks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.picks label{min-width:0}
+.picks select{width:100%;min-width:0}
+.picks label{display:flex;flex-direction:column;gap:4px}
+select{font:1rem var(--f-body);min-height:44px;padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%}
+.seg{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface);align-self:flex-start}
+.seg button{font:600 .95rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:8px 12px;min-height:44px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+.result{font:.95rem/1.5 var(--f-mono);white-space:pre-wrap;font-variant-numeric:tabular-nums}
+table.num{border-collapse:collapse;font:.9rem var(--f-mono);font-variant-numeric:tabular-nums;min-width:100%}
+table.num th,table.num td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right}
+table.num th:first-child,table.num td:first-child{text-align:left}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:.9rem;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle;background:var(--c)}
+body.focused header h1{display:none}
+@media (max-width:520px){
+  body{font-size:16px;padding-block:12px 0}
+  .wrap{gap:16px}
+  .station{padding:14px;gap:12px}
+  h2{font-size:1.15rem}
+  .levels button{padding:8px 12px}
+  .focus-nav{flex-wrap:nowrap;gap:8px}
+  .focus-nav button.btn{padding:8px 12px}
+  .picks{grid-template-columns:minmax(0,1fr);gap:8px}
+  .picks label{flex-direction:row;align-items:center;gap:10px}
+  .picks label > i-en,.picks label > i-de{flex:0 0 6.5em}
+  .picks select{flex:1 1 auto;width:auto}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow"><i-en>Gravity · The falling tower</i-en><i-de>Gravitation · Der Fallturm</i-de></span>
+  <h1><i-en>Heavy and light, dropped together</i-en><i-de>Schwer und leicht, gleichzeitig fallen gelassen</i-de></h1>
+  <p><i-en>The bell tower of Pisa leans so far that a ball dropped from the top gallery falls freely to the ground, about 56 metres below. That makes it a perfect place for an old question: does a heavy thing fall faster than a light one? Guess first, then drop.</i-en><i-de>Der Glockenturm von Pisa ist so schief, dass eine Kugel von der obersten Galerie frei bis zum Boden fällt, etwa 56 Meter tief. Ein idealer Ort für eine alte Frage: Fällt etwas Schweres schneller als etwas Leichtes? Erst raten, dann fallen lassen.</i-de></p>
+  <div class="levels" role="group" aria-label="Level">
+    <button data-level="0" aria-pressed="false"><i-en>Child</i-en><i-de>Kind</i-de></button><button data-level="1" aria-pressed="true"><i-en>High school</i-en><i-de>Schule</i-de></button><button data-level="2" aria-pressed="false"><i-en>College</i-en><i-de>Studium</i-de></button><button data-level="3" aria-pressed="false"><i-en>Expert</i-en><i-de>Experte</i-de></button>
+  </div>
+</header>
+
+<section class="station" data-station="guess" data-show="0 1 2 3">
+  <span class="num"><i-en>Station 1 · Guess</i-en><i-de>Station 1 · Raten</i-de></span>
+  <h2><i-en>Which ball lands first?</i-en><i-de>Welche Kugel landet zuerst?</i-de></h2>
+  <p><i-en>Two balls of exactly the same size: one of iron (about 4 kg), one of wood (about 0.4 kg, ten times lighter). Both are let go at the same moment from the top of the tower. What happens?</i-en><i-de>Zwei Kugeln, genau gleich groß: eine aus Eisen (etwa 4 kg), eine aus Holz (etwa 0,4 kg, zehnmal leichter). Beide werden im selben Moment oben vom Turm losgelassen. Was passiert?</i-de></p>
+  <div class="choices" id="guessBox" data-predict="drop1 skip1">
+    <button data-mis="heavier-falls-faster" data-fb-en="Most people expect this, and it was taught for almost 2000 years. But the iron ball is only a fraction of a second ahead. With ten times the speed, the wooden ball would still be near the top." data-fb-de="Das erwarten die meisten, und so wurde es fast 2000 Jahre lang gelehrt. Aber die Eisenkugel ist nur einen Bruchteil einer Sekunde voraus. Bei zehnfacher Geschwindigkeit wäre die Holzkugel noch fast oben."><i-en>The iron ball, far ahead: ten times heavier, ten times faster</i-en><i-de>Die Eisenkugel, weit vorn: zehnmal schwerer, zehnmal schneller</i-de></button>
+    <button data-ok data-fb-en="Right. After 56 metres they land only a fraction of a second apart, although one is ten times heavier." data-fb-de="Richtig. Nach 56 Metern landen sie nur einen Bruchteil einer Sekunde nacheinander, obwohl eine zehnmal schwerer ist."><i-en>Almost together, the iron ball only slightly ahead</i-en><i-de>Fast gleichzeitig, die Eisenkugel nur knapp vorn</i-de></button>
+    <button data-mis="light-falls-faster" data-fb-en="The iron ball lands first, but only just. Light things are not pulled harder; the air even holds the light ball back a little more." data-fb-de="Die Eisenkugel landet zuerst, aber nur knapp. Leichte Dinge werden nicht stärker gezogen; die Luft bremst die leichte Kugel sogar etwas mehr."><i-en>The wooden ball: light things are quicker</i-en><i-de>Die Holzkugel: Leichtes ist schneller</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="drop-stage">
+    <canvas class="tower" id="cv1" width="760" height="720" role="img" aria-label="Leaning tower with two falling balls"></canvas>
+    <div class="row"><button class="btn" id="drop1"><i-en>Drop both</i-en><i-de>Beide fallen lassen</i-de></button><button class="btn ghost" id="skip1"><i-en>Skip to landing</i-en><i-de>Zur Landung springen</i-de></button></div>
+    <div class="out result" id="res1" aria-live="polite"></div>
+  </div>
+  <div class="explain">
+  <p class="note" data-show="1 2 3"><i-en>The iron ball wins by a few metres after a 56-metre fall. If ten times the weight meant ten times the speed, the wooden ball would still be near the top. Gravity pulls ten times harder on the iron ball, but the iron ball also has ten times as much mass to get moving, so both speed up at the same rate. The few metres come from the air, which holds back the light ball more (station 3).</i-en><i-de>Die Eisenkugel gewinnt nach 56 Metern Fall mit ein paar Metern Vorsprung. Würde zehnfaches Gewicht zehnfache Geschwindigkeit bedeuten, wäre die Holzkugel noch fast oben. Die Schwerkraft zieht zehnmal stärker an der Eisenkugel, aber die Eisenkugel muss auch zehnmal so viel Masse in Bewegung bringen, deshalb werden beide gleich schnell schneller. Die paar Meter kommen von der Luft, die die leichte Kugel stärker bremst (Station 3).</i-de></p>
+  <p class="note" data-show="0"><i-en>The Earth pulls harder on the heavy ball, but the heavy ball is also harder to get moving. These two cancel out, so both fall almost together. Only the air holds the wooden ball back a little.</i-en><i-de>Die Erde zieht stärker an der schweren Kugel, aber die schwere Kugel ist auch schwerer in Gang zu bringen. Beides gleicht sich aus, darum fallen beide fast zusammen. Nur die Luft bremst die Holzkugel ein bisschen.</i-de></p>
+  </div>
+</section>
+
+<section class="station" data-station="vacuum" data-show="0 1 2 3">
+  <span class="num"><i-en>Station 2 · Take the air away</i-en><i-de>Station 2 · Luft weg</i-de></span>
+  <h2><i-en>Feather and hammer</i-en><i-de>Feder und Hammer</i-de></h2>
+  <p><i-en>A feather really does fall much more slowly than a hammer. Is that because it is light, or because of the air? Pick two things, drop them with air, then pump the air out (or take the tower to the Moon) and drop them again.</i-en><i-de>Eine Feder fällt wirklich viel langsamer als ein Hammer. Liegt das daran, dass sie leicht ist, oder an der Luft? Such dir zwei Dinge aus, lass sie mit Luft fallen, pump dann die Luft ab (oder stell den Turm auf den Mond) und lass sie noch einmal fallen.</i-de></p>
+  <p><i-en>First a guess: without any air, what do a hammer and a feather do?</i-en><i-de>Zuerst ein Tipp: Was machen Hammer und Feder ganz ohne Luft?</i-de></p>
+  <div class="choices" id="vacBox" data-predict="drop2 skip2">
+    <button data-mis="heavier-falls-faster" data-fb-en="Without air the hammer has no advantage: both land at exactly the same moment. Its weight was never the reason the feather was slow." data-fb-de="Ohne Luft hat der Hammer keinen Vorteil: Beide landen genau im selben Moment. Sein Gewicht war nie der Grund, warum die Feder langsam war."><i-en>The hammer still lands first, it is heavier</i-en><i-de>Der Hammer landet trotzdem zuerst, er ist schwerer</i-de></button>
+    <button data-ok data-fb-en="Right. Without air they land at exactly the same moment. Only the air made the feather slow." data-fb-de="Richtig. Ohne Luft landen sie genau im selben Moment. Nur die Luft hat die Feder gebremst."><i-en>Both land at the same moment</i-en><i-de>Beide landen im selben Moment</i-de></button>
+    <button data-mis="no-gravity-without-air" data-fb-en="Gravity does not need air. Without air the feather falls just as fast as the hammer, and both land together." data-fb-de="Die Schwerkraft braucht keine Luft. Ohne Luft fällt die Feder genauso schnell wie der Hammer, und beide landen zusammen."><i-en>The feather floats, without air nothing holds it down</i-en><i-de>Die Feder schwebt, ohne Luft hält sie nichts unten</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="picks">
+    <label><i-en>Left</i-en><i-de>Links</i-de><select id="pickA2"></select></label>
+    <label><i-en>Right</i-en><i-de>Rechts</i-de><select id="pickB2"></select></label>
+  </div>
+  <div class="seg" id="env2" role="group" aria-label="Surroundings">
+    <button data-env="air" aria-pressed="true"><i-en>Earth, with air</i-en><i-de>Erde, mit Luft</i-de></button><button data-env="vacuum" aria-pressed="false"><i-en>Earth, air pumped out</i-en><i-de>Erde, Luft abgepumpt</i-de></button><button data-env="moon" aria-pressed="false"><i-en>Moon</i-en><i-de>Mond</i-de></button>
+  </div>
+  <div class="drop-stage">
+    <canvas class="tower" id="cv2" width="760" height="720" role="img" aria-label="Tower with two falling objects"></canvas>
+    <div class="row"><button class="btn" id="drop2"><i-en>Drop both</i-en><i-de>Beide fallen lassen</i-de></button><button class="btn ghost" id="skip2"><i-en>Skip to landing</i-en><i-de>Zur Landung springen</i-de></button></div>
+    <div class="out result" id="res2" aria-live="polite"></div>
+  </div>
+  <p class="note explain" data-show="1 2 3"><i-en>Without air, every object falls with the same acceleration g, whatever its mass, shape or material. On Earth g ≈ 9.81 m/s², on the Moon g ≈ 1.62 m/s², so everything falls more slowly there, but still all together.</i-en><i-de>Ohne Luft fällt jeder Gegenstand mit derselben Beschleunigung g, egal welche Masse, Form oder welches Material. Auf der Erde ist g ≈ 9,81 m/s², auf dem Mond g ≈ 1,62 m/s², dort fällt also alles langsamer, aber immer noch alles gemeinsam.</i-de></p>
+</section>
+
+<section class="station" data-station="drag" data-show="1 2 3">
+  <span class="num"><i-en>Station 3 · The air pushes back</i-en><i-de>Station 3 · Die Luft drückt zurück</i-de></span>
+  <h2><i-en>Speed over time</i-en><i-de>Geschwindigkeit über die Zeit</i-de></h2>
+  <p><i-en>Air pushes against anything moving through it, and the faster it moves, the harder the push. A falling object speeds up until the push of the air is as strong as its weight. From then on it falls at a constant speed: its terminal speed. Drop a flat sheet of paper and the same sheet crumpled into a ball, and watch the graph.</i-en><i-de>Luft drückt gegen alles, was sich durch sie bewegt, und je schneller, desto stärker. Ein fallender Gegenstand wird schneller, bis der Luftdruck so stark ist wie sein Gewicht. Ab dann fällt er gleichmäßig schnell: mit seiner Endgeschwindigkeit. Lass ein flaches Blatt Papier und dasselbe Blatt zu einer Kugel geknüllt fallen und schau auf die Kurve.</i-de></p>
+  <p><i-en>First a guess: a flat sheet and the same sheet crumpled into a ball, dropped together. What happens?</i-en><i-de>Zuerst ein Tipp: Ein flaches Blatt und dasselbe Blatt zu einer Kugel geknüllt fallen zusammen. Was passiert?</i-de></p>
+  <div class="choices" id="dragBox" data-predict="drop3 skip3">
+    <button data-mis="heavier-falls-faster" data-fb-en="Same paper, same mass, and still the ball lands seconds earlier. Mass cannot be the reason; the size of the surface is." data-fb-de="Dasselbe Papier, dieselbe Masse, und trotzdem landet die Kugel Sekunden früher. Die Masse kann nicht der Grund sein, die Größe der Fläche ist es."><i-en>Together, it is the same paper</i-en><i-de>Zusammen, es ist ja dasselbe Papier</i-de></button>
+    <button data-ok data-fb-en="Right. The ball lands seconds earlier: the air has much less surface to push against." data-fb-de="Richtig. Die Kugel landet Sekunden früher: Die Luft hat viel weniger Fläche zum Drücken."><i-en>The crumpled ball lands much earlier</i-en><i-de>Die geknüllte Kugel landet viel früher</i-de></button>
+    <button data-mis="gravity-depends-on-shape" data-fb-en="The flat sheet is the slow one: the air pushes against its whole surface. Gravity pulls on both the same." data-fb-de="Das flache Blatt ist das langsame: Die Luft drückt gegen seine ganze Fläche. Die Schwerkraft zieht an beiden gleich."><i-en>The flat sheet lands first</i-en><i-de>Das flache Blatt landet zuerst</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="picks">
+    <label><i-en>Left</i-en><i-de>Links</i-de><select id="pickA3"></select></label>
+    <label><i-en>Right</i-en><i-de>Rechts</i-de><select id="pickB3"></select></label>
+  </div>
+  <div class="drop-stage">
+    <canvas class="tower" id="cv3" width="760" height="720" role="img" aria-label="Tower with two falling objects and force arrows"></canvas>
+    <div class="row"><button class="btn" id="drop3"><i-en>Drop both</i-en><i-de>Beide fallen lassen</i-de></button><button class="btn ghost" id="skip3"><i-en>Skip to landing</i-en><i-de>Zur Landung springen</i-de></button></div>
+    <canvas class="plot" id="plot3" width="800" height="450" role="img" aria-label="Speed over time"></canvas>
+    <div class="legend" id="legend3"></div>
+    <div class="out result" id="res3" aria-live="polite"></div>
+  </div>
+  <p class="note"><i-en>Arrows on the objects: down = weight, up = push of the air (drag). When both arrows are equally long, the speed stops growing.</i-en><i-de>Pfeile an den Gegenständen: nach unten = Gewicht, nach oben = Druck der Luft (Luftwiderstand). Sind beide Pfeile gleich lang, wächst die Geschwindigkeit nicht mehr.</i-de></p>
+  <p class="note" data-show="2 3"><i-en>Drag force F = ½ ρ c<sub>d</sub> A v² (air density ρ ≈ 1.2 kg/m³, drag coefficient c<sub>d</sub>, cross-section A). Setting it equal to the weight m g gives the terminal speed v<sub>t</sub> = √(2 m g / (ρ c<sub>d</sub> A)). The crumpled sheet has the same m but a much smaller A.</i-en><i-de>Luftwiderstand F = ½ ρ c<sub>w</sub> A v² (Luftdichte ρ ≈ 1,2 kg/m³, Widerstandsbeiwert c<sub>w</sub>, Querschnittsfläche A). Gleichsetzen mit dem Gewicht m g ergibt die Endgeschwindigkeit v<sub>t</sub> = √(2 m g / (ρ c<sub>w</sub> A)). Das geknüllte Blatt hat dasselbe m, aber ein viel kleineres A.</i-de></p>
+</section>
+
+<section class="station" data-station="model" data-show="2 3">
+  <span class="num"><i-en>Station 4 · Inside the simulation</i-en><i-de>Station 4 · In der Simulation</i-de></span>
+  <h2><i-en>How the computer lets things fall</i-en><i-de>Wie der Computer Dinge fallen lässt</i-de></h2>
+  <p><i-en>The simulator does not know the answer in advance. It takes small time steps Δt: from the current speed and the forces it estimates where the object is a moment later, again and again. Bigger steps are faster to compute but less accurate. Compare two methods against the exact formula.</i-en><i-de>Der Simulator kennt die Antwort nicht im Voraus. Er macht kleine Zeitschritte Δt: Aus der aktuellen Geschwindigkeit und den Kräften schätzt er, wo der Gegenstand einen Moment später ist, immer wieder. Größere Schritte gehen schneller, sind aber ungenauer. Vergleiche zwei Verfahren mit der exakten Formel.</i-de></p>
+  <div class="picks">
+    <label><i-en>Object</i-en><i-de>Gegenstand</i-de><select id="pick4"></select></label>
+    <label><i-en>Surroundings</i-en><i-de>Umgebung</i-de><select id="env4"></select></label>
+  </div>
+  <div class="row"><label for="dt4">Δt</label><input type="range" id="dt4" min="0" max="6" step="1" value="3"><span class="mono" id="dt4v"></span></div>
+  <div class="scroll"><table class="num" id="tab4"></table></div>
+  <p class="note" id="note4"></p>
+  <pre class="code" data-show="3">// one step, state (y, v), a(v) = g − (k/m)·v·|v|
+// Euler:   y += v·Δt;  v += a(v)·Δt
+// RK4:     k1 = a(v)
+//          k2 = a(v + k1·Δt/2)
+//          k3 = a(v + k2·Δt/2)
+//          k4 = a(v + k3·Δt)
+//          v += (k1 + 2k2 + 2k3 + k4)·Δt/6  (y likewise)</pre>
+  <p class="note" data-show="3"><i-en>Exact solution with quadratic drag from rest: v(t) = v<sub>t</sub>·tanh(g t / v<sub>t</sub>), y(t) = (v<sub>t</sub>² / g)·ln cosh(g t / v<sub>t</sub>), so the fall time is t = (v<sub>t</sub> / g)·arcosh(e<sup>g h / v<sub>t</sub>²</sup>). The model keeps c<sub>d</sub> fixed; for a real sphere c<sub>d</sub> ≈ 0.47 only holds for Reynolds numbers of about 10³ to 2·10⁵, and the paper sheet tumbles, which no constant c<sub>d</sub> captures.</i-en><i-de>Exakte Lösung mit quadratischem Widerstand aus der Ruhe: v(t) = v<sub>t</sub>·tanh(g t / v<sub>t</sub>), y(t) = (v<sub>t</sub>² / g)·ln cosh(g t / v<sub>t</sub>), also Fallzeit t = (v<sub>t</sub> / g)·arcosh(e<sup>g h / v<sub>t</sub>²</sup>). Das Modell hält c<sub>w</sub> fest; für eine echte Kugel gilt c<sub>w</sub> ≈ 0,47 nur für Reynoldszahlen von etwa 10³ bis 2·10⁵, und das Papierblatt taumelt, was kein konstantes c<sub>w</sub> abbildet.</i-de></p>
+</section>
+
+<section class="station" data-station="check" data-show="0 1 2 3">
+  <span class="num"><i-en>Check yourself</i-en><i-de>Prüf dich</i-de></span>
+  <h2><i-en>Two short questions</i-en><i-de>Zwei kurze Fragen</i-de></h2>
+  <p><i-en>An astronaut on the Moon drops a hammer and a feather at the same moment. What happens?</i-en><i-de>Eine Astronautin auf dem Mond lässt einen Hammer und eine Feder gleichzeitig fallen. Was passiert?</i-de></p>
+  <div class="choices">
+    <button data-ok data-fb-en="Right. The Moon has no air, so nothing slows the feather down. Both land together (it has actually been done)." data-fb-de="Richtig. Der Mond hat keine Luft, also bremst nichts die Feder. Beide landen zusammen (das wurde wirklich ausprobiert)."><i-en>Both land at the same moment</i-en><i-de>Beide landen im selben Moment</i-de></button>
+    <button data-mis="heavier-falls-faster" data-fb-en="On Earth, yes, because of the air. On the Moon there is no air, and gravity speeds both up equally." data-fb-de="Auf der Erde ja, wegen der Luft. Auf dem Mond gibt es keine Luft, und die Schwerkraft beschleunigt beide gleich."><i-en>The hammer lands first</i-en><i-de>Der Hammer landet zuerst</i-de></button>
+    <button data-mis="no-gravity-on-moon" data-fb-en="The Moon has gravity, just six times weaker than the Earth's. Both fall, slowly and together." data-fb-de="Der Mond hat Schwerkraft, nur sechsmal schwächer als die Erde. Beide fallen, langsam und gemeinsam."><i-en>Both float, there is no gravity on the Moon</i-en><i-de>Beide schweben, auf dem Mond gibt es keine Schwerkraft</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <p><i-en>A flat sheet of paper and the same sheet crumpled into a ball are dropped. Why does the ball land first?</i-en><i-de>Ein flaches Blatt Papier und dasselbe Blatt zu einer Kugel geknüllt werden fallen gelassen. Warum landet die Kugel zuerst?</i-de></p>
+  <div class="choices">
+    <button data-mis="heavier-falls-faster" data-fb-en="Crumpling does not change the mass: it is the same sheet." data-fb-de="Knüllen ändert die Masse nicht: Es ist dasselbe Blatt."><i-en>It has become heavier</i-en><i-de>Sie ist schwerer geworden</i-de></button>
+    <button data-ok data-fb-en="Exactly. Same weight, but much less surface pushing against the air, so the air slows it far less." data-fb-de="Genau. Gleiches Gewicht, aber viel weniger Fläche, die gegen die Luft drückt, also bremst die Luft sie viel weniger."><i-en>It has a smaller surface for the air to push against</i-en><i-de>Sie bietet der Luft weniger Fläche</i-de></button>
+    <button data-mis="gravity-depends-on-shape" data-fb-en="Gravity pulls on the paper the same way, whatever its shape. The difference is the air." data-fb-de="Die Schwerkraft zieht immer gleich am Papier, egal welche Form. Der Unterschied ist die Luft."><i-en>Gravity pulls harder on round things</i-en><i-de>Die Schwerkraft zieht stärker an runden Dingen</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+</section>
+<footer><i-en>Simulator "The falling tower" · numbers: tower 56 m, g = 9.81 m/s², air 1.2 kg/m³</i-en><i-de>Simulator „Der Fallturm“ · Werte: Turm 56 m, g = 9,81 m/s², Luft 1,2 kg/m³</i-de> · Personal Tutor Format</footer>
+</div>
+
+<script src="ptf-sim.js"></script>
+<script>
+const SIM_ID = "ptf:sim/falling-tower", SIM_VERSION = "1.1.1";
+const SIM_LOCALES = ["en", "de"];
+const PTF_LEVELS = {"0": "child", "1": "highschool", "2": "college", "3": "expert"};
+const START_LEVEL = "1";
+/* Shared PTF glue: levels, stations, snapshot (SIMULATOR-SPEC.md §4) */
+function setLevel(l){
+  document.querySelectorAll(".levels button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.level===l));
+  CURRENT_LEVEL=l;
+  if (FOCUS && !stationsAtLevel().includes(FOCUS)) FOCUS = stationsAtLevel()[0] || null;
+  applyVisibility();
+}
+const stationsAtLevel = () => [...document.querySelectorAll("section[data-station]")].filter(s => s.dataset.show.split(" ").includes(CURRENT_LEVEL)).map(s => s.dataset.station);
+/* Focus mode (SIMULATOR-SPEC.md §4.7): one station at a time with Back / Next. */
+let FOCUS = null;
+function applyVisibility() {
+  document.querySelectorAll("[data-show]").forEach(s => {
+    const lvl = s.dataset.show.split(" ").includes(CURRENT_LEVEL);
+    s.hidden = !lvl || (FOCUS !== null && s.matches("section[data-station]") && s.dataset.station !== FOCUS);
+  });
+  document.body.classList.toggle("focused", FOCUS !== null);
+  const nav = document.getElementById("focusNav");
+  if (completed) renderStepper();
+  if (!nav) return;
+  nav.hidden = FOCUS === null;
+  if (FOCUS === null) return;
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS);
+  document.getElementById("focusBack").disabled = i <= 0;
+  document.getElementById("focusNext").disabled = i >= list.length - 1;
+  document.getElementById("focusPos").textContent = `${i + 1} / ${list.length}`;
+}
+/* Progress: one numbered step per station at the current level; done steps get a tick, any step can be opened directly. */
+function renderStepper() {
+  const nav = document.getElementById("stepper");
+  if (!nav) return;
+  nav.innerHTML = "";
+  stationsAtLevel().forEach((id, i) => {
+    const sec = document.querySelector(`section[data-station="${id}"]`), h = sec.querySelector("h2");
+    const title = h ? (h.querySelector(LOCALE === "de" ? "i-de" : "i-en") || h).textContent.trim() : id;
+    const b = document.createElement("button");
+    b.className = "step" + (completed.has(id) ? " done" : "");
+    b.textContent = completed.has(id) ? "✓" : String(i + 1);
+    b.title = title; b.setAttribute("aria-label", `${i + 1}. ${title}${completed.has(id) ? L(" (done)", " (erledigt)") : ""}`);
+    if (id === FOCUS) b.setAttribute("aria-current", "step");
+    b.onclick = () => { setFocus(id); ptf.event("experienced", { station: id, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: id } }); window.scrollTo({ top: 0, behavior: "auto" }); };
+    nav.append(b);
+  });
+}
+function setFocus(id) { FOCUS = id; applyVisibility(); }
+function moveFocus(step) {
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS), next = list[i + step];
+  if (!next) return;
+  setFocus(next);
+  ptf.event("experienced", { station: next, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: next } });
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+(function buildFocusNav() {
+  const nav = document.createElement("nav");
+  nav.id = "focusNav"; nav.className = "focus-nav"; nav.hidden = true;
+  nav.setAttribute("aria-label", "Stations");
+  nav.innerHTML = `<button class="btn ghost" id="focusBack"><i-en>Back</i-en><i-de>Zurück</i-de></button><span class="mono note" id="focusPos"></span><button class="btn" id="focusNext"><i-en>Next</i-en><i-de>Weiter</i-de></button><button class="btn ghost" id="focusAll"><i-en>Show all</i-en><i-de>Alles zeigen</i-de></button>`;
+  const footer = document.querySelector(".wrap > footer");
+  footer ? footer.before(nav) : document.querySelector(".wrap").append(nav);
+  nav.querySelector("#focusBack").onclick = () => moveFocus(-1);
+  nav.querySelector("#focusNext").onclick = () => moveFocus(1);
+  nav.querySelector("#focusAll").onclick = () => setFocus(null);
+  const start = document.createElement("button");
+  start.id = "focusStart"; start.className = "btn ghost";
+  start.innerHTML = "<i-en>Step by step</i-en><i-de>Schritt für Schritt</i-de>";
+  start.onclick = () => { setFocus(stationsAtLevel()[0]); ptf.event("experienced", { station: FOCUS, data: { focus: FOCUS } }); };
+  const stepper = document.createElement("nav");
+  stepper.id = "stepper"; stepper.className = "stepper"; stepper.setAttribute("aria-label", "Progress");
+  document.querySelector(".wrap > header").after(stepper);
+  const levels = document.querySelector("header .levels");
+  const row = document.createElement("div"); row.className = "row";
+  levels.before(row); row.append(levels, start);
+})();
+let CURRENT_LEVEL=START_LEVEL, LOCALE="en", READY=false;
+/* UI language (en, de): static text as <i-en>/<i-de> pairs, dynamic text via L(en, de). */
+const L = (en, de) => LOCALE === "de" ? de : en;
+const fmt = (x, d = 2) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+/* Each simulator declares SIM_LOCALES (matching "lang" in sim.json); unsupported locales fall back to English. */
+function setLocale(loc) {
+  LOCALE = /^de/i.test(loc || "") && SIM_LOCALES.includes("de") ? "de" : "en";
+  document.documentElement.lang = LOCALE;
+  if (READY && typeof rerender === "function") rerender();
+}
+setLocale(navigator.language);
+var completed = new Set();   /* var: hoisted, so applyVisibility can run before this line */
+const ptf = PTF.connect({
+  id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS[START_LEVEL],
+  onInit(ctx) {
+    if (ctx.locale) setLocale(ctx.locale);
+    const lvl = (ctx.state && ctx.state.level) || ctx.level;
+    if (lvl) applyLevel(lvl);
+    if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus !== false });
+  },
+  onSetLevel: applyLevel,
+  onGoto: gotoStation,
+  snapshot() {
+    const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `UI language: ${LOCALE}`, `Visible stations: ${shown.join(", ")}`];
+    if (FOCUS) parts.push(`Focus mode on station: ${FOCUS}`);
+    if (completed.size) parts.push(`Completed: ${[...completed].join(", ")}`);
+    if (typeof simSnapshot === "function") parts.push(simSnapshot());
+    return parts.join(". ");
+  }
+});
+function applyLevel(level) {
+  const n = Object.keys(PTF_LEVELS).find(k => PTF_LEVELS[k] === level);
+  if (n) setLevel(n);
+}
+function gotoStation(id, opts) {
+  const s = id ? document.querySelector(`section[data-station="${id}"]`) : null;
+  if (opts && opts.focus === false) setFocus(null);
+  if (!s) return;
+  if (!s.dataset.show.split(" ").includes(CURRENT_LEVEL)) setLevel(s.dataset.show.split(" ")[0]);
+  if (opts && opts.focus === true) { setFocus(id); window.scrollTo({ top: 0, behavior: "auto" }); return; }
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", () => {
+  setLevel(b.dataset.level);
+  const level = PTF_LEVELS[b.dataset.level];
+  ptf.event("level_changed", { level });
+  ptf.saveState({ level });
+}));
+function answered(station, correct, misconception, response) {
+  const result = { correct };
+  if (misconception && !correct) result.misconception = misconception;
+  if (response !== undefined) result.response = String(response);
+  ptf.event("answered", { station, level: PTF_LEVELS[CURRENT_LEVEL], result });
+}
+function done(station) {
+  if (completed.has(station)) return;
+  completed.add(station);
+  ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
+  renderStepper();
+}
+/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb-en / data-fb-de,
+   followed by <p class="feedback" hidden>. A station completes when all its visible boxes are answered correctly. Call initChoices() once the DOM is built. */
+/* Predict, observe, explain (SIMULATOR-SPEC.md §7 rule 5): a box with data-predict="<button ids>" is a prediction.
+   Picking an option only records the guess and unlocks those buttons; whether it was right is shown by reveal(box)
+   once the experiment has run. */
+function reveal(box) {
+  if (typeof box === "string") box = document.getElementById(box);
+  const b = box && box.querySelector("button[aria-pressed='true']");
+  if (!b || box.dataset.revealed) return;
+  box.dataset.revealed = "1";
+  judge(box, b);
+  box.querySelectorAll("button").forEach(x => x.disabled = true);
+  box.closest("[data-station]").querySelectorAll(".explain").forEach(e => e.classList.add("shown"));
+}
+function judge(box, b) {
+  const station = box.closest("[data-station]").dataset.station, fb = box.nextElementSibling;
+  const ok = b.hasAttribute("data-ok");
+  box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
+  b.classList.add(ok ? "right" : "wrong");
+  if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+  answered(station, ok, b.dataset.mis, (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim());
+  if (ok) box.dataset.solved = "1";
+}
+function initChoices() {
+document.querySelectorAll("[data-station] .choices[data-predict]").forEach(box => {
+  const gated = box.dataset.predict.split(" ").map(id => document.getElementById(id)).filter(Boolean)
+    .flatMap(el => el.matches("button, input, select") ? [el] : [...el.querySelectorAll("button, input, select")]);
+  const hint = document.createElement("p");
+  hint.className = "note predict-hint";
+  hint.innerHTML = "<i-en>First decide what you expect. Then try it.</i-en><i-de>Entscheide dich zuerst, was du erwartest. Dann probier es aus.</i-de>";
+  const fb = box.nextElementSibling;
+  (fb && fb.classList.contains("feedback") ? fb : box).after(hint);
+  gated.forEach(g => g.disabled = true);
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    if (box.dataset.revealed) return;
+    box.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    gated.forEach(g => g.disabled = false);
+    hint.hidden = true;
+    ptf.event("experienced", { station: box.closest("[data-station]").dataset.station, level: PTF_LEVELS[CURRENT_LEVEL], data: { prediction: (b.querySelector(LOCALE === "de" ? "i-de" : "i-en") || b).textContent.trim() } });
+  }));
+});
+document.querySelectorAll("[data-station] .choices:not([data-predict])").forEach(box => {
+  const sec = box.closest("[data-station]");
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    judge(box, b);
+    if ([...sec.querySelectorAll(".choices:not([data-predict])")].filter(x => !x.closest("[hidden]")).every(x => x.dataset.solved)) done(sec.dataset.station);
+  }));
+});
+}
+setLevel(START_LEVEL);
+/* Start with one station at a time (SIMULATOR-SPEC.md §4.7); Show all opens everything for review. */
+setFocus(stationsAtLevel()[0] || null);
+/* Theme tokens for canvas and WebGL. A host may set a token to anything CSS accepts (light-dark(), var(), color-mix()),
+   which a 2D context cannot parse, so resolve it to a plain colour or font list through the browser first. */
+const tokenProbe = document.createElement("i");
+tokenProbe.hidden = true; document.body.append(tokenProbe);
+function css(name) {
+  const font = name.startsWith("--f-");
+  tokenProbe.style[font ? "fontFamily" : "color"] = `var(${name})`;
+  return getComputedStyle(tokenProbe)[font ? "fontFamily" : "color"];
+}
+
+
+const $ = id => document.getElementById(id);
+const H = 56;   // drop height in metres
+const ENVS = {
+  air:    { key: "air", g: 9.81, rho: 1.2, en: "Earth, with air", de: "Erde, mit Luft" },
+  vacuum: { key: "vacuum", g: 9.81, rho: 0,   en: "Earth, air pumped out", de: "Erde, Luft abgepumpt" },
+  moon:   { key: "moon", g: 1.62, rho: 0,   en: "Moon", de: "Mond" }
+};
+/* Bodies: mass m (kg), cross-section A (m²), drag coefficient cd, drawn size r (px at scale), colour */
+const sphereA = d => Math.PI * d * d / 4;
+const BODIES = {
+  iron:   { en: "Iron ball (10 cm, 4.1 kg)",  de: "Eisenkugel (10 cm, 4,1 kg)",  m: 4.12,   A: sphereA(0.10), cd: 0.47, shape: "ball",   col: "#6B7684" },
+  wood:   { en: "Wooden ball (10 cm, 0.37 kg)", de: "Holzkugel (10 cm, 0,37 kg)", m: 0.37,   A: sphereA(0.10), cd: 0.47, shape: "ball",   col: "#B7793F" },
+  hammer: { en: "Hammer (1.3 kg)",            de: "Hammer (1,3 kg)",             m: 1.32,   A: 0.004,         cd: 1.0,  shape: "hammer", col: "#4B5563" },
+  feather:{ en: "Feather (0.5 g)",            de: "Feder (0,5 g)",               m: 0.0005, A: 0.005,         cd: 1.3,  shape: "feather",col: "#9CA3AF" },
+  paperBall:  { en: "Paper, crumpled (5 g)",  de: "Papier, geknüllt (5 g)",      m: 0.005,  A: sphereA(0.06), cd: 0.5,  shape: "ball",   col: "#E5E7EB" },
+  paperSheet: { en: "Paper, flat sheet (5 g)",de: "Papier, flaches Blatt (5 g)", m: 0.005,  A: 0.0624,        cd: 1.2,  shape: "sheet",  col: "#F3F4F6" }
+};
+
+/* Physics: 1D fall with quadratic drag, y measured downwards from the release point. */
+function accel(b, env, v) { const k = 0.5 * env.rho * b.cd * b.A; return env.g - (k / b.m) * v * Math.abs(v); }
+function termSpeed(b, env) { return env.rho ? Math.sqrt(2 * b.m * env.g / (env.rho * b.cd * b.A)) : Infinity; }
+function step(b, env, y, v, dt, method) {
+  if (method === "euler") return [y + v * dt, v + accel(b, env, v) * dt];
+  const a = vv => accel(b, env, vv);
+  const k1v = a(v),                 k1y = v;
+  const k2v = a(v + k1v * dt / 2),  k2y = v + k1v * dt / 2;
+  const k3v = a(v + k2v * dt / 2),  k3y = v + k2v * dt / 2;
+  const k4v = a(v + k3v * dt),      k4y = v + k3v * dt;
+  return [y + (k1y + 2 * k2y + 2 * k3y + k4y) * dt / 6, v + (k1v + 2 * k2v + 2 * k3v + k4v) * dt / 6];
+}
+/* Integrate until the body has fallen H metres; returns samples and the interpolated landing time and speed. */
+function simulate(b, env, dt = 1 / 240, method = "rk4") {
+  let t = 0, y = 0, v = 0; const s = [{ t, y, v }];
+  while (y < H && t < 600) {
+    const [y2, v2] = step(b, env, y, v, dt, method);
+    if (y2 >= H) { const f = (H - y) / (y2 - y); const T = t + f * dt, V = v + f * (v2 - v); s.push({ t: T, y: H, v: V }); return { s, T, V }; }
+    t += dt; y = y2; v = v2; s.push({ t, y, v });
+  }
+  return { s, T: t, V: v };
+}
+function exactTime(b, env) {
+  const vt = termSpeed(b, env), g = env.g;
+  if (!isFinite(vt)) return Math.sqrt(2 * H / g);
+  const x = g * H / (vt * vt);
+  /* arcosh(e^x) = ln(e^x + sqrt(e^2x − 1)) = x + ln(1 + sqrt(1 − e^−2x)) */
+  return (vt / g) * (x + Math.log(1 + Math.sqrt(1 - Math.exp(-2 * x))));
+}
+const at = (run, t) => {
+  const s = run.s; if (t >= run.T) return s[s.length - 1];
+  let lo = 0, hi = s.length - 1;
+  while (hi - lo > 1) { const mid = (lo + hi) >> 1; s[mid].t <= t ? lo = mid : hi = mid; }
+  const a = s[lo], b = s[hi], f = (t - a.t) / ((b.t - a.t) || 1);
+  return { t, y: a.y + f * (b.y - a.y), v: a.v + f * (b.v - a.v) };
+};
+
+/* Drawing */
+const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+function drawBody(ctx, b, x, y, scale) {
+  ctx.save(); ctx.translate(x, y); ctx.fillStyle = b.col; ctx.strokeStyle = css("--ink"); ctx.lineWidth = 1.5;
+  if (b.shape === "ball") { const r = Math.max(7, Math.sqrt(b.A / Math.PI) * scale * 9); ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill(); ctx.stroke(); }
+  else if (b.shape === "hammer") { ctx.fillRect(-3, -16, 6, 26); ctx.strokeRect(-3, -16, 6, 26); ctx.fillRect(-12, 8, 24, 10); ctx.strokeRect(-12, 8, 24, 10); }
+  else if (b.shape === "feather") { ctx.beginPath(); ctx.ellipse(0, 0, 5, 16, 0.5, 0, 7); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-6, 13); ctx.lineTo(6, -13); ctx.stroke(); }
+  else { ctx.fillRect(-18, -3, 36, 6); ctx.strokeRect(-18, -3, 36, 6); }
+  ctx.restore();
+}
+function arrow(ctx, x, y, len, col) {
+  if (Math.abs(len) < 2) return;
+  ctx.save(); ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + len); ctx.stroke();
+  const d = Math.sign(len); ctx.beginPath(); ctx.moveTo(x - 6, y + len - d * 8); ctx.lineTo(x + 6, y + len - d * 8); ctx.lineTo(x, y + len); ctx.fill();
+  ctx.restore();
+}
+/* The tower is an illustration, not a theme element: fixed stone colours, drawn once per surroundings and cached. */
+const STONE = { light: "#F3EDE0", lit: "#E9E1CF", mid: "#D6CBB4", shade: "#B2A588", deep: "#8A7D64", line: "#76694F", hole: "#4E463A" };
+function drawTower(ctx, bx, ground, h, w, envKey) {
+  const R = w / 2, hb = h * 0.2, hl = (h - hb) / 6, wb = w * 0.64, hbel = hl * 0.62;
+  const body = (r) => { const g = ctx.createLinearGradient(-r, 0, r, 0);
+    g.addColorStop(0, STONE.deep); g.addColorStop(0.12, STONE.mid); g.addColorStop(0.38, STONE.light);
+    g.addColorStop(0.62, STONE.lit); g.addColorStop(0.88, STONE.shade); g.addColorStop(1, STONE.deep); return g; };
+  /* Openings and columns sit on a cylinder: an angle φ around the axis appears at x = r·sin φ. */
+  const xs = (r, deg) => r * Math.sin(deg * Math.PI / 180);
+  function arcade(r, yBottom, yTop, step, gapDeg, blind) {
+    const ry = Math.min(hl * 0.16, (yBottom - yTop) * 0.4);
+    for (let a = -90 + step / 2; a < 90; a += step) {
+      const x1 = xs(r, a - step / 2 + gapDeg), x2 = xs(r, a + step / 2 - gapDeg);
+      if (x2 - x1 < 2.5) continue;
+      const cx = (x1 + x2) / 2, rx = (x2 - x1) / 2, spring = yTop + ry;
+      ctx.beginPath(); ctx.moveTo(x1, yBottom); ctx.lineTo(x1, spring); ctx.ellipse(cx, spring, rx, ry, 0, Math.PI, 0); ctx.lineTo(x2, yBottom); ctx.closePath();
+      const edge = Math.abs(Math.sin(a * Math.PI / 180));   /* openings near the sides look darker */
+      if (blind) { ctx.fillStyle = `rgba(80,68,50,${0.10 + 0.12 * edge})`; ctx.fill(); ctx.strokeStyle = STONE.shade; ctx.lineWidth = 1; ctx.stroke(); }
+      else { ctx.fillStyle = STONE.hole; ctx.globalAlpha = 0.72 + 0.28 * edge; ctx.fill(); ctx.globalAlpha = 1;
+        /* inner wall of the gallery, lit through the opening */
+        ctx.save(); ctx.clip(); ctx.fillStyle = "rgba(233,225,207,0.28)"; ctx.fillRect(x1, spring + ry * 0.6, rx * 0.9, yBottom - spring); ctx.restore(); }
+    }
+  }
+  function cornice(r, y, t) {
+    ctx.fillStyle = body(r + 5); ctx.fillRect(-r - 5, y - t, 2 * r + 10, t);
+    ctx.strokeStyle = STONE.line; ctx.lineWidth = 1; ctx.strokeRect(-r - 5, y - t, 2 * r + 10, t);
+    ctx.fillStyle = "rgba(60,50,35,0.18)"; ctx.fillRect(-r, y, 2 * r, 3);   /* shadow under the ledge */
+  }
+  ctx.save(); ctx.translate(bx, ground); ctx.rotate(4 * Math.PI / 180);   /* the real tower leans about 4 degrees */
+  /* main shaft, from below the ground line (hidden by the lawn) to the top gallery */
+  ctx.fillStyle = body(R); ctx.fillRect(-R, -h, w, h + 24);
+  ctx.strokeStyle = STONE.line; ctx.lineWidth = 1.5; ctx.strokeRect(-R, -h, w, h + 24);
+  /* ground storey: tall blind arches and a door */
+  arcade(R, -6, -hb + 14, 26, 3, true);
+  ctx.fillStyle = STONE.hole; ctx.beginPath(); ctx.moveTo(-9, 0); ctx.lineTo(-9, -hb * 0.38); ctx.arc(0, -hb * 0.38, 9, Math.PI, 0); ctx.lineTo(9, 0); ctx.fill();
+  /* six open galleries */
+  for (let i = 0; i < 6; i++) {
+    const y0 = -hb - i * hl, y1 = y0 - hl;
+    cornice(R, y0, 6);
+    arcade(R, y0 - hl * 0.2, y1 + hl * 0.14, 18, 2.6, false);
+    ctx.strokeStyle = STONE.shade; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-R, y0 - hl * 0.2); ctx.lineTo(R, y0 - hl * 0.2); ctx.stroke();   /* balustrade */
+  }
+  cornice(R, -h, 7);
+  /* belfry: narrower, with bell openings */
+  ctx.fillStyle = body(wb / 2); ctx.fillRect(-wb / 2, -h - hbel, wb, hbel);
+  ctx.strokeStyle = STONE.line; ctx.lineWidth = 1.5; ctx.strokeRect(-wb / 2, -h - hbel, wb, hbel);
+  arcade(wb / 2, -h - hbel * 0.18, -h - hbel * 0.86, 30, 4, false);
+  cornice(wb / 2, -h - hbel, 6);
+  ctx.restore();
+  /* lawn of the square (grey dust on the Moon) */
+  const moon = envKey === "moon", g = ctx.createLinearGradient(0, ground, 0, ground + 60);
+  g.addColorStop(0, moon ? "#A3A3A0" : "#86B26A"); g.addColorStop(1, moon ? "#7C7C79" : "#5F8D4B");
+  ctx.fillStyle = g; ctx.fillRect(0, ground, ctx.canvas.width, ctx.canvas.height - ground);
+  ctx.fillStyle = moon ? "#6C6C69" : "#4E7A3C"; ctx.fillRect(0, ground, ctx.canvas.width, 2);
+}
+/* A tower scene: draws the leaning tower, the two lanes and the bodies at time t. */
+function Scene(canvas, opts = {}) {
+  const ctx = canvas.getContext("2d"), W = canvas.width, Hc = canvas.height;
+  const top = 130, ground = Hc - 60, scale = (ground - top) / H;
+  const lanes = [W * 0.6, W * 0.77];
+  const lean = 4 * Math.PI / 180, bx = W * 0.2, w = 150, h = (ground - top) / Math.cos(lean);
+  const gallery = bx + h * Math.sin(lean) + (w / 2 + 5) * Math.cos(lean);   /* right edge of the top gallery */
+  const backdrop = document.createElement("canvas"); backdrop.width = W; backdrop.height = Hc;
+  let backdropKey = "";
+  function tower(envKey) {
+    const ink = css("--ink"), muted = css("--muted"), key = [envKey, ink, muted, LOCALE].join("|");
+    if (key !== backdropKey) {
+      const b = backdrop.getContext("2d"); b.clearRect(0, 0, W, Hc);
+      drawTower(b, bx, ground, h, w, envKey);
+      /* release beam from the top gallery out over the two lanes */
+      b.fillStyle = "#8A5A2B"; b.fillRect(gallery - 4, top - 16, W * 0.86 - gallery + 4, 7);
+      b.strokeStyle = "#5E3C1C"; b.lineWidth = 1; b.strokeRect(gallery - 4, top - 16, W * 0.86 - gallery + 4, 7);
+      b.strokeStyle = "#5E3C1C"; b.lineWidth = 2; lanes.forEach(x => { b.beginPath(); b.moveTo(x, top - 9); b.lineTo(x, top - 4); b.stroke(); });
+      /* height scale */
+      b.fillStyle = muted; b.font = "22px " + css("--f-body"); b.textAlign = "right";
+      for (let m = 0; m <= H; m += 10) { const yy = ground - m * scale; b.fillRect(W - 46, yy, 12, 2); b.fillText(fmtNum(m, 0) + " m", W - 50, yy + 7); }
+      backdropKey = key;
+    }
+    ctx.drawImage(backdrop, 0, 0);
+  }
+  function draw(runs, bodies, env, t, strobe) {
+    ctx.clearRect(0, 0, W, Hc); tower(env.key);
+    runs.forEach((run, i) => {
+      if (!run) return;
+      const b = bodies[i], x = lanes[i];
+      if (strobe) { ctx.globalAlpha = 0.25; for (let tt = 0; tt < run.T; tt += strobe) drawBody(ctx, b, x, top + at(run, tt).y * scale, scale); ctx.globalAlpha = 1; }
+      const p = at(run, t); const y = top + p.y * scale;
+      drawBody(ctx, b, x, y, scale);
+      if (opts.forces) {
+        const L = 46, k = env.rho ? (1 - accel(b, env, p.v) / env.g) : 0;   /* drag as a fraction of the weight */
+        arrow(ctx, x - 26, y, L, css("--accent")); arrow(ctx, x - 26, y, -L * k, css("--warn"));
+      }
+    });
+    ctx.fillStyle = css("--ink"); ctx.font = "600 30px " + css("--f-body"); ctx.textAlign = "left";
+    ctx.fillText("t = " + fmtNum(t, 2) + " s", 16, 34);
+    if (strobe && runs[0]) { ctx.font = "18px " + css("--f-body"); ctx.fillStyle = css("--muted"); ctx.fillText(L("faint copies: every ", "blasse Kopien: alle ") + fmtNum(strobe, strobe < 1 ? 2 : 0) + " s", 16, 60); }
+  }
+  return { draw };
+}
+const niceStep = x => { const e = 10 ** Math.floor(Math.log10(x)), f = x / e; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * e; };
+const fmtNum = (x, d) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+const bname = k => L(BODIES[k].en, BODIES[k].de);
+
+/* A drop experiment: two bodies, one environment, animated in real time. */
+function Drop(id, getSetup, onLanded, opts) {
+  const scene = Scene($("cv" + id), opts); let runs = [null, null], raf = 0, t0 = 0, setup = getSetup();
+  function frame(now) {
+    const T = Math.max(...runs.map(r => r.T)), t = Math.min((now - t0) / 1000, T);
+    scene.draw(runs, setup.bodies.map(k => BODIES[k]), ENVS[setup.env], t, false);
+    if (opts && opts.onFrame) opts.onFrame(t, runs, setup);
+    if (t < T) raf = requestAnimationFrame(frame); else finish();
+  }
+  function finish() {
+    cancelAnimationFrame(raf); raf = 0;
+    const T = Math.max(...runs.map(r => r.T));
+    scene.draw(runs, setup.bodies.map(k => BODIES[k]), ENVS[setup.env], T, niceStep(T / 14));
+    if (opts && opts.onFrame) opts.onFrame(T, runs, setup);
+    onLanded(runs, setup);
+  }
+  return {
+    drop() {
+      setup = getSetup(); const env = ENVS[setup.env];
+      runs = setup.bodies.map(k => simulate(BODIES[k], env));
+      ptf.event("experienced", { station: opts.station, data: { bodies: setup.bodies, env: setup.env } });
+      cancelAnimationFrame(raf);
+      if (reduceMotion()) return finish();
+      t0 = performance.now(); raf = requestAnimationFrame(frame);
+    },
+    skip() { if (runs[0]) finish(); },
+    idle() { setup = getSetup(); runs = [null, null]; scene.draw(runs, [], ENVS[setup.env], 0, false); },
+    get runs() { return runs; }, get setup() { return setup; }
+  };
+}
+function resultText(runs, setup) {
+  const lines = runs.map((r, i) => `${bname(setup.bodies[i])}: ${fmtNum(r.T, 2)} s, ${fmtNum(r.V, 1)} m/s`);
+  const dt = Math.abs(runs[0].T - runs[1].T), first = runs[0].T <= runs[1].T ? 0 : 1, other = 1 - first;
+  const gap = H - at(runs[other], runs[first].T).y;
+  lines.push(dt < 0.005 ? L("Both land at the same moment.", "Beide landen im selben Moment.")
+    : L(`${bname(setup.bodies[first])} is ahead by ${fmtNum(dt, 2)} s. When it lands, the other is still ${gap < 1 ? fmtNum(gap * 100, 0) + " cm" : fmtNum(gap, 1) + " m"} above the ground.`,
+        `${bname(setup.bodies[first])} ist ${fmtNum(dt, 2)} s voraus. Bei der Landung ist der andere noch ${gap < 1 ? fmtNum(gap * 100, 0) + " cm" : fmtNum(gap, 1) + " m"} über dem Boden.`));
+  return lines.join("\n");
+}
+const last = {};
+
+/* Station 1 */
+const d1 = Drop("1", () => ({ bodies: ["iron", "wood"], env: "air" }), (runs, setup) => {
+  $("res1").textContent = resultText(runs, setup); last.guess = runs.map(r => r.T); reveal("guessBox"); done("guess");
+}, { station: "guess" });
+$("drop1").onclick = () => { $("res1").textContent = ""; d1.drop(); };
+$("skip1").onclick = () => d1.skip();
+
+/* Station 2 */
+function fillPicks(sel, keys, value) {
+  sel.innerHTML = keys.map(k => `<option value="${k}">${bname(k)}</option>`).join(""); sel.value = value;
+}
+let env2 = "air"; const seen2 = new Set();
+const d2 = Drop("2", () => ({ bodies: [$("pickA2").value, $("pickB2").value], env: env2 }), (runs, setup) => {
+  $("res2").textContent = L(ENVS[setup.env].en, ENVS[setup.env].de) + "\n" + resultText(runs, setup);
+  seen2.add(setup.env); last.vacuum = { env: setup.env, T: runs.map(r => r.T) };
+  if (setup.env !== "air") reveal("vacBox");
+  if (seen2.has("air") && (seen2.has("vacuum") || seen2.has("moon"))) done("vacuum");
+}, { station: "vacuum" });
+$("env2").addEventListener("click", e => { const b = e.target.closest("button[data-env]"); if (!b) return; env2 = b.dataset.env;
+  $("env2").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); d2.idle(); });
+$("drop2").onclick = () => { $("res2").textContent = ""; d2.drop(); };
+$("skip2").onclick = () => d2.skip();
+
+/* Station 3: with force arrows and a speed graph */
+function plot(t, runs, setup) {
+  const c = $("plot3"), ctx = c.getContext("2d"), W = c.width, Hh = c.height, pad = 56;
+  ctx.clearRect(0, 0, W, Hh);
+  const Tmax = Math.max(...runs.map(r => r ? r.T : 4), 1), Vmax = Math.max(...runs.map(r => r ? Math.max(...r.s.map(p => p.v)) : 10), 2) * 1.1;
+  const X = tt => pad + tt / Tmax * (W - pad - 16), Y = v => Hh - pad + 8 - v / Vmax * (Hh - pad - 16);
+  ctx.strokeStyle = css("--line"); ctx.fillStyle = css("--muted"); ctx.lineWidth = 1; ctx.font = "18px " + css("--f-body");
+  ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(Tmax), Y(0)); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(0), Y(Vmax)); ctx.stroke();
+  ctx.textAlign = "center"; for (let s = 0, st = niceStep(Tmax / 8); s <= Tmax + 1e-9; s += st) ctx.fillText(fmtNum(s, s % 1 ? 1 : 0), X(s), Y(0) + 22);
+  ctx.fillText(L("time (s)", "Zeit (s)"), X(Tmax / 2), Hh - 6);
+  ctx.textAlign = "right"; const vs = Vmax > 30 ? 10 : Vmax > 10 ? 5 : 1; for (let v = 0; v <= Vmax; v += vs) ctx.fillText(fmtNum(v, 0), X(0) - 6, Y(v) + 6);
+  ctx.save(); ctx.translate(16, Y(Vmax / 2)); ctx.rotate(-Math.PI / 2); ctx.textAlign = "center"; ctx.fillText(L("speed (m/s)", "Geschw. (m/s)"), 0, 0); ctx.restore();
+  const cols = [css("--accent"), css("--warn")];
+  runs.forEach((r, i) => {
+    if (!r) return;
+    ctx.strokeStyle = cols[i]; ctx.lineWidth = 3; ctx.beginPath();
+    r.s.filter(p => p.t <= t).forEach((p, j) => j ? ctx.lineTo(X(p.t), Y(p.v)) : ctx.moveTo(X(p.t), Y(p.v))); ctx.stroke();
+    const vt = termSpeed(BODIES[setup.bodies[i]], ENVS[setup.env]);
+    if (vt < Vmax) { ctx.setLineDash([8, 6]); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(X(0), Y(vt)); ctx.lineTo(X(Tmax), Y(vt)); ctx.stroke(); ctx.setLineDash([]); }
+  });
+  $("legend3").innerHTML = setup.bodies.map((k, i) => `<span style="--c:${cols[i]}">${bname(k)}</span>`).join("") + `<span style="--c:var(--muted)">${L("dashed: terminal speed", "gestrichelt: Endgeschwindigkeit")}</span>`;
+}
+const d3 = Drop("3", () => ({ bodies: [$("pickA3").value, $("pickB3").value], env: "air" }), (runs, setup) => {
+  const env = ENVS[setup.env];
+  $("res3").textContent = resultText(runs, setup) + "\n" + setup.bodies.map((k, i) => {
+    const vt = termSpeed(BODIES[k], env), reached = runs[i].V / vt;
+    return L(`${bname(k)}: terminal speed ${fmtNum(vt, 1)} m/s, reached ${fmtNum(Math.min(reached, 1) * 100, 0)} % of it`,
+             `${bname(k)}: Endgeschwindigkeit ${fmtNum(vt, 1)} m/s, davon ${fmtNum(Math.min(reached, 1) * 100, 0)} % erreicht`);
+  }).join("\n");
+  last.drag = { bodies: setup.bodies, T: runs.map(r => r.T) };
+  if (setup.bodies.includes("paperSheet") && setup.bodies.includes("paperBall")) reveal("dragBox");
+  if (runs.some((r, i) => r.V / termSpeed(BODIES[setup.bodies[i]], env) > 0.95)) done("drag");
+}, { station: "drag", forces: true, onFrame: plot });
+$("drop3").onclick = () => { $("res3").textContent = ""; d3.drop(); };
+$("skip3").onclick = () => d3.skip();
+
+/* Station 4: numerical methods vs the exact solution */
+const DTS = [0.001, 0.01, 0.05, 0.1, 0.25, 0.5, 1];
+function renderModel() {
+  const b = BODIES[$("pick4").value], env = ENVS[$("env4").value], dt = DTS[+$("dt4").value], ex = exactTime(b, env);
+  $("dt4v").textContent = fmtNum(dt, dt < 0.01 ? 3 : 2) + " s";
+  const rows = [["Euler", simulate(b, env, dt, "euler")], ["RK4", simulate(b, env, dt, "rk4")]];
+  $("tab4").innerHTML = `<tr><th>${L("Method", "Verfahren")}</th><th>${L("steps", "Schritte")}</th><th>${L("fall time", "Fallzeit")}</th><th>${L("error", "Fehler")}</th></tr>` +
+    rows.map(([n, r]) => `<tr><td>${n}</td><td>${r.s.length - 1}</td><td>${fmtNum(r.T, 4)} s</td><td>${fmtNum(Math.abs(r.T - ex) * 1000, 1)} ms</td></tr>`).join("") +
+    `<tr><td>${L("exact formula", "exakte Formel")}</td><td>–</td><td>${fmtNum(ex, 4)} s</td><td>0</td></tr>`;
+  const errE = Math.abs(rows[0][1].T - ex), errR = Math.abs(rows[1][1].T - ex);
+  $("note4").textContent = L(`With Δt = ${fmtNum(dt, 3)} s, Euler is off by ${fmtNum(errE * 1000, 1)} ms and RK4 by ${fmtNum(errR * 1000, 2)} ms. Halving Δt roughly halves Euler's error (first order) but divides RK4's by about 16 (fourth order). The simulator itself uses RK4 with Δt = 1/240 s.`,
+    `Mit Δt = ${fmtNum(dt, 3)} s liegt Euler ${fmtNum(errE * 1000, 1)} ms daneben und RK4 ${fmtNum(errR * 1000, 2)} ms. Halbiert man Δt, halbiert sich ungefähr Eulers Fehler (erste Ordnung), der von RK4 sinkt auf etwa ein Sechzehntel (vierte Ordnung). Der Simulator selbst rechnet mit RK4 und Δt = 1/240 s.`);
+  last.model = { body: $("pick4").value, env: $("env4").value, dt, euler: rows[0][1].T, rk4: rows[1][1].T, exact: ex };
+}
+let touched4 = 0;
+["pick4", "env4", "dt4"].forEach(id => $(id).addEventListener("input", () => { renderModel(); if (++touched4 >= 2) done("model"); }));
+
+function simSnapshot() {
+  const p = [];
+  if (last.guess) p.push(`Guess drop (iron vs wood, with air): ${last.guess.map(x => x.toFixed(2) + " s").join(" vs ")}`);
+  if (last.vacuum) p.push(`Last drop in station vacuum (${last.vacuum.env}): ${$("pickA2").value} ${last.vacuum.T[0].toFixed(2)} s vs ${$("pickB2").value} ${last.vacuum.T[1].toFixed(2)} s`);
+  if (last.drag) p.push(`Last drag drop: ${last.drag.bodies.join(" vs ")}: ${last.drag.T.map(x => x.toFixed(2) + " s").join(" vs ")}`);
+  if (last.model) p.push(`Numerics: ${last.model.body}, ${last.model.env}, dt ${last.model.dt} s, Euler ${last.model.euler.toFixed(4)} s, RK4 ${last.model.rk4.toFixed(4)} s, exact ${last.model.exact.toFixed(4)} s`);
+  return p.join(". ") || "No drop yet";
+}
+function rerender() {
+  const keep = id => $(id).value;
+  const a2 = keep("pickA2") || "hammer", b2 = keep("pickB2") || "feather", a3 = keep("pickA3") || "paperSheet", b3 = keep("pickB3") || "paperBall", p4 = keep("pick4") || "paperBall", e4 = keep("env4") || "air";
+  const all = Object.keys(BODIES);
+  fillPicks($("pickA2"), all, a2); fillPicks($("pickB2"), all, b2);
+  fillPicks($("pickA3"), all, a3); fillPicks($("pickB3"), all, b3); fillPicks($("pick4"), all, p4);
+  $("env4").innerHTML = Object.keys(ENVS).map(k => `<option value="${k}">${L(ENVS[k].en, ENVS[k].de)}</option>`).join(""); $("env4").value = e4;
+  [d1, d2, d3].forEach(d => d.runs[0] ? d.skip() : d.idle());
+  if (!d3.runs[0]) plot(0, [null, null], d3.setup);
+  renderModel();
+}
+rerender(); initChoices(); READY = true;
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", rerender);
+new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "style"] });
+</script>
+</body>
+</html>

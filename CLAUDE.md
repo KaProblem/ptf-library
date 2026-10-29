@@ -12,4 +12,5 @@ SIMULATOR-SPEC.md before adding content.
 - Never modify a published `sims/<name>/<version>/`; create a new version and update ranges/lockfiles.
 - Before committing: `node ../ptf-spec/tools/ptf-check.mjs .` (0 errors) and
   `node ../ptf-spec/tools/ptf-selftest.mjs sims/*/*/` for changed simulators.
+- After any content change run `node ../ptf-spec/tools/ptf-check.mjs catalog --write .` so `ptf-catalog.json` lists the new digests.
 - Update CHANGELOG.md and the bundle's log.md.

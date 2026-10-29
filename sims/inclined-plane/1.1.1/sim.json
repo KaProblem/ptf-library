@@ -1,0 +1,95 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/inclined-plane",
+  "version": "1.1.1",
+  "title": "The inclined plane",
+  "description": "Race balls, cylinders, rings and a sliding block down a ramp; hear the square law with bells; see how the slope splits gravity and where rolling energy goes.",
+  "lang": [
+    "en",
+    "de"
+  ],
+  "concepts": [
+    "inclined-plane",
+    "uniform-acceleration",
+    "distance-time-squared",
+    "force-components",
+    "rolling",
+    "moment-of-inertia",
+    "rotational-energy",
+    "static-friction"
+  ],
+  "levels": [
+    "child",
+    "highschool",
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "race",
+      "title": "Ball against ring",
+      "levels": [
+        "child",
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "bells",
+      "title": "Bells on the ramp (distance grows with time squared)",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "angle",
+      "title": "From ramp to free fall (a = g sin θ)",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "rolling",
+      "title": "Rolling costs spin: energy split and slipping",
+      "levels": [
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "check",
+      "title": "Two short questions",
+      "levels": [
+        "child",
+        "highschool",
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "entry": "index.html",
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "events": [
+    "answered",
+    "experienced",
+    "station_completed",
+    "level_changed"
+  ],
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "derived_from": "ptf:sim/inclined-plane@1.1.0",
+  "changelog": "Phone layout: compact spacing below 520 px (smaller paddings and gaps, title hidden in focus mode, level switch and navigation on one line).",
+  "integrity": "sha256-2Vzgn9chDvFAnRKEAAtcF0FyJrcQPw+gqr/1tq/m5jo="
+}
