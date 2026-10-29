@@ -26,11 +26,11 @@
     {
       "kind": "bundle",
       "id": "llm-basics",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "title": "How large language models work",
       "summary": "From \"guess the next character\" to the transformer, built up step by step with hands-on simulators.",
       "path": "bundles/llm-basics",
-      "digest": "sha256-869WbNVS12r5Tb5pJAdW534E06YfcIppWUos5qfF3Jg="
+      "digest": "sha256-BbFDTLTHkiQnRm0/0DydpzYc6jGWyHmvEpM4JaKe+Ok="
     },
     {
       "kind": "sim",
@@ -58,6 +58,15 @@
       "summary": "A pretrained model only continues documents: spot it, order the training stages up to RLHF, estimate the scale gap to GPT-3, and compare decoder, encoder and cross-attention.",
       "path": "sims/babbler-to-assistant/1.0.0",
       "digest": "sha256-LxI9DOu1xXhYDT8MtR7AqVYWhIQS6rd5CccsXGVLpPY="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/bigram-lab",
+      "version": "1.0.0",
+      "title": "Bigram lab",
+      "summary": "Measuring and tuning a counted bigram model in four small stations: the loss of a line from the training text against letter salad, the validation loss while the model reads more text, sampling temperature, and the V×V table behind the model.",
+      "path": "sims/bigram-lab/1.0.0",
+      "digest": "sha256-O/hYdaBrp1itZ9wPv75Byg+rF6XI+Phh8sC/X9mp1wE="
     },
     {
       "kind": "sim",
@@ -169,6 +178,15 @@
     },
     {
       "kind": "sim",
+      "id": "ptf:sim/loss-lens",
+      "version": "1.3.0",
+      "title": "Loss lens",
+      "summary": "Cross-entropy loss up close: surprise per character, averaging over a sentence, and distributing probability yourself.",
+      "path": "sims/loss-lens/1.3.0",
+      "digest": "sha256-pMaLoXpIKgYm+6Ix88K0RfKXgdB7QwY3G94xGWEhao4="
+    },
+    {
+      "kind": "sim",
       "id": "ptf:sim/newton-einstein",
       "version": "1.0.0",
       "title": "Newton and Einstein",
@@ -193,6 +211,15 @@
       "summary": "Newton's cannon and the Moon test, a 3D picture of curved space, satellite clocks that run fast, and Mercury's turning orbit.",
       "path": "sims/newton-einstein/1.1.1",
       "digest": "sha256-xxJWBqphMellrGPxK9v68j+Q7BKQ8hwzrZmQUMUctSE="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/next-char-basics",
+      "version": "1.0.0",
+      "title": "Guess the next character",
+      "summary": "The first steps of a language model in six small stations: guess the next character yourself, turn text into numbers, count what follows a character, generate text by rolling weighted dice, see how one snippet holds many training examples, and retrain on your own text.",
+      "path": "sims/next-char-basics/1.0.0",
+      "digest": "sha256-82t4HmUgXnt6gRXT3oFTTzPI3irYFuLewI29Gh+GN0Q="
     },
     {
       "kind": "sim",

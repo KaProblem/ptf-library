@@ -1,0 +1,77 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/bigram-lab",
+  "version": "1.0.0",
+  "title": "Bigram lab",
+  "description": "Measuring and tuning a counted bigram model in four small stations: the loss of a line from the training text against letter salad, the validation loss while the model reads more text, sampling temperature, and the V×V table behind the model.",
+  "lang": [
+    "en",
+    "de"
+  ],
+  "concepts": [
+    "cross-entropy",
+    "validation-loss",
+    "temperature",
+    "sampling",
+    "bigram",
+    "embedding-table"
+  ],
+  "levels": [
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "loss",
+      "title": "The loss",
+      "levels": [
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "training-curve",
+      "title": "Read more text, be less surprised",
+      "levels": [
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "temperature",
+      "title": "Bold or careful sampling",
+      "levels": [
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "bigram-table",
+      "title": "The model is a V×V table",
+      "levels": [
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "entry": "index.html",
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "events": [
+    "answered",
+    "station_completed",
+    "level_changed",
+    "experienced"
+  ],
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "derived_from": "ptf:sim/next-char-lab@2.1.0",
+  "changelog": "Second half of next-char-lab 2.1.0, split so that each simulator has at most seven stations (PEDAGOGY.md §5). English and German UI; every experiment starts with a prediction that is judged after the result (SIMULATOR-SPEC §7 rule 5); starts in focus mode with a progress row; canvas colours are resolved through a probe element (§4.5); full state is saved and restored.",
+  "integrity": "sha256-eHXirVPQ5E5yXRTt4UjqLgWCw2fF63wwg2TNTbRsMtE="
+}

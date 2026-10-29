@@ -7,7 +7,7 @@ title: How large language models work
 description: From "guess the next character" to the transformer, built up step by step with hands-on simulators.
 lang: en
 license: CC-BY-SA-4.0
-version: 0.4.0
+version: 0.4.1
 tags: [llm, machine-learning, gpt]
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 ---
@@ -29,10 +29,10 @@ Python file per step, from the tokenizer to a trained GPT that writes text.
 
 | Element | Levels | Simulator |
 | --- | --- | --- |
-| [Tokenizer](elements/tokenizer.md) | child, highschool, college | next-char-lab |
-| [Training examples, context and batches](elements/training-examples.md) | highschool, college, expert | next-char-lab |
-| [Softmax](elements/softmax.md) | highschool, college, expert | next-char-lab |
-| [Cross-entropy loss](elements/cross-entropy.md) | highschool, college, expert | loss-lens, next-char-lab |
+| [Tokenizer](elements/tokenizer.md) | child, highschool, college | next-char-basics |
+| [Training examples, context and batches](elements/training-examples.md) | highschool, college, expert | next-char-basics |
+| [Softmax](elements/softmax.md) | highschool, college, expert | next-char-basics, bigram-lab |
+| [Cross-entropy loss](elements/cross-entropy.md) | highschool, college, expert | loss-lens, bigram-lab |
 | [A first model that learns](elements/bigram-model.md) | highschool, college, expert | training-loop |
 | [Looking back: the causal mask](elements/causal-mask.md) | highschool, college, expert | causal-mask |
 | [Self-attention](elements/self-attention.md) | child, highschool, college, expert | attention-lab |

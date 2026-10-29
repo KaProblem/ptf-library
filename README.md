@@ -19,8 +19,10 @@ the questions. The content is open; the explanation is personal.
 
 | Simulator | Versions | UI language | Concepts |
 | --- | --- | --- | --- |
-| [next-char-lab](sims/next-char-lab/) | 1.0.0 (deprecated), 2.0.0, 2.1.0 | de | tokenizer, bigram, softmax, loss, sampling, temperature |
-| [loss-lens](sims/loss-lens/) | 1.0.0, 1.1.0 | de | cross-entropy, negative log-likelihood |
+| [next-char-basics](sims/next-char-basics/) | 1.0.0 | en, de | next-character prediction, tokenizer, bigram counts, sampling, training examples |
+| [bigram-lab](sims/bigram-lab/) | 1.0.0 | en, de | loss, validation curve, temperature, bigram table |
+| [next-char-lab](sims/next-char-lab/) | 1.0.0, 2.0.0, 2.1.0, 2.2.0 (all deprecated: split into next-char-basics and bigram-lab) | de | tokenizer, bigram, softmax, loss, sampling, temperature |
+| [loss-lens](sims/loss-lens/) | 1.0.0, 1.1.0, 1.2.0, 1.3.0 | de | cross-entropy, negative log-likelihood |
 | [causal-mask](sims/causal-mask/) | 1.0.0 | en, de | causal mask, weighted average, masked softmax |
 | [attention-lab](sims/attention-lab/) | 1.0.0 | en, de | self-attention, query/key/value, scaling, positions |
 | [transformer-block](sims/transformer-block/) | 1.0.0 | en | multi-head attention, feed-forward, loss ladder |
@@ -55,7 +57,7 @@ Clone [ptf-spec](https://github.com/KaProblem/ptf-spec) next to this repository,
 (cd ../ptf-spec && npm install)
 node ../ptf-spec/tools/ptf-check.mjs .                                   # validate everything
 node ../ptf-spec/tools/ptf-selftest.mjs sims/*/*/                        # run simulator self-tests (Playwright)
-node ../ptf-spec/tools/ptf-selftest.mjs --serve sims/next-char-lab/2.0.0 # try a simulator in the dev host
+node ../ptf-spec/tools/ptf-selftest.mjs --serve sims/next-char-basics/1.0.0 # try a simulator in the dev host
 node ../ptf-spec/tools/ptf-check.mjs hash --write sims/<name>/<version>  # after editing an unpublished version
 node ../ptf-spec/tools/ptf-check.mjs lock bundles/<bundle> .             # refresh a bundle's lockfile
 node ../ptf-spec/tools/ptf-codetest.mjs code/*/*/                        # smoke-test code labs (needs Python and the lab's packages)

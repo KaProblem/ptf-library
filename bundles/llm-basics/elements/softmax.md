@@ -19,15 +19,20 @@ leads_to:
   - ptf:el/llm-basics/cross-entropy
 duration_min: { highschool: 10, college: 20, expert: 15 }
 simulators:
-  - ref: ptf:sim/next-char-lab@^2.0.0
+  - ref: ptf:sim/next-char-basics@^1.0.0
     station: counted-probabilities
     levels: [highschool]
     role: explore
     note: Shows probabilities from counting; good bridge before introducing scores and softmax.
     use_when: the learner needs a concrete feel for probabilities before scores and exponentials
-  - ref: ptf:sim/next-char-lab@^2.0.0
+  - ref: ptf:sim/next-char-basics@^1.0.0
+    station: generate
+    levels: [highschool]
+    role: explore
+    use_when: the learner should see that rolling weighted dice character by character already gives word-like text
+  - ref: ptf:sim/bigram-lab@^1.0.0
     station: temperature
-    levels: [college]
+    levels: [college, expert]
     role: explore
     use_when: the learner wants to see how creative versus predictable text comes from one setting
 code:
@@ -41,7 +46,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.3.0
+version: 0.3.1
 license: CC-BY-SA-4.0
 ---
 

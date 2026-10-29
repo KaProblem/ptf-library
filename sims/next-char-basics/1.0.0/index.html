@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guess the next character</title>
+<style>
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
+  --accent:#0E6E68; --accent-soft:#D5ECEA; --warn:#C2410C; --warn-soft:#FBE3D6;
+  --f-display:"Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.3rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+header{display:flex;flex-direction:column;gap:12px}
+.levels{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start;background:var(--surface);max-width:100%}
+.levels button{font:600 1rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:10px 16px;min-height:44px;cursor:pointer}
+.levels button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.station{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.station .num{font:600 .8rem var(--f-mono);color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:600 .95rem var(--f-body);min-height:44px;padding:8px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--accent)}
+button.btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-height:44px;min-width:0}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+label{color:var(--muted);font-size:.95rem}
+.note{color:var(--muted);font-size:.95rem}
+.stat{font:600 1.5rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:24px}
+.stats div{display:flex;flex-direction:column}
+.scroll{overflow-x:auto;max-width:100%}
+.out{font:.95rem/1.5 var(--f-mono);white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px}
+.feedback{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:4px}
+.feedback.bad{border-color:var(--warn);background:var(--warn-soft)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices button{text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.choices button.right{border-color:var(--accent);background:var(--accent-soft)}
+.choices button.wrong{border-color:var(--warn);background:var(--warn-soft)}
+table.grid{border-collapse:collapse;font:.85rem var(--f-mono);font-variant-numeric:tabular-nums}
+table.grid th{color:var(--muted);font-weight:600;padding:4px 6px}
+table.grid td{width:46px;height:40px;text-align:center;border:1px solid var(--line);padding:0}
+table.grid td button{width:100%;height:100%;min-height:40px;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.bars{display:flex;flex-direction:column;gap:4px;font:.9rem var(--f-mono)}
+.bar{display:grid;grid-template-columns:5.5em 1fr 4em;gap:8px;align-items:center}
+.bar .fill{height:18px;background:var(--accent);border-radius:3px;min-width:2px}
+.bar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.tok{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:4px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font:1rem var(--f-mono);color:var(--ink);cursor:pointer}
+.tok[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+svg text{font-family:var(--f-mono)}
+details summary{cursor:pointer;font-weight:600;min-height:32px}
+footer{color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+html:not([lang="de"]) i-de,html[lang="de"] i-en{display:none!important}
+i-en,i-de{font-style:inherit}
+.focus-nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;bottom:0;background:var(--bg);padding:10px 0;border-top:1px solid var(--line)}
+.focus-nav #focusAll{margin-left:auto}
+.focus-nav button:disabled{opacity:.4;cursor:default}
+body.focused header > :not(.row){display:none}
+body.focused #focusStart{display:none}
+body.focused footer{display:none}
+.choices button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
+.choices button:disabled{cursor:default}
+.stepper{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.stepper .step{min-width:44px;min-height:44px;border-radius:22px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:600 1rem var(--f-mono);cursor:pointer}
+.stepper .step.done{border-color:var(--accent);color:var(--accent)}
+.stepper .step[aria-current="step"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.gated{display:flex;flex-direction:column;gap:14px}
+input[type=text],textarea,select{max-width:100%;font:1rem var(--f-mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;min-height:44px}
+input[type=text]{flex:1 1 220px;min-width:0}
+textarea{width:100%;min-height:140px;resize:vertical}
+canvas{display:block;max-width:100%;height:auto}
+pre.code{font:.85rem/1.5 var(--f-mono);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px;overflow-x:auto;margin:0}
+textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:520px){
+  body{font-size:16px;padding-block:12px 0}
+  .wrap{gap:16px}
+  .station{padding:14px;gap:12px}
+  h2{font-size:1.15rem}
+  .levels button{padding:8px 12px}
+  .focus-nav{flex-wrap:nowrap;gap:8px}
+  .focus-nav button.btn{padding:8px 12px}
+}
+
+.bar{grid-template-columns:2.2em 1fr 4.2em}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:flex;flex-direction:column;align-items:center;min-width:44px;min-height:44px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);cursor:pointer;font-family:var(--f-mono)}
+.chip b{font-size:1.05rem;font-weight:600}
+.chip small{font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft)}
+.chip.bad{border-color:var(--warn);background:var(--warn-soft)}
+.out{min-height:4.5em;max-height:16em;overflow:auto}
+.out .new{background:var(--accent-soft)}
+.pairs{font:.9rem/1.7 var(--f-mono);display:flex;flex-direction:column}
+.pairs .last{background:var(--accent-soft);border-radius:3px}
+.pairs .tgt{color:var(--warn);font-weight:600}
+input.big{font:1.6rem/1 var(--f-mono);width:3em;text-align:center;flex:0 0 auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow"><i-en>How GPT works · The next character</i-en><i-de>Wie GPT funktioniert · Das nächste Zeichen</i-de></span>
+  <h1><i-en>Guess the next character</i-en><i-de>Rate das nächste Zeichen</i-de></h1>
+  <p><i-en>Your phone keyboard suggests the next word while you type. ChatGPT does the same thing, again and again: it estimates how the text continues, picks one piece, appends it and estimates again. Here you do that yourself first, then you build the simplest model that works this way. No prior knowledge needed.</i-en><i-de>Die Tastatur deines Handys schlägt beim Tippen das nächste Wort vor. ChatGPT macht dasselbe, immer wieder: Es schätzt, wie der Text weitergeht, wählt ein Stück aus, hängt es an und schätzt erneut. Hier machst du das zuerst selbst und baust dann das einfachste Modell, das so arbeitet. Du brauchst kein Vorwissen.</i-de></p>
+  <p class="note mono" id="corpusInfo"></p>
+  <div class="levels" role="group" aria-label="Level">
+    <button data-level="1" aria-pressed="true"><i-en>High school</i-en><i-de>Schule</i-de></button><button data-level="2" aria-pressed="false"><i-en>College</i-en><i-de>Studium</i-de></button><button data-level="3" aria-pressed="false"><i-en>Expert</i-en><i-de>Experte</i-de></button>
+  </div>
+</header>
+
+<section class="station" data-station="guess" data-show="1 2 3">
+  <span class="num"><i-en>Station 1 · You are the language model</i-en><i-de>Station 1 · Du bist das Sprachmodell</i-de></span>
+  <h2><i-en>Guess the next character</i-en><i-de>Rate das nächste Zeichen</i-de></h2>
+  <p><i-en>Below is a piece of text, cut off in the middle. Type the character you think comes next (a space counts too) and check. Play five rounds and notice <em>where</em> your guess comes from.</i-en><i-de>Unten steht ein Stück Text, mitten im Satz abgeschnitten. Tipp das Zeichen, das deiner Meinung nach als Nächstes kommt (auch ein Leerzeichen zählt), und prüfe. Spiel fünf Runden und achte darauf, <em>woher</em> deine Vermutung kommt.</i-de></p>
+  <div class="out" id="g0Text"></div>
+  <div class="row"><input type="text" id="g0In" class="big" maxlength="2" aria-label="Your guess"><button class="btn" id="g0Check"><i-en>Check</i-en><i-de>Prüfen</i-de></button><button class="btn ghost" id="g0Next"><i-en>Next piece</i-en><i-de>Nächstes Stück</i-de></button><span class="mono" id="g0Score"></span></div>
+  <p class="note" id="g0Res"></p>
+  <p class="note" id="g0After" hidden><i-en>That is exactly the job of a language model: predict the next piece from the text so far. You use spelling, grammar and the meaning of the sentence. The model in the next stations knows far less: only the last character.</i-en><i-de>Genau das ist die Aufgabe eines Sprachmodells: aus dem bisherigen Text das nächste Stück vorhersagen. Du nutzt Rechtschreibung, Grammatik und den Sinn des Satzes. Das Modell in den nächsten Stationen weiß viel weniger: nur das letzte Zeichen.</i-de></p>
+</section>
+
+<section class="station" data-station="tokenizer" data-show="1 2 3">
+  <span class="num"><i-en>Station 2 · Text becomes numbers</i-en><i-de>Station 2 · Text wird zu Zahlen</i-de></span>
+  <h2><i-en>The tokenizer</i-en><i-de>Der Tokenizer</i-de></h2>
+  <p><i-en>The model sees no letters, only numbers. Every character that occurs in the training text gets a number; together they are the vocabulary. The training text here is an English play.</i-en><i-de>Das Modell sieht keine Buchstaben, nur Zahlen. Jedes Zeichen, das im Trainingstext vorkommt, bekommt eine Nummer; zusammen sind sie das Vokabular. Der Trainingstext hier ist ein englisches Theaterstück.</i-de></p>
+  <p><b><i-en>Guess first:</i-en><i-de>Erst raten:</i-de></b> <i-en>You type the German word "Füße" (feet). Does the model have a number for every character?</i-en><i-de>Du tippst „Füße“. Hat das Modell für jedes Zeichen eine Nummer?</i-de></p>
+  <div class="choices gate" data-gate="unknown">
+    <button data-mis="tokenizer-knows-everything" data-fb-en="No. The vocabulary holds only characters that occur in the training text; ü and ß never do, so they have no number (red)." data-fb-de="Nein. Das Vokabular enthält nur Zeichen, die im Trainingstext vorkommen; ü und ß kommen nie vor, also haben sie keine Nummer (rot)."><i-en>Yes, every character gets a number</i-en><i-de>Ja, jedes Zeichen bekommt eine Nummer</i-de></button>
+    <button data-ok data-fb-en="Right. ü and ß never occur in the training text, so they are not in the vocabulary (red). A real tokenizer is built from far more text, so this rarely happens." data-fb-de="Richtig. ü und ß kommen im Trainingstext nie vor, also stehen sie nicht im Vokabular (rot). Ein echter Tokenizer wird aus viel mehr Text gebaut, darum passiert das selten."><i-en>No: ü and ß have no number</i-en><i-de>Nein: ü und ß haben keine Nummer</i-de></button>
+    <button data-fb-en="No. The tokenizer does not translate characters; a character is either in the vocabulary or not." data-fb-de="Nein. Der Tokenizer übersetzt keine Zeichen; ein Zeichen steht im Vokabular oder nicht."><i-en>It turns ü into u and ß into s first</i-en><i-de>Es macht vorher aus ü ein u und aus ß ein s</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="gated" data-gated="unknown" hidden>
+    <div class="row"><input type="text" id="tokIn" value="Füße, citizens!" aria-label="Text to split"></div>
+    <div class="chips" id="tokChips"></div>
+    <p class="note" id="tokNote"></p>
+    <p class="note" data-show="2 3"><i-en>In code: <span class="mono">stoi = {ch: i for i, ch in enumerate(sorted(set(text)))}</span>, <span class="mono">encode = lambda s: [stoi[c] for c in s]</span>. Real GPTs split text into about 50,000 to 200,000 word pieces (tokens) instead of single characters; the principle is the same.</i-en><i-de>Im Code: <span class="mono">stoi = {ch: i for i, ch in enumerate(sorted(set(text)))}</span>, <span class="mono">encode = lambda s: [stoi[c] for c in s]</span>. Echte GPTs zerlegen Text statt in einzelne Zeichen in etwa 50.000 bis 200.000 Wortstücke (Tokens); das Prinzip bleibt gleich.</i-de></p>
+  </div>
+</section>
+
+<section class="station" data-station="counted-probabilities" data-show="1 2 3">
+  <span class="num"><i-en>Station 3 · What comes next?</i-en><i-de>Station 3 · Was kommt danach?</i-de></span>
+  <h2><i-en>Counted probabilities</i-en><i-de>Gezählte Wahrscheinlichkeiten</i-de></h2>
+  <p><i-en>The simplest model, the bigram model, looks only at the <em>last</em> character and asks: what came after it in the training text, and how often?</i-en><i-de>Das einfachste Modell, das Bigramm-Modell, schaut nur auf das <em>letzte</em> Zeichen und fragt: Was kam im Trainingstext danach, und wie oft?</i-de></p>
+  <p><b><i-en>Guess first:</i-en><i-de>Erst raten:</i-de></b> <i-en>In this English text, which character follows "h" most often?</i-en><i-de>Welches Zeichen folgt in diesem englischen Text am häufigsten auf „h“?</i-de></p>
+  <div class="choices gate" data-gate="after-h">
+    <button data-ok data-fb-en="Right: “he”, “her”, “the” and “them” are everywhere. “e” follows “h” about 4 times in 10." data-fb-de="Richtig: „he“, „her“, „the“ und „them“ stehen überall. Auf „h“ folgt etwa 4 von 10 Mal ein „e“.">e</button>
+    <button data-mis="bigram-uses-meaning" data-fb-en="Not this time: a space after “h” is rare (about 6 %). Words like “the” and “he” put an “e” after it." data-fb-de="Diesmal nicht: Ein Leerzeichen nach „h“ ist selten (etwa 6 %). Wörter wie „the“ und „he“ setzen ein „e“ dahinter."><i-en>a space</i-en><i-de>ein Leerzeichen</i-de></button>
+    <button data-fb-en="Close, but “a” comes third (about 15 %); “e” leads with about 37 %." data-fb-de="Knapp daneben: „a“ kommt erst an dritter Stelle (etwa 15 %); „e“ führt mit etwa 37 %.">a</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="gated" data-gated="after-h" hidden>
+    <div class="row"><label for="nextSel"><i-en>Current character</i-en><i-de>Aktuelles Zeichen</i-de></label><select id="nextSel"></select></div>
+    <div class="bars" id="nextBars"></div>
+    <p class="note"><i-en>Try a few other characters, for example a space or a comma.</i-en><i-de>Probier ein paar andere Zeichen aus, zum Beispiel ein Leerzeichen oder ein Komma.</i-de></p>
+  </div>
+</section>
+
+<section class="station" data-station="generate" data-show="1 2 3">
+  <span class="num"><i-en>Station 4 · Rolling the dice</i-en><i-de>Station 4 · Würfeln</i-de></span>
+  <h2><i-en>Generating text, one character at a time</i-en><i-de>Text erzeugen, Zeichen für Zeichen</i-de></h2>
+  <p><i-en>Generating means: look up the probabilities after the last character, roll a weighted die once, append the result, repeat.</i-en><i-de>Erzeugen heißt: die Wahrscheinlichkeiten nach dem letzten Zeichen nachschlagen, einmal gewichtet würfeln, das Ergebnis anhängen, wiederholen.</i-de></p>
+  <p><b><i-en>Guess first:</i-en><i-de>Erst raten:</i-de></b> <i-en>The counted model writes 100 characters. What will they look like?</i-en><i-de>Das gezählte Modell schreibt 100 Zeichen. Wie sehen die aus?</i-de></p>
+  <div class="choices gate" data-gate="bigram-text">
+    <button data-mis="bigram-understands-words" data-fb-en="No. It only knows the last character, so it cannot hold a word or a sentence together." data-fb-de="Nein. Es kennt nur das letzte Zeichen und kann darum kein Wort und keinen Satz zusammenhalten."><i-en>English sentences like in the play</i-en><i-de>Englische Sätze wie im Stück</i-de></button>
+    <button data-ok data-fb-en="Right: word-sized chunks with spaces, a few short real words, but no sense. Compare it with the untrained model." data-fb-de="Richtig: wortgroße Stücke mit Leerzeichen, ein paar kurze echte Wörter, aber kein Sinn. Vergleich es mit dem untrainierten Modell."><i-en>Word-like pieces with spaces, but no sense</i-en><i-de>Wortähnliche Stücke mit Leerzeichen, aber ohne Sinn</i-de></button>
+    <button data-fb-en="That is what the untrained model writes, where every character is equally likely. Counting already helps a lot." data-fb-de="So schreibt das untrainierte Modell, bei dem jedes Zeichen gleich wahrscheinlich ist. Zählen hilft schon viel."><i-en>Random letter soup</i-en><i-de>Zufälliger Buchstabensalat</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="gated" data-gated="bigram-text" hidden data-judge-on="#gen1, #gen100">
+    <div class="row">
+      <select id="genMode" aria-label="Model"></select>
+      <button class="btn" id="gen1"><i-en>+1 character</i-en><i-de>+1 Zeichen</i-de></button><button class="btn" id="gen100">+100</button><button class="btn ghost" id="genReset"><i-en>Clear</i-en><i-de>Leeren</i-de></button>
+    </div>
+    <div class="out" id="genOut" aria-live="polite"></div>
+    <p class="note" data-after="bigram-text" hidden><i-en>Why is it still nonsense? The model knows only the very last character. After "e" it knows that a space or "n" often comes next, but not which word is being written. Letting characters look back at more context is what attention does later.</i-en><i-de>Warum ist es immer noch Unsinn? Das Modell kennt nur das allerletzte Zeichen. Nach „e“ weiß es, dass oft ein Leerzeichen oder „n“ kommt, aber nicht, welches Wort gerade entsteht. Mehr Kontext zurückzuschauen, das leistet später die Attention.</i-de></p>
+  </div>
+</section>
+
+<section class="station" data-station="context-window" data-show="1 2 3">
+  <span class="num"><i-en>Station 5 · Training examples</i-en><i-de>Station 5 · Trainingsbeispiele</i-de></span>
+  <h2><i-en>One snippet, many examples</i-en><i-de>Ein Ausschnitt, viele Beispiele</i-de></h2>
+  <p><i-en>A model is trained on snippets of the text. Each snippet is a whole set of small tasks: "given these characters, which one comes next?"</i-en><i-de>Ein Modell wird mit Ausschnitten aus dem Text trainiert. Jeder Ausschnitt ist ein ganzer Satz kleiner Aufgaben: „Welches Zeichen kommt nach diesen Zeichen?“</i-de></p>
+  <p><b><i-en>Guess first:</i-en><i-de>Erst raten:</i-de></b> <i-en>A snippet is 9 characters long. How many training examples are inside?</i-en><i-de>Ein Ausschnitt ist 9 Zeichen lang. Wie viele Trainingsbeispiele stecken darin?</i-de></p>
+  <div class="choices gate" data-gate="examples">
+    <button data-mis="one-snippet-one-example" data-fb-en="More. Every position is its own example: after the first character, after the first two, and so on." data-fb-de="Mehr. Jede Position ist ein eigenes Beispiel: nach dem ersten Zeichen, nach den ersten zwei, und so weiter.">1</button>
+    <button data-ok data-fb-en="Right: 9 characters give 8 pairs of context and next character. The last character has no successor inside the snippet." data-fb-de="Richtig: 9 Zeichen ergeben 8 Paare aus Kontext und nächstem Zeichen. Das letzte Zeichen hat im Ausschnitt keinen Nachfolger.">8</button>
+    <button data-fb-en="Almost: the last character has no next character inside the snippet, so there are 8." data-fb-de="Fast: Das letzte Zeichen hat im Ausschnitt keinen Nachfolger, also sind es 8.">9</button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="gated" data-gated="examples" hidden>
+    <div class="row"><label for="bs"><i-en>Context length</i-en><i-de>Kontextlänge</i-de> (block_size)</label><input type="range" id="bs" min="1" max="12" value="8"><span class="mono" id="bsVal"></span><button class="btn ghost" id="bsNew"><i-en>New snippet</i-en><i-de>Neuer Ausschnitt</i-de></button></div>
+    <div class="pairs" id="pairs"></div>
+    <p class="note"><i-en>Highlighted is the one character the bigram model actually uses from each context. Later models use all of it.</i-en><i-de>Markiert ist das eine Zeichen, das das Bigramm-Modell aus jedem Kontext tatsächlich benutzt. Spätere Modelle nutzen alles.</i-de></p>
+    <p class="note" data-show="2 3"><i-en>In code: <span class="mono">x = data[i:i+block_size]</span>, <span class="mono">y = data[i+1:i+block_size+1]</span>; y is x shifted by one.</i-en><i-de>Im Code: <span class="mono">x = data[i:i+block_size]</span>, <span class="mono">y = data[i+1:i+block_size+1]</span>; y ist x um eins verschoben.</i-de></p>
+  </div>
+</section>
+
+<section class="station" data-station="corpus" data-show="1 2 3">
+  <span class="num"><i-en>Station 6 · Your own text</i-en><i-de>Station 6 · Dein eigener Text</i-de></span>
+  <h2><i-en>What the model learns from</i-en><i-de>Woraus das Modell lernt</i-de></h2>
+  <p><i-en>Everything the model knows comes from counting its training text, an excerpt of an English play by Shakespeare. You can replace it with any text of your own.</i-en><i-de>Alles, was das Modell weiß, kommt aus dem Zählen in seinem Trainingstext, einem Auszug aus einem englischen Theaterstück von Shakespeare. Du kannst ihn durch jeden eigenen Text ersetzen.</i-de></p>
+  <p><b><i-en>Guess first:</i-en><i-de>Erst raten:</i-de></b> <i-en>You paste a German text and count again. What happens to the generated text?</i-en><i-de>Du fügst einen deutschen Text ein und zählst neu. Was passiert mit dem erzeugten Text?</i-de></p>
+  <div class="choices gate" data-gate="own-text">
+    <button data-mis="model-has-fixed-knowledge" data-fb-en="No. The model has no knowledge of its own: all its numbers come from the text it counted." data-fb-de="Nein. Das Modell hat kein eigenes Wissen: Alle seine Zahlen kommen aus dem Text, den es gezählt hat."><i-en>It still sounds like English</i-en><i-de>Es klingt weiter englisch</i-de></button>
+    <button data-ok data-fb-en="Right: new counts, new probabilities, and the nonsense starts to look German." data-fb-de="Richtig: neue Zählungen, neue Wahrscheinlichkeiten, und der Unsinn sieht plötzlich deutsch aus."><i-en>It starts to look German</i-en><i-de>Es sieht plötzlich deutsch aus</i-de></button>
+    <button data-fb-en="No. Counting works for any characters, in any language." data-fb-de="Nein. Zählen funktioniert mit beliebigen Zeichen, in jeder Sprache."><i-en>Nothing works any more: the model only knows English</i-en><i-de>Nichts geht mehr: Das Modell kann nur Englisch</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="gated" data-gated="own-text" hidden data-judge-on="#useCorpus">
+    <textarea id="corpus" aria-label="Training text"></textarea>
+    <div class="row"><button class="btn" id="useCorpus"><i-en>Count this text</i-en><i-de>Diesen Text zählen</i-de></button><button class="btn ghost" id="sampleDe"><i-en>Insert a German sample</i-en><i-de>Deutsches Beispiel einsetzen</i-de></button><button class="btn ghost" id="resetCorpus"><i-en>Back to Shakespeare</i-en><i-de>Zurück zu Shakespeare</i-de></button></div>
+    <p class="note" id="corpusNote"></p>
+    <div class="out" id="corpusOut"></div>
+  </div>
+</section>
+<footer><i-en>Training text: an excerpt from Shakespeare's "Coriolanus".</i-en><i-de>Trainingstext: Auszug aus Shakespeares „Coriolanus“.</i-de></footer>
+</div>
+
+<script src="ptf-sim.js"></script>
+<script>
+const SIM_ID = "ptf:sim/next-char-basics", SIM_VERSION = "1.0.0";
+const SIM_LOCALES = ["en", "de"];
+const PTF_LEVELS = {"1": "highschool", "2": "college", "3": "expert"};
+const START_LEVEL = "1";
+/* Shared PTF glue: levels, stations, focus mode, progress, predictions, resume state, snapshot (SIMULATOR-SPEC.md §4).
+   The simulator defines SIM_ID, SIM_VERSION, SIM_LOCALES, PTF_LEVELS, START_LEVEL before this block, and optionally
+   simState() / simRestore(st) / simSnapshot() / rerender() / onGuess(gate, ok) after it. */
+let CURRENT_LEVEL = START_LEVEL, LOCALE = "en", READY = false, FOCUS = null;
+var completed = new Set();   /* var: hoisted, so applyVisibility can run before this line */
+/* UI language (en, de): static text as <i-en>/<i-de> pairs, dynamic text via L(en, de). */
+const L = (en, de) => LOCALE === "de" ? de : en;
+const fmt = (x, d = 2) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+const txt = el => (el.querySelector(LOCALE === "de" ? "i-de" : "i-en") || el).textContent.trim();
+/* SIM_LOCALES matches "lang" in sim.json; unsupported locales fall back to the first entry (§4.6). */
+function setLocale(loc) {
+  LOCALE = /^de/i.test(loc || "") && SIM_LOCALES.includes("de") ? "de" : SIM_LOCALES[0];
+  document.documentElement.lang = LOCALE;
+  renderStepper();
+  if (READY && typeof rerender === "function") rerender();
+}
+const stationsAtLevel = () => [...document.querySelectorAll("section[data-station]")].filter(s => s.dataset.show.split(" ").includes(CURRENT_LEVEL)).map(s => s.dataset.station);
+function setLevel(l) {
+  document.querySelectorAll(".levels button").forEach(b => b.setAttribute("aria-pressed", b.dataset.level === l));
+  CURRENT_LEVEL = l;
+  if (FOCUS && !stationsAtLevel().includes(FOCUS)) FOCUS = stationsAtLevel()[0] || null;
+  applyVisibility();
+  persist();
+}
+/* Focus mode (SIMULATOR-SPEC.md §4.7): one station at a time with Back / Next. */
+function applyVisibility() {
+  document.querySelectorAll("[data-show]").forEach(s => {
+    const lvl = s.dataset.show.split(" ").includes(CURRENT_LEVEL);
+    s.hidden = !lvl || (FOCUS !== null && s.matches("section[data-station]") && s.dataset.station !== FOCUS);
+  });
+  document.body.classList.toggle("focused", FOCUS !== null);
+  renderStepper();
+  const nav = document.getElementById("focusNav");
+  if (!nav) return;
+  nav.hidden = FOCUS === null;
+  if (FOCUS === null) return;
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS);
+  document.getElementById("focusBack").disabled = i <= 0;
+  document.getElementById("focusNext").disabled = i >= list.length - 1;
+  document.getElementById("focusPos").textContent = `${i + 1} / ${list.length}`;
+  if (READY && typeof onFocus === "function") onFocus(FOCUS);
+}
+/* Progress: one numbered step per station at the current level; done steps get a tick, any step can be opened directly. */
+function renderStepper() {
+  const nav = document.getElementById("stepper");
+  if (!nav) return;
+  nav.innerHTML = "";
+  stationsAtLevel().forEach((id, i) => {
+    const h = document.querySelector(`section[data-station="${id}"] h2`), title = h ? txt(h) : id;
+    const b = document.createElement("button");
+    b.className = "step" + (completed.has(id) ? " done" : "");
+    b.textContent = completed.has(id) ? "✓" : String(i + 1);
+    b.title = title; b.setAttribute("aria-label", `${i + 1}. ${title}${completed.has(id) ? L(" (done)", " (erledigt)") : ""}`);
+    if (id === FOCUS) b.setAttribute("aria-current", "step");
+    b.onclick = () => { setFocus(id); ptf.event("experienced", { station: id, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: id } }); window.scrollTo({ top: 0, behavior: "auto" }); };
+    nav.append(b);
+  });
+}
+function setFocus(id) { FOCUS = id; applyVisibility(); persist(); }
+function moveFocus(step) {
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS), next = list[i + step];
+  if (!next) return;
+  setFocus(next);
+  ptf.event("experienced", { station: next, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: next } });
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+(function buildFocusNav() {
+  const nav = document.createElement("nav");
+  nav.id = "focusNav"; nav.className = "focus-nav"; nav.hidden = true;
+  nav.setAttribute("aria-label", "Stations");
+  nav.innerHTML = `<button class="btn ghost" id="focusBack"><i-en>Back</i-en><i-de>Zurück</i-de></button><span class="mono note" id="focusPos"></span><button class="btn" id="focusNext"><i-en>Next</i-en><i-de>Weiter</i-de></button><button class="btn ghost" id="focusAll"><i-en>Show all</i-en><i-de>Alles zeigen</i-de></button>`;
+  const footer = document.querySelector(".wrap > footer");
+  footer ? footer.before(nav) : document.querySelector(".wrap").append(nav);
+  nav.querySelector("#focusBack").onclick = () => moveFocus(-1);
+  nav.querySelector("#focusNext").onclick = () => moveFocus(1);
+  nav.querySelector("#focusAll").onclick = () => setFocus(null);
+  const start = document.createElement("button");
+  start.id = "focusStart"; start.className = "btn ghost";
+  start.innerHTML = "<i-en>Step by step</i-en><i-de>Schritt für Schritt</i-de>";
+  start.onclick = () => { setFocus(stationsAtLevel()[0]); ptf.event("experienced", { station: FOCUS, data: { focus: FOCUS } }); };
+  const stepper = document.createElement("nav");
+  stepper.id = "stepper"; stepper.className = "stepper"; stepper.setAttribute("aria-label", "Progress");
+  document.querySelector(".wrap > header").after(stepper);
+  const levels = document.querySelector("header .levels");
+  const row = document.createElement("div"); row.className = "row";
+  levels.before(row); row.append(levels, start);
+})();
+setLocale(navigator.language);
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", () => {
+  setLevel(b.dataset.level);
+  ptf.event("level_changed", { level: PTF_LEVELS[b.dataset.level] });
+}));
+function answered(station, correct, misconception, response) {
+  const result = { correct };
+  if (misconception && !correct) result.misconception = misconception;
+  if (response !== undefined) result.response = String(response);
+  ptf.event("answered", { station, level: PTF_LEVELS[CURRENT_LEVEL], result });
+  persist();
+}
+/* Every experiment reports what the learner tried, so the tutor can talk about it. */
+function report(station, data) { ptf.event("experienced", { station, level: PTF_LEVELS[CURRENT_LEVEL], data }); persist(); }
+function done(station) {
+  if (completed.has(station)) return;
+  completed.add(station);
+  ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
+  renderStepper(); persist();
+}
+/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb-en / data-fb-de,
+   followed by <p class="feedback" hidden>. A station completes when all its visible graded boxes are answered correctly. */
+function showFeedback(box, b, ok) {
+  const fb = box.nextElementSibling;
+  if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+}
+function markChoice(box, b) {
+  const ok = b.hasAttribute("data-ok");
+  box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
+  b.classList.add(ok ? "right" : "wrong");
+  showFeedback(box, b, ok);
+  box.dataset.choice = [...box.querySelectorAll("button")].indexOf(b);
+  if (ok) box.dataset.solved = "1"; else delete box.dataset.solved;
+  return ok;
+}
+/* Predict, observe, explain (SIMULATOR-SPEC.md §7 rule 5): a .choices.gate box is a prediction. Picking an option only
+   records it and shows the hidden part [data-gated="<its data-gate>"]. The prediction is judged and reported as answered
+   at the learner's first use of a control there (or of one matching its data-judge-on), once the result is in view,
+   and it never completes the station. Elements with data-after="<gate>" (explanations) stay hidden until then. */
+function initGuess(box) {
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { if (!box.dataset.judged) pickGuess(box, b); }));
+  document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => ["click", "input"].forEach(t =>
+    el.addEventListener(t, e => { if (e.target.closest(el.dataset.judgeOn || "button, input, select, textarea")) setTimeout(() => judgeGuess(box)); })));
+}
+function pickGuess(box, b) {
+  box.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  box.dataset.pick = [...box.querySelectorAll("button")].indexOf(b);
+  document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => { el.hidden = false; });
+  ptf.event("experienced", { station: box.closest("[data-station]").dataset.station, level: PTF_LEVELS[CURRENT_LEVEL], data: { prediction: txt(b) } });
+  if (typeof onReveal === "function") onReveal(box.dataset.gate);
+  persist();
+}
+function judgeGuess(box, restoring) {
+  const b = box.dataset.pick === undefined ? null : box.querySelectorAll("button")[+box.dataset.pick];
+  if (!b || box.dataset.judged) return;
+  box.dataset.judged = "1";
+  const ok = b.hasAttribute("data-ok");
+  b.classList.add(ok ? "right" : "wrong");
+  box.querySelectorAll("button").forEach(x => { x.disabled = true; });
+  showFeedback(box, b, ok);
+  document.querySelectorAll(`[data-after="${box.dataset.gate}"]`).forEach(el => { el.hidden = false; });
+  if (!restoring) answered(box.closest("[data-station]").dataset.station, ok, b.dataset.mis, txt(b));
+  if (typeof onGuess === "function") onGuess(box.dataset.gate, ok);
+}
+function initChoices() {
+  document.querySelectorAll("[data-station] .choices").forEach(box => {
+    const sec = box.closest("[data-station]");
+    if (box.dataset.gate) return initGuess(box);
+    box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+      const ok = markChoice(box, b);
+      answered(sec.dataset.station, ok, b.dataset.mis, txt(b));
+      const graded = [...sec.querySelectorAll(".choices:not(.gate)")].filter(x => !x.closest("[hidden]"));
+      if (graded.length && graded.every(x => x.dataset.solved)) done(sec.dataset.station);
+    }));
+  });
+}
+/* Resume state (ptf/state): level, focus, progress, predictions, quiz answers, plus whatever simState() returns. */
+let RESTORING = true, persistTimer = null;
+function persist() {
+  if (RESTORING) return;
+  clearTimeout(persistTimer);
+  persistTimer = setTimeout(() => {
+    const guesses = {}, quiz = {};
+    document.querySelectorAll(".choices.gate").forEach(x => { if (x.dataset.pick !== undefined) guesses[x.dataset.gate] = { pick: +x.dataset.pick, judged: !!x.dataset.judged }; });
+    document.querySelectorAll(".choices[data-q]").forEach(x => { if (x.dataset.choice !== undefined) quiz[x.dataset.q] = +x.dataset.choice; });
+    ptf.saveState(Object.assign({ level: PTF_LEVELS[CURRENT_LEVEL], focus: FOCUS, completed: [...completed], guesses, quiz },
+      typeof simState === "function" ? simState() : {}));
+  }, 200);
+}
+function restore(st) {
+  if (!st || typeof st !== "object") return;
+  if (typeof simRestore === "function") simRestore(st);
+  if (st.guesses && typeof st.guesses === "object") document.querySelectorAll(".choices.gate").forEach(box => {
+    const g = st.guesses[box.dataset.gate], b = g && Number.isInteger(g.pick) && box.querySelectorAll("button")[g.pick];
+    if (!b) return;
+    pickGuess(box, b);
+    if (g.judged) judgeGuess(box, true);
+  });
+  if (st.quiz && typeof st.quiz === "object") document.querySelectorAll(".choices[data-q]").forEach(box => {
+    const b = Number.isInteger(st.quiz[box.dataset.q]) && box.querySelectorAll("button")[st.quiz[box.dataset.q]];
+    if (b) markChoice(box, b);
+  });
+  if (Array.isArray(st.completed)) st.completed.forEach(id => { if (document.querySelector(`section[data-station="${id}"]`)) completed.add(id); });
+  if (st.focus === null || (typeof st.focus === "string" && stationsAtLevel().includes(st.focus))) FOCUS = st.focus;
+  applyVisibility();
+}
+const ptf = PTF.connect({
+  id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS[START_LEVEL],
+  onInit(ctx) {
+    RESTORING = true;
+    try {
+      if (ctx.locale) setLocale(ctx.locale);
+      const lvl = (ctx.state && ctx.state.level) || ctx.level;
+      if (lvl) applyLevel(lvl);
+      restore(ctx.state);
+      if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus !== false });
+      if (typeof rerender === "function") rerender();
+    } finally { RESTORING = false; }
+  },
+  onSetLevel: applyLevel,
+  onGoto: gotoStation,
+  onTheme() { if (READY && typeof rerender === "function") rerender(); },
+  snapshot() {
+    const shown = [...document.querySelectorAll("section[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `UI language: ${LOCALE}`, `Visible stations: ${shown.join(", ")}`];
+    if (FOCUS) parts.push(`Focus mode on station: ${FOCUS}`);
+    if (completed.size) parts.push(`Completed: ${[...document.querySelectorAll("section[data-station]")].map(s => s.dataset.station).filter(id => completed.has(id)).join(", ")}`);
+    const preds = [...document.querySelectorAll(".choices.gate")].filter(x => x.dataset.pick !== undefined)
+      .map(x => { const b = x.querySelectorAll("button")[+x.dataset.pick]; return `${x.dataset.gate} ${JSON.stringify(b.textContent.trim().replace(/\s+/g, " "))}${x.dataset.judged ? (b.hasAttribute("data-ok") ? " (right)" : " (wrong)") : " (not yet judged)"}`; });
+    if (preds.length) parts.push(`Predictions: ${preds.join("; ")}`);
+    if (typeof simSnapshot === "function") parts.push(simSnapshot());
+    return parts.join(". ");
+  }
+});
+function applyLevel(level) {
+  const n = Object.keys(PTF_LEVELS).find(k => PTF_LEVELS[k] === level);
+  if (n) setLevel(n);
+}
+function gotoStation(id, opts) {
+  const s = id ? document.querySelector(`section[data-station="${id}"]`) : null;
+  if (opts && opts.focus === false) setFocus(null);
+  if (!s) return;
+  if (!s.dataset.show.split(" ").includes(CURRENT_LEVEL)) setLevel(s.dataset.show.split(" ")[0]);
+  if (opts && opts.focus === true) { setFocus(id); window.scrollTo({ top: 0, behavior: "auto" }); return; }
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+/* Theme tokens for canvas (§4.5): a host may set a token to anything CSS accepts (light-dark(), var(), color-mix()),
+   which a 2D context cannot parse, so resolve it to a plain colour or font list through the browser first. */
+const tokenProbe = document.createElement("i");
+tokenProbe.hidden = true; document.body.append(tokenProbe);
+function css(name) {
+  const font = name.startsWith("--f-");
+  tokenProbe.style[font ? "fontFamily" : "color"] = `var(${name})`;
+  return getComputedStyle(tokenProbe)[font ? "fontFamily" : "color"];
+}
+const $ = id => document.getElementById(id);
+
+
+const SHAKESPEARE=`First Citizen:
+Before we proceed any further, hear me speak.
+
+All:
+Speak, speak.
+
+First Citizen:
+You are all resolved rather to die than to famish?
+
+All:
+Resolved. resolved.
+
+First Citizen:
+First, you know Caius Marcius is chief enemy to the people.
+
+All:
+We know't, we know't.
+
+First Citizen:
+Let us kill him, and we'll have corn at our own price.
+Is't a verdict?
+
+All:
+No more talking on't; let it be done: away, away!
+
+Second Citizen:
+One word, good citizens.
+
+First Citizen:
+We are accounted poor citizens, the patricians good.
+What authority surfeits on would relieve us: if they
+would yield us but the superfluity, while it were
+wholesome, we might guess they relieved us humanely;
+but they think we are too dear: the leanness that
+afflicts us, the object of our misery, is as an
+inventory to particularise their abundance; our
+sufferance is a gain to them Let us revenge this with
+our pikes, ere we become rakes: for the gods know I
+speak this in hunger for bread, not in thirst for revenge.
+
+Second Citizen:
+Would you proceed especially against Caius Marcius?
+
+All:
+Against him first: he's a very dog to the commonalty.
+
+Second Citizen:
+Consider you what services he has done for his country?
+
+First Citizen:
+Very well; and could be content to give him good
+report fort, but that he pays himself with being proud.
+
+Second Citizen:
+Nay, but speak not maliciously.
+
+First Citizen:
+I say unto you, what he hath done famously, he did
+it to that end: though soft-conscienced men can be
+content to say it was for his country he did it to
+please his mother and to be partly proud; which he
+is, even till the altitude of his virtue.
+`;
+const GERMAN = `Es war einmal ein kleiner Igel, der wohnte am Rand eines großen Waldes. Jeden Morgen ging er hinaus und suchte Beeren, Pilze und Käfer. Eines Tages traf er einen Hasen, der sehr schnell laufen konnte. „Wollen wir um die Wette laufen?“, fragte der Hase und lachte. Der Igel überlegte nicht lange und sagte: „Gern, aber erst morgen früh.“ In der Nacht erzählte er seiner Frau von dem Plan, und die beiden lachten, bis der Mond über den Bäumen stand. Am nächsten Morgen wartete der Hase schon am Feld, und die Sonne schien über die Wiese.
+`;
+const ALPHA = 0.1, MAX_SAVE = 30000;
+const disp = c => c === "\n" ? "↵" : c === " " ? "␣" : c;
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+/* Text is split into code points ([...text], like Python's list(text)) everywhere, so an emoji stays one character. */
+const lastChar = s => Array.from(s.slice(-2)).pop();
+let M = null, genText = "\n", genNew = 0, curChar = "h", bsOffset = 0;
+function build(text) {
+  const seq = [...text], chars = [...new Set(seq)].sort(), V = chars.length, stoi = {};
+  chars.forEach((c, i) => stoi[c] = i);
+  const cnt = Array.from({ length: V }, () => new Float64Array(V)), row = new Float64Array(V);
+  for (let i = 0; i + 1 < seq.length; i++) { const a = stoi[seq[i]], b = stoi[seq[i + 1]]; cnt[a][b]++; row[a]++; }
+  return { text, seq, chars, V, stoi, cnt, row };
+}
+function probs(a, mode = "bigram") {
+  const { V, cnt, row } = M, p = new Float64Array(V);
+  for (let b = 0; b < V; b++) p[b] = mode === "uniform" ? 1 / V : (cnt[a][b] + ALPHA) / (row[a] + ALPHA * V);
+  return p;
+}
+function sample(p) { let r = Math.random(), s = 0; for (let i = 0; i < p.length; i++) { s += p[i]; if (r < s) return i; } return p.length - 1; }
+function gen(n, mode, from) { let t = from; for (let i = 0; i < n; i++) { const a = M.stoi[lastChar(t)] ?? 0; t += M.chars[sample(probs(a, mode))]; } return t; }
+const topIdx = (p, k) => [...p.keys()].sort((a, b) => p[b] - p[a]).slice(0, k);
+function barsHTML(p, k = 8) {
+  const idx = topIdx(p, k), mx = p[idx[0]];
+  return idx.map(i => `<div class="bar"><span>${esc(disp(M.chars[i]))}</span><div><div class="fill" style="width:${(p[i] / mx * 100).toFixed(1)}%"></div></div><span class="v">${fmt(p[i] * 100, 1)} %</span></div>`).join("");
+}
+const startChar = () => M.stoi["\n"] !== undefined ? "\n" : M.chars[0];
+
+/* Station 1: guess */
+const g0 = { pos: 0, hits: 0, total: 0, done: false };
+function g0New() {
+  const t = M.seq; g0.pos = Math.min(40, t.length - 1) + Math.floor(Math.random() * Math.max(1, t.length - 41)); g0.done = false;
+  $("g0Text").textContent = t.slice(Math.max(0, g0.pos - 40), g0.pos).join("") + "▍"; $("g0In").value = "";
+  $("g0Res").textContent = L("Type one character and press Check.", "Tipp ein Zeichen und drück „Prüfen“.");
+}
+function g0Check() {
+  if (g0.done) return;
+  const t = M.seq, c = t[g0.pos], g = [...$("g0In").value][0];
+  if (!g) { $("g0In").focus(); return; }
+  g0.done = true; g0.total++;
+  const ok = g === c || (g === " " && c === "\n"); if (ok) g0.hits++;
+  const p = probs(M.stoi[t[g0.pos - 1]]), top = topIdx(p, 1)[0];
+  $("g0Text").textContent = t.slice(Math.max(0, g0.pos - 40), g0.pos + 1).join("");
+  $("g0Res").textContent = L(`${ok ? "Right!" : "Not this time."} It was "${disp(c)}". A model that sees only "${disp(t[g0.pos - 1])}" would have guessed "${disp(M.chars[top])}" (${fmt(p[top] * 100, 0)} %).`,
+    `${ok ? "Richtig!" : "Daneben."} Es kam „${disp(c)}“. Ein Modell, das nur „${disp(t[g0.pos - 1])}“ sieht, hätte „${disp(M.chars[top])}“ getippt (${fmt(p[top] * 100, 0)} %).`);
+  renderScore();
+  answered("guess", ok, undefined, g);
+  if (g0.total >= 5) { $("g0After").hidden = false; done("guess"); }
+}
+const renderScore = () => { $("g0Score").textContent = g0.total ? L(`${g0.hits} of ${g0.total} right`, `${g0.hits} von ${g0.total} richtig`) : ""; };
+$("g0Check").onclick = g0Check; $("g0Next").onclick = g0New;
+$("g0In").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); g0.done ? g0New() : g0Check(); } });
+
+/* Station 2: tokenizer */
+function renderTok() {
+  const s = [...$("tokIn").value]; let unk = 0;
+  $("tokChips").innerHTML = s.map(c => { const id = M.stoi[c]; if (id === undefined) unk++;
+    return `<button class="chip${id === undefined ? " bad" : ""}${c === curChar ? " sel" : ""}" data-c="${encodeURIComponent(c)}" title="${id === undefined ? L("not in the vocabulary", "nicht im Vokabular") : L("character ", "Zeichen ") + id}"><b>${esc(disp(c))}</b><small>${id === undefined ? "?" : id}</small></button>`; }).join("");
+  $("tokNote").textContent = L(`Vocabulary: ${M.V} different characters.`, `Vokabular: ${M.V} verschiedene Zeichen.`) +
+    (unk ? L(` ${unk} of these characters never occur in the training text (red); the model has no number for them.`, ` ${unk} dieser Zeichen kommen im Trainingstext nie vor (rot); das Modell hat keine Nummer für sie.`) : "");
+}
+$("tokChips").addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; const c = decodeURIComponent(b.dataset.c); if (M.stoi[c] === undefined) return; curChar = c; renderTok(); renderNext(); reportChar(); });
+const debounced = (fn, ms = 400) => { let t = null; return () => { clearTimeout(t); t = setTimeout(fn, ms); }; };
+$("tokIn").addEventListener("input", renderTok);
+$("tokIn").addEventListener("input", debounced(() => {
+  const s = [...$("tokIn").value];
+  report("tokenizer", { text: s.slice(0, 80).join(""), ids: s.slice(0, 80).map(c => M.stoi[c] ?? null), unknown: s.filter(c => M.stoi[c] === undefined).length });
+  done("tokenizer");
+}));
+
+/* Station 3: counted probabilities */
+const charsTried = new Set();
+function renderNext() {
+  $("nextSel").innerHTML = M.chars.map(c => `<option value="${encodeURIComponent(c)}"${c === curChar ? " selected" : ""}>${esc(disp(c))}  (#${M.stoi[c]}, ${L("seen", "gesehen")} ${M.row[M.stoi[c]]}×)</option>`).join("");
+  $("nextBars").innerHTML = barsHTML(probs(M.stoi[curChar]));
+}
+function reportChar() {
+  const p = probs(M.stoi[curChar]);
+  charsTried.add(curChar);
+  report("counted-probabilities", { char: curChar, top: topIdx(p, 3).map(i => ({ char: M.chars[i], p: +p[i].toFixed(3) })) });
+  if (charsTried.size >= 3) done("counted-probabilities");
+}
+$("nextSel").addEventListener("change", e => { curChar = decodeURIComponent(e.target.value); renderNext(); renderTok(); reportChar(); });
+
+/* Station 4: generate */
+const genModes = new Set();
+function renderGenMode() {
+  const v = $("genMode").value || "bigram";
+  $("genMode").innerHTML = `<option value="bigram">${L("Counted (bigram)", "Gezählt (Bigramm)")}</option><option value="uniform">${L("Untrained (all equally likely)", "Untrainiert (alles gleich wahrscheinlich)")}</option>`;
+  $("genMode").value = v;
+}
+function renderGen() {
+  const old = genText.slice(0, genText.length - genNew), nw = genText.slice(genText.length - genNew);
+  $("genOut").innerHTML = esc(old) + (nw ? `<span class="new">${esc(nw)}</span>` : ""); $("genOut").scrollTop = 1e9;
+}
+function genClick(n) {
+  const before = genText.length, mode = $("genMode").value;
+  genText = gen(n, mode, genText); genNew = genText.length - before; renderGen();
+  genModes.add(mode);
+  report("generate", { mode, added: n, text: [...genText].slice(-60).join("") });
+  if (genModes.size === 2) done("generate");
+}
+$("gen1").onclick = () => genClick(1);
+$("gen100").onclick = () => genClick(100);
+$("genReset").onclick = () => { genText = startChar(); genNew = 0; renderGen(); persist(); };
+
+/* Station 5: training examples */
+function renderPairs() {
+  const bs = +$("bs").value; $("bsVal").textContent = bs; const t = M.seq;
+  if (bsOffset + bs + 1 > t.length) bsOffset = 0;
+  const chunk = t.slice(bsOffset, bsOffset + bs + 1), x = chunk.slice(0, bs), y = chunk.slice(1), ids = s => s.map(c => M.stoi[c]).join(" ");
+  let h = `<div>${L("snippet", "Ausschnitt")} (${bs + 1}) = "${esc(chunk.map(disp).join(""))}"</div><div>x = [${ids(x)}]</div><div>y = [${ids(y)}]</div><div>&nbsp;</div>`;
+  for (let i = 0; i < bs; i++) { const ctx = x.slice(0, i + 1).map(disp), last = ctx.pop();
+    h += `<div>${i + 1}. ${esc(ctx.join(""))}<span class="last">${esc(last)}</span> → <span class="tgt">${esc(disp(y[i]))}</span></div>`; }
+  $("pairs").innerHTML = h;
+}
+$("bs").addEventListener("input", renderPairs);
+$("bs").addEventListener("change", () => { report("context-window", { block_size: +$("bs").value, examples: +$("bs").value }); done("context-window"); });
+$("bsNew").onclick = () => { bsOffset = Math.floor(Math.random() * Math.max(1, M.seq.length - 14)); renderPairs(); report("context-window", { block_size: +$("bs").value, offset: bsOffset }); done("context-window"); };
+
+/* Station 6: own text */
+function setCorpus(text) {
+  M = build(text); if (M.stoi[curChar] === undefined) curChar = M.stoi.h !== undefined ? "h" : M.chars[Math.floor(M.V / 2)];
+  genText = startChar(); genNew = 0; rerender(); g0New();
+}
+function renderCorpusInfo() {
+  $("corpusInfo").textContent = L(`Training text: ${M.seq.length.toLocaleString("en-US")} characters · vocabulary ${M.V}`, `Trainingstext: ${M.seq.length.toLocaleString("de-DE")} Zeichen · Vokabular ${M.V}`);
+  $("corpusNote").textContent = M.text === SHAKESPEARE ? L("Now counted: Shakespeare.", "Gerade gezählt: Shakespeare.") : L(`Now counted: your text, ${M.seq.length} characters, ${M.V} different.`, `Gerade gezählt: dein Text, ${M.seq.length} Zeichen, ${M.V} verschiedene.`);
+}
+$("useCorpus").onclick = () => {
+  const t = $("corpus").value;
+  if ([...t].length < 50) { $("corpusNote").textContent = L("Please use at least 50 characters.", "Bitte mindestens 50 Zeichen verwenden."); return; }
+  setCorpus(t);
+  $("corpusOut").textContent = gen(160, "bigram", startChar()).slice(1);
+  report("corpus", { characters: M.seq.length, vocabulary: M.V, custom: M.text !== SHAKESPEARE, sample: $("corpusOut").textContent.slice(0, 80) });
+  if (M.text !== SHAKESPEARE) done("corpus");
+};
+$("sampleDe").onclick = () => { $("corpus").value = GERMAN; };
+$("resetCorpus").onclick = () => { $("corpus").value = SHAKESPEARE; setCorpus(SHAKESPEARE); $("corpusOut").textContent = ""; report("corpus", { characters: M.seq.length, vocabulary: M.V, custom: false }); };
+
+function rerender() { renderCorpusInfo(); renderScore(); renderTok(); renderNext(); renderGenMode(); renderGen(); renderPairs(); renderStepper(); }
+function simState() {
+  return { corpus: M.text !== SHAKESPEARE && M.text.length <= MAX_SAVE ? M.text : null, guess: { hits: g0.hits, total: g0.total },
+    tok: $("tokIn").value, curChar, charsTried: [...charsTried], genMode: $("genMode").value, genText: [...genText].slice(-400).join(""), genModes: [...genModes], bs: +$("bs").value };
+}
+function simRestore(st) {
+  const str = x => typeof x === "string", num = x => Number.isFinite(x);
+  if (str(st.corpus) && [...st.corpus].length >= 50) { $("corpus").value = st.corpus; setCorpus(st.corpus); }
+  if (st.guess && num(st.guess.hits) && num(st.guess.total)) { g0.hits = st.guess.hits; g0.total = st.guess.total; if (g0.total >= 5) $("g0After").hidden = false; }
+  if (str(st.tok)) $("tokIn").value = st.tok;
+  if (str(st.curChar) && M.stoi[st.curChar] !== undefined) curChar = st.curChar;
+  if (Array.isArray(st.charsTried)) st.charsTried.forEach(c => charsTried.add(c));
+  if (st.genMode === "uniform" || st.genMode === "bigram") $("genMode").value = st.genMode;
+  if (str(st.genText) && st.genText) { genText = st.genText; genNew = 0; }
+  if (Array.isArray(st.genModes)) st.genModes.forEach(m => genModes.add(m));
+  if (num(st.bs)) $("bs").value = st.bs;
+  rerender();
+}
+function simSnapshot() {
+  return [
+    `Corpus: ${M.text === SHAKESPEARE ? "Shakespeare excerpt" : "learner's own text"}, ${M.seq.length} characters, vocabulary ${M.V}`,
+    `Guessing game: ${g0.hits} of ${g0.total} right`,
+    `Tokenizer text: ${JSON.stringify($("tokIn").value)}, ${[...$("tokIn").value].filter(c => M.stoi[c] === undefined).length} unknown characters`,
+    `Current character: ${JSON.stringify(curChar)}, most likely next ${JSON.stringify(M.chars[topIdx(probs(M.stoi[curChar]), 1)[0]])}`,
+    `Generating with the ${$("genMode").value === "uniform" ? "untrained (uniform)" : "counted bigram"} model, text so far ends ${JSON.stringify([...genText].slice(-40).join(""))}`,
+    `Context length ${$("bs").value}, so a snippet of ${+$("bs").value + 1} characters holds ${$("bs").value} examples`
+  ].join(". ");
+}
+$("corpus").value = SHAKESPEARE;
+M = build(SHAKESPEARE);
+renderGenMode();
+setCorpus(SHAKESPEARE);
+initChoices();
+setLevel(START_LEVEL);
+setFocus(stationsAtLevel()[0] || null);
+READY = true; RESTORING = false;
+</script>
+</body>
+</html>

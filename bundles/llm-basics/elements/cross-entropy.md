@@ -23,16 +23,16 @@ simulators:
     station: surprise
     levels: [highschool]
     role: explore
-    note: Use when the learner did not get the loss from next-char-lab ("explain differently").
+    note: Use when the learner did not get the loss from bigram-lab ("explain differently").
     use_when: the learner did not get the loss from numbers alone and needs another angle
-  - ref: ptf:sim/next-char-lab@^2.0.0
+  - ref: ptf:sim/bigram-lab@^1.0.0
     station: loss
-    levels: [college]
+    levels: [college, expert]
     role: explore
     use_when: the learner wants to see the loss computed on real text
-  - ref: ptf:sim/next-char-lab@^2.0.0
+  - ref: ptf:sim/bigram-lab@^1.0.0
     station: training-curve
-    levels: [college]
+    levels: [college, expert]
     role: practice
     use_when: the learner should watch the loss fall during training
 code:
@@ -46,7 +46,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.3.0
+version: 0.3.1
 license: CC-BY-SA-4.0
 ---
 

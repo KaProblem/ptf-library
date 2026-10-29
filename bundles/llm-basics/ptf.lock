@@ -9,6 +9,10 @@
       "version": "1.0.0",
       "integrity": "sha256-EiZCfR+z5PtYCqNfXHyc85cSxCrOy8bZquMrj2pQuOg="
     },
+    "ptf:sim/bigram-lab": {
+      "version": "1.0.0",
+      "integrity": "sha256-eHXirVPQ5E5yXRTt4UjqLgWCw2fF63wwg2TNTbRsMtE="
+    },
     "ptf:sim/causal-mask": {
       "version": "1.0.0",
       "integrity": "sha256-f68wTvHwqbvISGZnqH1loWx8JooM9jUMcvJFwGdi5po="
@@ -18,12 +22,12 @@
       "integrity": "sha256-hxpwJzyQ0NSoQH2NTIJF0UYrIkWaipbZ/PvCvJBZgBU="
     },
     "ptf:sim/loss-lens": {
-      "version": "1.2.0",
-      "integrity": "sha256-m+aNrf7AG0dgkUbYeDIqJ05TN3Fidx0p0eHcUP1bGf0="
+      "version": "1.3.0",
+      "integrity": "sha256-Czl4+QuTjziHnUVpgIGL7/Abmavq97HVP/9TU/16BQE="
     },
-    "ptf:sim/next-char-lab": {
-      "version": "2.2.0",
-      "integrity": "sha256-5bmOH1errlcAEQT83HExqb71baZGCr+6frFmh77g9+k="
+    "ptf:sim/next-char-basics": {
+      "version": "1.0.0",
+      "integrity": "sha256-PDO5aMli11eOYhv60sehqv4UMa4cXu3UTjWnEuu+qgY="
     },
     "ptf:sim/residual-stream": {
       "version": "1.1.0",

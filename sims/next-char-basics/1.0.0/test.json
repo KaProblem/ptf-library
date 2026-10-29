@@ -1,0 +1,207 @@
+{
+  "steps": [
+    {
+      "init": {
+        "level": "highschool",
+        "locale": "en"
+      }
+    },
+    {
+      "expectStations": [
+        "guess"
+      ]
+    },
+    {
+      "expectText": "Play five rounds"
+    },
+    {
+      "type": {
+        "selector": "#g0In",
+        "text": "e"
+      }
+    },
+    {
+      "click": "#g0Check"
+    },
+    {
+      "expectEvent": {
+        "verb": "answered",
+        "station": "guess"
+      }
+    },
+    {
+      "click": "#focusNext"
+    },
+    {
+      "expectStations": [
+        "tokenizer"
+      ]
+    },
+    {
+      "click": "[data-gate='unknown'] button[data-ok]"
+    },
+    {
+      "expectEvent": {
+        "verb": "experienced",
+        "station": "tokenizer"
+      }
+    },
+    {
+      "type": {
+        "selector": "#tokIn",
+        "text": "Füße 🙂"
+      }
+    },
+    {
+      "expectEvent": {
+        "verb": "answered",
+        "station": "tokenizer"
+      }
+    },
+    {
+      "expectText": "ü and ß never occur"
+    },
+    {
+      "expectEvent": {
+        "verb": "station_completed",
+        "station": "tokenizer"
+      }
+    },
+    {
+      "click": "#focusNext"
+    },
+    {
+      "click": "[data-gate='after-h'] button[data-ok]"
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "Current character: \"h\", most likely next \"e\""
+        ]
+      }
+    },
+    {
+      "goto": {
+        "station": "generate",
+        "focus": true
+      }
+    },
+    {
+      "click": "[data-gate='bigram-text'] button[data-mis]"
+    },
+    {
+      "click": "#gen100"
+    },
+    {
+      "expectEvent": {
+        "verb": "answered",
+        "station": "generate"
+      }
+    },
+    {
+      "expectText": "It only knows the last character"
+    },
+    {
+      "expectEvent": {
+        "verb": "experienced",
+        "station": "generate"
+      }
+    },
+    {
+      "goto": {
+        "station": "context-window",
+        "focus": true
+      }
+    },
+    {
+      "click": "[data-gate='examples'] button[data-ok]"
+    },
+    {
+      "click": "#bsNew"
+    },
+    {
+      "expectEvent": {
+        "verb": "station_completed",
+        "station": "context-window"
+      }
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "a snippet of 9 characters holds 8 examples"
+        ]
+      }
+    },
+    {
+      "goto": {
+        "station": "corpus",
+        "focus": true
+      }
+    },
+    {
+      "click": "[data-gate='own-text'] button[data-ok]"
+    },
+    {
+      "click": "#sampleDe"
+    },
+    {
+      "click": "#useCorpus"
+    },
+    {
+      "expectEvent": {
+        "verb": "station_completed",
+        "station": "corpus"
+      }
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "learner's own text"
+        ]
+      }
+    },
+    {
+      "reload": true
+    },
+    {
+      "expectStations": [
+        "corpus"
+      ]
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "learner's own text",
+          "own-text"
+        ]
+      }
+    },
+    {
+      "goto": {
+        "focus": false
+      }
+    },
+    {
+      "expectStations": [
+        "guess",
+        "tokenizer",
+        "counted-probabilities",
+        "generate",
+        "context-window",
+        "corpus"
+      ]
+    },
+    {
+      "click": "[data-level='2']"
+    },
+    {
+      "expectEvent": "level_changed"
+    },
+    {
+      "expectText": "y is x shifted by one"
+    },
+    {
+      "expectNoError": true
+    }
+  ]
+}
