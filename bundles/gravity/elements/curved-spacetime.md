@@ -6,6 +6,9 @@ title: Curved spacetime
 description: In Einstein's theory gravity is not a force but the curvature of spacetime; it agrees with Newton for everyday cases and differs measurably in clocks (GPS), light bending and Mercury's orbit.
 lang: en
 levels: [child, highschool, college, expert]
+objectives:
+  - "Explain in plain words what Einstein changed: gravity as curved spacetime instead of a force."
+  - Name a measurement where Newton and Einstein differ, such as clocks on GPS satellites.
 tags: [physics, gravity, general-relativity, einstein, time-dilation, gps, equivalence-principle]
 about:
   - wikidata: Q4240689
@@ -25,16 +28,19 @@ simulators:
     levels: [child, highschool, college, expert]
     role: explore
     note: Use the funnel as a picture, then discuss right away why the trampoline analogy is circular (station text).
+    use_when: the learner wants a picture of curved spacetime (and should hear where the picture fails)
   - ref: ptf:sim/newton-einstein@^1.1.0
     station: clocks
     levels: [highschool, college, expert]
     role: explore
     note: Ask first whether a clock on a satellite should run faster or slower; most learners only know the speed effect.
+    use_when: the learner should predict whether satellite clocks run fast or slow
   - ref: ptf:sim/newton-einstein@^1.1.0
     station: mercury
     levels: [college, expert]
     role: practice
     note: Run with relativity × 0 first (closed ellipse), then × 100 000; point out that the real value is shown next to it.
+    use_when: the learner is curious about the classic test of relativity in the solar system
 sources:
   - id: ashby-gps
     resource: https://link.springer.com/article/10.12942/lrr-2003-1
@@ -47,9 +53,15 @@ sources:
     title: "Albert Einstein: The Foundation of the General Theory of Relativity (1916), English translation"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.2
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- Newton's law works so well that it needed extremely precise measurements to find its limits.
+- Einstein's answer, curved spacetime, is the reason your phone's GPS works.
+- Afterwards the learner can say what curved spacetime means and where its effects can be measured.
 
 # Core
 

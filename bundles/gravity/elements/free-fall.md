@@ -6,6 +6,9 @@ title: "Free fall: heavy and light together"
 description: Without air, every object falls with the same acceleration g, whatever its mass; the distance grows with the square of the time.
 lang: en
 levels: [child, highschool, college, expert]
+objectives:
+  - Predict that a heavy and a light object fall equally fast without air, and explain why.
+  - Explain that the speed grows by about 9.8 m/s every second and the distance with the square of the time.
 tags: [physics, mechanics, gravity, free-fall, acceleration]
 about:
   - wikidata: Q140028
@@ -22,11 +25,13 @@ simulators:
     levels: [child, highschool, college, expert]
     role: explore
     note: Ask for the guess before anything else; most learners expect the heavy ball to win clearly.
+    use_when: the learner should commit to a guess about heavy versus light before any explanation
   - ref: ptf:sim/falling-tower@^1.1.0
     station: vacuum
     levels: [child, highschool, college, expert]
     role: explore
     note: Let the learner drop feather and hammer with air first, then without; the "aha" is that the difference disappears.
+    use_when: the learner suspects air is behind the difference and wants to see it removed
 sources:
   - id: galileo-two-new-sciences
     resource: https://oll.libertyfund.org/titles/galilei-dialogues-concerning-two-new-sciences
@@ -39,9 +44,15 @@ sources:
     title: "NASA NSSDCA: The Apollo 15 Hammer-Feather Drop"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.2
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- Almost everyone expects the heavier ball to land first. This step checks that belief.
+- Falling is the simplest motion in physics and the starting point for everything else about gravity.
+- Afterwards the learner can say why weight does not decide how fast things fall, and how far something falls in a given time.
 
 # Core
 

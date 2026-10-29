@@ -80,7 +80,8 @@ table.steps td{padding:6px 8px;border-bottom:1px solid var(--line)}
 table.steps td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .lbar{height:12px;background:var(--heat);border-radius:2px;min-width:2px}
 .sliders{display:flex;flex-direction:column;gap:6px}
-.srow{display:grid;grid-template-columns:7.5em 1fr 3.5em;gap:10px;align-items:center}
+.srow{display:grid;grid-template-columns:7.5em minmax(0,1fr) 3.5em;gap:10px;align-items:center}
+.srow input[type=range]{min-width:0;width:100%}
 .srow .pct{text-align:right;font-variant-numeric:tabular-nums}
 .feedback{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:4px}
 .feedback.bad{border-color:var(--heat);background:var(--heat-soft)}
@@ -88,9 +89,6 @@ table.steps td.num{text-align:right;font-variant-numeric:tabular-nums;white-spac
 .choices button{text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
 .choices button.right{border-color:var(--accent);background:var(--accent-soft)}
 .choices button.wrong{border-color:var(--heat);background:var(--heat-soft)}
-.choices button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
-.choices button:disabled{cursor:default}
-.gated{display:flex;flex-direction:column;gap:14px}
 .focus-nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;bottom:0;background:var(--bg);padding:10px 0;border-top:1px solid var(--line)}
 .focus-nav #focusAll{margin-left:auto}
 .focus-nav button:disabled{opacity:.4;cursor:default}
@@ -102,6 +100,21 @@ body.focused footer{display:none}
 .stepper .step.done{border-color:var(--accent);color:var(--accent)}
 .stepper .step[aria-current="step"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
 footer{color:var(--muted);font-size:.85rem}
+/* 1.2: predict before you try, compact phone layout */
+.reveal{display:flex;flex-direction:column;gap:14px}
+.reveal.locked{opacity:.35;pointer-events:none;filter:grayscale(1)}
+details.more summary{cursor:pointer;color:var(--accent);font-weight:600;min-height:32px}
+details.more p{margin-top:6px}
+body.focused header h1{display:none}
+@media (max-width:520px){
+  body{font-size:16px;padding-block:12px 0}
+  .wrap{gap:16px}
+  .station{padding:14px;gap:12px}
+  h2{font-size:1.15rem}
+  .srow{grid-template-columns:4.8em minmax(0,1fr) 3em;gap:6px}
+  .focus-nav{flex-wrap:nowrap;gap:8px}
+  .focus-nav button.btn{padding:8px 12px}
+}
 </style>
 </head>
 <body>
@@ -109,61 +122,43 @@ footer{color:var(--muted);font-size:.85rem}
 <header>
   <span class="eyebrow">Wie GPT funktioniert · Lektion 1 · Vertiefung</span>
   <h1>Loss-Lupe</h1>
-  <p>Ein Sprachmodell braucht eine einzige Zahl, die sagt, wie gut es gerade ist. Diese Zahl heißt Loss. Hier schaust du ihr in drei Schritten unter die Haube: erst ein Zeichen, dann ein ganzes Wort, dann bist du selbst das Modell.</p>
+  <p>Der Loss ist die eine Zahl, die sagt, wie gut ein Sprachmodell gerade ist. Drei Schritte: ein Zeichen, ein Wort, dann bist du selbst das Modell.</p>
   <div class="meta"><span class="badge">v1.2</span><span id="corpusInfo" class="mono"></span></div>
   <div class="row" id="headRow"></div>
 </header>
 
 <section class="station" data-station="surprise" data-show="1">
-  <span class="num">Schritt 1 · Ein Zeichen</span>
+  <span class="num" data-sub="Ein Zeichen">Ein Zeichen</span>
   <h2>Überraschung messen</h2>
-  <p>Das Modell gibt dem Zeichen, das tatsächlich kommt, eine Wahrscheinlichkeit p. Der Loss dieses Schritts ist −ln(p). Schieb den Regler und beobachte, wie stark kleine Wahrscheinlichkeiten bestraft werden.</p>
-  <p><b>Erst raten:</b> Bei p = 50 % ist die Strafe 0,69. Wie groß ist sie, wenn das Modell dem richtigen Zeichen nur 1 % gegeben hat?</p>
-  <div class="choices gate" data-gate="one-percent">
-    <button data-mis="loss-linear-in-p" data-fb="Viel mehr. Der Logarithmus bestraft kleine Wahrscheinlichkeiten immer stärker: −ln(0,01) ≈ 4,6, fast siebenmal so viel wie 0,69.">Etwa doppelt so groß</button>
-    <button data-ok data-fb="Richtig: −ln(0,01) ≈ 4,6, fast siebenmal so viel wie bei 50 %. Je unwahrscheinlicher, desto steiler steigt die Strafe.">Etwa siebenmal so groß (rund 4,6)</button>
-    <button data-mis="loss-proportional-to-1-over-p" data-fb="Weniger. 50-mal unwahrscheinlicher heißt nicht 50-mal mehr Strafe: Der Logarithmus macht daraus nur gut das Siebenfache, −ln(0,01) ≈ 4,6.">50-mal so groß</button>
+  <p>Das Modell gibt dem Zeichen, das wirklich kommt, eine Wahrscheinlichkeit p. Der Loss dieses Schritts ist −ln(p).</p>
+  <p class="q"><strong>Erst raten:</strong> Das Modell gibt dem richtigen Zeichen nur noch 1 % statt 10 %. Was passiert mit dem Loss?</p>
+  <div class="choices" data-q="ten-to-one">
+    <button data-mis="loss-counts-errors" data-fb="Nicht ganz: Der Loss zählt nicht nur richtig oder falsch. Weniger Wahrscheinlichkeit für das richtige Zeichen heißt mehr Strafe, hier von 2,3 auf 4,6. Prüf es mit dem Regler.">Er ändert sich kaum, falsch ist falsch</button>
+    <button data-ok data-fb="Stimmt: −ln(0,1) ≈ 2,3 und −ln(0,01) ≈ 4,6. Jede Zehnerstufe weniger kostet gleich viel mehr. Prüf es mit dem Regler.">Er wird ungefähr doppelt so groß</button>
+    <button data-fb="Nicht ganz: Der Logarithmus wächst langsamer. Jede Zehnerstufe weniger kostet etwa 2,3 mehr, also von 2,3 auf 4,6. Prüf es mit dem Regler.">Er wird ungefähr zehnmal so groß</button>
   </div>
   <p class="feedback" hidden></p>
-  <div class="gated" data-gated="one-percent" hidden>
+  <div class="reveal locked" data-reveal="surprise">
   <div class="row"><label for="pSl">p für das richtige Zeichen</label><input type="range" id="pSl" min="1" max="100" value="50"><span class="mono" id="pVal"></span></div>
   <div class="scroll"><canvas id="lnCurve" width="780" height="260" aria-label="Kurve −ln p"></canvas></div>
   <div class="stats"><div><span class="note">Loss für diesen Schritt</span><span class="stat" id="pLoss"></span></div></div>
-  <p class="note" data-after="one-percent" hidden>Merkpunkte: 100 % ergibt 0 (keine Überraschung). 50 % ergibt 0,69. Blind raten unter 48 Zeichen (≈ 2 %) ergibt 3,87. Bei 1 % sind es schon 4,6. Warum der Logarithmus? Er macht aus „wie unwahrscheinlich“ eine Strafe, die man über viele Schritte einfach addieren kann.</p>
+  <details class="more"><summary>Merkpunkte</summary><p>100 % ergibt 0 (keine Überraschung). 50 % ergibt 0,69. Blind raten unter 48 Zeichen (≈ 2 %) ergibt 3,87. Bei 1 % sind es schon 4,6. Warum der Logarithmus? Er macht aus „wie unwahrscheinlich“ eine Strafe, die man über viele Schritte einfach addieren kann.</p></details>
   </div>
 </section>
 
 <section class="station" data-station="average" data-show="1">
-  <span class="num">Schritt 2 · Ein Wort</span>
+  <span class="num" data-sub="Ein Wort">Ein Wort</span>
   <h2>Vom Zeichen zum Durchschnitt</h2>
-  <p>Für einen ganzen Text macht man das für jeden Übergang und nimmt den Mittelwert. Tipp ein Wort oder einen Satz ein. Die Wahrscheinlichkeiten kommen vom Bigramm-Modell aus der Lektion, das nur das vorige Zeichen kennt.</p>
-  <p><b>Erst raten:</b> Das Wort „speak“ hat 5 Zeichen. Über wie viele Schritte wird sein Loss gemittelt?</p>
-  <div class="choices gate" data-gate="steps">
-    <button data-fb="Fast: Das erste Zeichen hat keinen Vorgänger, es wird nicht vorhergesagt. Es sind 4 Schritte.">5</button>
-    <button data-ok data-fb="Richtig: s→p, p→e, e→a, a→k. Das erste Zeichen hat keinen Vorgänger und wird nicht vorhergesagt.">4</button>
-    <button data-mis="loss-per-word" data-fb="Nein. Der Loss wird nicht pro Wort berechnet, sondern für jeden Übergang von einem Zeichen zum nächsten: hier 4.">1, ein Wort ist ein Schritt</button>
-  </div>
-  <p class="feedback" hidden></p>
-  <div class="gated" data-gated="steps" hidden>
+  <p>Für einen ganzen Text nimmt man den Mittelwert über alle Übergänge. Tipp ein Wort oder einen Satz ein.</p>
   <div class="row"><input type="text" id="wIn" value="speak" aria-label="Wort oder Satz"></div>
   <div class="scroll"><table class="steps" id="wTab"></table></div>
   <div class="out mono" id="wSum"></div>
-  <p class="note">Tipp jetzt ein eigenes Wort oder einen Satz ein.</p>
-  </div>
 </section>
 
 <section class="station" data-station="distribute" data-show="1">
-  <span class="num">Schritt 3 · Du bist das Modell</span>
+  <span class="num" data-sub="Du bist das Modell">Du bist das Modell</span>
   <h2>Verteil die Wahrscheinlichkeit</h2>
   <p id="c3Intro"></p>
-  <p><b>Erst raten:</b> Welche Verteilung nach „e“ ergibt den kleinsten Loss?</p>
-  <div class="choices gate" data-gate="best-distribution">
-    <button data-mis="all-in-on-favourite" data-fb="Nein. Alles auf den Favoriten ist riskant: Jedes Mal, wenn etwas anderes kommt, ist p winzig und die Strafe riesig.">Alles auf das häufigste Zeichen</button>
-    <button data-fb="Nein. Gleichmäßig verschenkt Wahrscheinlichkeit an Zeichen, die selten kommen; das ist kaum besser als blind raten.">Alle Zeichen gleich wahrscheinlich</button>
-    <button data-ok data-fb="Richtig. Der Loss ist am kleinsten, wenn deine Verteilung den echten Häufigkeiten entspricht. Genau deshalb lernt ein Modell beim Senken des Loss die echten Häufigkeiten.">Genau die echten Häufigkeiten</button>
-  </div>
-  <p class="feedback" hidden></p>
-  <div class="gated" data-gated="best-distribution" hidden>
   <div class="sliders" id="c3Sl"></div>
   <div class="stats">
     <div><span class="note">Dein Loss</span><span class="stat" id="c3Mine"></span></div>
@@ -172,12 +167,12 @@ footer{color:var(--muted);font-size:.85rem}
   </div>
   <div class="row"><button class="btn ghost" id="c3All">Alles auf den Favoriten</button><button class="btn ghost" id="c3Even">Gleichmäßig</button><button class="btn ghost" id="c3Real">Echte Häufigkeiten</button></div>
   <p class="note" id="c3Note"></p>
-  <details class="quiz" data-after="best-distribution" hidden><summary>Was du hier entdecken kannst</summary><p>Der Loss ist am kleinsten, wenn deine Verteilung den echten Häufigkeiten entspricht. Alles auf ein Zeichen zu setzen ist riskant: Jedes Mal, wenn etwas anderes kommt, ist p winzig und die Strafe riesig. Genau deshalb „lernt“ ein Modell beim Senken des Loss die echten Häufigkeiten. Training ist nichts anderes als dieser Schieberegler-Job, nur automatisch und für Millionen Regler gleichzeitig.</p></details>
-  </div>
+  <details class="more"><summary>Wie wird gerechnet?</summary><p>Die Regler werden automatisch auf 100 % normiert. „Alles andere“ wird gleichmäßig auf die übrigen Zeichen verteilt. Dann wird dein Loss über alle echten Fälle gemittelt.</p></details>
+  <details class="quiz"><summary>Was du hier entdecken kannst</summary><p>Der Loss ist am kleinsten, wenn deine Verteilung den echten Häufigkeiten entspricht. Alles auf ein Zeichen zu setzen ist riskant: Jedes Mal, wenn etwas anderes kommt, ist p winzig und die Strafe riesig. Genau deshalb „lernt“ ein Modell beim Senken des Loss die echten Häufigkeiten. Training ist nichts anderes als dieser Schieberegler-Job, nur automatisch und für Millionen Regler gleichzeitig.</p></details>
 </section>
 
 <section class="station" data-station="quiz" data-show="1">
-  <span class="num">Prüf dich</span>
+  <span class="num" data-sub="Prüf dich">Prüf dich</span>
   <h2>Drei kurze Fragen</h2>
   <p>Ein Modell hat auf einem Text Loss 0. Was bedeutet das?</p>
   <div class="choices" data-q="zero">
@@ -270,10 +265,7 @@ is, even till the altitude of his virtue.
 `;
 const ALPHA=0.1,$=id=>document.getElementById(id);
 const disp=c=>c==="\n"?"↵":c===" "?"␣":c;
-/* Theme tokens for canvas (SIMULATOR-SPEC.md §4.5): a host may set a token to light-dark(), var() or color-mix(), which a 2D context
-   cannot parse, so resolve it to a plain colour or font list through a hidden probe element first. */
-const tokenProbe=document.createElement("i");tokenProbe.hidden=true;document.body.append(tokenProbe);
-function css(n){const font=n.startsWith("--f-");tokenProbe.style[font?"fontFamily":"color"]=`var(${n})`;return getComputedStyle(tokenProbe)[font?"fontFamily":"color"];}
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const fmt=(x,d=2)=>x.toLocaleString("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d});
 const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
 const T=SHAKESPEARE,chars=[...new Set(T)].sort(),V=chars.length,stoi={};chars.forEach((c,i)=>stoi[c]=i);
@@ -324,7 +316,7 @@ const ctx="e",ci=stoi[ctx],follow=[];for(let i=0;i+1<T.length;i++)if(T[i]===ctx)
 const freq={};follow.forEach(c=>freq[c]=(freq[c]||0)+1);
 const favs=Object.keys(freq).sort((a,b)=>freq[b]-freq[a]).slice(0,3),cands=[...favs,"rest"];
 let w={};cands.forEach(c=>w[c]=25);
-$("c3Intro").innerHTML=`Im Trainingstext steht ${follow.length}-mal ein „e“. Du entscheidest, welche Wahrscheinlichkeit dein Modell nach „e“ welchem Zeichen gibt. Die Regler werden automatisch auf 100 % normiert. „Alles andere“ wird gleichmäßig auf die übrigen ${V-3} Zeichen verteilt. Dann wird dein Loss über alle ${follow.length} echten Fälle gemittelt.`;
+$("c3Intro").innerHTML=`Was kommt nach „e“? Verteil die Wahrscheinlichkeit so, dass dein Loss über die ${follow.length} echten Fälle im Text möglichst klein wird.`;
 $("c3Sl").innerHTML=cands.map(c=>`<div class="srow"><label for="sl_${encodeURIComponent(c)}" class="mono">${c==="rest"?"alles andere":"„"+disp(c)+"“"}</label><input type="range" min="0" max="100" value="25" id="sl_${encodeURIComponent(c)}" data-c="${encodeURIComponent(c)}"><span class="mono pct"></span></div>`).join("");
 function q(c){const tot=Object.values(w).reduce((a,b)=>a+b,0)||1;
   if(favs.includes(c))return w[c]/tot;return (w.rest/tot)/(V-3);}
@@ -388,6 +380,8 @@ function renderStepper() {
   nav.innerHTML = "";
   stationsAtLevel().forEach((id, i) => {
     const h = document.querySelector(`section[data-station="${id}"] h2`), title = h ? h.textContent.trim() : id;
+    const num = document.querySelector(`section[data-station="${id}"] .num`);
+    if (num) num.textContent = `${i + 1} · ${num.dataset.sub}`;
     const b = document.createElement("button");
     b.className = "step" + (completed.has(id) ? " done" : "");
     b.textContent = completed.has(id) ? "✓" : String(i + 1);
@@ -439,60 +433,27 @@ function markChoice(box, b) {
   b.classList.add(ok ? "right" : "wrong");
   fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = b.dataset.fb;
   quiz[box.dataset.q] = { choice: [...box.querySelectorAll("button")].indexOf(b), correct: ok };
+  /* Predict before you try: a prediction question unlocks the experiment below it. */
+  const reveal = box.closest("[data-station]").querySelector(".reveal.locked");
+  if (reveal) reveal.classList.remove("locked");
   return ok;
 }
-document.querySelectorAll("[data-station] .choices[data-q]").forEach(box => {
+document.querySelectorAll("[data-station] .choices").forEach(box => {
   const station = box.closest("[data-station]").dataset.station;
   box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
     const ok = markChoice(box, b), result = { correct: ok, response: b.textContent.trim() };
     if (!ok && b.dataset.mis) result.misconception = b.dataset.mis;
     ptf.event("answered", { station, level: PTF_LEVELS[CURRENT_LEVEL], data: { question: box.dataset.q }, result });
     persist();
-    if ([...document.querySelectorAll(`[data-station="${station}"] .choices[data-q]`)].every(x => quiz[x.dataset.q] && quiz[x.dataset.q].correct)) done(station);
+    if (!document.querySelector(`[data-station="${station}"] .reveal`) && [...document.querySelectorAll(`[data-station="${station}"] .choices`)].every(x => quiz[x.dataset.q] && quiz[x.dataset.q].correct)) done(station);
   }));
-});
-
-/* Predict, observe, explain (SIMULATOR-SPEC.md §7 rule 5): a .choices.gate box is a prediction. Picking an option only records it
-   and shows [data-gated="<gate>"]; the prediction is judged and reported as answered at the first use of a control there, once the
-   result is in view. Explanations marked data-after="<gate>" stay hidden until then. A prediction never completes a station. */
-const guesses = {};
-function pickGuess(box, b) {
-  box.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
-  guesses[box.dataset.gate] = { pick: [...box.querySelectorAll("button")].indexOf(b), judged: false };
-  document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => { el.hidden = false; });
-  drawLn();
-}
-function judgeGuess(box, restoringNow) {
-  const g = guesses[box.dataset.gate], b = g && box.querySelectorAll("button")[g.pick];
-  if (!b || box.dataset.judged) return;
-  box.dataset.judged = "1"; g.judged = true;
-  const ok = b.hasAttribute("data-ok"), fb = box.nextElementSibling;
-  b.classList.add(ok ? "right" : "wrong");
-  box.querySelectorAll("button").forEach(x => { x.disabled = true; });
-  fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = b.dataset.fb;
-  document.querySelectorAll(`[data-after="${box.dataset.gate}"]`).forEach(el => { el.hidden = false; });
-  if (restoringNow) return;
-  const result = { correct: ok, response: b.textContent.trim() };
-  if (!ok && b.dataset.mis) result.misconception = b.dataset.mis;
-  ptf.event("answered", { station: box.closest("[data-station]").dataset.station, level: PTF_LEVELS[CURRENT_LEVEL], data: { prediction: box.dataset.gate }, result });
-  persist();
-}
-document.querySelectorAll("[data-station] .choices.gate").forEach(box => {
-  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
-    if (box.dataset.judged) return;
-    pickGuess(box, b);
-    ptf.event("experienced", { station: box.closest("[data-station]").dataset.station, level: PTF_LEVELS[CURRENT_LEVEL], data: { prediction: b.textContent.trim() } });
-    persist();
-  }));
-  document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => ["click", "input"].forEach(t =>
-    el.addEventListener(t, e => { if (e.target.closest("button, input")) setTimeout(() => judgeGuess(box)); })));
 });
 
 /* Resume state (ptf/state): everything the learner set, so a reload shows the same experiment. */
 let restoring = false;
 function persist() {
   if (restoring || typeof ptf === "undefined") return;
-  ptf.saveState({ level: PTF_LEVELS[CURRENT_LEVEL], focus: FOCUS, p: +$("pSl").value, tried, word: $("wIn").value, weights: w, quiz, guesses, completed: [...completed] });
+  ptf.saveState({ level: PTF_LEVELS[CURRENT_LEVEL], focus: FOCUS, p: +$("pSl").value, tried, word: $("wIn").value, weights: w, quiz, completed: [...completed] });
 }
 function restore(st) {
   if (!st || typeof st !== "object") return;
@@ -505,12 +466,6 @@ function restore(st) {
     if (st.quiz && typeof st.quiz === "object") document.querySelectorAll(".choices[data-q]").forEach(box => {
       const a = st.quiz[box.dataset.q], b = a && box.querySelectorAll("button")[a.choice];
       if (b) markChoice(box, b);
-    });
-    if (st.guesses && typeof st.guesses === "object") document.querySelectorAll(".choices.gate").forEach(box => {
-      const g = st.guesses[box.dataset.gate], b = g && Number.isInteger(g.pick) && box.querySelectorAll("button")[g.pick];
-      if (!b) return;
-      pickGuess(box, b);
-      if (g.judged) judgeGuess(box, true);
     });
     if (Array.isArray(st.completed)) st.completed.forEach(id => { if (stationsAtLevel().includes(id)) completed.add(id); });
     drawLn(); renderWord(); renderC3();
@@ -527,9 +482,6 @@ function simSnapshot() {
     `Average: text ${JSON.stringify($("wIn").value)}, ${r.n} steps, loss ${r.n ? r.loss.toFixed(2) : "none"}`,
     `Distribute after "e": ${dist}; learner's loss ${zero ? "infinite (a real character got 0 %)" : mine.toFixed(2)}, best possible with these sliders ${c3Best.toFixed(2)}, counted model ${cm.toFixed(2)}, blind guessing ${Math.log(V).toFixed(2)}`
   ];
-  const preds = Object.entries(guesses).map(([k, g]) => { const b = document.querySelector(`.choices[data-gate="${k}"]`).querySelectorAll("button")[g.pick];
-    return `${k} ${JSON.stringify(b.textContent.trim())}${g.judged ? (b.hasAttribute("data-ok") ? " (right)" : " (wrong)") : " (not yet judged)"}`; });
-  if (preds.length) parts.push(`Predictions: ${preds.join("; ")}`);
   const answers = Object.entries(quiz).map(([k, a]) => `${k} ${a.correct ? "right" : "wrong"}`);
   if (answers.length) parts.push(`Quiz: ${answers.join(", ")}`);
   return parts.join(". ");
@@ -541,7 +493,6 @@ const ptf = PTF.connect({
     if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus !== false });
   },
   onSetLevel() { /* one level only */ },
-  onTheme() { drawLn(); },
   onGoto: gotoStation,
   snapshot() {
     const shown = [...document.querySelectorAll("[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);

@@ -14,7 +14,7 @@
     "type": "object",
     "properties": {}
   },
-  "integrity": "sha256-SaWunTbekxYLDlTDk/iaJY10+m0Fudz7I5vAFeQDPXY=",
+  "integrity": "sha256-m+aNrf7AG0dgkUbYeDIqJ05TN3Fidx0p0eHcUP1bGf0=",
   "id": "ptf:sim/loss-lens",
   "version": "1.2.0",
   "title": "Loss lens",
@@ -63,5 +63,5 @@
     "station_completed"
   ],
   "derived_from": "ptf:sim/loss-lens@1.1.0",
-  "changelog": "Predict first (SIMULATOR-SPEC §7 rule 5): stations surprise, average and distribute ask for a prediction (penalty at 1 %, number of steps in a word, best distribution) before they show their controls; the prediction is judged and reported as answered at the first use of the revealed controls, explanations that give the answer away stay hidden until then, and predictions are saved, restored and reported in the snapshot. Canvas colours are resolved through a probe element (§4.5) and redrawn on theme changes."
+  "changelog": "Predict before you try: the first station asks how the loss changes when p drops from 10 % to 1 % before the slider unlocks (answered, with misconception loss-counts-errors). Shorter texts with details behind \"more\" toggles, compact phone layout (sliders no longer overflow the card, title hidden in focus mode, navigation on one line), station labels numbered like the progress row."
 }

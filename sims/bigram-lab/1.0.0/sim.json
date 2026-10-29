@@ -73,5 +73,5 @@
   ],
   "derived_from": "ptf:sim/next-char-lab@2.1.0",
   "changelog": "Second half of next-char-lab 2.1.0, split so that each simulator has at most seven stations (PEDAGOGY.md §5). English and German UI; every experiment starts with a prediction that is judged after the result (SIMULATOR-SPEC §7 rule 5); starts in focus mode with a progress row; canvas colours are resolved through a probe element (§4.5); full state is saved and restored.",
-  "integrity": "sha256-E1yoJkBw6IME86yqswx7/ebNGPukRvtPB++8FDrYLvo="
+  "integrity": "sha256-eHXirVPQ5E5yXRTt4UjqLgWCw2fF63wwg2TNTbRsMtE="
 }

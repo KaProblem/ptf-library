@@ -97,5 +97,5 @@
   ],
   "derived_from": "ptf:sim/next-char-lab@2.1.0",
   "changelog": "First half of next-char-lab 2.1.0, split so that each simulator has at most seven stations (PEDAGOGY.md §5). English and German UI; every experiment starts with a prediction that is judged after the result (SIMULATOR-SPEC §7 rule 5); starts in focus mode with a progress row; canvas-free; full state is saved and restored. The loss, training curve, temperature and table stations moved to bigram-lab.",
-  "integrity": "sha256-eRctMu7gyoQ795HL/QpmcTvQZy0C/5+/4aIHSZfrMY0="
+  "integrity": "sha256-PDO5aMli11eOYhv60sehqv4UMa4cXu3UTjWnEuu+qgY="
 }

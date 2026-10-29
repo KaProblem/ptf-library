@@ -21,8 +21,8 @@ the questions. The content is open; the explanation is personal.
 | --- | --- | --- | --- |
 | [next-char-basics](sims/next-char-basics/) | 1.0.0 | en, de | next-character prediction, tokenizer, bigram counts, sampling, training examples |
 | [bigram-lab](sims/bigram-lab/) | 1.0.0 | en, de | loss, validation curve, temperature, bigram table |
-| [next-char-lab](sims/next-char-lab/) | 1.0.0, 2.0.0, 2.1.0 (all deprecated: split into next-char-basics and bigram-lab) | de | tokenizer, bigram, softmax, loss, sampling, temperature |
-| [loss-lens](sims/loss-lens/) | 1.0.0, 1.1.0, 1.2.0 | de | cross-entropy, negative log-likelihood |
+| [next-char-lab](sims/next-char-lab/) | 1.0.0, 2.0.0, 2.1.0, 2.2.0 (all deprecated: split into next-char-basics and bigram-lab) | de | tokenizer, bigram, softmax, loss, sampling, temperature |
+| [loss-lens](sims/loss-lens/) | 1.0.0, 1.1.0, 1.2.0, 1.3.0 | de | cross-entropy, negative log-likelihood |
 | [causal-mask](sims/causal-mask/) | 1.0.0 | en, de | causal mask, weighted average, masked softmax |
 | [attention-lab](sims/attention-lab/) | 1.0.0 | en, de | self-attention, query/key/value, scaling, positions |
 | [transformer-block](sims/transformer-block/) | 1.0.0 | en | multi-head attention, feed-forward, loss ladder |

@@ -6,6 +6,9 @@ title: Training examples, context and batches
 description: One chunk of text holds many training examples at once; the context length limits how far back the model can look, and batches process independent chunks in parallel.
 lang: en
 levels: [highschool, college, expert]
+objectives:
+  - Explain how one chunk of text contains many training examples at once.
+  - Describe what the context length limits and why batches do not influence each other.
 tags: [llm, training, context-window, block-size, batch]
 about:
   - wikidata: Q125619872
@@ -22,6 +25,7 @@ simulators:
     station: context-window
     levels: [highschool, college, expert]
     role: explore
+    use_when: the learner should see the examples in a chunk rather than count them in their head
 code:
   - ref: ptf:code/gpt-from-scratch@^1.0.0
     step: batches
@@ -33,9 +37,15 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.2.2
+version: 0.3.1
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- A model learns from pairs of "text so far" and "next token".
+- This step shows how a single piece of text yields many such pairs, and why there is a limit on how far back the model looks.
+- Afterwards the learner can count the examples in a chunk and explain the context window.
 
 # Core
 

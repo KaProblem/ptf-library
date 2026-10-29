@@ -7,7 +7,7 @@ title: "Gravity: from the leaning tower to curved spacetime"
 description: Why heavy and light things fall together, what air and ramps change, how one law holds apples and moons, and how Einstein replaced the pull with curved spacetime.
 lang: en
 license: CC-BY-SA-4.0
-version: 0.1.2
+version: 0.2.1
 tags: [physics, mechanics, gravity, relativity]
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 ---

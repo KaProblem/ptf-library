@@ -14,12 +14,19 @@
       "expectText": "Überraschung messen"
     },
     {
-      "click": "[data-gate='one-percent'] button[data-mis='loss-linear-in-p']"
+      "click": "[data-q='ten-to-one'] button:last-child"
     },
     {
       "expectEvent": {
-        "verb": "experienced",
+        "verb": "answered",
         "station": "surprise"
+      }
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "ten-to-one wrong"
+        ]
       }
     },
     {
@@ -33,15 +40,6 @@
         "verb": "experienced",
         "station": "surprise"
       }
-    },
-    {
-      "expectEvent": {
-        "verb": "answered",
-        "station": "surprise"
-      }
-    },
-    {
-      "expectText": "fast siebenmal so viel"
     },
     {
       "snapshot": {
@@ -72,9 +70,6 @@
       ]
     },
     {
-      "click": "[data-gate='steps'] button[data-ok]"
-    },
-    {
       "type": {
         "selector": "#wIn",
         "text": "hear me"
@@ -103,9 +98,6 @@
       "expectStations": [
         "distribute"
       ]
-    },
-    {
-      "click": "[data-gate='best-distribution'] button[data-ok]"
     },
     {
       "click": "#c3All"
@@ -162,14 +154,7 @@
     {
       "snapshot": {
         "contains": [
-          "Predictions: one-percent \"Etwa doppelt so groß\" (wrong); steps \"4\" (right); best-distribution \"Genau die echten Häufigkeiten\" (right)"
-        ]
-      }
-    },
-    {
-      "snapshot": {
-        "contains": [
-          "Quiz: zero right, compare right, validation right",
+          "zero right, compare right, validation right",
           "Completed: surprise, average, distribute, quiz"
         ]
       }
@@ -186,9 +171,6 @@
       "goto": {
         "focus": false
       }
-    },
-    {
-      "expectText": "Was du hier entdecken kannst"
     },
     {
       "expectStations": [

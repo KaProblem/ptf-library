@@ -6,6 +6,9 @@ title: "The transformer block: multi-head attention and feed-forward"
 description: A block first lets tokens exchange information through several attention heads in parallel, then lets each token process what it gathered on its own in a feed-forward layer.
 lang: en
 levels: [highschool, college, expert]
+objectives:
+  - "Describe the two halves of a block: communication (attention heads) and computation (feed-forward)."
+  - Explain why several heads run in parallel and why blocks are stacked.
 tags: [llm, transformer, multi-head-attention, feed-forward, mlp]
 about:
   - wikidata: Q85810444
@@ -22,15 +25,18 @@ simulators:
     station: heads
     levels: [highschool, college, expert]
     role: explore
+    use_when: the learner wants to see different heads ask different questions
   - ref: ptf:sim/transformer-block@^1.0.0
     station: feed-forward
     levels: [highschool, college]
     role: explore
     note: The key observation is that changing one token's input changes only that token's output.
+    use_when: the learner should see that the feed-forward part works on each token alone
   - ref: ptf:sim/transformer-block@^1.0.0
     station: stack
     levels: [highschool, college, expert]
     role: practice
+    use_when: the learner wants to see what stacking blocks changes
 code:
   - ref: ptf:code/gpt-from-scratch@^1.0.0
     step: transformer-block
@@ -42,9 +48,15 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.2.1
+version: 0.3.0
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- Attention alone lets tokens talk; a block adds time for each token to think about what it heard.
+- Stacking such blocks is the transformer.
+- Afterwards the learner can sketch a block and say what each half does.
 
 # Core
 

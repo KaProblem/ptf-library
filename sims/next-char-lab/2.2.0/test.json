@@ -1,0 +1,248 @@
+{
+  "steps": [
+    {
+      "init": {
+        "level": "highschool"
+      }
+    },
+    {
+      "expectStations": [
+        "guess"
+      ]
+    },
+    {
+      "expectText": "Rate das nächste Zeichen"
+    },
+    {
+      "type": {
+        "selector": "#g0In",
+        "text": "e"
+      }
+    },
+    {
+      "click": "#g0Check"
+    },
+    {
+      "expectEvent": {
+        "verb": "answered",
+        "station": "guess"
+      }
+    },
+    {
+      "click": "#focusNext"
+    },
+    {
+      "expectStations": [
+        "tokenizer"
+      ]
+    },
+    {
+      "goto": {
+        "station": "corpus",
+        "focus": true
+      }
+    },
+    {
+      "expectStations": [
+        "corpus"
+      ]
+    },
+    {
+      "type": {
+        "selector": "#corpus",
+        "text": "Ich mag Kekse 🍪 und Milch 🥛. Du magst 🙂 Kekse auch, oder? Wir essen Kekse 🍪 mit Milch 🥛 am Abend 🙂.\nIch mag Kekse 🍪 und Milch 🥛. Du magst 🙂 Kekse auch, oder? Wir essen Kekse 🍪 mit Milch 🥛 am Abend 🙂.\nIch mag Kekse 🍪 und Milch 🥛. Du magst 🙂 Kekse auch, oder? Wir essen Kekse 🍪 mit Milch 🥛 am Abend 🙂.\n"
+      }
+    },
+    {
+      "click": "#useCorpus"
+    },
+    {
+      "expectEvent": {
+        "verb": "station_completed",
+        "station": "corpus"
+      }
+    },
+    {
+      "expectNoError": true
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "learner's own text, 300 characters"
+        ]
+      }
+    },
+    {
+      "goto": {
+        "station": "tokenizer",
+        "focus": true
+      }
+    },
+    {
+      "type": {
+        "selector": "#tokIn",
+        "text": "Kekse 🙂"
+      }
+    },
+    {
+      "expectEvent": {
+        "verb": "station_completed",
+        "station": "tokenizer"
+      }
+    },
+    {
+      "click": "#tokChips .chip:last-child"
+    },
+    {
+      "goto": {
+        "station": "counted-probabilities",
+        "focus": true
+      }
+    },
+    {
+      "click": "#cpOpts button:first-child"
+    },
+    {
+      "expectEvent": {
+        "verb": "answered",
+        "station": "counted-probabilities"
+      }
+    },
+    {
+      "expectEvent": {
+        "verb": "station_completed",
+        "station": "counted-probabilities"
+      }
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "Current character: \"🙂\""
+        ]
+      }
+    },
+    {
+      "goto": {
+        "station": "generate",
+        "focus": true
+      }
+    },
+    {
+      "click": ".predict[data-predict='generate'] button[data-o='babble']"
+    },
+    {
+      "click": "#gen100"
+    },
+    {
+      "expectEvent": {
+        "verb": "experienced",
+        "station": "generate"
+      }
+    },
+    {
+      "expectEvent": {
+        "verb": "answered",
+        "station": "generate"
+      }
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "generate: babble (right)"
+        ]
+      }
+    },
+    {
+      "click": "[data-level='2']"
+    },
+    {
+      "expectEvent": "level_changed"
+    },
+    {
+      "expectStations": [
+        "loss"
+      ]
+    },
+    {
+      "type": {
+        "selector": "#lossIn",
+        "text": "Ich mag Kekse 🍪"
+      }
+    },
+    {
+      "expectEvent": {
+        "verb": "station_completed",
+        "station": "loss"
+      }
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "Loss sentence: \"Ich mag Kekse 🍪\", loss"
+        ]
+      }
+    },
+    {
+      "goto": {
+        "station": "temperature",
+        "focus": true
+      }
+    },
+    {
+      "click": ".predict[data-predict='temperature'] button[data-o='flat']"
+    },
+    {
+      "click": "#tgen"
+    },
+    {
+      "expectEvent": {
+        "verb": "answered",
+        "station": "temperature"
+      }
+    },
+    {
+      "goto": {
+        "station": "loss",
+        "focus": true
+      }
+    },
+    {
+      "reload": true
+    },
+    {
+      "snapshot": {
+        "contains": [
+          "generate: babble (right)",
+          "temperature: flat (wrong)"
+        ]
+      }
+    },
+    {
+      "expectStations": [
+        "loss"
+      ]
+    },
+    {
+      "goto": {
+        "focus": false
+      }
+    },
+    {
+      "expectStations": [
+        "loss",
+        "training-curve",
+        "temperature",
+        "corpus"
+      ]
+    },
+    {
+      "goto": "bigram-table"
+    },
+    {
+      "expectText": "V×V-Tabelle"
+    },
+    {
+      "expectNoError": true
+    }
+  ]
+}

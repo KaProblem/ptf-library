@@ -1,0 +1,133 @@
+{
+  "steps": [
+    {
+      "init": {
+        "level": "highschool",
+        "locale": "en"
+      }
+    },
+    {
+      "expectText": "The cannon on the mountain"
+    },
+    {
+      "click": "#cannonBox button[data-ok]"
+    },
+    {
+      "click": "[data-station='cannon'] [data-v='7.7']"
+    },
+    {
+      "click": "#skip1"
+    },
+    {
+      "expectText": "once around the Earth in 93 min"
+    },
+    {
+      "expectEvent": "answered"
+    },
+    {
+      "expectEvent": "station_completed"
+    },
+    {
+      "goto": {
+        "station": "moon",
+        "focus": true
+      }
+    },
+    {
+      "click": "#moonBox button[data-ok]"
+    },
+    {
+      "type": {
+        "selector": "#r2",
+        "text": "60"
+      }
+    },
+    {
+      "expectText": "exactly how far the Moon falls"
+    },
+    {
+      "goto": {
+        "station": "spacetime",
+        "focus": true
+      }
+    },
+    {
+      "click": "#spaceBox button[data-ok]"
+    },
+    {
+      "click": "#go3"
+    },
+    {
+      "expectEvent": "experienced"
+    },
+    {
+      "goto": {
+        "station": "clocks",
+        "focus": true
+      }
+    },
+    {
+      "click": "#clockBox button[data-ok]"
+    },
+    {
+      "click": "[data-station='clocks'] [data-h='20200']"
+    },
+    {
+      "expectText": "gains 38.5 µs per day"
+    },
+    {
+      "click": "[data-level='3']"
+    },
+    {
+      "expectEvent": "level_changed"
+    },
+    {
+      "goto": {
+        "station": "mercury",
+        "focus": true
+      }
+    },
+    {
+      "click": "#mercBox button[data-ok]"
+    },
+    {
+      "click": "#go5"
+    },
+    {
+      "click": "#skip5"
+    },
+    {
+      "expectText": "Newton only: the ellipse closes on itself"
+    },
+    {
+      "type": {
+        "selector": "#k5",
+        "text": "5"
+      }
+    },
+    {
+      "click": "#go5"
+    },
+    {
+      "click": "#skip5"
+    },
+    {
+      "expectText": "(first-order formula: 2.8756°)"
+    },
+    {
+      "goto": {
+        "station": "check",
+        "focus": true
+      }
+    },
+    {
+      "expectText": "Two short questions"
+    },
+    {
+      "snapshot": true
+    },
+    {
+      "expectNoError": true
+    }
+  ]
+}

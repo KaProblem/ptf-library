@@ -6,6 +6,9 @@ title: Air resistance and terminal speed
 description: Air pushes back harder the faster an object moves; a falling object speeds up until drag equals its weight and then falls at its terminal speed.
 lang: en
 levels: [highschool, college, expert]
+objectives:
+  - Explain why a crumpled sheet of paper falls faster than a flat one of the same mass.
+  - Describe how a falling object reaches a terminal speed when drag equals its weight.
 tags: [physics, mechanics, drag, terminal-velocity, numerical-integration]
 about:
   - wikidata: Q206621
@@ -23,11 +26,13 @@ simulators:
     levels: [highschool, college, expert]
     role: explore
     note: Start with the flat and the crumpled sheet of paper (same mass); ask which lands first before dropping.
+    use_when: the learner needs to see that shape, not mass, changes the fall in air
   - ref: ptf:sim/falling-tower@^1.1.0
     station: model
     levels: [college, expert]
     role: practice
     note: Let the learner make Δt large until Euler is visibly wrong, then compare RK4.
+    use_when: the learner is curious how a computer calculates the fall step by step (college level and above)
 sources:
   - id: openstax-drag
     resource: https://openstax.org/books/university-physics-volume-1/pages/6-4-drag-force-and-terminal-speed
@@ -37,9 +42,15 @@ sources:
     title: "The Feynman Lectures on Physics, Vol. I, ch. 9: Newton's Laws of Dynamics"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.1.2
+version: 0.2.0
 license: CC-BY-SA-4.0
 ---
+
+# Introduction
+
+- In everyday life heavy things do seem to fall faster. The reason is the air, not gravity.
+- Skydivers, raindrops and parachutes all depend on it.
+- Afterwards the learner can explain terminal speed and why shape and size matter for it.
 
 # Core
 
