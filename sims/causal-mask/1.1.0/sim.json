@@ -1,0 +1,81 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/causal-mask",
+  "version": "1.1.0",
+  "title": "Looking back: the causal mask",
+  "description": "Averaging over the past, the lower-triangular mask as a weight table, and masked softmax as the bridge to self-attention.",
+  "lang": [
+    "en",
+    "de"
+  ],
+  "concepts": [
+    "causal-mask",
+    "weighted-average",
+    "lower-triangular-matrix",
+    "masked-softmax",
+    "self-attention"
+  ],
+  "levels": [
+    "highschool",
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "average-past",
+      "title": "Average of the past",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "triangle",
+      "title": "The triangle (open the future and see the leak)",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "softmax-mask",
+      "title": "Scores, mask, softmax",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "check",
+      "title": "Two short questions",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "entry": "index.html",
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "events": [
+    "answered",
+    "experienced",
+    "station_completed",
+    "level_changed"
+  ],
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "derived_from": "ptf:sim/causal-mask@1.0.0",
+  "changelog": "Levels are depths, not parts (SPEC.md §5.2): station softmax-mask is available at every level, because masked softmax over zero scores is the bridge to self-attention for every learner. The note on why −∞ and not 0 is shown at every level; the PyTorch code stays expert only.",
+  "integrity": "sha256-kR8mDAg0IzVEADebc/mnByQCJL4e10kt0RHzi++wEJo="
+}

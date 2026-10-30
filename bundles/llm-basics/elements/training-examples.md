@@ -37,7 +37,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.3.1
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -85,29 +85,51 @@ at the same time, but nobody copies from anybody else.
 
 # Level: college
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-Sample B random offsets into the token stream, take block_size + 1 tokens
-from each, and stack them into x (B × T) and y (B × T), where y is x shifted
-by one. The model outputs logits of shape (B, T, V) and the loss is the mean
-cross-entropy over all B·T positions, so each batch carries B·T supervised
-predictions. Because the targets for every prefix length are present, one
-forward pass trains all context lengths 1…T together; the causal mask (later
-in this path) is what keeps position t from seeing tokens after t. The held-out
-validation split is evaluated the same way, averaged over several batches to
-reduce noise.
+How many supervised predictions are in the 9-token chunk "First Cit"?
+Count before reading on: the answer is 8, one for every prefix
+("F" → "i", "Fi" → "r", …, "First Ci" → "t").
+
+In general a chunk of block_size + 1 tokens gives block_size examples:
+inputs x = tokens 0…T−1, targets y = x shifted by one, and example t has
+context x[0..t] and target y[t]. Sample B random offsets into the token
+stream and stack the chunks into x and y of shape (B × T). The model
+outputs logits of shape (B, T, V), and the loss is the mean cross-entropy
+over all B·T positions, so one forward pass trains every context length
+1…T at once. That is why the model can later start generating from a
+single token; the causal mask (later in this path) keeps position t from
+seeing tokens after t.
+
+T is also a hard limit: at generation time the context is cropped to the
+last T tokens, and nothing earlier reaches the model. The B rows of a batch
+never interact; batching exists only to keep the GPU busy, and the loss is
+just averaged over them. A held-out validation split (about 10 %) is
+evaluated the same way, averaged over several batches to reduce noise.
 
 # Level: expert
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
+
+Predict the number of supervised targets in one batch of B = 64 chunks with
+block_size T = 256 (answer: 64 · 256 = 16,384), and why none of them leaks
+information into another.
+
+Next-token training turns every chunk of T + 1 tokens into T examples with
+contexts of length 1…T, trained in one pass with x and y = x shifted by
+one; the causal mask restricts position t to tokens ≤ t, and the batch
+dimension is fully independent, so the loss is a mean over B·T conditionally
+independent predictions. At inference the context is cropped to the last T
+tokens.
 
 Context length is a hard architectural limit for learned absolute position
 embeddings (positions beyond block_size have no embedding) and a cost limit
 for attention, which is O(T²) in time and memory per layer. Longer contexts
 use relative or rotary position encodings, sparse or linear attention
 variants, and KV caching at inference. Random-offset sampling means epochs
-are only approximate; production pipelines pack documents with separator
-tokens and mask attention across document boundaries.
+are only approximate; production pipelines pack several documents into one
+row with separator tokens and then mask attention across document boundaries,
+because otherwise packed documents would interact.
 
 # Misconceptions
 
@@ -179,6 +201,54 @@ tokens and mask attention across document boundaries.
     { "answer": "57" }
   ],
   "explanation": "y is x shifted by one. Position t (counting from 0) sees x[0..t] and must predict y[t]."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "worksheets",
+  "level": "highschool",
+  "purpose": "check",
+  "misconception": "batch-elements-interact",
+  "question": "A model trains on a batch of 4 chunks at the same time. One chunk is from Hamlet, one from a cookbook. What does the cookbook chunk learn from the Hamlet chunk?",
+  "options": [
+    {
+      "text": "Nothing; the chunks are worked on side by side but separately",
+      "correct": true,
+      "feedback": "Right. Like pupils with their own worksheets: same time, no copying."
+    },
+    {
+      "text": "It borrows words from Hamlet as extra context",
+      "correct": false,
+      "feedback": "No. Each chunk is its own context; the batch only makes the computer faster."
+    },
+    {
+      "text": "It averages its predictions with Hamlet's",
+      "correct": false,
+      "feedback": "No. Only the losses are averaged at the end; the predictions stay separate."
+    }
+  ],
+  "explanation": "A batch is for speed. Every chunk is predicted from its own text only."
+}
+```
+
+```ptf-question
+{
+  "kind": "free_text",
+  "id": "packing",
+  "level": "expert",
+  "purpose": "check",
+  "misconception": "batch-elements-interact",
+  "question": "A pipeline packs three short documents into one row of 2,048 tokens. What goes wrong if it trains as usual, and how is it fixed?",
+  "rubric": [
+    "Within a row, later tokens can attend to tokens of earlier, unrelated documents",
+    "The model learns spurious dependencies across document boundaries",
+    "Fix: separator tokens plus an attention mask that blocks attention across boundaries (or reset positions per document)",
+    "Rows of a batch remain independent either way"
+  ],
+  "sample_answer": "The causal mask only blocks the future, so tokens of document 3 can attend to documents 1 and 2 and learn fake dependencies. Add separator tokens and a block-diagonal causal mask (and reset positions) so each document only sees itself.",
+  "explanation": "Rows in a batch never interact, but positions within a row do, so packing needs its own mask."
 }
 ```
 

@@ -1,0 +1,74 @@
+{
+  "steps": [
+    {
+      "init": {
+        "level": "highschool",
+        "locale": "en"
+      }
+    },
+    {
+      "expectText": "Average of the past"
+    },
+    {
+      "click": "[data-station='average-past'] .choices button[data-ok]"
+    },
+    {
+      "expectEvent": "answered"
+    },
+    {
+      "click": "#tri button[data-c='2,5']"
+    },
+    {
+      "expectText": "Warning, leak"
+    },
+    {
+      "click": "#triReset"
+    },
+    {
+      "expectEvent": "station_completed"
+    },
+    {
+      "goto": {
+        "station": "softmax-mask",
+        "focus": true
+      }
+    },
+    {
+      "expectStations": [
+        "softmax-mask"
+      ]
+    },
+    {
+      "expectText": "Scores, mask, softmax"
+    },
+    {
+      "goto": {
+        "focus": false
+      }
+    },
+    {
+      "click": "[data-level='2']"
+    },
+    {
+      "expectEvent": "level_changed"
+    },
+    {
+      "expectText": "Scores, mask, softmax"
+    },
+    {
+      "click": "#smFocus"
+    },
+    {
+      "expectText": "Uneven scores"
+    },
+    {
+      "goto": "check"
+    },
+    {
+      "snapshot": true
+    },
+    {
+      "expectNoError": true
+    }
+  ]
+}

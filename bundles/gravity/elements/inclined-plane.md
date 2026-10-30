@@ -40,7 +40,7 @@ sources:
     title: "OpenStax University Physics Volume 1, 6.2 Solving Problems with Newton's Laws"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.2.0
+version: 0.3.0
 license: CC-BY-SA-4.0
 ---
 
@@ -100,17 +100,26 @@ t² law for free fall.
 
 # Level: expert
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-The inclined plane is the simplest constrained system: the normal force is a
-constraint force that enforces motion on a one-dimensional manifold, and the
-generalized coordinate s along the slope has Lagrangian L = ½ m ṡ² + m g s
-sin θ, giving s̈ = g sin θ directly. Friction enters as a non-holonomic,
-dissipative force. Historically the point is methodological: Galileo traded
-the unmeasurable short time of free fall for a slower process with the same
-functional form and inferred the limit θ → 90°. The extrapolation is valid
-for sliding without friction; for rolling bodies the factor 1 / (1 + k)
-(next element) must be divided out.
+Before reading: Galileo measured a ball on a ramp, not a falling ball. What
+exactly entitles him to extrapolate to θ = 90°, and what does a rolling ball
+add to the extrapolation?
+
+The normal force is a constraint force that keeps the body on a
+one-dimensional path; with the coordinate s along the slope the Lagrangian
+L = ½ m ṡ² + m g s sin θ gives s̈ = g sin θ directly. The ramp therefore
+"dilutes" gravity by sin θ but keeps the functional form: from rest
+s = ½ g sin θ · t², so distances in equal time steps still go 1 : 3 : 5 : 7,
+and the limit θ → 90° is free fall. Friction enters as a dissipative force,
+a = g (sin θ − μ_k cos θ).
+
+Historically the point is methodological: Galileo traded the unmeasurable
+short time of free fall for a slower process with the same functional form
+and inferred the limit. The extrapolation is valid for frictionless sliding;
+for rolling bodies the acceleration carries the factor 1 / (1 + k) (next
+element), which is constant for a given shape, so the t² law survives but
+the value of g must be corrected.
 
 # Misconceptions
 
@@ -212,6 +221,35 @@ for sliding without friction; for rolling bodies the factor 1 / (1 + k)
   "rubric": ["The t² law (constant acceleration) holds for any fixed angle", "The value of the acceleration does not extrapolate as g sin θ for a rolling ball", "Rolling adds the factor 1 / (1 + k), k = 2/5 for a solid sphere", "Fine for the form of the law, wrong by 5/7 for the value of g"],
   "sample_answer": "Any fixed slope gives constant acceleration, so s ∝ t² is established exactly, and it carries over to the vertical. But a rolling ball's acceleration is g sin θ / (1 + k) = 5/7 g sin θ for a solid sphere, so using rolling balls to infer the value of g underestimates it by the factor 5/7 unless rotation is accounted for.",
   "explanation": "Functional form transfers; the numerical value needs the rolling correction."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "t-squared-ramp",
+  "level": "expert",
+  "purpose": "check",
+  "misconception": "equal-distances-equal-times",
+  "question": "A solid ball rolls without slipping down a 10° ramp. Which statement about its motion is correct?",
+  "options": [
+    {
+      "text": "s ∝ t² still holds, with a = g sin θ / (1 + 2/5) instead of g sin θ",
+      "correct": true,
+      "feedback": "Right. The rolling factor is constant, so the kinematics keep their form; only the value of the acceleration changes."
+    },
+    {
+      "text": "s ∝ t holds, because rolling friction keeps the speed constant",
+      "correct": false,
+      "feedback": "No. Static friction does no work here; the ball keeps accelerating uniformly."
+    },
+    {
+      "text": "s ∝ t² holds with a = g sin θ exactly, so Galileo's g is right",
+      "correct": false,
+      "feedback": "No. Part of the energy goes into spin, so a rolling ball accelerates less than a sliding block; g inferred without the factor comes out too small."
+    }
+  ],
+  "explanation": "Uniform acceleration along the slope gives s = ½ a t² for any constant a; rolling only scales a by 1 / (1 + k)."
 }
 ```
 

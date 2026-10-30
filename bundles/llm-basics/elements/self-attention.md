@@ -19,32 +19,32 @@ leads_to:
   - ptf:el/llm-basics/transformer-block
 duration_min: { child: 10, highschool: 20, college: 30, expert: 20 }
 simulators:
-  - ref: ptf:sim/attention-lab@^1.0.0
+  - ref: ptf:sim/attention-lab@^1.2.0
     station: who-listens
-    levels: [highschool, college]
+    levels: [highschool, college, expert]
     role: explore
     note: Guess first. Most learners pick the nearest noun; that is the hook for "attention is learned, not distance".
     use_when: the learner should guess which word matters before any mechanics
-  - ref: ptf:sim/attention-lab@^1.0.0
+  - ref: ptf:sim/attention-lab@^1.2.0
     station: query-key
     levels: [highschool, college, expert]
     role: practice
     use_when: the learner wants to see how a match score is computed
-  - ref: ptf:sim/attention-lab@^1.0.0
+  - ref: ptf:sim/attention-lab@^1.2.0
     station: value
-    levels: [college, expert]
+    levels: [highschool, college, expert]
     role: explore
     use_when: the learner understands the weights but not what gets passed on
-  - ref: ptf:sim/attention-lab@^1.0.0
+  - ref: ptf:sim/attention-lab@^1.2.0
     station: positions
     levels: [college, expert]
     role: explore
     use_when: the learner asks how the model knows word order
-  - ref: ptf:sim/attention-lab@^1.0.0
+  - ref: ptf:sim/attention-lab@^1.2.0
     station: scaling
     levels: [expert]
     role: explore
-    use_when: the learner wonders why the scores are divided by √d (college level and above)
+    use_when: the learner wonders why the scores are divided by √d (optional deepening)
 code:
   - ref: ptf:code/gpt-from-scratch@^1.0.0
     step: self-attention
@@ -59,7 +59,7 @@ sources:
     title: "Vaswani et al.: Attention Is All You Need"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.3.0
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -128,13 +128,24 @@ adjusts them until the predictions of the next word get better.
 
 # Level: college
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-For a sequence X ∈ ℝ^(T×C), a head computes Q = X W_Q, K = X W_K,
-V = X W_V ∈ ℝ^(T×d). The affinity matrix Q Kᵀ (T × T) replaces the zero
-scores of the causal average; after scaling by 1/√d, masking s > t with −∞
-and a row-wise softmax, the output is A V. In PyTorch:
-`wei = q @ k.transpose(-2, -1) * d**-0.5`, mask, softmax, `out = wei @ v`.
+Guess first: in "The cat drinks milk because she is thirsty", should "she"
+attend most to "cat" or to the nearer "milk"? A trained head picks "cat",
+so the weights cannot come from distance.
+
+Each token's vector x (token embedding + position embedding) is projected
+three ways: the query q = x W_Q ("what am I looking for?"), the key
+k = x W_K ("what do I offer?") and the value v = x W_V ("what I pass on").
+For a sequence X ∈ ℝ^(T×C), a head computes Q, K, V ∈ ℝ^(T×d). The affinity
+matrix Q Kᵀ (T × T) replaces the zero scores of the causal average; after
+scaling by 1/√d, masking s > t with −∞ and a row-wise softmax, the output is
+A V: each token collects a weighted mix of values, with weights set by how
+well its query matches each key. The key only decides the match; the value
+is what is passed on. W_Q, W_K and W_V are learned by backpropagation like
+any other parameter, so which tokens matter to which is learned from data.
+In PyTorch: `wei = q @ k.transpose(-2, -1) * d**-0.5`, mask, softmax,
+`out = wei @ v`.
 
 Three properties are worth stating. First, attention has no notion of
 position: permuting the visible tokens permutes nothing in the aggregate, so
@@ -145,19 +156,31 @@ token), and taking K and V from another sequence gives cross-attention.
 
 # Level: expert
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-Self-attention is a content-addressed soft lookup whose cost is O(T² d) per
-head. The 1/√d factor keeps the logit variance near 1 under unit-variance
+Before reading: with d = 64 and unit-variance q and k, what is the standard
+deviation of q · k, and what does that do to an unscaled softmax? (8; the
+softmax saturates.)
+
+A head is a content-addressed soft lookup: Attention(Q, K, V) =
+softmax(Q Kᵀ / √d + M) V with Q = X W_Q, K = X W_K, V = X W_V and M the
+causal mask. Query-key dot products decide the weights, values are what is
+aggregated, and all three projections are learned end to end, so the
+routing between tokens is data-dependent rather than positional or hand
+written. The 1/√d factor keeps the logit variance near 1 under unit-variance
 initialisation; without it the softmax saturates, gradients vanish and heads
-collapse to attending to a single token. Variants change each ingredient:
-relative and rotary position encodings replace absolute embeddings; multi-
-query and grouped-query attention share K and V across heads to shrink the
-KV cache; FlashAttention fuses masking and softmax into a tiled kernel to
-avoid materialising T × T; sparse, sliding-window and linear attention trade
-expressivity for sub-quadratic cost. Interpretability work finds recurring
-head types such as previous-token heads and induction heads, which together
-implement in-context copying.
+collapse to attending to a single token. Attention is permutation-
+equivariant, so order comes only from position information, and its cost is
+O(T² d) per head.
+
+Variants change each ingredient: relative and rotary position encodings
+replace absolute embeddings; multi-query and grouped-query attention share K
+and V across heads to shrink the KV cache; FlashAttention fuses masking and
+softmax into a tiled kernel to avoid materialising T × T; sparse,
+sliding-window and linear attention trade expressivity for sub-quadratic
+cost. Interpretability work finds recurring head types such as
+previous-token heads and induction heads, which together implement
+in-context copying.
 
 # Misconceptions
 
@@ -260,6 +283,35 @@ implement in-context copying.
   "rubric": ["Self-attention: Q, K, V from the same sequence", "Cross-attention: Q from one sequence, K and V from another", "Masking is independent of self/cross: decoder masks, encoder does not", "Uses: GPT decoder, translation decoder attending to encoder, classification/BERT encoder"],
   "sample_answer": "In self-attention, queries, keys and values all come from the same tokens (GPT). In cross-attention the queries come from one sequence and keys and values from another, e.g. a translation decoder reading the encoded source sentence. Whether a head is masked is a separate choice: decoder heads use the causal mask to allow generation, encoder heads let every token see every token, which suits classification.",
   "explanation": "Attention is a general mechanism; the source of K, V and the mask define its role."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "question-and-sign",
+  "level": "child",
+  "purpose": "check",
+  "misconception": "attention-is-programmed",
+  "question": "In \"The dog chased the ball because it was hungry\", the word \"it\" asks its little question. Who decided which word \"it\" listens to?",
+  "options": [
+    {
+      "text": "The model learned it by reading lots and lots of text",
+      "correct": true,
+      "feedback": "Yes! Nobody tells it. From many sentences it learned that hungry things are usually animals, so \"it\" listens to \"dog\"."
+    },
+    {
+      "text": "A programmer wrote a rule: \"it\" always means the dog",
+      "correct": false,
+      "feedback": "No. There are far too many sentences for rules. The model learns it from examples."
+    },
+    {
+      "text": "It always listens to the word right next to it",
+      "correct": false,
+      "feedback": "No. The word next to it is \"because\", and that does not help. It listens to the word that fits its question."
+    }
+  ],
+  "explanation": "Each word's question and each word's sign are learned from text, so the model finds the word that helps most, near or far."
 }
 ```
 

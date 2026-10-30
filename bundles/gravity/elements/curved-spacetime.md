@@ -23,19 +23,19 @@ requires:
   - ptf:el/gravity/universal-gravitation
 duration_min: { child: 10, highschool: 20, college: 25, expert: 20 }
 simulators:
-  - ref: ptf:sim/newton-einstein@^1.1.0
+  - ref: ptf:sim/newton-einstein@^1.2.0
     station: spacetime
     levels: [child, highschool, college, expert]
     role: explore
     note: Use the funnel as a picture, then discuss right away why the trampoline analogy is circular (station text).
     use_when: the learner wants a picture of curved spacetime (and should hear where the picture fails)
-  - ref: ptf:sim/newton-einstein@^1.1.0
+  - ref: ptf:sim/newton-einstein@^1.2.0
     station: clocks
-    levels: [highschool, college, expert]
+    levels: [child, highschool, college, expert]
     role: explore
     note: Ask first whether a clock on a satellite should run faster or slower; most learners only know the speed effect.
     use_when: the learner should predict whether satellite clocks run fast or slow
-  - ref: ptf:sim/newton-einstein@^1.1.0
+  - ref: ptf:sim/newton-einstein@^1.2.0
     station: mercury
     levels: [college, expert]
     role: practice
@@ -53,7 +53,7 @@ sources:
     title: "Albert Einstein: The Foundation of the General Theory of Relativity (1916), English translation"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.2.0
+version: 0.3.0
 license: CC-BY-SA-4.0
 ---
 
@@ -119,9 +119,15 @@ Newton's pull.
 
 # Level: college
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-Start from the equivalence principle: in an elevator accelerating at g, a
+Guess first: does a clock on a GPS satellite run faster or slower than one on
+the ground, and is the effect big enough to matter? (Faster, by 38 µs per day,
+enough for 11 km of position error per day.)
+
+Einstein replaced Newton's force by geometry: mass curves spacetime, and a
+freely falling body follows the straightest path (a geodesic) through it;
+nothing pulls. Start from the equivalence principle: in an elevator accelerating at g, a
 light pulse sent from floor to ceiling arrives redshifted by g h / c², because
 the ceiling has moved away during the travel time. If acceleration and
 gravity are indistinguishable, the same redshift must appear between floors
@@ -131,13 +137,23 @@ minus 7.2 µs per day of velocity time dilation. In the weak-field limit the
 metric is ds² ≈ −(1 + 2Φ/c²) c² dt² + (1 − 2Φ/c²) dx², and slow geodesics
 reproduce Newton's r̈ = −∇Φ from the time part alone; the space part doubles
 light deflection and, together with the next order in Φ, produces Mercury's
-43″ per century.
+43″ per century. Newton has no clock effect at all, which is why GPS is the
+everyday test that tells the two theories apart.
 
 # Level: expert
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-For a test mass in the Schwarzschild field the orbit equation is
+Before reading: which three classical observations distinguish general
+relativity from Newton's gravity, and which one does every phone use daily?
+
+In general relativity gravity is not a force but the curvature of
+spacetime: free bodies follow geodesics of the metric, and in the weak field
+almost all of the effect sits in g₀₀ ≈ −(1 + 2Φ/c²), i.e. in clock rates.
+That gives the measurable differences from Newton: gravitational time
+dilation (GPS clocks gain 45.7 µs per day from height and lose 7.2 µs from
+speed), light deflection twice the Newtonian value, and Mercury's perihelion
+advance. For a test mass in the Schwarzschild field the orbit equation is
 u'' + u = G M / h² + 3 G M u² / c² (u = 1/r), equivalent to adding an
 attractive −3 G M h² / (c² r⁴) term to the Newtonian radial acceleration.
 Treating it perturbatively gives the perihelion advance 6π G M / (c² a
@@ -251,6 +267,54 @@ correction of up to about 46 ns.
   "rubric": ["About 532″ from perturbations by other planets (Newtonian)", "Residual 43″ matches 6πGM/(c²a(1−e²)) × 415 orbits", "The correction is an extra −3GMh²/(c²r⁴) radial term", "Scaling the coupling keeps the mechanism; the precession grows linearly while the correction stays small; at large factors higher orders appear and must be named"],
   "sample_answer": "Newtonian perturbation theory with all planets accounts for about 532″ per century. The remaining 43″ equals 6πGM/(c²a(1−e²)) ≈ 5.0e-7 rad per orbit times 415 orbits. In the orbit equation this corresponds to an extra attractive term 3GMh²/(c²r⁴). Multiplying its strength in a simulation makes the same mechanism visible; as long as the term stays a small perturbation, the precession scales linearly and matches the formula; at very large factors the second order shows, so the display has to show the true value next to the boosted one.",
   "explanation": "A residual after all Newtonian effects is what made the precession a test of the theory."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "gps-net-check",
+  "level": "highschool",
+  "purpose": "check",
+  "misconception": "newton-clocks-absolute",
+  "question": "What would happen to GPS positions if the satellites' clocks were not corrected for relativity?",
+  "options": [
+    {
+      "text": "They would drift by about 11 km per day, because the satellite clocks gain about 38 microseconds a day",
+      "correct": true,
+      "feedback": "Right. Height makes them run fast (+46 µs), speed slow (−7 µs); light covers 300 m per microsecond."
+    },
+    {
+      "text": "Nothing, clocks tick the same everywhere",
+      "correct": false,
+      "feedback": "That is Newton's picture, and measurement shows it is wrong: clock rates depend on height and speed."
+    },
+    {
+      "text": "The error would only matter near a black hole",
+      "correct": false,
+      "feedback": "No. The effect is small, but GPS needs nanosecond timing, so it matters every day."
+    }
+  ],
+  "explanation": "Mass bends spacetime, mostly time. GPS is the everyday proof that Einstein's description beats Newton's."
+}
+```
+
+```ptf-question
+{
+  "kind": "free_text",
+  "id": "geodesic-not-force",
+  "level": "expert",
+  "purpose": "check",
+  "misconception": "rubber-sheet-literal",
+  "question": "Explain why, in the weak-field limit, the time part of the metric alone reproduces Newtonian free fall, and what the rubber-sheet picture gets wrong.",
+  "rubric": [
+    "For slow motion, the geodesic equation is dominated by Γ^i_00 ≈ ∂_i Φ / c² from g₀₀ ≈ −(1 + 2Φ/c²)",
+    "This gives r̈ = −∇Φ, Newton's law, without any force",
+    "The rubber sheet curves space, not time, and uses gravity to explain gravity",
+    "Spatial curvature matters for fast bodies such as light (doubling deflection)"
+  ],
+  "sample_answer": "With v ≪ c, the geodesic equation reduces to ẍ^i = −c² Γ^i_00 = −∂_i Φ, so the curvature of time in g₀₀ alone yields Newtonian acceleration. The rubber sheet shows curved space and needs the Earth's gravity to make the marble roll into the dip; for slow bodies it is time that is curved, while space curvature becomes visible only for light.",
+  "explanation": "Free fall is inertial motion in curved spacetime; for everyday speeds, 'gravity' is mostly time running differently at different heights."
 }
 ```
 

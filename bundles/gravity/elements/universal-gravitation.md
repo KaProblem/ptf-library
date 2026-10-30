@@ -19,15 +19,15 @@ leads_to:
   - ptf:el/gravity/curved-spacetime
 duration_min: { child: 10, highschool: 20, college: 20, expert: 15 }
 simulators:
-  - ref: ptf:sim/newton-einstein@^1.1.0
+  - ref: ptf:sim/newton-einstein@^1.2.0
     station: cannon
     levels: [child, highschool, college, expert]
     role: explore
     note: Fire at 4 km/s first, then let the learner find the speed that never lands; ask what this says about astronauts.
     use_when: the learner cannot picture an orbit as falling around the Earth
-  - ref: ptf:sim/newton-einstein@^1.1.0
+  - ref: ptf:sim/newton-einstein@^1.2.0
     station: moon
-    levels: [highschool, college, expert]
+    levels: [child, highschool, college, expert]
     role: explore
     note: Ask the learner to predict how much weaker gravity is at 60 Earth radii before they move the slider.
     use_when: the learner should predict how much weaker gravity is at the Moon's distance
@@ -40,7 +40,7 @@ sources:
     title: "The Feynman Lectures on Physics, Vol. I, ch. 7: The Theory of Gravitation"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.2.0
+version: 0.3.0
 license: CC-BY-SA-4.0
 ---
 
@@ -69,7 +69,7 @@ body, so it never lands.
 
 # Level: child
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
 Imagine you throw a ball sideways from a very, very high mountain. A slow
 throw lands nearby. A faster throw lands farther away. What if you could
@@ -82,6 +82,12 @@ Earth. That is what the Moon does, and the space station, and every
 satellite: they are all falling around the Earth. Astronauts float in the
 space station not because there is no gravity up there, but because they and
 the station are falling together.
+
+The same pull that makes an apple fall from a tree reaches all the way to the
+Moon, only weaker. The farther away, the weaker it gets, and fast: twice as
+far away, only a quarter of the pull. The Moon is so far away that the
+Earth's pull there is thousands of times weaker than at the apple tree, just
+enough to keep bending the Moon's path round us.
 
 # Level: highschool
 
@@ -117,17 +123,27 @@ the same acceleration, so no internal forces are needed to support them.
 
 # Level: expert
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
+
+Before reading: Newton's Moon test compares two numbers, the Moon's
+centripetal acceleration and g / 60². Compute both (2.7 · 10⁻³ m/s² each) and
+say what assumption about the Earth makes the second one legitimate.
+
+One inverse-square law, F = G m₁ m₂ / r², governs the apple and the Moon:
+at 60 Earth radii g drops by 3600, matching the Moon's v² / r. (Using the
+centre distance relies on the shell theorem: a spherically symmetric body
+attracts like a point mass.) An orbit is free fall with enough tangential
+speed that the trajectory misses the surface: v_circ = √(G M / r), bound for
+E < 0, escape at √2 · v_circ.
 
 Newton's law is the weak-field, slow-motion limit of general relativity:
-with potential Φ = −G M / r, geodesics of the metric g₀₀ ≈ −(1 + 2Φ/c²)
-reproduce r̈ = −∇Φ. Closed orbits are special to the 1/r and r² potentials
-(Bertrand's theorem); any perturbation makes the ellipse precess. In the
-solar system, perturbations by other planets account for most of Mercury's
-perihelion advance (about 532″ per century); the residual 43″ per century is
-the first relativistic correction. G is the least precisely known fundamental
-constant (relative uncertainty about 2 · 10⁻⁵), while G M of the Earth is
-known to 10⁻⁹ from satellite tracking.
+with Φ = −G M / r, geodesics of g₀₀ ≈ −(1 + 2Φ/c²) reproduce r̈ = −∇Φ. Closed
+orbits are special to the 1/r and r² potentials (Bertrand's theorem); any
+perturbation makes the ellipse precess. In the solar system, other planets
+account for most of Mercury's perihelion advance (about 532″ per century);
+the residual 43″ per century is the first relativistic correction. G is the
+least precisely known fundamental constant (relative uncertainty about
+2 · 10⁻⁵), while G M of the Earth is known to 10⁻⁹ from satellite tracking.
 
 # Misconceptions
 
@@ -227,6 +243,54 @@ known to 10⁻⁹ from satellite tracking.
   "rubric": ["Inverse-square force conserves the Laplace-Runge-Lenz vector", "Bertrand's theorem: only 1/r² and linear forces give closed bound orbits for all initial conditions", "A perturbation breaks the conservation, the perihelion direction rotates", "1/r⁴ term (as in the relativistic correction) gives a prograde precession proportional to its strength"],
   "sample_answer": "For an inverse-square force the Laplace-Runge-Lenz vector is conserved; it points to the perihelion, so the ellipse does not turn. By Bertrand's theorem only inverse-square and harmonic forces have all bound orbits closed. An extra attractive 1/r⁴ term breaks the symmetry: the radial and angular periods differ slightly and the perihelion advances each orbit, by Δφ ≈ 6πGM/(c²a(1−e²)) for the relativistic form.",
   "explanation": "Precession is the fingerprint of a deviation from the pure inverse-square law."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "quarter-pull",
+  "level": "child",
+  "purpose": "check",
+  "misconception": "gravity-linear-distance",
+  "question": "A rocket flies so far that it is twice as far from the middle of the Earth as before. How strong is the Earth's pull on it now?",
+  "options": [
+    {
+      "text": "A quarter as strong",
+      "correct": true,
+      "feedback": "Yes! Twice as far means only a quarter of the pull."
+    },
+    {
+      "text": "Half as strong",
+      "correct": false,
+      "feedback": "Good guess, but the pull gets weaker faster than that: twice as far, a quarter of the pull."
+    },
+    {
+      "text": "Zero, there is no gravity in space",
+      "correct": false,
+      "feedback": "No. The pull reaches very far, even to the Moon; it only gets weaker."
+    }
+  ],
+  "explanation": "Gravity weakens with the square of the distance: 2 × 2 = 4, so a quarter."
+}
+```
+
+```ptf-question
+{
+  "kind": "free_text",
+  "id": "moon-test",
+  "level": "expert",
+  "purpose": "check",
+  "misconception": "moon-not-falling",
+  "question": "Reproduce Newton's Moon test with r_Moon ≈ 60 R_E and a period of 27.3 days, and say why using the Earth's centre distance is justified.",
+  "rubric": [
+    "Centripetal acceleration a = 4π² r / T² ≈ 2.7 · 10⁻³ m/s²",
+    "g / 60² = 9.81 / 3600 ≈ 2.7 · 10⁻³ m/s²",
+    "Agreement shows the same inverse-square law acts on apple and Moon",
+    "Shell theorem: a spherically symmetric Earth attracts like a point mass at its centre"
+  ],
+  "sample_answer": "r = 60 · 6.37 · 10⁶ m ≈ 3.8 · 10⁸ m, T = 2.36 · 10⁶ s, so a = 4π² r / T² ≈ 2.7 · 10⁻³ m/s², which equals g / 3600. The Moon falls towards the Earth exactly as an inverse-square law predicts. The centre distance is legitimate because a spherically symmetric mass acts like a point mass outside it (shell theorem).",
+  "explanation": "This calculation unified terrestrial and celestial mechanics."
 }
 ```
 

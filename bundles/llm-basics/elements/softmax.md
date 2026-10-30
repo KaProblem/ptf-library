@@ -30,9 +30,9 @@ simulators:
     levels: [highschool]
     role: explore
     use_when: the learner should see that rolling weighted dice character by character already gives word-like text
-  - ref: ptf:sim/bigram-lab@^1.0.0
+  - ref: ptf:sim/bigram-lab@^1.1.0
     station: temperature
-    levels: [college, expert]
+    levels: [highschool, college, expert]
     role: explore
     use_when: the learner wants to see how creative versus predictable text comes from one setting
 code:
@@ -46,7 +46,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.3.1
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -74,7 +74,7 @@ share above zero, and all shares together exactly 100 %.
 
 # Level: highschool
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
 Imagine the model has just read "th" and must say how likely each of the 65
 characters is next. Internally it first gives every character a score, for
@@ -85,37 +85,64 @@ Softmax fixes that in two steps. First, take e to the power of each score:
 this makes every value positive, and big scores become much bigger. Then
 divide each value by the sum of all values, so together they add up to 1.
 Now "e" might get 72 %, "a" 13 %, "x" 0.4 %. Nothing is exactly zero, and
-the order stays the same.
+the order stays the same: raise the score of "a" and its share grows, while
+all the others shrink a little.
 
 To write text, the model then rolls a weighted die with these
 probabilities. Usually "e" comes up, but sometimes "a". That is why the same
 model can give different answers to the same question.
 
+One setting changes how loaded the die is: the **temperature**. Before the
+softmax, all scores are divided by it. A low temperature (say 0.5) makes the
+differences bigger, so "e" wins almost every time and the text gets
+predictable. A high temperature (say 1.5) makes the differences smaller, the
+die gets fairer and the text more surprising, with more odd letters.
+
 # Level: college
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-Given logits z ∈ ℝ^V, softmax(z)_i = exp(z_i) / Σ_j exp(z_j). It is the
-standard way to parameterise a categorical distribution with an unconstrained
-vector, and its gradient combines neatly with cross-entropy:
-∂L/∂z = softmax(z) − onehot(target).
+Take logits z = (2, 1, 0) and guess the probabilities before computing:
+softmax gives about (0.67, 0.24, 0.09). Then guess what happens at
+temperature T = 0.5.
 
-Temperature scaling divides the logits by T before the softmax. Sampling at
-T = 1 reproduces the model's distribution; lower T trades diversity for
-predictability. Greedy decoding (argmax) is the limit T → 0 and tends to get
-stuck in repetitive loops.
+Given logits z ∈ ℝ^V, softmax(z)_i = exp(z_i) / Σ_j exp(z_j). The
+exponential makes every entry positive and the normalisation makes them sum
+to 1; since exp is monotonic, the order of the logits is kept, and only
+differences between logits matter (adding a constant to all of them changes
+nothing, which is why implementations subtract max z). Raising one logit
+raises its probability and lowers all others. It is the standard way to
+parameterise a categorical distribution with an unconstrained vector, and its
+gradient combines neatly with cross-entropy: ∂L/∂z = softmax(z) − onehot(target).
+
+Temperature scaling computes softmax(z / T). At T = 1 sampling reproduces
+the model's distribution; T < 1 sharpens it (z / 0.5 = (4, 2, 0) gives about
+(0.87, 0.12, 0.02)), T > 1 flattens it. Greedy decoding (argmax) is the
+limit T → 0 and tends to get stuck in repetitive loops.
 
 # Level: expert
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-Softmax is the gradient of log-sum-exp and the maximum-entropy distribution
-for given expected logits. In attention it reappears as a soft, differentiable
-lookup: scores q·k/√d are scaled so that their variance stays near 1 and the
-softmax does not saturate into a one-hot distribution at initialisation.
-Practical issues: numerical stability (subtract max z), the cost of the full
-V-way softmax for large vocabularies, and calibration: fine-tuned models are
-often over-confident, which temperature can partly correct.
+Before reading: what is the entropy of softmax(z / T) in the limits T → 0
+and T → ∞, and why does attention divide its scores by √d?
+
+softmax(z)_i = exp(z_i) / Σ_j exp(z_j) maps ℝ^V onto the interior of the
+probability simplex: all entries positive, summing to 1, order-preserving and
+invariant to adding a constant. It is the gradient of log-sum-exp and the
+maximum-entropy distribution for given expected logits; with cross-entropy
+its gradient is softmax(z) − onehot(y). Temperature divides the logits:
+softmax(z / T) goes to a one-hot argmax (entropy 0) as T → 0 and to the
+uniform distribution (entropy ln V) as T → ∞, so T trades diversity against
+predictability in sampling.
+
+In attention it reappears as a soft, differentiable lookup: scores q·k/√d
+are scaled so that their variance stays near 1 and the softmax does not
+saturate into a one-hot distribution at initialisation, which would kill the
+gradients; √d acts as a fixed temperature. Practical issues: numerical
+stability (subtract max z), the cost of the full V-way softmax for large
+vocabularies, and calibration: fine-tuned models are often over-confident,
+which temperature scaling can partly correct.
 
 # Misconceptions
 
@@ -196,6 +223,83 @@ often over-confident, which temperature can partly correct.
   "rubric": ["Dot products of d-dimensional vectors have variance growing with d", "Large scores saturate the softmax towards one-hot", "Saturation gives tiny gradients and attends to one token only", "Scaling keeps variance near 1 at initialisation"],
   "sample_answer": "q·k sums d products, so its variance grows with d. Without scaling, the softmax becomes nearly one-hot, gradients vanish and each query attends to a single key. Dividing by √d keeps the scores' variance around 1.",
   "explanation": "This is the same temperature effect: √d acts as a temperature that keeps the softmax soft."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "low-temperature",
+  "level": "highschool",
+  "purpose": "check",
+  "misconception": "always-picks-top",
+  "question": "You lower the temperature from 1.0 to 0.3. What happens to the generated text?",
+  "options": [
+    {
+      "text": "It becomes more predictable: the most likely letters win even more often",
+      "correct": true,
+      "feedback": "Right. Dividing the scores by a small number makes the differences bigger, so the die gets more loaded."
+    },
+    {
+      "text": "It becomes more creative and surprising",
+      "correct": false,
+      "feedback": "That is what a high temperature does: it makes the die fairer."
+    },
+    {
+      "text": "Nothing changes, the probabilities are fixed",
+      "correct": false,
+      "feedback": "No. The scores are divided by the temperature before the softmax, so the probabilities change."
+    }
+  ],
+  "explanation": "Low temperature: sharper distribution, safer text. High temperature: flatter distribution, more surprises."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "shift-logits",
+  "level": "college",
+  "purpose": "check",
+  "misconception": "softmax-changes-order",
+  "question": "Logits (2, 1, 0) give probabilities (0.67, 0.24, 0.09). What do the logits (12, 11, 10) give?",
+  "options": [
+    {
+      "text": "Exactly the same probabilities",
+      "correct": true,
+      "feedback": "Right. Softmax only depends on the differences between logits; the common factor e^10 cancels."
+    },
+    {
+      "text": "Nearly 1 for the first token, because 12 is large",
+      "correct": false,
+      "feedback": "No. Large absolute values do not matter, only differences do. Scaling them (temperature) would change the result, shifting does not."
+    },
+    {
+      "text": "A uniform distribution",
+      "correct": false,
+      "feedback": "No. The differences are still 1 and 2."
+    }
+  ],
+  "explanation": "exp(z_i + c) / Σ exp(z_j + c) = exp(z_i) / Σ exp(z_j). This is why implementations can subtract max z for numerical stability."
+}
+```
+
+```ptf-question
+{
+  "kind": "free_text",
+  "id": "temperature-limits",
+  "level": "expert",
+  "purpose": "check",
+  "misconception": "always-picks-top",
+  "question": "Describe softmax(z / T) in the limits T → 0 and T → ∞ and what each means for sampled text.",
+  "rubric": [
+    "T → 0: one-hot on the argmax, entropy 0, greedy decoding",
+    "Greedy text tends to repeat itself",
+    "T → ∞: uniform distribution, entropy ln V",
+    "Uniform sampling ignores the model and produces noise"
+  ],
+  "sample_answer": "As T → 0 the largest logit dominates and the distribution becomes one-hot (greedy decoding, entropy 0), which often loops. As T → ∞ all logits shrink towards 0 and the distribution becomes uniform with entropy ln V, so the text is random noise.",
+  "explanation": "Temperature interpolates between argmax and uniform; T = 1 samples the model's own distribution."
 }
 ```
 

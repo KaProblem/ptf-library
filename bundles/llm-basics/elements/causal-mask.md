@@ -17,23 +17,23 @@ leads_to:
   - ptf:el/llm-basics/self-attention
 duration_min: { highschool: 15, college: 20, expert: 10 }
 simulators:
-  - ref: ptf:sim/causal-mask@^1.0.0
+  - ref: ptf:sim/causal-mask@^1.1.0
     station: average-past
-    levels: [highschool, college]
+    levels: [highschool, college, expert]
     role: explore
     note: Start here; the guess question makes the "no future" rule tangible.
     use_when: the learner should feel the "no future" rule with a simple average
-  - ref: ptf:sim/causal-mask@^1.0.0
+  - ref: ptf:sim/causal-mask@^1.1.0
     station: triangle
     levels: [highschool, college, expert]
     role: explore
     note: Let the learner open a future cell and see the leak before explaining why the mask exists.
     use_when: the learner should see what leaks when the mask is broken
-  - ref: ptf:sim/causal-mask@^1.0.0
+  - ref: ptf:sim/causal-mask@^1.1.0
     station: softmax-mask
-    levels: [college, expert]
+    levels: [highschool, college, expert]
     role: practice
-    use_when: the learner is ready to connect the mask with softmax weights (college level and above)
+    use_when: the learner should see that masked softmax over equal scores gives the same triangle, the bridge to self-attention
 code:
   - ref: ptf:code/gpt-from-scratch@^1.0.0
     step: averaging
@@ -45,7 +45,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.3.0
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -75,7 +75,7 @@ the causal mask.
 
 # Level: highschool
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
 Here are eight numbers in a row: 3, 1, 4, 1, 5, 9, 2, 6. Each one stands for
 something about a character in a sentence. Now every position may collect
@@ -93,32 +93,57 @@ you get a table. Row 1 takes 100 % from itself. Row 2 takes 50 % from 1 and
 diagonal stays empty, so the filled part looks like a triangle. That triangle
 is called the causal mask: it is a rule that the future is off limits.
 
+There is a second way to fill the same triangle, and the next step needs it.
+Give every allowed cell a score of 0 and every forbidden cell "minus
+infinity", then run softmax on each row. Equal scores give equal shares, and
+minus infinity gives exactly 0 %, so you get the same averages. The point:
+later the scores will not all be 0, and then a position can take more from
+the earlier characters that matter to it, while the future still stays at 0 %.
+
 # Level: college
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
+
+Compute first: x = (3, 1, 4, 1, 5, 9, 2, 6). What is the causal average at
+position 5, and which entries must it ignore? (14 / 5 = 2.8; positions 6 to 8.)
+
+A position must not read later tokens: during training they are its own
+target and the targets of the following positions, and at generation time
+they do not exist yet. Without the mask the training loss collapses towards
+0 and the model is useless for generation.
 
 Let x ∈ ℝ^(T×C). The causal average is out_t = (1/t) Σ_{s≤t} x_s. Build
-W = row-normalised tril(ones(T, T)); then out = W x computes every out_t at
-once, and with a batch dimension (B, T, T) @ (B, T, C) runs per sequence.
-Equivalently, start from a score matrix S = 0, set S_ts = −∞ for s > t, and
-take softmax over each row. The second form matters because S does not have
-to stay zero: if S is computed from the data, each position can weight its
-past unevenly while the mask still guarantees causality. That is exactly a
-self-attention head without the query/key/value parametrisation.
+W = row-normalised tril(ones(T, T)); then out = W x computes every out_t in
+one matrix multiplication, and with a batch dimension (B, T, T) @ (B, T, C)
+runs per sequence. Equivalently, start from a score matrix S = 0, set
+S_ts = −∞ for s > t, and take softmax over each row (setting the score to 0
+would not remove a position, since e^0 = 1). The second form matters because
+S does not have to stay zero: if S is computed from the data, each position
+can weight its past unevenly while the mask still guarantees causality. That
+is exactly a self-attention head without the query/key/value parametrisation.
 
 # Level: expert
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-The mask defines the attention graph: a decoder uses the causal (lower-
-triangular) graph so the factorisation p(x) = Π_t p(x_t | x_<t) holds and all
-T next-token losses can be computed in one parallel pass (teacher forcing).
-Encoders drop the mask; prefix-LM variants allow full attention within a
-prompt and causal attention afterwards; document packing adds block-diagonal
-masks. Implementations fuse the mask into the attention kernel
-(FlashAttention's causal flag) instead of materialising a T × T matrix, and
-masked logits are set to a large negative number or −∞ before the softmax,
-never multiplied by zero after it, which would break normalisation.
+Predict: what happens to the training loss and to sampled text if the mask
+is removed from a decoder? (The loss collapses because positions read their
+targets; generation degrades because the future is not available at inference.)
+
+Position t may aggregate only x_≤t, so the factorisation
+p(x) = Π_t p(x_t | x_<t) holds and all T next-token losses can be computed in
+one parallel pass (teacher forcing). The simplest aggregator is the uniform
+causal average W x with W the row-normalised lower-triangular matrix; the
+same W arises as softmax(S + M) with S = 0 and M_ts = −∞ for s > t, and any
+data-dependent S turns it into attention while M keeps causality.
+
+The mask defines the attention graph: encoders drop it; prefix-LM variants
+allow full attention within a prompt and causal attention afterwards;
+document packing adds block-diagonal masks. Implementations fuse the mask
+into the attention kernel (FlashAttention's causal flag) instead of
+materialising a T × T matrix, and masked logits are set to a large negative
+number or −∞ before the softmax, never multiplied by zero after it, which
+would break normalisation.
 
 # Misconceptions
 
@@ -204,6 +229,54 @@ never multiplied by zero after it, which would break normalisation.
   "rubric": ["Teacher forcing: the true prefix is the input", "The causal mask makes output t depend only on tokens ≤ t", "Hence all T conditionals p(x_t | x_<t) are computed in parallel", "Efficiency: one pass instead of T"],
   "sample_answer": "Training uses the true text as input (teacher forcing). The causal mask ensures that the representation at position t depends only on tokens up to t, so the logits at each position are exactly the conditional p(x_t+1 | x_≤t). All T of them come out of one parallel pass instead of T sequential ones.",
   "explanation": "The triangular mask is what makes next-token training parallel."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "triangle-check",
+  "level": "highschool",
+  "purpose": "check",
+  "misconception": "attention-sees-future",
+  "question": "In the table of weights for 4 positions, which cells of row 2 can be filled?",
+  "options": [
+    {
+      "text": "Columns 1 and 2: itself and the position before it",
+      "correct": true,
+      "feedback": "Right. Each takes 50 %; columns 3 and 4 lie in the future."
+    },
+    {
+      "text": "All four columns, 25 % each",
+      "correct": false,
+      "feedback": "No. Columns 3 and 4 are later characters, the answers it is supposed to guess."
+    },
+    {
+      "text": "Only column 2, its own position",
+      "correct": false,
+      "feedback": "It may also use the past: column 1 is allowed."
+    }
+  ],
+  "explanation": "Row t has t filled cells, each 1/t. Everything above the diagonal stays 0, which gives the triangle."
+}
+```
+
+```ptf-question
+{
+  "kind": "free_text",
+  "id": "mask-placement",
+  "level": "expert",
+  "purpose": "check",
+  "misconception": "mask-by-zero-scores",
+  "question": "Why must the causal mask be applied to the logits before the softmax, and not by zeroing weights after it?",
+  "rubric": [
+    "Zeroing after softmax leaves rows that no longer sum to 1",
+    "Renormalising after zeroing would work but costs an extra pass; −∞ before softmax gives exact zeros and correct normalisation in one step",
+    "A score of 0 is not a removal: e^0 = 1",
+    "The masked positions must get exactly zero gradient and weight to keep causality"
+  ],
+  "sample_answer": "Softmax normalises over all entries, so zeroing afterwards breaks the row sums (or needs renormalising). Adding −∞ before the softmax gives e^(−∞) = 0, so future positions get exactly zero weight and the rest are normalised correctly; a 0 score would still give weight.",
+  "explanation": "masked_fill(tril == 0, −inf) followed by softmax is the standard, numerically clean form."
 }
 ```
 

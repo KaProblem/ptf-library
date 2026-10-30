@@ -23,23 +23,23 @@ leads_to:
   - ptf:el/llm-basics/gpt-end-to-end
 duration_min: { highschool: 15, college: 25, expert: 15 }
 simulators:
-  - ref: ptf:sim/residual-stream@^1.0.0
+  - ref: ptf:sim/residual-stream@^1.2.0
     station: deep-signal
     levels: [highschool, college, expert]
     role: explore
     note: Have the learner set 40 layers with factor 0.8 before explaining; the collapse to almost nothing is the hook.
     use_when: the learner should see a signal fade through many layers before hearing the fix
-  - ref: ptf:sim/residual-stream@^1.0.0
+  - ref: ptf:sim/residual-stream@^1.2.0
     station: layer-norm
-    levels: [highschool, college]
+    levels: [highschool, college, expert]
     role: explore
     use_when: the learner wants to see numbers kept in range
-  - ref: ptf:sim/residual-stream@^1.0.0
+  - ref: ptf:sim/residual-stream@^1.2.0
     station: dropout
-    levels: [college, expert]
+    levels: [highschool, college, expert]
     role: explore
     use_when: the learner asks how a model avoids memorising
-  - ref: ptf:sim/residual-stream@^1.0.0
+  - ref: ptf:sim/residual-stream@^1.2.0
     station: scale-up
     levels: [highschool, college, expert]
     role: practice
@@ -55,7 +55,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.3.0
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -111,32 +111,53 @@ same recipe, made thousands of times bigger, gives models like GPT-3.
 
 # Level: college
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
+
+Compute first: if each of 40 layers scales the gradient by 0.8, what reaches
+the bottom layer? (0.8^40 ≈ 0.0001.) And with 1.2 per layer? (About 1,500.)
 
 Backpropagation through L plain layers multiplies L Jacobians; their norms
-compound, so gradients vanish or explode exponentially in depth. With
-residual blocks, ∂x_L/∂x_l = Π (I + J_k), which always contains the identity
-term, so the loss gradient reaches x_l undiminished regardless of what the
-blocks do. Layer norm, LN(x) = γ ⊙ (x − μ)/√(σ² + ε) + β with μ, σ over the
-feature dimension, controls the scale of the activations entering each
-sub-layer; pre-norm placement keeps the residual stream itself
-un-normalised, which trains more stably without learning-rate warm-up
-tricks. Dropout is applied to attention weights and to the outputs of each
-residual branch; it acts as a regulariser by training an implicit ensemble.
+compound, so gradients vanish or explode exponentially in depth and deep
+stacks without help train worse than shallow ones. Residual connections
+change each block to x ← x + Block(x), so ∂x_L/∂x_l = Π (I + J_k), which
+always contains the identity term: the loss gradient reaches x_l
+undiminished regardless of what the blocks do, and blocks initialised small
+start out close to the identity. They add no parameters, only a path.
+
+Layer norm, LN(x) = γ ⊙ (x − μ)/√(σ² + ε) + β with μ, σ over the feature
+dimension of each token (not over the batch), keeps the scale of the
+activations entering each sub-layer stable; pre-norm placement,
+x + Attn(LN(x)), keeps the residual stream itself un-normalised, which
+trains more stably. Dropout zeroes a random fraction p of activations
+(attention weights and residual-branch outputs) during training only, as a
+regulariser that narrows the gap between training and validation loss; at
+inference it is off. Together they let a 6-layer, 384-wide model (about
+10 M parameters, ≈ 12 · L · d²) reach a validation loss of 1.48.
 
 # Level: expert
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
+
+Before reading: in a pre-norm transformer of L blocks, why does GPT-2 scale
+the residual-branch output weights by 1/√(2L) at initialisation?
+
+Depth multiplies Jacobians, so plain stacks suffer vanishing or exploding
+gradients. Residual connections x ← x + f(x) give ∂x_L/∂x_l = Π (I + J_k),
+an identity path from the loss to every layer, and make the network
+approximately a sum of paths of different lengths. Layer norm (or RMSNorm)
+normalises each token's features before every sub-layer, keeping inputs well
+scaled while the stream itself accumulates; dropout on attention weights
+and branch outputs regularises during training and is switched off at
+inference.
 
 The residual stream view treats the d-dimensional stream as a shared
-communication channel that every attention head and MLP reads from (via
-LN and an input projection) and writes to (via an output projection). This
-makes the model approximately a sum of paths of different lengths, and it
-is the basis of circuit-level interpretability. Practical scaling details:
-scale residual-branch output weights by 1/√(2L) at initialisation (GPT-2),
-use RMSNorm instead of LayerNorm in many recent models, drop dropout
-entirely for large pretraining runs where data is not repeated, and choose
-width, depth and token count with compute-optimal scaling laws (roughly 20
+communication channel that every attention head and MLP reads from (via LN
+and an input projection) and writes to (via an output projection); it is the
+basis of circuit-level interpretability. Because 2L branches add to the
+stream, its variance grows with depth, hence the 1/√(2L) initialisation.
+Other practical details: RMSNorm instead of LayerNorm in many recent models,
+no dropout for large pretraining runs where data is not repeated, and width,
+depth and token count chosen with compute-optimal scaling laws (roughly 20
 tokens per parameter in the Chinchilla analysis).
 
 # Misconceptions
@@ -236,6 +257,54 @@ tokens per parameter in the Chinchilla analysis).
   "rubric": ["Pre-norm keeps an un-normalised identity path in the residual stream", "Gradients flow through the identity path unchanged", "Post-norm puts LN on the main path, rescaling gradients at every layer", "Pre-norm trains deep models stably with less warm-up"],
   "sample_answer": "With pre-norm, x + f(LN(x)), the residual stream itself is never normalised, so there is a clean identity path from the loss to every layer. Post-norm, LN(x + f(x)), places the normalisation on that path, which rescales gradients at each layer and makes deep models unstable without careful learning-rate warm-up.",
   "explanation": "Pre-norm preserves the gradient highway that residual connections create; a final LN before the output layer is then needed."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "dropout-once",
+  "level": "highschool",
+  "purpose": "check",
+  "misconception": "dropout-at-inference",
+  "question": "Which sentence describes dropout correctly?",
+  "options": [
+    {
+      "text": "During training, random parts of the network are switched off at every step, so the model cannot just memorise the text",
+      "correct": true,
+      "feedback": "Right. When the model is used later, nothing is switched off."
+    },
+    {
+      "text": "It switches off random parts every time you chat with the model, to make answers creative",
+      "correct": false,
+      "feedback": "No. Dropout is only used during training; creativity comes from sampling (temperature)."
+    },
+    {
+      "text": "It removes the layers that are not needed, to make the model smaller",
+      "correct": false,
+      "feedback": "No. All layers stay; dropout only skips random parts during individual training steps."
+    }
+  ],
+  "explanation": "Dropout fights memorising during training. Layer norm, the other helper, keeps the numbers in a stable range."
+}
+```
+
+```ptf-question
+{
+  "kind": "free_text",
+  "id": "residual-init",
+  "level": "expert",
+  "purpose": "check",
+  "misconception": "residual-adds-capacity",
+  "question": "Explain why residual connections make depth trainable and why GPT-2 scales residual-branch output weights by 1/√(2L) at initialisation.",
+  "rubric": [
+    "The Jacobian of x + f(x) contains the identity, so gradients have a direct path to every layer",
+    "Residuals add no parameters",
+    "Each of the 2L branches adds to the stream, so its variance grows linearly with depth",
+    "Scaling by 1/√(2L) keeps the stream's variance roughly constant at initialisation"
+  ],
+  "sample_answer": "∂x_L/∂x_l = Π (I + J_k) always contains I, so the signal does not vanish however deep the stack is. But 2L branches (attention and MLP per block) each add a random contribution, so the stream variance grows with L; scaling their output weights by 1/√(2L) keeps it near 1 at the start.",
+  "explanation": "The highway keeps gradients alive; the initialisation keeps the highway from overflowing."
 }
 ```
 

@@ -25,14 +25,14 @@ simulators:
     role: explore
     note: Use when the learner did not get the loss from bigram-lab ("explain differently").
     use_when: the learner did not get the loss from numbers alone and needs another angle
-  - ref: ptf:sim/bigram-lab@^1.0.0
+  - ref: ptf:sim/bigram-lab@^1.1.0
     station: loss
-    levels: [college, expert]
+    levels: [highschool, college, expert]
     role: explore
     use_when: the learner wants to see the loss computed on real text
-  - ref: ptf:sim/bigram-lab@^1.0.0
+  - ref: ptf:sim/bigram-lab@^1.1.0
     station: training-curve
-    levels: [college, expert]
+    levels: [highschool, college, expert]
     role: practice
     use_when: the learner should watch the loss fall during training
 code:
@@ -46,7 +46,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.3.1
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -74,7 +74,7 @@ token was unlikely. The overall loss is the average over all positions.
 
 # Level: highschool
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
 How do you tell whether a model's guesses are good? Counting right and wrong
 answers is too crude: a model that gives the right character 49 % is much
@@ -85,37 +85,61 @@ So we ask a different question: **how surprised was the model** by what
 really came next? If it gave the right character 100 %, there is no surprise
 at all: loss 0. If it gave it 50 %, a little surprise: 0.69. If it gave it
 only 1 %, big surprise: 4.6. The formula behind these numbers is −ln(p), and
-p = 0 would mean infinite surprise.
+p = 0 would mean infinite surprise, so a model must never rule anything out
+completely.
 
 To judge a whole text, we take the average surprise over all characters.
+A model that guesses blindly among 65 characters gives each 1/65 and has an
+average loss of about 4.17; a simple trained model gets to about 2.5.
 Training a model means nudging its numbers again and again so that this
-average gets smaller.
+average gets smaller. Check it on text the model has never trained on, too:
+if the loss only falls on the training text, the model is just memorising.
 
 # Level: college
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
+
+Compute before reading on: the model gives the true next character
+probability 0.1. What is the loss at this position? (−ln 0.1 ≈ 2.30.)
 
 With logits z_t at position t and target token y_t, the loss is
-L = −(1/N) Σ_t ln softmax(z_t)[y_t]. This is the cross-entropy between the
-one-hot data distribution and the model's distribution, and it equals the
-negative log-likelihood of the data under the model. Minimising it by
-gradient descent is maximum-likelihood training.
+L = −(1/N) Σ_t ln softmax(z_t)[y_t]: the model's surprise −ln p at the real
+next token, averaged over all N positions. Unlike an error count, it rewards
+putting high probability on the right token even when it is not the top
+guess, and it punishes confident mistakes without bound (p → 0 gives
+L → ∞). This is the cross-entropy between the one-hot data distribution and
+the model's distribution, and it equals the negative log-likelihood of the
+data under the model. Training lowers the average loss by gradient descent,
+which is maximum-likelihood training; ∂L/∂z_t = softmax(z_t) − onehot(y_t).
 
-Benchmarks: ln V is the loss of a uniform guess; anything above it at the
-start indicates a badly scaled initialisation. Track training and validation
-loss together; diverging curves mean overfitting.
+Benchmarks: ln V ≈ 4.17 for V = 65 is the loss of a uniform guess; anything
+clearly above it at the start indicates a badly scaled initialisation. A
+trained character bigram reaches about 2.5, a small transformer about 1.5.
+Track training and validation loss together; diverging curves mean
+overfitting. e^L is the perplexity (2.5 ≈ 12 effective choices).
 
 # Level: expert
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
+
+Estimate first: a model reaches 1.5 nats per character. How many bits per
+character is that, and what perplexity? (About 2.16 bits, perplexity 4.5.)
+
+The per-token loss is the surprisal −ln q(y_t | context) of the real next
+token; the training objective is its mean over the data, the empirical
+cross-entropy, which training minimises by gradient descent (maximum
+likelihood, gradient softmax − onehot). It is unbounded for q → 0, so models
+must keep mass on every possible outcome.
 
 Cross-entropy decomposes as H(p, q) = H(p) + KL(p ‖ q): the irreducible
-entropy of the data plus the model's excess. Reported in bits per character
-(divide by ln 2) or as perplexity, it makes models with the same tokenizer
-comparable; across tokenizers, normalise per byte. Scaling laws describe
-loss as a power law in parameters, data and compute, with the data entropy
-as the floor. Note that low loss does not imply calibrated or truthful
-outputs after fine-tuning.
+entropy of the data plus the model's excess, so the loss cannot go below the
+entropy of the text itself. Reported in bits per character (divide by ln 2)
+or as perplexity e^H, it makes models with the same tokenizer comparable;
+across tokenizers, normalise per byte. Only held-out loss estimates
+generalisation; the gap to training loss measures overfitting. Scaling laws
+describe loss as a power law in parameters, data and compute, with the data
+entropy as the floor. Low loss does not imply calibrated or truthful outputs
+after fine-tuning.
 
 # Misconceptions
 
@@ -185,6 +209,64 @@ outputs after fine-tuning.
     { "text": "The learning rate is too low", "correct": false, "feedback": "A low learning rate slows both curves; it does not make them diverge." }
   ],
   "explanation": "Only held-out data tells you whether the model generalises."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "confident-mistake",
+  "level": "college",
+  "purpose": "check",
+  "misconception": "zero-probability-ok",
+  "question": "Model A gives the true next token 0.4, model B gives it 0.001 but was right on all other positions. Why can B still end up with the higher average loss?",
+  "options": [
+    {
+      "text": "−ln 0.001 ≈ 6.9 is a huge penalty, and −ln p grows without bound as p → 0",
+      "correct": true,
+      "feedback": "Right. Confident mistakes are punished hard; one of them can outweigh many good predictions."
+    },
+    {
+      "text": "Because loss counts the number of wrong top guesses",
+      "correct": false,
+      "feedback": "No. Cross-entropy only looks at the probability of the true token, not at which token was ranked first."
+    },
+    {
+      "text": "It cannot; one position does not change an average",
+      "correct": false,
+      "feedback": "It can: averages are sensitive to large terms, and −ln p is unbounded."
+    }
+  ],
+  "explanation": "−ln 0.4 ≈ 0.92 versus −ln 0.001 ≈ 6.91. Keeping some probability on every possible token protects against this."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "loss-floor",
+  "level": "expert",
+  "purpose": "check",
+  "misconception": "training-loss-enough",
+  "question": "A team's training loss keeps falling, but the validation loss has been flat at 1.6 for a while. What is the best reading?",
+  "options": [
+    {
+      "text": "The model now mostly fits the training set (growing generalisation gap), or validation loss is near the data entropy plus the model's remaining KL",
+      "correct": true,
+      "feedback": "Right. Only held-out loss measures generalisation; H(p) is a floor no model can beat."
+    },
+    {
+      "text": "The model keeps getting better, because training loss is what matters",
+      "correct": false,
+      "feedback": "No. Training loss can be driven down by memorising."
+    },
+    {
+      "text": "The loss function is broken, cross-entropy should always fall on both",
+      "correct": false,
+      "feedback": "No. Cross-entropy on unseen data is bounded below by the data entropy and rises with overfitting."
+    }
+  ],
+  "explanation": "H(p, q) = H(p) + KL(p ‖ q); the validation curve shows how much of the KL term is left and when memorising starts."
 }
 ```
 

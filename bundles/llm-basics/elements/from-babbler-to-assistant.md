@@ -47,7 +47,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.3.0
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -119,33 +119,54 @@ numbers; GPT-3 has 175 billion.
 
 # Level: college
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
+
+Predict first: a base model trained only on web text gets the prompt "What
+is the capital of France?". Which continuation is most likely, an answer or
+a list of more quiz questions? Often the list: it continues documents.
 
 The decoder-only transformer models p(x_t | x_<t) and is trained by maximum
 likelihood on a large corpus, so its behaviour mirrors the distribution of
-documents rather than the intent of a user. Alignment to assistant behaviour
-is a post-training pipeline: supervised fine-tuning (SFT) on curated
-prompt–response pairs; a reward model r(prompt, response) trained on human
-preference comparisons; then policy optimisation (PPO) maximising r with a
-KL penalty towards the SFT model to avoid reward hacking. Encoder-decoder
-models remain useful where input and output are distinct sequences
-(translation, summarisation) and encoder-only models where no generation is
-needed (classification, retrieval embeddings).
+documents rather than the intent of a user. Assistant behaviour comes from a
+post-training pipeline on the same architecture: supervised fine-tuning
+(SFT) on curated prompt–response pairs; a reward model r(prompt, response)
+trained on human preference comparisons; then policy optimisation (PPO)
+maximising r with a KL penalty towards the SFT model to avoid reward hacking
+(RLHF). Scale is the other ingredient: a 10-million-parameter toy model
+against 175 billion parameters and about 300 billion training tokens for
+GPT-3, roughly 17,500 times as many parameters.
+
+Encoder-decoder models remain useful where input and output are distinct
+sequences (translation, summarisation) and encoder-only models where no
+generation is needed (classification, retrieval embeddings).
 
 # Level: expert
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-Post-training has diversified beyond PPO-based RLHF: direct preference
-optimisation (DPO) and related methods optimise preferences without an
-explicit reward model or RL loop; constitutional and AI-feedback methods
-replace part of the human labels; reinforcement learning with verifiable
-rewards trains reasoning on maths and code with automatic checking. Scaling
-follows predictable power laws in parameters, data and compute; compute-
-optimal training (Chinchilla) shifted the field from very large
-undertrained models to smaller ones on more tokens. Most capability comes
-from pretraining; post-training mainly elicits and shapes it, which is why
-base models can already do much with careful few-shot prompting.
+Before reading: a base model already answers well if the prompt looks like
+a Q&A page with three solved examples. What does that say about where an
+assistant's capabilities come from?
+
+A pretrained decoder maximises the likelihood of web documents, so it
+completes documents; assistant behaviour is post-trained into the same
+architecture at much larger scale (10⁸ to 10¹² parameters, 10¹¹ to 10¹³
+tokens). The classic pipeline is SFT on demonstrations, a reward model from
+pairwise human preferences (Bradley–Terry), and PPO maximising
+r − β · KL(π ‖ π_SFT); the KL term keeps the policy near the distribution
+the reward model was trained on, without it the policy exploits reward-model
+errors (reward hacking) and degrades its language.
+
+Post-training has diversified: direct preference optimisation (DPO) and
+related methods optimise preferences without an explicit reward model or RL
+loop; constitutional and AI-feedback methods replace part of the human
+labels; reinforcement learning with verifiable rewards trains reasoning on
+maths and code with automatic checking. Scaling follows predictable power
+laws in parameters, data and compute; compute-optimal training (Chinchilla)
+shifted the field from very large undertrained models to smaller ones on
+more tokens. Most capability comes from pretraining; post-training mainly
+elicits and shapes it, which is why base models can already do much with
+careful few-shot prompting.
 
 # Misconceptions
 
@@ -223,11 +244,58 @@ base models can already do much with careful few-shot prompting.
   "kind": "free_text",
   "id": "kl-penalty",
   "level": "expert",
-  "purpose": "transfer",
+  "purpose": "check",
   "question": "In RLHF, why is the policy usually penalised for diverging from the supervised fine-tuned model (KL penalty)?",
   "rubric": ["The reward model is an imperfect proxy", "Unconstrained optimisation exploits its errors (reward hacking)", "The KL term keeps outputs close to the distribution the reward model was trained on", "It preserves language quality and diversity"],
   "sample_answer": "The reward model only approximates human preferences and is reliable near the outputs it was trained on. Without a constraint the policy finds outputs that score highly but are bad (reward hacking) and its language degrades. The KL penalty keeps it close to the SFT model, where the reward model's judgments are trustworthy.",
   "explanation": "Optimising a learned proxy needs a leash; the KL penalty is that leash."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "parrot-to-helper",
+  "level": "child",
+  "purpose": "check",
+  "misconception": "pretraining-makes-assistant",
+  "question": "The model has read lots and lots of texts. What do people do next so that it helps you instead of just continuing your text?",
+  "options": [
+    {
+      "text": "Show it many good examples of questions with helpful answers, and tell it which of its answers they like better",
+      "correct": true,
+      "feedback": "Yes! First good examples, then practice with people saying which answer is better."
+    },
+    {
+      "text": "Nothing, reading more texts is enough",
+      "correct": false,
+      "feedback": "Reading more makes it a better parrot, but not a helper. It needs examples of helping."
+    },
+    {
+      "text": "Build a completely new computer brain",
+      "correct": false,
+      "feedback": "No. It keeps the same brain; it only practises in a new way."
+    }
+  ],
+  "explanation": "A model that only read texts continues them. Example answers and people's feedback teach it to help."
+}
+```
+
+```ptf-question
+{
+  "kind": "ordering",
+  "id": "post-training-order",
+  "level": "college",
+  "purpose": "check",
+  "misconception": "pretraining-makes-assistant",
+  "instruction": "Put the stages of building a chat assistant in order.",
+  "items": [
+    "Pretraining on a large text corpus (next-token prediction)",
+    "Supervised fine-tuning on prompt–response pairs",
+    "Training a reward model on human preference comparisons",
+    "Policy optimisation against the reward model with a KL penalty"
+  ],
+  "explanation": "Pretraining gives a document completer; SFT teaches the answer format; the reward model and RL with a KL penalty shape which answers it prefers."
 }
 ```
 

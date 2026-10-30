@@ -7,7 +7,7 @@ title: How large language models work
 description: From "guess the next character" to the transformer, built up step by step with hands-on simulators.
 lang: en
 license: CC-BY-SA-4.0
-version: 0.4.1
+version: 0.5.0
 tags: [llm, machine-learning, gpt]
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 ---

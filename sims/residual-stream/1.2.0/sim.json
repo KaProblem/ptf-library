@@ -1,0 +1,91 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/residual-stream",
+  "version": "1.2.0",
+  "title": "Residual highway",
+  "description": "Why deep transformers train at all: vanishing signals with and without residual connections, layer norm, dropout against memorising, and a parameter counter from a small model to GPT-3.",
+  "lang": [
+    "en"
+  ],
+  "concepts": [
+    "residual-connection",
+    "vanishing-gradient",
+    "layer-norm",
+    "pre-norm",
+    "dropout",
+    "overfitting",
+    "parameter-count",
+    "scaling"
+  ],
+  "levels": [
+    "highschool",
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "deep-signal",
+      "title": "Does the learning signal reach the bottom?",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "layer-norm",
+      "title": "Layer norm",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "dropout",
+      "title": "Dropout",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "scale-up",
+      "title": "How many parameters?",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "check",
+      "title": "Short questions",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "entry": "index.html",
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "events": [
+    "answered",
+    "station_completed",
+    "level_changed"
+  ],
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "derived_from": "ptf:sim/residual-stream@1.1.0",
+  "changelog": "Levels are depths, not parts (SPEC.md §5.2): station dropout is available at every level, because saying what dropout does is an objective of the element at every level.",
+  "integrity": "sha256-tDr8LfOPqrXc8hBIsBDiro20szAZDpmdy7xcSVfRtxI="
+}
