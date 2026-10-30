@@ -44,7 +44,7 @@ sources:
     title: "NASA NSSDCA: The Apollo 15 Hammer-Feather Drop"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.2.0
+version: 0.3.0
 license: CC-BY-SA-4.0
 ---
 
@@ -74,7 +74,7 @@ falls with the same, steadily growing speed: on Earth it gains about
 
 # Level: child
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
 Hold a heavy ball and a light ball, the same size, high up and let go at the
 same moment. Which one hits the floor first? Try it, or try it in the tower.
@@ -85,6 +85,11 @@ bigger by the same amount, so they cancel out. Only the air can make a
 difference: a feather floats down slowly because the air pushes against it.
 Where there is no air, like on the Moon, a feather and a hammer fall side by
 side.
+
+And while they fall, they get faster and faster, like a bike rolling down a
+steep hill. Every second a falling stone is about 10 metres per second
+faster than the second before. That is why it falls only a little way in the
+first second, and four times as far after two seconds.
 
 # Level: highschool
 
@@ -120,17 +125,28 @@ dependence of g.
 
 # Level: expert
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-The universality of free fall (weak equivalence principle) is the empirical
-root of general relativity: if all test bodies follow the same trajectory
-independent of composition, the trajectory is a property of spacetime, not
-of the body, and gravity can be geometrised. Current bounds on the Eötvös
-parameter η = 2|a₁ − a₂| / (a₁ + a₂) are about 10⁻¹⁵ (MICROSCOPE, 2022),
-from lunar laser ranging about 10⁻¹³ for the Earth-Moon system including
-gravitational self-energy (strong equivalence principle). Pedagogically,
-the historically decisive steps were Stevin's and Galileo's arguments
-against Aristotle and Galileo's inclined-plane measurements of s ∝ t².
+Before reading: how would you test, to one part in 10¹⁵, that a titanium and
+a platinum mass fall alike, and why would a violation matter for general
+relativity?
+
+Without air every body near the Earth falls with the same acceleration
+g ≈ 9.81 m/s², because the gravitational mass in F = m_g g and the inertial
+mass in F = m_i a are proportional for all materials; from rest v = g t and
+s = ½ g t² (distances in equal time steps 1 : 3 : 5 : 7). This universality
+of free fall (weak equivalence principle) is the empirical root of general
+relativity: if all test bodies follow the same trajectory independent of
+composition, the trajectory is a property of spacetime, not of the body, and
+gravity can be geometrised.
+
+Current bounds on the Eötvös parameter η = 2|a₁ − a₂| / (a₁ + a₂) are about
+10⁻¹⁵ (MICROSCOPE, 2022, with test masses in a drag-free satellite in
+permanent free fall); lunar laser ranging gives about 10⁻¹³ for the
+Earth-Moon system including gravitational self-energy (strong equivalence
+principle). Historically, the decisive steps were Stevin's drop and
+Galileo's thought experiment against Aristotle, and Galileo's inclined-plane
+measurements of s ∝ t².
 
 # Misconceptions
 
@@ -244,6 +260,79 @@ against Aristotle and Galileo's inclined-plane measurements of s ∝ t².
   "rubric": ["Tie a heavy and a light body together", "Aristotle predicts both slower (light one drags) and faster (combined is heavier)", "Contradiction refutes speed depending on weight alone", "It does not by itself rule out dependence on material; that needs experiment"],
   "sample_answer": "If speed grew with weight, a light stone tied to a heavy one would hold it back, so the pair falls slower than the heavy stone alone; but the pair is heavier, so it should fall faster. Both cannot hold, so fall speed cannot depend on weight alone. The argument assumes speed is a function of weight only; whether bodies of different composition fall alike is an empirical question, answered by experiments up to MICROSCOPE.",
   "explanation": "A logical argument rules out weight dependence; the material independence is experimental."
+}
+```
+
+```ptf-question
+{
+  "kind": "calculation_steps",
+  "id": "tower-fall-calc",
+  "level": "college",
+  "purpose": "check",
+  "misconception": "constant-fall-speed",
+  "title": "Fall from the tower",
+  "intro": "An object is dropped from rest from 56 m, without air resistance, g = 9.81 m/s².",
+  "columns": [
+    "Quantity",
+    "Formula",
+    "Value"
+  ],
+  "rows": [
+    [
+      "Fall time",
+      "t = √(2h / g)",
+      "√(112 / 9.81) ≈ 3.38 s"
+    ],
+    [
+      "Impact speed",
+      "v = g t",
+      "9.81 · 3.38 ≈ 33.2 m/s"
+    ],
+    [
+      "Distance in the first second",
+      "s = ½ g t²",
+      "4.9 m"
+    ],
+    [
+      "Distance in the second second",
+      "s(2) − s(1)",
+      "19.6 − 4.9 = 14.7 m"
+    ]
+  ],
+  "result": {
+    "label": "Ratio of the distances in the first two seconds",
+    "value": "1 : 3"
+  },
+  "explanation": "The speed grows linearly, so the distance grows with t²; the distances in successive seconds go 1 : 3 : 5 : 7, independent of the mass."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "eotvos",
+  "level": "expert",
+  "purpose": "check",
+  "misconception": "heavier-falls-faster",
+  "question": "A satellite experiment finds that two test masses of different materials fall with accelerations differing by 2 · 10⁻¹⁵ relative. What would this mean?",
+  "options": [
+    {
+      "text": "The ratio of gravitational to inertial mass would depend on composition, violating the weak equivalence principle",
+      "correct": true,
+      "feedback": "Right. Free fall would then not be a pure property of spacetime, and general relativity would need modification."
+    },
+    {
+      "text": "Heavier objects fall faster, as Aristotle said",
+      "correct": false,
+      "feedback": "No. Such a tiny composition effect is unrelated to weight, and nothing like proportional to it."
+    },
+    {
+      "text": "Air resistance was not fully removed",
+      "correct": false,
+      "feedback": "Drag-free satellites are built to rule that out; a residual of this size would be a discovery only if all such systematics were excluded."
+    }
+  ],
+  "explanation": "MICROSCOPE bounds η at about 10⁻¹⁵; so far all materials fall alike within that precision."
 }
 ```
 

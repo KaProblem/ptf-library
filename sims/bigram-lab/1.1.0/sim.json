@@ -1,0 +1,82 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/bigram-lab",
+  "version": "1.1.0",
+  "title": "Bigram lab",
+  "description": "Measuring and tuning a counted bigram model in four small stations: the loss of a line from the training text against letter salad, the validation loss while the model reads more text, sampling temperature, and the V×V table behind the model.",
+  "lang": [
+    "en",
+    "de"
+  ],
+  "concepts": [
+    "cross-entropy",
+    "validation-loss",
+    "temperature",
+    "sampling",
+    "bigram",
+    "embedding-table"
+  ],
+  "levels": [
+    "highschool",
+    "college",
+    "expert"
+  ],
+  "stations": [
+    {
+      "id": "loss",
+      "title": "The loss",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "training-curve",
+      "title": "Read more text, be less surprised",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "temperature",
+      "title": "Bold or careful sampling",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    },
+    {
+      "id": "bigram-table",
+      "title": "The model is a V×V table",
+      "levels": [
+        "highschool",
+        "college",
+        "expert"
+      ]
+    }
+  ],
+  "entry": "index.html",
+  "params": {
+    "type": "object",
+    "properties": {}
+  },
+  "events": [
+    "answered",
+    "station_completed",
+    "level_changed",
+    "experienced"
+  ],
+  "capabilities": [],
+  "license": "MIT",
+  "authors": [
+    "human:stefan",
+    "claude/opus"
+  ],
+  "derived_from": "ptf:sim/bigram-lab@1.0.0",
+  "changelog": "Levels are depths, not parts (SPEC.md §5.2): new level highschool for all stations, so high-school learners get temperature (an objective of softmax) and the loss on real text too. The stations already use plain words; the code notes stay expert only.",
+  "integrity": "sha256-+EZMHQbMhPdr6GR+DXDDCj+KxiBSMnTMvanh6hKucZM="
+}

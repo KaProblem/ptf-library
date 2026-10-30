@@ -17,20 +17,20 @@
     {
       "kind": "bundle",
       "id": "gravity",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "title": "Gravity: from the leaning tower to curved spacetime",
       "summary": "Why heavy and light things fall together, what air and ramps change, how one law holds apples and moons, and how Einstein replaced the pull with curved spacetime.",
       "path": "bundles/gravity",
-      "digest": "sha256-ZzgzbzLa+4OOxh9+oT2qg86JSSM22/0dKNuAOwhTMtU="
+      "digest": "sha256-e1tL7udjADkBdHgssiFRygT8bpV+WbXT2QzUgmd47Pw="
     },
     {
       "kind": "bundle",
       "id": "llm-basics",
-      "version": "0.4.1",
+      "version": "0.5.0",
       "title": "How large language models work",
       "summary": "From \"guess the next character\" to the transformer, built up step by step with hands-on simulators.",
       "path": "bundles/llm-basics",
-      "digest": "sha256-BbFDTLTHkiQnRm0/0DydpzYc6jGWyHmvEpM4JaKe+Ok="
+      "digest": "sha256-k4/HxesZsEpxj3tgpIhlp+/GyJyHZvdMc7eG6kGBeNI="
     },
     {
       "kind": "sim",
@@ -52,6 +52,15 @@
     },
     {
       "kind": "sim",
+      "id": "ptf:sim/attention-lab",
+      "version": "1.2.0",
+      "title": "Attention lab",
+      "summary": "Self-attention hands-on: guess who a word listens to, steer a query against keys, see what the values carry, why scores are scaled by 1/sqrt(d), and why attention needs positions.",
+      "path": "sims/attention-lab/1.2.0",
+      "digest": "sha256-mFhwYdDfanCrO4EjaYOYzoDMN4DSX7hPpUz8TutnD1o="
+    },
+    {
+      "kind": "sim",
       "id": "ptf:sim/babbler-to-assistant",
       "version": "1.0.0",
       "title": "From babbler to assistant",
@@ -70,12 +79,30 @@
     },
     {
       "kind": "sim",
+      "id": "ptf:sim/bigram-lab",
+      "version": "1.1.0",
+      "title": "Bigram lab",
+      "summary": "Measuring and tuning a counted bigram model in four small stations: the loss of a line from the training text against letter salad, the validation loss while the model reads more text, sampling temperature, and the V×V table behind the model.",
+      "path": "sims/bigram-lab/1.1.0",
+      "digest": "sha256-Xe+7rOPGFUyXLNSkNdNoUNwdhFTYxrkfaQJg7FUGxs4="
+    },
+    {
+      "kind": "sim",
       "id": "ptf:sim/causal-mask",
       "version": "1.0.0",
       "title": "Looking back: the causal mask",
       "summary": "Averaging over the past, the lower-triangular mask as a weight table, and masked softmax as the bridge to self-attention.",
       "path": "sims/causal-mask/1.0.0",
       "digest": "sha256-ehkW1jnnJNDmJiT/ediaYaufvl5olZhIulCZXysbmv8="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/causal-mask",
+      "version": "1.1.0",
+      "title": "Looking back: the causal mask",
+      "summary": "Averaging over the past, the lower-triangular mask as a weight table, and masked softmax as the bridge to self-attention.",
+      "path": "sims/causal-mask/1.1.0",
+      "digest": "sha256-oAhJBHO6RlqMLjXNWMJaLjYah2j2IekGFVbvwVIbIj4="
     },
     {
       "kind": "sim",
@@ -214,6 +241,15 @@
     },
     {
       "kind": "sim",
+      "id": "ptf:sim/newton-einstein",
+      "version": "1.2.0",
+      "title": "Newton and Einstein",
+      "summary": "Newton's cannon and the Moon test, a 3D picture of curved space, satellite clocks that run fast, and Mercury's turning orbit.",
+      "path": "sims/newton-einstein/1.2.0",
+      "digest": "sha256-w1akDpphrsEmTYshSf4sH8gb1VDVS+m7LmsYlkeDfxQ="
+    },
+    {
+      "kind": "sim",
       "id": "ptf:sim/next-char-basics",
       "version": "1.0.0",
       "title": "Guess the next character",
@@ -274,6 +310,15 @@
       "summary": "Why deep transformers train at all: vanishing signals with and without residual connections, layer norm, dropout against memorising, and a parameter counter from a small model to GPT-3.",
       "path": "sims/residual-stream/1.1.0",
       "digest": "sha256-3N8vkfE+InpxwEK0r3G4Zk4a1a6k3uPrG7OStCzoqkY="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/residual-stream",
+      "version": "1.2.0",
+      "title": "Residual highway",
+      "summary": "Why deep transformers train at all: vanishing signals with and without residual connections, layer norm, dropout against memorising, and a parameter counter from a small model to GPT-3.",
+      "path": "sims/residual-stream/1.2.0",
+      "digest": "sha256-gnFHSRtt+nsBf/Ng8GAUhxIpNWLWi5hnRqpHhqSdi/k="
     },
     {
       "kind": "sim",

@@ -40,7 +40,7 @@ sources:
     title: "The Feynman Lectures on Physics, Vol. I, ch. 19: Center of Mass; Moment of Inertia"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.2.0
+version: 0.3.0
 license: CC-BY-SA-4.0
 ---
 
@@ -112,18 +112,29 @@ slips and the simple formula fails; lower μ in the simulator to see it.
 
 # Level: expert
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
+
+Before reading: a solid sphere, a hollow sphere and a hoop roll down the same
+incline without slipping. Rank them, and find the friction coefficient below
+which the sphere starts to slip.
+
+For rolling without slipping, v = ω r and I = k m r² give
+m g h = ½ m v² (1 + k), so a = g sin θ / (1 + k): sliding block (k = 0), solid
+sphere (2/5), hollow sphere (2/3), hoop (1). Mass and radius cancel; only the
+mass distribution k matters, and the fraction k / (1 + k) of the energy goes
+into rotation. Static friction f = k m g sin θ / (1 + k) does no work because
+the contact point is at rest; rolling requires f ≤ μ_s m g cos θ, i.e.
+tan θ ≤ μ_s (1 + k) / k (sphere: tan θ ≤ 3.5 μ_s).
 
 In the slipping regime the dynamics split: the centre accelerates with
-g (sin θ − μ_k cos θ) and the spin with α = μ_k g cos θ / (k r); slip
-velocity v − ω r grows when the spin cannot keep up, and the dissipated power
-is μ_k m g cos θ · (v − ω r). Real rolling also loses energy through rolling
-resistance (deformation hysteresis, c_rr ≈ 0.001 for steel on steel), which
-the ideal model ignores. For simulations this is a cautionary case: game
-engines model contact with impulses, position correction and (in 2D) discs,
-so a "ball" rolls with k = 1/2 and may creep or slip at contact transitions.
-A closed-form or tailored integrator is both simpler and right; an engine is
-worth it only when the interaction between many bodies is the point.
+g (sin θ − μ_k cos θ) and the spin with α = μ_k g cos θ / (k r); slip velocity
+v − ω r grows, and the dissipated power is μ_k m g cos θ · (v − ω r). Real
+rolling also loses energy through rolling resistance (deformation
+hysteresis, c_rr ≈ 0.001 for steel on steel). For simulations this is a
+cautionary case: game engines model contact with impulses, position
+correction and (in 2D) discs, so a "ball" rolls with k = 1/2 and may creep or
+slip at contact transitions. A closed-form or tailored integrator is both
+simpler and right.
 
 # Misconceptions
 
@@ -226,6 +237,54 @@ worth it only when the interaction between many bodies is the point.
   "rubric": ["2/3 · 9.81 · sin 20° ≈ 2.24: the engine models a disc (k = 1/2)", "A solid sphere gives 5/7 · g sin θ ≈ 2.40 m/s²", "Both are right for their model: disc vs. sphere", "Fix: set the rotational inertia to 2/5 m r² or use an analytic model; state the assumption"],
   "sample_answer": "2.24 m/s² is exactly 2/3 g sin 20°, the result for a solid disc. A real ball (solid sphere) gives 5/7 g sin 20° ≈ 2.40 m/s². The engine is correct for a disc; to model a sphere, override the body's moment of inertia to 2/5 m r², or skip the engine and use a = g sin θ / (1 + k). Either way, the simulation should say which body it models.",
   "explanation": "Simulation results are only as right as the model's assumptions."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "tape-or-marble",
+  "level": "child",
+  "purpose": "check",
+  "misconception": "ring-faster",
+  "question": "A roll of tape and a ball of the same size roll down a slope side by side. Which one is slower, and why?",
+  "options": [
+    {
+      "text": "The roll of tape: its weight is out at the edge, so spinning takes more of its effort",
+      "correct": true,
+      "feedback": "Yes! The ring shape is hard to spin, so less is left for rolling forward."
+    },
+    {
+      "text": "The ball, because it is rounder",
+      "correct": false,
+      "feedback": "No. The ball wins: much of its weight is near the middle, so it spins up easily."
+    },
+    {
+      "text": "Neither, round things always roll equally fast",
+      "correct": false,
+      "feedback": "Try it! Where the weight sits makes a difference."
+    }
+  ],
+  "explanation": "Rolling means moving forward and spinning. Weight far from the middle makes spinning harder."
+}
+```
+
+```ptf-question
+{
+  "kind": "free_text",
+  "id": "slip-limit",
+  "level": "expert",
+  "purpose": "check",
+  "misconception": "friction-always-wastes-energy",
+  "question": "Show that a solid sphere rolls without slipping on an incline only if tan θ ≤ 3.5 μ_s, and explain why static friction does not reduce its kinetic energy.",
+  "rubric": [
+    "a = g sin θ / (1 + k) with k = 2/5",
+    "Required friction f = k m g sin θ / (1 + k) = (2/7) m g sin θ",
+    "Condition f ≤ μ_s m g cos θ gives tan θ ≤ (7/2) μ_s",
+    "The contact point is momentarily at rest, so static friction does no work"
+  ],
+  "sample_answer": "From m a = m g sin θ − f and f r = I a / r with I = (2/5) m r², f = (2/7) m g sin θ. Rolling needs f ≤ μ_s m g cos θ, so tan θ ≤ 3.5 μ_s. The contact point does not move relative to the surface, so f does no work; it only shifts energy from translation into rotation.",
+  "explanation": "Static friction enables rolling without dissipating energy; only slipping (kinetic friction) or deformation dissipates."
 }
 ```
 

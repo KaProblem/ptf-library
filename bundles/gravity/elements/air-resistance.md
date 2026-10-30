@@ -42,7 +42,7 @@ sources:
     title: "The Feynman Lectures on Physics, Vol. I, ch. 9: Newton's Laws of Dynamics"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.2.0
+version: 0.3.0
 license: CC-BY-SA-4.0
 ---
 
@@ -89,13 +89,23 @@ same push of the air, but ten times less weight to push through it.
 
 # Level: college
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-Predict the shape of v(t) before plotting it: linear at first, then flatter,
-approaching a horizontal line. With quadratic drag the equation
-m v̇ = m g − k v², k = ½ ρ c_d A, separates and gives v(t) = v_t tanh(t / τ)
-with v_t = √(m g / k) and τ = v_t / g. After t = 2τ the object has 96 % of
-v_t. A dimensionless check: when the drop height h is small compared with
+Predict before plotting: a crumpled and a flat sheet of the same 5 g paper
+are dropped together. Which lands first, and what does each v(t) curve look
+like? (The ball; both rise linearly at first, then flatten towards
+different horizontal lines.)
+
+Drag at everyday speeds is F = ½ ρ c_d A v²: it grows with the square of the
+speed and with the area A facing the flow. Same mass means same weight, but
+the flat sheet has a much larger A and c_d, so drag balances its weight
+already at about 1 m/s, while the crumpled ball keeps accelerating to about
+7.6 m/s. With k = ½ ρ c_d A the equation m v̇ = m g − k v² separates and gives
+v(t) = v_t tanh(t / τ) with terminal speed v_t = √(m g / k), where drag
+equals weight and the net force vanishes, and τ = v_t / g. After t = 2τ the
+object has 96 % of v_t.
+
+A dimensionless check: when the drop height h is small compared with
 v_t² / g, air hardly matters (iron ball: h / (v_t² / g) ≈ 0.03); when it is
 large, the object spends most of the fall at terminal speed (flat paper:
 ≈ 500). The simulator integrates the same equation numerically; comparing
@@ -104,16 +114,25 @@ step size decides whether a simulation is trustworthy.
 
 # Level: expert
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-The quadratic drag law is an approximation valid in the inertial regime
-(Re ≈ 10³ to 2 · 10⁵ for a smooth sphere), where c_d is roughly constant. In
-the Stokes regime (Re ≪ 1) drag is linear, F = 6π μ r v, and v_t = 2 r² Δρ g
-/ (9 μ). At the drag crisis (Re ≈ 3 · 10⁵) c_d falls from about 0.47 to 0.1.
-For a full model, c_d(Re) is tabulated and the ODE becomes non-autonomous in
-speed only, still a one-line RK4 update. Plates and sheets add rotational
-degrees of freedom: fluttering and tumbling (studied as falling-paper
-dynamics) couple lift and drag and are chaotic. A simulation that keeps c_d
+Before reading: estimate the Reynolds number of a crumpled paper ball (6 cm)
+at 7.6 m/s, and say whether the quadratic drag law applies. (Re ≈ 3 · 10⁴:
+yes, inertial regime.)
+
+In the inertial regime drag is F = ½ ρ c_d A v² with c_d roughly constant, so
+m v̇ = m g − k v² gives v(t) = v_t tanh(g t / v_t) with v_t = √(2 m g /
+(ρ c_d A)): the object accelerates until drag equals weight, then falls at
+v_t with zero net force. At equal mass, a larger c_d A (the flat sheet
+against the crumpled ball) lowers v_t as 1 / √(c_d A), which is the whole
+crumpled-versus-flat effect.
+
+The quadratic law holds for Re ≈ 10³ to 2 · 10⁵ for a smooth sphere. In the
+Stokes regime (Re ≪ 1) drag is linear, F = 6π μ r v, and v_t = 2 r² Δρ g /
+(9 μ). At the drag crisis (Re ≈ 3 · 10⁵) c_d falls from about 0.47 to 0.1.
+For a full model, c_d(Re) is tabulated and the ODE stays a one-line RK4
+update. Plates and sheets add rotational degrees of freedom: fluttering and
+tumbling couple lift and drag and are chaotic. A simulation that keeps c_d
 fixed must say so; ours does, and treats the flat sheet as a falling plate.
 
 # Misconceptions
@@ -216,6 +235,35 @@ fixed must say so; ours does, and treats the flat sheet as a falling plate.
   "rubric": ["Reynolds number dependence of c_d", "Transition of the boundary layer to turbulence (around Re ≈ 3 · 10⁵ for a smooth sphere)", "Turbulent boundary layer separates later, smaller wake, c_d drops sharply", "Dimples trigger the transition at lower Re, within the range of a golf drive"],
   "sample_answer": "c_d depends on the Reynolds number. Near Re ≈ 3 · 10⁵ the boundary layer of a smooth sphere becomes turbulent, stays attached longer and the wake shrinks, so c_d drops from about 0.47 to 0.1: the drag crisis. Dimples make the boundary layer turbulent at lower Re, so a golf ball gets the low drag at the speeds it actually flies.",
   "explanation": "A constant c_d is a model choice that fails across the drag crisis."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "stokes-or-quadratic",
+  "level": "expert",
+  "purpose": "check",
+  "misconception": "drag-proportional-to-speed",
+  "question": "A fog droplet (radius 10 µm) and a raindrop (radius 1 mm) fall through air. How does their terminal speed scale with radius?",
+  "options": [
+    {
+      "text": "Fog droplet: v_t ∝ r² (Stokes, linear drag); raindrop: roughly v_t ∝ √r (quadratic drag)",
+      "correct": true,
+      "feedback": "Right. The drag law depends on the Reynolds number: linear for tiny droplets, quadratic for raindrops."
+    },
+    {
+      "text": "Both v_t ∝ √r, because drag always grows with v²",
+      "correct": false,
+      "feedback": "No. At Re ≪ 1 viscosity dominates and drag is linear in v."
+    },
+    {
+      "text": "Both fall at the same speed, because all bodies fall alike",
+      "correct": false,
+      "feedback": "That holds only without air. With air, terminal speed depends strongly on size."
+    }
+  ],
+  "explanation": "Stokes: v_t = 2 r² Δρ g / (9 μ). Quadratic: m ∝ r³, A ∝ r², so v_t = √(2 m g / (ρ c_d A)) ∝ √r."
 }
 ```
 

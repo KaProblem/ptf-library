@@ -61,7 +61,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T14:30:00Z }
 status: draft
-version: 0.2.0
+version: 0.3.0
 license: CC-BY-SA-4.0
 ---
 
@@ -94,10 +94,11 @@ The model never sees more than its context window.
 
 # Level: highschool
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-Start by putting the parts in order in the simulator, without help. If you
-get stuck, ask yourself what each part needs as input.
+Start by putting the parts in order without help: tokenizer, embeddings,
+blocks, output layer, softmax, sampling. If you get stuck, ask yourself what
+each part needs as input.
 
 Here is the journey of one prediction. The model has read "to be or no".
 First every character becomes a number. Each number is swapped for a list
@@ -119,39 +120,59 @@ The rules, like the mask or the die, stay the same forever.
 
 # Level: college
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-Let the learner step through the trace station with shapes switched on and
-name each shape before revealing it; then do the shapes quiz for a batch.
-The invariant worth noticing: B and T never change inside the model; only
+Name each shape before reading on, for a batch of B = 4 sequences of
+T = 8 characters, width C = 32 and V = 65: the ids, the embeddings, the
+output of a block, the logits.
+
+One prediction, end to end: the tokenizer maps text to ids (B, T); token
+embeddings plus position embeddings give x (B, T, C); a stack of blocks
+(multi-head attention under a causal mask, then a per-position feed-forward
+network, each with layer norm and a residual connection) keeps the shape
+(B, T, C) while every position gathers what it needs from earlier ones; a
+final layer norm and the linear head give logits (B, T, V); softmax turns the
+last position's logits into probabilities; one token is sampled, appended,
+and the whole pass runs again. B and T never change inside the model; only
 the last dimension does, from ids to C, to C / heads inside each head, back
 to C, and finally to V.
 
-Then connect the code. `GPT.forward` is: embeddings, `self.blocks(x)`,
-`self.ln_f`, `self.lm_head`, loss on all positions. `generate` is a loop
-around the same forward pass: crop to `block_size`, keep `logits[:, -1, :]`,
-divide by temperature, softmax, `torch.multinomial`, `torch.cat`. Training
-computes T predictions per sequence in one pass; generation throws away all
-but the last one, which is why it is so much slower per token. (Real
-systems cache keys and values of earlier positions to avoid recomputing
-them; that is an optimisation, not a change to the model.)
+In code, `GPT.forward` is embeddings, `self.blocks(x)`, `self.ln_f`,
+`self.lm_head`, loss on all positions; `generate` crops to `block_size`, keeps
+`logits[:, -1, :]`, divides by temperature, applies softmax,
+`torch.multinomial`, `torch.cat`. Training changes only the parameters:
+embeddings, attention and feed-forward weights, layer-norm scales and the
+head. The tokenizer, the mask, softmax and sampling are fixed. Anything older
+than `block_size` tokens is cropped away. Training computes T predictions
+per sequence in one pass; generation throws away all but the last one,
+which is why it is slower per token. (Real systems cache keys and values of
+earlier positions; that is an optimisation, not a change to the model.)
 
 # Level: expert
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-A useful exercise is a parameter budget: for the 6 × 384 model, each block
-holds about 12 · 384² ≈ 1.77 M weights (4 · C² in attention, 8 · C² in the
-feed-forward layer), six blocks about 10.6 M, plus embeddings and head;
-compare with the printed count of 10.8 M. Then ask where compute goes per
-generated token: the blocks dominate, attention adds a term linear in the
-context length per token (quadratic over a whole sequence).
+Budget first: how many weights does one block of width 384 hold, and how
+many do six blocks hold? (About 12 · 384² ≈ 1.77 M per block, 10.6 M for six,
+against a printed total of 10.8 M with embeddings and head.)
 
-Discuss what this architecture cannot do by itself: it has no memory beyond
-the window, no notion of truth beyond the training distribution, and no
-goal other than continuing the document. Those gaps are what tokenisation
-at scale, fine-tuning and reinforcement learning from human feedback
-address in the next element.
+A GPT is an autoregressive pipeline run once per generated token: tokenize;
+embed tokens and positions; apply L pre-norm blocks, each x + MHA(LN(x)) with
+a causal mask, then x + MLP(LN(x)), with 4 · C² weights in attention and
+8 · C² in the MLP; final LN; project to V logits; softmax with temperature;
+sample; append; crop to the context window. Training learns embeddings,
+block weights, norms and the head by minimising next-token cross-entropy on
+all positions in parallel; the tokenizer, the mask and the sampling rule are
+fixed, and nothing outside the window can influence a prediction.
+
+Compute per generated token is dominated by the blocks (about 2 FLOPs per
+parameter), and attention adds a term linear in the context length per token
+(quadratic over a whole sequence); KV caching avoids recomputing earlier
+positions. The architecture by itself has no memory beyond the window, no
+notion of truth beyond the training distribution and no goal other than
+continuing the document; tokenisation at scale, fine-tuning and
+reinforcement learning from human feedback address those gaps in the next
+element.
 
 # Misconceptions
 
@@ -258,6 +279,35 @@ address in the next element.
   "answer": 1.77,
   "tolerance": 0.2,
   "explanation": "12 · 384² ≈ 1.77 million: 4 · C² in attention (query, key, value, projection) and 8 · C² in the feed-forward layer with inner width 4C."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "fixed-or-learned",
+  "level": "expert",
+  "purpose": "check",
+  "misconception": "model-remembers-everything",
+  "question": "A user pastes 10,000 tokens into a model with a 4,096-token window and asks about the first paragraph. Which statement is correct?",
+  "options": [
+    {
+      "text": "After cropping, the first paragraph never reaches the model; no learned weight can recover it",
+      "correct": true,
+      "feedback": "Right. The window is a hard limit of the forward pass; parameters only hold what training put there."
+    },
+    {
+      "text": "The KV cache keeps the cropped tokens available to attention",
+      "correct": false,
+      "feedback": "No. The cache only stores keys and values of tokens inside the window, to avoid recomputing them."
+    },
+    {
+      "text": "The residual stream carries a summary of the cropped tokens forward",
+      "correct": false,
+      "feedback": "No. The residual stream lives at the positions inside the current window; cropped positions have no stream at all."
+    }
+  ],
+  "explanation": "Context length is fixed by the architecture (and position encoding) and by cost; memory beyond it needs a system around the model, such as retrieval."
 }
 ```
 

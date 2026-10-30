@@ -10,8 +10,8 @@
       "integrity": "sha256-2Vzgn9chDvFAnRKEAAtcF0FyJrcQPw+gqr/1tq/m5jo="
     },
     "ptf:sim/newton-einstein": {
-      "version": "1.1.1",
-      "integrity": "sha256-rO4KCHcnFU5zfuaxk4vADa+7TrOca5GvquNv5TyUkbU="
+      "version": "1.2.0",
+      "integrity": "sha256-UFyZdeNdNBqkQhr7vhLgoLADl021RGPSM6dNB9cBWxo="
     }
   }
 }

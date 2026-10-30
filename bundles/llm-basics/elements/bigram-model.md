@@ -55,7 +55,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T14:30:00Z }
 status: draft
-version: 0.2.0
+version: 0.3.0
 license: CC-BY-SA-4.0
 ---
 
@@ -88,11 +88,13 @@ token, appends it and repeats.
 
 # Level: highschool
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-Before you read on, open the table in the simulator and look up two
-characters. Every row says the same thing: 20 % for everything. The model
-knows nothing yet.
+Picture the simplest possible language model: a table with one row for
+every character and, in each row, a score for every character that could
+come next. Look up two rows of a fresh table (in a tiny alphabet of five
+characters): every row says the same thing, 20 % for everything, because
+softmax turns equal scores into equal shares. The model knows nothing yet.
 
 Now take one example from the text: after "b" comes "a". The model gave
 "a" only 20 %, so it was quite surprised; its loss is about 1.6. A training
@@ -100,7 +102,10 @@ step nudges the numbers in the row of "b": the score for "a" goes up a bit,
 the scores for the others go down a bit. Press the button a few times and
 "a" climbs to 50 %, 70 %, 90 %.
 
-Real training does this for all examples at once, again and again. The
+Each step has the same three moves: measure the loss, work out in which
+direction each number should move to lower it (the gradient), and move it a
+small step that way. Real training does this for all examples at once, again
+and again. The
 step size matters. Tiny steps learn, but painfully slowly. Huge steps
 overshoot: the model swings from one extreme to the other and the loss
 jumps around. In between, the loss drops quickly and then flattens out.
@@ -112,7 +117,7 @@ but no words. It forgets everything except the last character.
 
 # Level: college
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
 Start in the simulator with the nudge station at a larger step size, and
 read the score changes under each bar: the correct character gains
@@ -124,7 +129,8 @@ In code, the model is `nn.Embedding(65, 65)`. A batch of shape (B, T) is
 looked up to give logits (B, T, 65); for the loss you flatten to (B·T, 65)
 and (B·T,) and call `F.cross_entropy`. The training loop is four lines:
 `logits, loss = model(xb, yb)`, `optimizer.zero_grad()`, `loss.backward()`,
-`optimizer.step()`. Before training the loss is about 4.7, a little worse than
+`optimizer.step()`. The learning rate scales every step: too small and the
+loss crawls, too large and it overshoots and oscillates. Before training the loss is about 4.7, a little worse than
 uniform guessing (ln 65 ≈ 4.17) because the random initial scores are
 confidently wrong in places; after a few thousand steps it settles around 2.5.
 
@@ -135,21 +141,29 @@ feed it the whole sequence. That waste is the starting point for attention.
 
 # Level: expert
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-The bigram table is the maximum-likelihood estimate of P(x_{t+1} | x_t)
-once training has converged: its softmax rows approach the normalised pair
-counts, and the loss approaches the conditional entropy of the data given
-one token of context. Gradient descent here is convex per row, so with a
-sensible learning rate it reaches that optimum; the instability at large
-learning rates is plain overshooting of a well-conditioned problem.
+Predict first: to what loss does a converged character bigram converge on
+Shakespeare, and what quantity of the data is that? (About 2.5 nats: the
+conditional entropy of the next character given the current one.)
+
+The model is a V × V matrix W of logits; row x_t gives softmax(W[x_t]) as
+P(x_{t+1} | x_t). One training step evaluates the mean cross-entropy on a
+batch of (B, T) positions, backpropagates (per row the gradient is
+softmax − onehot, so the target gains lr · (1 − p) and every other token
+loses lr · p under plain SGD) and updates W with AdamW. The objective is
+convex per row, so with a sensible learning rate it reaches the
+maximum-likelihood estimate, the normalised pair counts; too small a rate
+crawls, too large overshoots a well-conditioned problem and oscillates.
+Generation feeds the last token's row through softmax, samples with
+temperature, appends and repeats, so the model is a first-order Markov chain
+that ignores all earlier context.
 
 The setup is the scaffold for everything that follows: the same data
-pipeline, loss, optimizer (AdamW), evaluation (averaged train/val loss) and
-sampling loop stay unchanged while the model in the middle grows from a
-lookup table into a transformer. Ask the learner to predict which lines of
-the training script will change when attention is added: only the model
-class.
+pipeline, loss, optimizer, evaluation (averaged train/val loss) and sampling
+loop stay unchanged while the model in the middle grows from a lookup table
+into a transformer. Ask the learner to predict which lines of the training
+script will change when attention is added: only the model class.
 
 # Misconceptions
 
@@ -253,6 +267,25 @@ class.
     { "answer": "step" }
   ],
   "explanation": "Forward, backward, step; zero_grad clears the old gradients before the next backward pass."
+}
+```
+
+```ptf-question
+{
+  "kind": "free_text",
+  "id": "bigram-optimum",
+  "level": "expert",
+  "purpose": "check",
+  "misconception": "bigger-lr-faster",
+  "question": "A bigram model is trained with plain SGD on a fixed corpus. What does it converge to, and why does a very large learning rate not get there faster?",
+  "rubric": [
+    "The rows of softmax(W) converge to the normalised pair counts (maximum-likelihood estimate)",
+    "The loss converges to the conditional entropy H(x_{t+1} | x_t) of the data",
+    "The per-row objective is convex, so a suitable rate reaches the optimum",
+    "A too large rate overshoots and oscillates or diverges instead of converging"
+  ],
+  "sample_answer": "Each row's softmax converges to the empirical next-token frequencies after that token, and the loss to the conditional entropy given one token. The objective is convex per row, but a too large step overshoots the minimum and oscillates, so it converges slower or not at all.",
+  "explanation": "The bigram optimum is known in closed form (the counts), which makes it a good test for the training loop."
 }
 ```
 

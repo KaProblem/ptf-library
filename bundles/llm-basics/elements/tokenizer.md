@@ -42,7 +42,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.3.1
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -70,30 +70,41 @@ numbers.
 
 # Level: child
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
 Let's play a game. I write the start of a sentence and stop: "Once upon a ti…".
 What letter comes next? You knew it, because you have heard many stories.
 
-A computer program can learn the same game. But it cannot read letters like
-you do. So first we give every letter a number, like a secret code: a = 1,
-b = 2, and so on, and even the space gets a number. Now the sentence is a row
-of numbers, and the program learns which number usually comes next.
+A computer program can learn the same game, but it cannot read letters like
+you do. It can only work with numbers. So first we give every letter a
+number, like a secret code: a = 1, b = 2, and so on, and even the space gets
+a number. All the letters that have a number together are the program's
+alphabet; grown-ups call it the **vocabulary**. Now "ab" becomes 1, 2, and
+the program learns which number usually comes next. When it answers with a
+number, we look it up in the code and turn it back into a letter.
+
+The numbers are only names, like the numbers on football shirts: number 2 is
+not "more of a letter" than number 1.
 
 # Level: highschool
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
 Before any explanation, try being the model yourself: look at a piece of text
 that stops in the middle of a word and guess the next character. You will be
 right surprisingly often, because you know spelling, grammar and meaning.
 
-A language model plays exactly this game, but it only sees numbers. A
-**tokenizer** makes the translation. The simplest tokenizer gives every
-character that occurs in the training text its own number: for a large
-Shakespeare text that is 65 different characters, so the numbers run from 0
-to 64. "Hi!" might become [20, 47, 2]. These 65 characters are the model's
-whole **vocabulary**.
+A language model plays exactly this game, but a computer can only calculate
+with numbers, so it never sees letters. A **tokenizer** makes the
+translation. The simplest tokenizer gives every character that occurs in the
+training text its own number: for a large Shakespeare text that is 65
+different characters, so the numbers run from 0 to 64. "Hi!" might become
+[20, 47, 2]. These 65 characters are the model's whole **vocabulary**. The
+model answers with a number too, and the tokenizer translates it back:
+2 → "!". Encoding and decoding must fit together exactly.
+
+The numbers are just labels. That "a" is 39 and "b" is 40 tells the model
+nothing; everything it knows about letters it has to learn from text.
 
 Big models like ChatGPT cut text into larger pieces, often whole words or
 parts of words. That makes texts shorter in tokens, but the model needs to
@@ -101,18 +112,26 @@ know about 50,000 or more different pieces.
 
 # Level: college
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
+
+Guess the next character of "To be or not to b". A language model solves
+this task billions of times, but as a neural network it can only compute
+with numbers, so text has to be mapped to integers first.
 
 A tokenizer is a pair of functions encode: string → list of ints and
 decode: list of ints → string with decode(encode(s)) = s. A character-level
 tokenizer builds a lookup table from the sorted set of characters in the
-corpus (`stoi`, `itos`). Subword tokenizers such as BPE start from bytes and
-repeatedly merge the most frequent adjacent pair into a new token until the
-vocabulary reaches a target size (50,257 for GPT-2).
+corpus (`stoi`, `itos`); for about 1 million characters of Shakespeare the
+vocabulary has V = 65 entries. The IDs are arbitrary indices: sorting the
+characters is a convenience, and any similarity between tokens has to be
+learned later in the embedding vectors.
 
-The choice matters for everything downstream: the model's input and output
-layers have one row per token (V × d parameters each), and sequence length
-in tokens limits how much text fits into the context window.
+Subword tokenizers such as BPE start from bytes and repeatedly merge the
+most frequent adjacent pair into a new token until the vocabulary reaches a
+target size (50,257 for GPT-2). The choice is a trade-off: a small V gives
+long sequences, a large V short sequences but more parameters, since the
+model's input and output layers have one row per token (V × d each), and
+sequence length in tokens limits how much text fits into the context window.
 
 # Misconceptions
 
@@ -181,6 +200,35 @@ in tokens limits how much text fits into the context window.
     { "text": "'b' is more important than 'a'", "correct": false, "feedback": "No. A larger ID carries no weight." }
   ],
   "explanation": "IDs index rows in a table. All structure the model uses is learned from data."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "secret-code",
+  "level": "child",
+  "purpose": "check",
+  "misconception": "ids-carry-meaning",
+  "question": "In our secret code a = 1, b = 2 and c = 3. The program answers with the numbers 3, 1, 2. Which letters are that?",
+  "options": [
+    {
+      "text": "c, a, b",
+      "correct": true,
+      "feedback": "Yes! You turned the numbers back into letters, just like the program's code book does."
+    },
+    {
+      "text": "a, b, c",
+      "correct": false,
+      "feedback": "Look again: 3 comes first, and 3 is c."
+    },
+    {
+      "text": "Three times the letter c, because 3 is the biggest",
+      "correct": false,
+      "feedback": "No. A bigger number is not a bigger letter; each number is just the name of one letter."
+    }
+  ],
+  "explanation": "The code works both ways: letters become numbers for the program, and its numbers become letters again for us."
 }
 ```
 

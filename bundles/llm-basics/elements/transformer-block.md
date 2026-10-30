@@ -28,7 +28,7 @@ simulators:
     use_when: the learner wants to see different heads ask different questions
   - ref: ptf:sim/transformer-block@^1.0.0
     station: feed-forward
-    levels: [highschool, college]
+    levels: [highschool, college, expert]
     role: explore
     note: The key observation is that changing one token's input changes only that token's output.
     use_when: the learner should see that the feed-forward part works on each token alone
@@ -48,7 +48,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.3.0
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -77,7 +77,7 @@ the transformer.
 
 # Level: highschool
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
 Think of a group project. First everybody talks: each person asks around
 and collects what they need from the others. Then everybody goes back to
@@ -95,33 +95,61 @@ Here no information moves between words; each word just works with what it
 collected. Then the next block starts with another round of talking and
 thinking.
 
+Why several heads instead of one? One head can only make one weighted mix,
+so it would have to blur "the word before me" and "who is doing something"
+together. Several heads ask several questions at once. And why stack blocks?
+Each round builds on what the earlier rounds found: first simple things such
+as neighbouring letters, later combinations such as words and who does what.
+Each addition lowers the loss a bit in a small Shakespeare model: from about
+2.4 with one head to about 2.24 with several heads and a feed-forward layer.
+
 # Level: college
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-MultiHead(X) = concat(head_1, …, head_h) W_O, with head_i = Attention(X W_Q^i,
-X W_K^i, X W_V^i) and head size d_model / h, so the cost is about that of one
-full-width head. Several smaller heads beat one large head because each
-softmax can select different tokens; one head has to average everything it
-wants into a single distribution. The position-wise feed-forward network
-FF(x) = act(x W1 + b1) W2 + b2 with W1 ∈ ℝ^(d×4d) is applied to each position
-independently, so it is equivalent to a 1 × 1 convolution over the sequence.
-A block is then x ← x + MHA(LN(x)); x ← x + FF(LN(x)) (residuals and layer
-norm are the next element).
+Predict first: with d_model = 384 and 6 heads, what is the head size, and is
+6 heads × 64 more expensive than one head of 384? (64; about the same cost.)
+
+A block has two halves. Communication: multi-head attention,
+MultiHead(X) = concat(head_1, …, head_h) W_O with head_i = Attention(X W_Q^i,
+X W_K^i, X W_V^i) and head size d_model / h. Several smaller heads beat one
+large head because each softmax can select different tokens; one head has to
+average everything it wants into a single distribution. Computation: the
+position-wise feed-forward network FF(x) = act(x W1 + b1) W2 + b2 with
+W1 ∈ ℝ^(d×4d), applied to each position independently (equivalent to a
+1 × 1 convolution over the sequence), so no information moves between tokens
+there. A block is then x ← x + MHA(LN(x)); x ← x + FF(LN(x)) (residuals and
+layer norm are the next element).
+
+Blocks are stacked because each one composes the features of the previous
+one: early layers find local patterns, later layers combine them. On a
+character-level Shakespeare model one head gives a validation loss of about
+2.4, multi-head 2.28, plus feed-forward 2.24; deeper stacks then need the
+residual stream to train.
 
 # Level: expert
 
-<!-- ptf:text v1 -->
+<!-- ptf:text v2 -->
 
-Mechanistically, attention moves information between residual-stream
-positions and the MLP reads and writes features at each position; the MLPs
-behave like key-value memories that store much of the model's factual
-knowledge. Heads are partially redundant and can often be pruned after
-training. Modern variants use SwiGLU feed-forwards (with width about 8/3 d
-to keep parameters constant), grouped-query attention, parallel attention
-and MLP branches (GPT-J, PaLM), and mixture-of-experts feed-forwards that
-route each token to a few of many expert MLPs, decoupling parameter count
-from compute per token.
+Before reading: why can a single head not implement "copy the token after
+the previous occurrence of the current token", while two heads in two
+stacked blocks can? (An induction head needs a previous-token head first.)
+
+A block alternates communication and computation: multi-head attention,
+concat(head_1 … head_h) W_O with head size d_model / h, moves information
+between positions, each head with its own softmax and therefore its own
+selection; the position-wise MLP (typically 4d wide) transforms features at
+each position independently. Stacking composes them, so later heads can
+attend based on features earlier layers wrote, as in induction circuits.
+
+Mechanistically, attention reads and writes residual-stream subspaces and
+the MLPs behave like key-value memories that store much of the model's
+factual knowledge. Heads are partially redundant and can often be pruned
+after training. Modern variants use SwiGLU feed-forwards (with width about
+8/3 d to keep parameters constant), grouped-query attention, parallel
+attention and MLP branches (GPT-J, PaLM), and mixture-of-experts
+feed-forwards that route each token to a few of many expert MLPs, decoupling
+parameter count from compute per token.
 
 # Misconceptions
 
@@ -201,6 +229,35 @@ from compute per token.
   "rubric": ["One softmax yields one convex combination of values per position", "Different heads can select different tokens simultaneously", "Each head has its own subspace for queries, keys, values", "Cost is about the same because the total width is unchanged"],
   "sample_answer": "A single head produces one attention distribution per position, so it must blend everything it needs into one weighted average. With h heads, each has its own projections and softmax, so one head can track the previous token while another tracks the subject. Total width and compute stay about the same because each head is d/h wide.",
   "explanation": "Multiple heads trade width per head for multiple independent selection patterns."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "why-stack",
+  "level": "expert",
+  "purpose": "check",
+  "misconception": "feed-forward-mixes-tokens",
+  "question": "An induction head (\"after A … B … A, predict B\") needs at least two attention layers. Why?",
+  "options": [
+    {
+      "text": "A first head must write \"which token came before me\" into each position, so a later head can match on it",
+      "correct": true,
+      "feedback": "Right. Composition across layers is what stacking buys; the feed-forward layer cannot move that information between positions."
+    },
+    {
+      "text": "The feed-forward layer of the first block copies the previous token over",
+      "correct": false,
+      "feedback": "No. The feed-forward network works on each position alone; only attention moves information between positions."
+    },
+    {
+      "text": "A single head could do it, two layers only add capacity",
+      "correct": false,
+      "feedback": "No. One head can only match on what is already at each position, and before the first layer that is just the token and its position."
+    }
+  ],
+  "explanation": "Previous-token head in layer 1, then a head in layer 2 whose query matches keys that now contain \"my predecessor was A\"."
 }
 ```
 

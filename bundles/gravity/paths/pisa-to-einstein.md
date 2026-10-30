@@ -18,7 +18,7 @@ steps:
   - element: ptf:el/gravity/universal-gravitation
   - element: ptf:el/gravity/curved-spacetime
 status: draft
-version: 0.2.0
+version: 0.3.0
 license: CC-BY-SA-4.0
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 sources:
@@ -56,7 +56,8 @@ an hour at highschool level.
 
 - Open the course with its introduction and the question "does heavy fall faster?"; in later sessions, say where the learner is in the course first.
 - Open a simulator station when its `use_when` fits the learner, one station at a time in focus mode (SIMULATOR-SPEC.md §4.7); the progress row lets the learner jump between stations. Every experiment is locked until the learner has picked a prediction in the simulator, and only the result reveals whether it was right (predict, observe, explain). Do not give the answer before; afterwards, ask the learner to explain what they saw.
-- For a child, a short path works on its own: free fall (guess, vacuum) → rolling (race) → universal gravitation (cannon) → curved spacetime (spacetime). Skip formulas; keep the "lazier heavy ball" and "falling around the Earth" pictures.
+- For a child, a short path works on its own: free fall (guess, vacuum) → rolling (race) → universal gravitation (cannon, moon) → curved spacetime (spacetime, clocks). Skip formulas; keep the "lazier heavy ball" and "falling around the Earth" pictures.
+- Levels are depths, not parts (ptf-spec SPEC.md §5.2): stay at the learner's level for the whole course. Every element covers its objectives at every level, and so do the simulator stations listed for that level, so a learner never has to repeat a step at another level to get the whole idea. "Go deeper" means the same step again one level up (more terms, formulas and harder questions); offer it, never require it. Stations listed only for higher levels are optional deepening.
 - At highschool level steps 1 to 4 fit one session of about 60 minutes, steps 5 and 6 a second one.
 - The numbers in the simulators are computed (RK4 or closed form) and checked in their self-tests; use them as facts: iron vs. wood from 56 m is 0.17 s and about 5 m apart, not "a hand's width".
 - In step 2 at college level, let the learner break the simulation (large Δt with Euler) before trusting it; this is the bridge to "how do we know a simulation is right".
