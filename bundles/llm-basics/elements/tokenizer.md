@@ -7,8 +7,10 @@ description: A language model never sees letters or words, only numbers; the tok
 lang: en
 levels: [child, highschool, college]
 objectives:
-  - Explain why a language model works with numbers instead of letters or words.
-  - Turn a short text into tokens and numbers and back, and say what the vocabulary is.
+  - id: numbers-not-letters
+    text: Explain why a language model works with numbers instead of letters or words.
+  - id: encode-decode
+    text: Turn a short text into tokens and numbers and back, and say what the vocabulary is.
 tags: [llm, tokenizer, vocabulary]
 about:
   - wikidata: Q2438971
@@ -42,7 +44,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.4.0
+version: 0.5.0
 license: CC-BY-SA-4.0
 ---
 
@@ -161,6 +163,7 @@ sequence length in tokens limits how much text fits into the context window.
   "id": "what-model-sees",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["numbers-not-letters"],
   "misconception": "model-sees-words",
   "question": "What does a language model actually receive as input?",
   "options": [
@@ -178,6 +181,7 @@ sequence length in tokens limits how much text fits into the context window.
   "id": "vocab-size",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["encode-decode"],
   "question": "A character-level tokenizer reads 1 million characters of Shakespeare. About how many different tokens will its vocabulary have?",
   "answer": 65,
   "tolerance": 20,
@@ -192,6 +196,7 @@ sequence length in tokens limits how much text fits into the context window.
   "id": "id-meaning",
   "level": "college",
   "purpose": "check",
+  "objectives": ["numbers-not-letters"],
   "misconception": "ids-carry-meaning",
   "question": "In a character-level vocabulary, 'a' has ID 39 and 'b' has ID 40. What can the model conclude from this?",
   "options": [
@@ -209,6 +214,7 @@ sequence length in tokens limits how much text fits into the context window.
   "id": "secret-code",
   "level": "child",
   "purpose": "check",
+  "objectives": ["encode-decode"],
   "misconception": "ids-carry-meaning",
   "question": "In our secret code a = 1, b = 2 and c = 3. The program answers with the numbers 3, 1, 2. Which letters are that?",
   "options": [
@@ -229,6 +235,70 @@ sequence length in tokens limits how much text fits into the context window.
     }
   ],
   "explanation": "The code works both ways: letters become numbers for the program, and its numbers become letters again for us."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "why-numbers",
+  "level": "child",
+  "purpose": "check",
+  "objectives": [
+    "numbers-not-letters"
+  ],
+  "misconception": "model-sees-words",
+  "question": "Before a language model can read a text, every letter is turned into a number. Why?",
+  "options": [
+    {
+      "text": "The model is a big calculator: it can only compute with numbers",
+      "correct": true,
+      "feedback": "Yes! Letters are turned into numbers going in, and numbers back into letters coming out."
+    },
+    {
+      "text": "Numbers are shorter than letters",
+      "correct": false,
+      "feedback": "No. One letter becomes one number, so it is not shorter."
+    },
+    {
+      "text": "To keep the text secret from people",
+      "correct": false,
+      "feedback": "No. Anyone with the code list can turn the numbers back into letters."
+    }
+  ],
+  "explanation": "A model only does arithmetic. The tokenizer gives every character (or piece of a word) its own number."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "vocabulary-trade-off",
+  "level": "college",
+  "purpose": "check",
+  "objectives": [
+    "encode-decode"
+  ],
+  "misconception": "tokens-are-words",
+  "question": "A character tokenizer turns \"hello\" into 5 IDs from a vocabulary of 65; a BPE tokenizer with 50,257 tokens turns it into 1 ID. Which statement is right?",
+  "options": [
+    {
+      "text": "Both must decode back to exactly \"hello\"; the large vocabulary gives shorter sequences but more tokens to learn",
+      "correct": true,
+      "feedback": "Right. decode(encode(text)) = text for both; the vocabulary size trades sequence length against table size."
+    },
+    {
+      "text": "The BPE tokenizer loses the individual letters, so the text cannot be recovered",
+      "correct": false,
+      "feedback": "No. Each BPE token stands for a fixed string of bytes, so decoding is exact."
+    },
+    {
+      "text": "The character tokenizer is better because it has fewer tokens to learn and shorter sequences",
+      "correct": false,
+      "feedback": "It has fewer tokens, but the sequences are longer, not shorter."
+    }
+  ],
+  "explanation": "Encoding and decoding are exact inverses for any tokenizer; the choice of vocabulary changes sequence length and what the model must learn per token."
 }
 ```
 

@@ -7,8 +7,10 @@ description: Air pushes back harder the faster an object moves; a falling object
 lang: en
 levels: [highschool, college, expert]
 objectives:
-  - Explain why a crumpled sheet of paper falls faster than a flat one of the same mass.
-  - Describe how a falling object reaches a terminal speed when drag equals its weight.
+  - id: shape-matters
+    text: Explain why a crumpled sheet of paper falls faster than a flat one of the same mass.
+  - id: terminal-speed
+    text: Describe how a falling object reaches a terminal speed when drag equals its weight.
 tags: [physics, mechanics, drag, terminal-velocity, numerical-integration]
 about:
   - wikidata: Q206621
@@ -42,7 +44,7 @@ sources:
     title: "The Feynman Lectures on Physics, Vol. I, ch. 9: Newton's Laws of Dynamics"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.3.0
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -168,6 +170,7 @@ fixed must say so; ours does, and treats the flat sheet as a falling plate.
   "id": "terminal-forces",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["terminal-speed"],
   "misconception": "terminal-speed-means-no-gravity",
   "question": "A skydiver falls at a constant 55 m/s. Which statement is true?",
   "options": [
@@ -185,6 +188,7 @@ fixed must say so; ours does, and treats the flat sheet as a falling plate.
   "id": "double-speed-drag",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["terminal-speed"],
   "misconception": "drag-proportional-to-speed",
   "question": "A cyclist doubles her speed from 15 to 30 km/h. Roughly how does the air resistance change?",
   "options": [
@@ -202,6 +206,7 @@ fixed must say so; ours does, and treats the flat sheet as a falling plate.
   "id": "terminal-speed-paper-ball",
   "level": "college",
   "purpose": "check",
+  "objectives": ["terminal-speed"],
   "title": "Terminal speed of a crumpled sheet of paper",
   "intro": "m = 5 g, diameter 6 cm (A = π · 0.03² m²), c_d = 0.5, ρ = 1.2 kg/m³, g = 9.81 m/s².",
   "columns": ["Step", "Expression", "Value"],
@@ -231,6 +236,7 @@ fixed must say so; ours does, and treats the flat sheet as a falling plate.
   "id": "drag-crisis",
   "level": "expert",
   "purpose": "transfer",
+  "objectives": ["shape-matters"],
   "question": "Why can a smooth ball experience less drag at higher speed over a certain range, and why do golf balls have dimples?",
   "rubric": ["Reynolds number dependence of c_d", "Transition of the boundary layer to turbulence (around Re ≈ 3 · 10⁵ for a smooth sphere)", "Turbulent boundary layer separates later, smaller wake, c_d drops sharply", "Dimples trigger the transition at lower Re, within the range of a golf drive"],
   "sample_answer": "c_d depends on the Reynolds number. Near Re ≈ 3 · 10⁵ the boundary layer of a smooth sphere becomes turbulent, stays attached longer and the wake shrinks, so c_d drops from about 0.47 to 0.1: the drag crisis. Dimples make the boundary layer turbulent at lower Re, so a golf ball gets the low drag at the speeds it actually flies.",
@@ -244,6 +250,7 @@ fixed must say so; ours does, and treats the flat sheet as a falling plate.
   "id": "stokes-or-quadratic",
   "level": "expert",
   "purpose": "check",
+  "objectives": ["terminal-speed"],
   "misconception": "drag-proportional-to-speed",
   "question": "A fog droplet (radius 10 µm) and a raindrop (radius 1 mm) fall through air. How does their terminal speed scale with radius?",
   "options": [
@@ -264,6 +271,91 @@ fixed must say so; ours does, and treats the flat sheet as a falling plate.
     }
   ],
   "explanation": "Stokes: v_t = 2 r² Δρ g / (9 μ). Quadratic: m ∝ r³, A ∝ r², so v_t = √(2 m g / (ρ c_d A)) ∝ √r."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "same-mass-shapes",
+  "level": "highschool",
+  "purpose": "check",
+  "objectives": [
+    "shape-matters"
+  ],
+  "misconception": "air-only-slows-light-things",
+  "question": "Two sheets of paper weigh exactly the same. One stays flat, the other is crumpled into a small ball. Why does the ball reach the floor first?",
+  "options": [
+    {
+      "text": "The ball is small, so less air pushes against it and it can get faster before the push balances its weight",
+      "correct": true,
+      "feedback": "Right. Same weight, same pull; the smaller front meets less air at each speed."
+    },
+    {
+      "text": "Crumpling makes the paper heavier",
+      "correct": false,
+      "feedback": "No. The mass is the same; crumpling only changes the shape."
+    },
+    {
+      "text": "Gravity pulls harder on a ball than on a flat sheet",
+      "correct": false,
+      "feedback": "No. Gravity depends only on the mass, not on the shape."
+    }
+  ],
+  "explanation": "Gravity pulls both sheets equally. The air pushes harder on the flat sheet at any given speed, so its push balances the weight at a much lower speed."
+}
+```
+
+```ptf-question
+{
+  "kind": "estimate_number",
+  "id": "flat-vs-crumpled",
+  "level": "college",
+  "purpose": "check",
+  "objectives": [
+    "shape-matters"
+  ],
+  "question": "A flat A4 sheet (A ≈ 0.062 m², c_d ≈ 1.2) and the same sheet crumpled to a ball 6 cm across (A ≈ 0.0028 m², c_d ≈ 0.5) both weigh 5 g. By roughly what factor is the ball's terminal speed larger, if the flat sheet fell flat?",
+  "answer": 7.3,
+  "tolerance": 1.5,
+  "explanation": "v_t = √(2 m g / (ρ c_d A)), so at the same mass the ratio is √((1.2 · 0.062) / (0.5 · 0.0028)) = √53 ≈ 7.3: about 1 m/s against 7.6 m/s."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "scaling-with-size",
+  "level": "expert",
+  "purpose": "check",
+  "objectives": [
+    "shape-matters"
+  ],
+  "misconception": "heavier-falls-faster",
+  "question": "Two solid iron spheres fall through air in the quadratic-drag regime; one has twice the diameter of the other. How do their terminal speeds compare?",
+  "options": [
+    {
+      "text": "The larger one is about √2 ≈ 1.4 times faster, because mass grows with d³ but drag area only with d²",
+      "correct": true,
+      "feedback": "Right. v_t ∝ √(m / A) ∝ √(d³ / d²) = √d."
+    },
+    {
+      "text": "Both fall equally fast, because the material is the same",
+      "correct": false,
+      "feedback": "Only without air. With drag, size matters through the ratio of weight to cross-section."
+    },
+    {
+      "text": "The larger one is 8 times faster, because it is 8 times heavier",
+      "correct": false,
+      "feedback": "No. Its drag area is also 4 times larger, and v_t grows only with the square root of m / A."
+    },
+    {
+      "text": "The smaller one is faster, because it has less drag",
+      "correct": false,
+      "feedback": "It has less drag, but even less weight: m / A is smaller, so it is slower."
+    }
+  ],
+  "explanation": "v_t = √(2 m g / (ρ c_d A)) with m ∝ d³ and A ∝ d² gives v_t ∝ √d (for constant c_d, that is outside the drag crisis)."
 }
 ```
 

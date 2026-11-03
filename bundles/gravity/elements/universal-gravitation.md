@@ -7,8 +7,10 @@ description: Every mass attracts every other mass with a force that falls off wi
 lang: en
 levels: [child, highschool, college, expert]
 objectives:
-  - Explain that the same law makes an apple fall and keeps the Moon in orbit.
-  - Describe an orbit as falling while the ground curves away, and why gravity weakens with the square of the distance.
+  - id: same-law
+    text: Explain that the same law makes an apple fall and keeps the Moon in orbit.
+  - id: orbit-is-falling
+    text: Describe an orbit as falling while the ground curves away, and why gravity weakens with the square of the distance.
 tags: [physics, gravity, newton, orbit, inverse-square-law, weightlessness]
 about:
   - wikidata: Q134465
@@ -40,7 +42,7 @@ sources:
     title: "The Feynman Lectures on Physics, Vol. I, ch. 7: The Theory of Gravitation"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.3.0
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -161,6 +163,7 @@ least precisely known fundamental constant (relative uncertainty about
   "id": "astronauts-float",
   "level": "child",
   "purpose": "check",
+  "objectives": ["orbit-is-falling"],
   "misconception": "no-gravity-in-orbit",
   "question": "Why do astronauts float in the space station?",
   "options": [
@@ -178,6 +181,7 @@ least precisely known fundamental constant (relative uncertainty about
   "id": "double-distance",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["orbit-is-falling"],
   "misconception": "gravity-linear-distance",
   "question": "A satellite moves from 1 to 2 Earth radii from the Earth's centre. How does the Earth's pull on it change?",
   "options": [
@@ -195,6 +199,7 @@ least precisely known fundamental constant (relative uncertainty about
   "id": "moon-fall-per-second",
   "level": "highschool",
   "purpose": "transfer",
+  "objectives": ["same-law"],
   "misconception": "moon-not-falling",
   "question": "An apple falls 4.9 m in its first second. The Moon is about 60 Earth radii from the Earth's centre. How many millimetres does the Moon fall towards the Earth in one second?",
   "answer": 1.36,
@@ -210,6 +215,7 @@ least precisely known fundamental constant (relative uncertainty about
   "id": "iss-speed",
   "level": "college",
   "purpose": "check",
+  "objectives": ["orbit-is-falling"],
   "title": "Speed and period of the space station",
   "intro": "Altitude 400 km, R = 6371 km, G M = 3.986 · 10¹⁴ m³/s².",
   "columns": ["Step", "Expression", "Value"],
@@ -225,6 +231,7 @@ least precisely known fundamental constant (relative uncertainty about
   "id": "cannon-speeds",
   "level": "college",
   "purpose": "transfer",
+  "objectives": ["orbit-is-falling"],
   "misconception": "fast-escapes-gravity",
   "question": "Newton's cannon fires from 400 km altitude at 4, 7.7, 9.5 and 11 km/s. Describe the four paths and the energy criterion that separates them.",
   "rubric": ["4 km/s: falls back and lands (ellipse cut by the Earth)", "7.7 km/s: close to circular orbit", "9.5 km/s: elongated ellipse, still bound (E < 0)", "11 km/s: escapes, E > 0, above √2 · v_circ ≈ 10.85 km/s"],
@@ -252,6 +259,7 @@ least precisely known fundamental constant (relative uncertainty about
   "id": "quarter-pull",
   "level": "child",
   "purpose": "check",
+  "objectives": ["orbit-is-falling"],
   "misconception": "gravity-linear-distance",
   "question": "A rocket flies so far that it is twice as far from the middle of the Earth as before. How strong is the Earth's pull on it now?",
   "options": [
@@ -281,6 +289,7 @@ least precisely known fundamental constant (relative uncertainty about
   "id": "moon-test",
   "level": "expert",
   "purpose": "check",
+  "objectives": ["same-law"],
   "misconception": "moon-not-falling",
   "question": "Reproduce Newton's Moon test with r_Moon ≈ 60 R_E and a period of 27.3 days, and say why using the Earth's centre distance is justified.",
   "rubric": [
@@ -291,6 +300,105 @@ least precisely known fundamental constant (relative uncertainty about
   ],
   "sample_answer": "r = 60 · 6.37 · 10⁶ m ≈ 3.8 · 10⁸ m, T = 2.36 · 10⁶ s, so a = 4π² r / T² ≈ 2.7 · 10⁻³ m/s², which equals g / 3600. The Moon falls towards the Earth exactly as an inverse-square law predicts. The centre distance is legitimate because a spherically symmetric mass acts like a point mass outside it (shell theorem).",
   "explanation": "This calculation unified terrestrial and celestial mechanics."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "moon-stays",
+  "level": "child",
+  "purpose": "check",
+  "objectives": [
+    "same-law"
+  ],
+  "misconception": "moon-not-falling",
+  "question": "Why does the Moon not fly off into space?",
+  "options": [
+    {
+      "text": "The Earth pulls on it, the same pull that makes an apple fall from a tree",
+      "correct": true,
+      "feedback": "Yes! One pull for both: the apple falls down, and the Moon keeps falling around the Earth."
+    },
+    {
+      "text": "The Moon is glued to the sky",
+      "correct": false,
+      "feedback": "No, there is nothing to hold it except the Earth's pull."
+    },
+    {
+      "text": "There is no gravity up there, so it just stays where it is",
+      "correct": false,
+      "feedback": "There is gravity up there; without it the Moon would fly off in a straight line."
+    }
+  ],
+  "explanation": "Newton's big idea: the same gravity works on the ground and in the sky."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "apple-and-moon",
+  "level": "highschool",
+  "purpose": "check",
+  "objectives": [
+    "same-law"
+  ],
+  "misconception": "gravity-linear-distance",
+  "question": "Newton compared a falling apple with the Moon, which is 60 times farther from the Earth's centre. What did he find?",
+  "options": [
+    {
+      "text": "The Moon falls towards the Earth with about 1/3600 of g, exactly what one law weakened with the square of the distance predicts",
+      "correct": true,
+      "feedback": "Right. 60² = 3600, and the Moon's measured fall matches."
+    },
+    {
+      "text": "The Moon does not fall at all; it is held by a different force",
+      "correct": false,
+      "feedback": "No. It falls about 1.4 mm every second, and that fall matches the apple's law."
+    },
+    {
+      "text": "The Moon falls with the same g as the apple",
+      "correct": false,
+      "feedback": "No. The pull is 3600 times weaker at 60 Earth radii."
+    }
+  ],
+  "explanation": "9.81 m/s² / 3600 ≈ 2.7 mm/s², and that is exactly the acceleration the Moon needs to stay on its orbit."
+}
+```
+
+```ptf-question
+{
+  "kind": "estimate_number",
+  "id": "g-at-moon",
+  "level": "college",
+  "purpose": "check",
+  "objectives": [
+    "same-law"
+  ],
+  "misconception": "gravity-linear-distance",
+  "question": "Using g = 9.81 m/s² at the Earth's surface and the inverse-square law, what is the Earth's gravitational acceleration at the Moon's distance of 60.3 Earth radii, in mm/s²?",
+  "answer": 2.7,
+  "tolerance": 0.1,
+  "unit": "mm/s²",
+  "explanation": "9.81 / 60.3² = 9.81 / 3636 = 2.70 · 10⁻³ m/s². The Moon's centripetal acceleration from its orbit is 2.72 mm/s²: one law for both."
+}
+```
+
+```ptf-question
+{
+  "kind": "estimate_number",
+  "id": "geostationary-altitude",
+  "level": "expert",
+  "purpose": "check",
+  "objectives": [
+    "orbit-is-falling"
+  ],
+  "question": "A geostationary satellite falls around the Earth once per sidereal day (86 164 s). With G M = 3.986 · 10¹⁴ m³/s² and R = 6371 km, at what altitude does it orbit, in thousands of km?",
+  "answer": 35.8,
+  "tolerance": 0.5,
+  "unit": "thousand km",
+  "explanation": "G M / r² = ω² r gives r = (G M T² / 4π²)^(1/3) = 42 164 km, so the altitude is 42 164 − 6371 ≈ 35 790 km. The inverse-square law fixes the radius for each period (Kepler's third law)."
 }
 ```
 

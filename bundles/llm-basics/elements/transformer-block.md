@@ -7,8 +7,10 @@ description: A block first lets tokens exchange information through several atte
 lang: en
 levels: [highschool, college, expert]
 objectives:
-  - "Describe the two halves of a block: communication (attention heads) and computation (feed-forward)."
-  - Explain why several heads run in parallel and why blocks are stacked.
+  - id: two-halves
+    text: "Describe the two halves of a block: communication (attention heads) and computation (feed-forward)."
+  - id: heads-and-stacking
+    text: Explain why several heads run in parallel and why blocks are stacked.
 tags: [llm, transformer, multi-head-attention, feed-forward, mlp]
 about:
   - wikidata: Q85810444
@@ -48,7 +50,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.4.0
+version: 0.5.0
 license: CC-BY-SA-4.0
 ---
 
@@ -165,6 +167,7 @@ parameter count from compute per token.
   "id": "which-part-communicates",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["two-halves"],
   "misconception": "feed-forward-mixes-tokens",
   "question": "Which part of a transformer block lets words exchange information?",
   "options": [
@@ -182,6 +185,7 @@ parameter count from compute per token.
   "id": "loss-ladder",
   "level": "highschool",
   "purpose": "transfer",
+  "objectives": ["heads-and-stacking"],
   "instruction": "A small model learns to write Shakespeare-like text. Order these versions from highest (worst) to lowest (best) validation loss.",
   "items": ["Bigram model (only the last character)", "One attention head", "Four attention heads", "Four heads plus feed-forward", "Several blocks with residual connections", "Scaled up: 6 blocks, 6 heads, width 384"],
   "explanation": "Measured losses: 2.5, 2.4, 2.28, 2.24, 2.08, 1.48. Every component helps; scaling up helps most once the model can be trained deep."
@@ -194,6 +198,7 @@ parameter count from compute per token.
   "id": "head-size",
   "level": "college",
   "purpose": "check",
+  "objectives": ["heads-and-stacking"],
   "misconception": "more-heads-more-width",
   "question": "A model has width d_model = 384 and 6 heads. What is the head size?",
   "answer": 64,
@@ -209,6 +214,7 @@ parameter count from compute per token.
   "id": "ff-params",
   "level": "college",
   "purpose": "check",
+  "objectives": ["two-halves"],
   "question": "A block has width d and a feed-forward inner width of 4d. Roughly what share of the block's weights is in the feed-forward layer?",
   "options": [
     { "text": "About two thirds", "correct": true, "feedback": "Right: attention has 4d² (Q, K, V, output), feed-forward 8d² (d×4d and 4d×d)." },
@@ -225,6 +231,7 @@ parameter count from compute per token.
   "id": "why-multi-head",
   "level": "expert",
   "purpose": "transfer",
+  "objectives": ["heads-and-stacking"],
   "question": "Why does multi-head attention with h heads of size d/h usually beat a single head of size d at the same cost?",
   "rubric": ["One softmax yields one convex combination of values per position", "Different heads can select different tokens simultaneously", "Each head has its own subspace for queries, keys, values", "Cost is about the same because the total width is unchanged"],
   "sample_answer": "A single head produces one attention distribution per position, so it must blend everything it needs into one weighted average. With h heads, each has its own projections and softmax, so one head can track the previous token while another tracks the subject. Total width and compute stay about the same because each head is d/h wide.",
@@ -238,6 +245,7 @@ parameter count from compute per token.
   "id": "why-stack",
   "level": "expert",
   "purpose": "check",
+  "objectives": ["heads-and-stacking"],
   "misconception": "feed-forward-mixes-tokens",
   "question": "An induction head (\"after A … B … A, predict B\") needs at least two attention layers. Why?",
   "options": [
@@ -258,6 +266,70 @@ parameter count from compute per token.
     }
   ],
   "explanation": "Previous-token head in layer 1, then a head in layer 2 whose query matches keys that now contain \"my predecessor was A\"."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "why-several-heads",
+  "level": "highschool",
+  "purpose": "check",
+  "objectives": [
+    "heads-and-stacking"
+  ],
+  "misconception": "one-head-is-enough",
+  "question": "Why does a transformer block run several attention heads side by side?",
+  "options": [
+    {
+      "text": "Each head can look for something different, for example the previous word in one head and the subject of the sentence in another",
+      "correct": true,
+      "feedback": "Right. One head has to choose one mix of words; several heads can collect several things at once."
+    },
+    {
+      "text": "As backups in case one head fails",
+      "correct": false,
+      "feedback": "No. Heads learn different patterns; none is a copy of another."
+    },
+    {
+      "text": "Each extra head makes the model wider",
+      "correct": false,
+      "feedback": "No. The heads share the model width: 6 heads of 64 make 384."
+    }
+  ],
+  "explanation": "Multi-head attention splits the width into h smaller heads that run in parallel; their outputs are joined again."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "shuffle-feed-forward",
+  "level": "expert",
+  "purpose": "check",
+  "objectives": [
+    "two-halves"
+  ],
+  "misconception": "feed-forward-mixes-tokens",
+  "question": "You swap tokens 2 and 5 of a sequence (ignore position embeddings). What happens to the feed-forward layer's outputs?",
+  "options": [
+    {
+      "text": "The outputs for tokens 2 and 5 swap places and are otherwise unchanged, because the same weights act on each position separately",
+      "correct": true,
+      "feedback": "Right. The feed-forward layer is applied per token; only attention moves information between positions."
+    },
+    {
+      "text": "All outputs change, because the feed-forward layer mixes the whole sequence",
+      "correct": false,
+      "feedback": "No. It never looks at other positions."
+    },
+    {
+      "text": "The outputs stay in their old places",
+      "correct": false,
+      "feedback": "No. Each output belongs to its token's vector, so it moves with it."
+    }
+  ],
+  "explanation": "Attention is the communication half, feed-forward the computation half: FF(x_t) depends only on x_t."
 }
 ```
 

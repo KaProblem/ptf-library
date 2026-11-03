@@ -7,9 +7,12 @@ description: The bigram model is a table of scores, one row per token. Training 
 lang: en
 levels: [highschool, college, expert]
 objectives:
-  - Explain the bigram model as a table of scores, one row per token.
-  - "Describe one training step: loss, gradient, a small step, and what the learning rate does."
-  - Explain how the model generates text one token at a time.
+  - id: score-table
+    text: Explain the bigram model as a table of scores, one row per token.
+  - id: training-step
+    text: "Describe one training step: loss, gradient, a small step, and what the learning rate does."
+  - id: generation
+    text: Explain how the model generates text one token at a time.
 tags: [llm, bigram, training-loop, gradient-descent, learning-rate, generation]
 about:
   - wikidata: Q2773912
@@ -55,7 +58,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T14:30:00Z }
 status: draft
-version: 0.3.0
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -181,6 +184,7 @@ script will change when attention is added: only the model class.
   "id": "what-training-changes",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["training-step"],
   "misconception": "training-stores-text",
   "question": "What does one training step change?",
   "options": [
@@ -198,6 +202,7 @@ script will change when attention is added: only the model class.
   "id": "learning-rate",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["training-step"],
   "misconception": "bigger-lr-faster",
   "question": "With a very large learning rate, the loss goes 1.6, 0.8, 1.4, 1.2, 0.7, 1.3 … What is happening?",
   "options": [
@@ -215,6 +220,7 @@ script will change when attention is added: only the model class.
   "id": "initial-loss",
   "level": "college",
   "purpose": "check",
+  "objectives": ["training-step"],
   "question": "A freshly initialised bigram model on a vocabulary of 65 characters gives every character roughly the same probability. What loss do you expect before training?",
   "answer": 4.17,
   "tolerance": 0.3,
@@ -228,6 +234,7 @@ script will change when attention is added: only the model class.
   "id": "gradient-sign",
   "level": "college",
   "purpose": "transfer",
+  "objectives": ["training-step"],
   "question": "For one example, the model gives the correct token 30 % and a wrong token 60 %. With learning rate 1, how does the wrong token's score change in one plain gradient step?",
   "options": [
     { "text": "It goes down by 0.6", "correct": true, "feedback": "Right. The gradient on a wrong token is its probability p = 0.6; the step subtracts it." },
@@ -244,6 +251,7 @@ script will change when attention is added: only the model class.
   "id": "bigram-limit",
   "level": "highschool",
   "purpose": "transfer",
+  "objectives": ["score-table"],
   "misconception": "bigram-sees-context",
   "question": "A trained bigram model writes 'anana nd ba'. What keeps it from writing real words?",
   "options": [
@@ -261,6 +269,7 @@ script will change when attention is added: only the model class.
   "id": "loop-cloze",
   "level": "college",
   "purpose": "check",
+  "objectives": ["training-step"],
   "text": "One training step: compute logits and loss, call loss.{{1}}() to get the gradients, then optimizer.{{2}}() to update the parameters.",
   "gaps": [
     { "answer": "backward" },
@@ -276,6 +285,7 @@ script will change when attention is added: only the model class.
   "id": "bigram-optimum",
   "level": "expert",
   "purpose": "check",
+  "objectives": ["training-step", "score-table"],
   "misconception": "bigger-lr-faster",
   "question": "A bigram model is trained with plain SGD on a fixed corpus. What does it converge to, and why does a very large learning rate not get there faster?",
   "rubric": [
@@ -286,6 +296,145 @@ script will change when attention is added: only the model class.
   ],
   "sample_answer": "Each row's softmax converges to the empirical next-token frequencies after that token, and the loss to the conditional entropy given one token. The objective is convex per row, but a too large step overshoots the minimum and oscillates, so it converges slower or not at all.",
   "explanation": "The bigram optimum is known in closed form (the counts), which makes it a good test for the training loop."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "what-the-model-is",
+  "level": "highschool",
+  "purpose": "check",
+  "objectives": [
+    "score-table"
+  ],
+  "misconception": "training-stores-text",
+  "question": "A bigram model works with 65 different characters. What is the whole model?",
+  "options": [
+    {
+      "text": "A table of 65 × 65 scores: one row for each character, saying how likely each character is to follow it",
+      "correct": true,
+      "feedback": "Right. Looking up the row of the current character gives the scores for the next one."
+    },
+    {
+      "text": "A copy of the training text that it searches for matches",
+      "correct": false,
+      "feedback": "No. The text is not kept; only the scores in the table are."
+    },
+    {
+      "text": "A list of the 65 characters and how often each one occurs",
+      "correct": false,
+      "feedback": "That would ignore which character came before. The bigram model has one row per current character."
+    }
+  ],
+  "explanation": "4,225 numbers, nothing else. Softmax turns a row into probabilities for the next character."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "how-it-writes",
+  "level": "highschool",
+  "purpose": "check",
+  "objectives": [
+    "generation"
+  ],
+  "misconception": "sampling-is-error",
+  "question": "How does a trained bigram model write a line of text?",
+  "options": [
+    {
+      "text": "It looks up the row of the last character, turns it into probabilities, draws the next character at random with them, appends it and repeats",
+      "correct": true,
+      "feedback": "Right. One character at a time, each drawn from the row of the one before."
+    },
+    {
+      "text": "It picks a whole word that often follows the previous word",
+      "correct": false,
+      "feedback": "No. A character bigram model only knows pairs of characters, not words."
+    },
+    {
+      "text": "It always takes the most likely next character",
+      "correct": false,
+      "feedback": "That would give the same text every time and get stuck in loops; the model draws at random with the probabilities."
+    }
+  ],
+  "explanation": "Generation is a loop: look up, softmax, sample, append. Because it samples, the text is different every time."
+}
+```
+
+```ptf-question
+{
+  "kind": "estimate_number",
+  "id": "parameter-count",
+  "level": "college",
+  "purpose": "check",
+  "objectives": [
+    "score-table"
+  ],
+  "question": "How many parameters does a character bigram model have for a vocabulary of V = 65 (nn.Embedding(V, V))?",
+  "answer": 4225,
+  "tolerance": 0,
+  "explanation": "One row of V logits for each of the V tokens: 65 × 65 = 4,225. Row i, after softmax, is the distribution over what follows token i."
+}
+```
+
+```ptf-question
+{
+  "kind": "cloze",
+  "id": "generate-cloze",
+  "level": "college",
+  "purpose": "check",
+  "objectives": [
+    "generation"
+  ],
+  "misconception": "sampling-is-error",
+  "text": "To generate, take the logits at the {{1}} position, turn them into probabilities with {{2}}, draw the next token with torch.{{3}}, append it and repeat.",
+  "gaps": [
+    {
+      "answer": "last",
+      "accepted": [
+        "final",
+        "latest"
+      ]
+    },
+    {
+      "answer": "softmax",
+      "accepted": [
+        "F.softmax",
+        "torch.softmax"
+      ]
+    },
+    {
+      "answer": "multinomial",
+      "accepted": [
+        "multinomial()"
+      ]
+    }
+  ],
+  "explanation": "Only the last position predicts the next token. Sampling with multinomial instead of argmax keeps the text varied."
+}
+```
+
+```ptf-question
+{
+  "kind": "free_text",
+  "id": "greedy-bigram",
+  "level": "expert",
+  "purpose": "check",
+  "objectives": [
+    "generation"
+  ],
+  "misconception": "sampling-is-error",
+  "question": "A trained bigram model generates with greedy decoding (always the argmax). Describe the output and explain why sampling gives text with the right letter-pair statistics but still no words.",
+  "rubric": [
+    "Greedy: each token always maps to the same next token",
+    "So the output soon enters a fixed cycle (e.g. 'the the the')",
+    "Sampling reproduces the learned conditional distribution of pairs",
+    "With only one token of context it cannot keep track of words, so pairs are right but words are not"
+  ],
+  "sample_answer": "With argmax, each character has exactly one successor, so after at most V steps the text repeats a fixed cycle. Sampling draws from p(next | current), which matches the corpus' pair frequencies, so the letter pairs look right; but because the model sees only one character, nothing ties a sequence of pairs into a real word.",
+  "explanation": "Generation quality is limited by the context the model sees; every later step of the path adds more context."
 }
 ```
 
