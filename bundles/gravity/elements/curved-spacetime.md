@@ -7,8 +7,10 @@ description: In Einstein's theory gravity is not a force but the curvature of sp
 lang: en
 levels: [child, highschool, college, expert]
 objectives:
-  - "Explain in plain words what Einstein changed: gravity as curved spacetime instead of a force."
-  - Name a measurement where Newton and Einstein differ, such as clocks on GPS satellites.
+  - id: gravity-as-geometry
+    text: "Explain in plain words what Einstein changed: gravity as curved spacetime instead of a force."
+  - id: measurable-difference
+    text: Name a measurement where Newton and Einstein differ, such as clocks on GPS satellites.
 tags: [physics, gravity, general-relativity, einstein, time-dilation, gps, equivalence-principle]
 about:
   - wikidata: Q4240689
@@ -53,7 +55,7 @@ sources:
     title: "Albert Einstein: The Foundation of the General Theory of Relativity (1916), English translation"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.3.1
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -185,6 +187,7 @@ correction of up to about 46 ns.
   "id": "trampoline-limit",
   "level": "child",
   "purpose": "check",
+  "objectives": ["gravity-as-geometry"],
   "misconception": "rubber-sheet-literal",
   "question": "Why is the trampoline only a picture of Einstein's idea, not the real thing?",
   "options": [
@@ -219,6 +222,7 @@ correction of up to about 46 ns.
   "id": "gps-error-km",
   "level": "highschool",
   "purpose": "transfer",
+  "objectives": ["measurable-difference"],
   "misconception": "relativity-only-for-extremes",
   "question": "Light travels about 300 m per microsecond. If GPS ignored the 38 µs per day clock offset, how many kilometres would positions drift in one day?",
   "answer": 11.5,
@@ -234,6 +238,7 @@ correction of up to about 46 ns.
   "id": "gps-gravity-shift",
   "level": "college",
   "purpose": "check",
+  "objectives": ["measurable-difference"],
   "title": "Height effect on a GPS clock",
   "intro": "G M = 3.986 · 10¹⁴ m³/s², c = 2.998 · 10⁸ m/s, R = 6371 km, r = 26 571 km.",
   "columns": ["Step", "Expression", "Value"],
@@ -249,6 +254,7 @@ correction of up to about 46 ns.
   "id": "equivalence-redshift",
   "level": "college",
   "purpose": "transfer",
+  "objectives": ["measurable-difference"],
   "misconception": "newton-clocks-absolute",
   "question": "Use the equivalence principle to argue that a clock at the top of a tower runs faster than one at the bottom.",
   "rubric": ["A lab accelerating upward at g is equivalent to one resting in gravity", "A signal sent upward arrives Doppler-shifted (receiver moving away during transit)", "Frequency shift Δf/f = g h / c²", "Therefore in gravity the upper clock is measured to run faster by g h / c²"],
@@ -263,6 +269,7 @@ correction of up to about 46 ns.
   "id": "mercury-residual",
   "level": "expert",
   "purpose": "transfer",
+  "objectives": ["measurable-difference"],
   "question": "Mercury's perihelion advances 574″ per century. Explain how 43″ of it is attributed to general relativity, and why an exaggerated simulation is still a valid illustration.",
   "rubric": ["About 532″ from perturbations by other planets (Newtonian)", "Residual 43″ matches 6πGM/(c²a(1−e²)) × 415 orbits", "The correction is an extra −3GMh²/(c²r⁴) radial term", "Scaling the coupling keeps the mechanism; the precession grows linearly while the correction stays small; at large factors higher orders appear and must be named"],
   "sample_answer": "Newtonian perturbation theory with all planets accounts for about 532″ per century. The remaining 43″ equals 6πGM/(c²a(1−e²)) ≈ 5.0e-7 rad per orbit times 415 orbits. In the orbit equation this corresponds to an extra attractive term 3GMh²/(c²r⁴). Multiplying its strength in a simulation makes the same mechanism visible; as long as the term stays a small perturbation, the precession scales linearly and matches the formula; at very large factors the second order shows, so the display has to show the true value next to the boosted one.",
@@ -276,6 +283,7 @@ correction of up to about 46 ns.
   "id": "gps-net-check",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["measurable-difference"],
   "misconception": "newton-clocks-absolute",
   "question": "What would happen to GPS positions if the satellites' clocks were not corrected for relativity?",
   "options": [
@@ -305,6 +313,7 @@ correction of up to about 46 ns.
   "id": "geodesic-not-force",
   "level": "expert",
   "purpose": "check",
+  "objectives": ["gravity-as-geometry"],
   "misconception": "rubber-sheet-literal",
   "question": "Explain why, in the weak-field limit, the time part of the metric alone reproduces Newtonian free fall, and what the rubber-sheet picture gets wrong.",
   "rubric": [
@@ -315,6 +324,134 @@ correction of up to about 46 ns.
   ],
   "sample_answer": "With v ≪ c, the geodesic equation reduces to ẍ^i = −c² Γ^i_00 = −∂_i Φ, so the curvature of time in g₀₀ alone yields Newtonian acceleration. The rubber sheet shows curved space and needs the Earth's gravity to make the marble roll into the dip; for slow bodies it is time that is curved, while space curvature becomes visible only for light.",
   "explanation": "Free fall is inertial motion in curved spacetime; for everyday speeds, 'gravity' is mostly time running differently at different heights."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "clocks-up-high",
+  "level": "child",
+  "purpose": "check",
+  "objectives": [
+    "measurable-difference"
+  ],
+  "misconception": "newton-clocks-absolute",
+  "question": "Two very exact clocks are set to the same time. One stays on the ground, the other goes up into space on a satellite. After a day, what do people measure?",
+  "options": [
+    {
+      "text": "They show slightly different times, and the satellite navigation in phones has to correct for it",
+      "correct": true,
+      "feedback": "Yes! Time really runs a tiny bit differently up there, and GPS fixes it every day."
+    },
+    {
+      "text": "Exactly the same time, time is the same everywhere",
+      "correct": false,
+      "feedback": "That is what everyone thought before Einstein. Measurements show a tiny difference."
+    },
+    {
+      "text": "The satellite clock stops, because there is no gravity in space",
+      "correct": false,
+      "feedback": "No. It keeps ticking, and there is gravity up there too; it just ticks at a slightly different rate."
+    }
+  ],
+  "explanation": "Einstein's idea: gravity changes how fast time passes. Clocks higher up run a little faster, by millionths of a second per day, enough to matter for GPS."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "thrown-ball-einstein",
+  "level": "highschool",
+  "purpose": "check",
+  "objectives": [
+    "gravity-as-geometry"
+  ],
+  "misconception": "rubber-sheet-literal",
+  "question": "You throw a ball and it flies in a curve back to the ground. How does Einstein's theory describe this?",
+  "options": [
+    {
+      "text": "The ball moves as straight as it can through curved spacetime; near the Earth, mostly time is curved, and that bends the path",
+      "correct": true,
+      "feedback": "Right. No force is needed: free bodies follow the straightest paths of spacetime."
+    },
+    {
+      "text": "An invisible rope of force pulls the ball down, just as in Newton's theory",
+      "correct": false,
+      "feedback": "That is Newton's picture. Einstein replaced the force by the shape of spacetime."
+    },
+    {
+      "text": "The ball rolls into a dip in a rubber sheet under the Earth",
+      "correct": false,
+      "feedback": "The sheet is only a picture; on a real trampoline gravity would do the pulling."
+    }
+  ],
+  "explanation": "In general relativity falling is not caused by a force but by the geometry of spacetime; Newton's force law is the weak-field approximation of this."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "free-fall-lab",
+  "level": "college",
+  "purpose": "check",
+  "objectives": [
+    "gravity-as-geometry"
+  ],
+  "misconception": "rubber-sheet-literal",
+  "question": "In a closed lift that falls freely, you let go of a ball. What do you see, and what did Einstein conclude from it?",
+  "options": [
+    {
+      "text": "The ball floats next to you; locally gravity can be removed by falling, so it is better described as a property of spacetime than as a force",
+      "correct": true,
+      "feedback": "Right. That is the equivalence principle, the starting point of general relativity."
+    },
+    {
+      "text": "The ball falls to the floor more slowly than usual; gravity is weaker inside the lift",
+      "correct": false,
+      "feedback": "No. You, the lift and the ball all fall with the same acceleration, so the ball stays where it is relative to you."
+    },
+    {
+      "text": "The ball rises to the ceiling; the lift falls faster than the ball",
+      "correct": false,
+      "feedback": "No. All bodies fall alike, so nothing moves relative to the lift."
+    }
+  ],
+  "explanation": "Because all bodies fall with the same acceleration, a freely falling lab is locally weightless. Einstein took this as a sign that falling is the natural, force-free motion through spacetime."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "light-bending-factor",
+  "level": "expert",
+  "purpose": "check",
+  "objectives": [
+    "measurable-difference"
+  ],
+  "misconception": "newton-wrong",
+  "question": "Light grazing the Sun is deflected by 1.75″. A Newtonian calculation for a light corpuscle gives about half that. What does the factor 2 tell you?",
+  "options": [
+    {
+      "text": "Half the deflection comes from the time part of the metric (what Newton also has), the other half from the curvature of space, which Newton lacks",
+      "correct": true,
+      "feedback": "Right. For slow bodies the space part hardly matters; for light it doubles the effect."
+    },
+    {
+      "text": "The Newtonian value is wrong only because light has no mass",
+      "correct": false,
+      "feedback": "The mass cancels in the corpuscle argument; the difference is in the geometry, not in the mass."
+    },
+    {
+      "text": "The factor comes from the Sun's rotation",
+      "correct": false,
+      "feedback": "No. Frame dragging by the Sun's spin is many orders of magnitude smaller."
+    }
+  ],
+  "explanation": "In the weak field g_00 reproduces Newtonian gravity, and the spatial part contributes an equal amount for light. The 1919 eclipse measurements and radio interferometry confirm 1.75″."
 }
 ```
 

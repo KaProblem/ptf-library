@@ -7,8 +7,10 @@ description: A ramp passes on only the part g sin θ of gravity along the slope,
 lang: en
 levels: [highschool, college, expert]
 objectives:
-  - Explain why a ramp slows a fall down and how the angle changes it (g sin θ).
-  - Show that the distance on a ramp still grows with the square of the time.
+  - id: ramp-slows
+    text: Explain why a ramp slows a fall down and how the angle changes it (g sin θ).
+  - id: t-squared
+    text: Show that the distance on a ramp still grows with the square of the time.
 tags: [physics, mechanics, inclined-plane, force-components, uniform-acceleration]
 about:
   - wikidata: Q161462
@@ -40,7 +42,7 @@ sources:
     title: "OpenStax University Physics Volume 1, 6.2 Solving Problems with Newton's Laws"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.3.0
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -154,6 +156,7 @@ the value of g must be corrected.
   "id": "half-g-angle",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["ramp-slows"],
   "misconception": "ramp-changes-gravity",
   "question": "At which ramp angle does a frictionless block accelerate with half of g?",
   "options": [
@@ -171,6 +174,7 @@ the value of g must be corrected.
   "id": "odd-numbers",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["t-squared"],
   "text": "A ball starts from rest on a ramp. In the first second it rolls 10 cm, in the second second {{1}} cm, in the third second {{2}} cm. After three seconds it has rolled {{3}} cm in total.",
   "gaps": [
     { "answer": "30" },
@@ -187,6 +191,7 @@ the value of g must be corrected.
   "id": "speed-at-bottom",
   "level": "college",
   "purpose": "check",
+  "objectives": ["ramp-slows"],
   "misconception": "steeper-faster-at-bottom",
   "question": "Two frictionless ramps start at the same height of 2 m, one at 20°, one at 60°. Compare the blocks' speeds at the bottom.",
   "options": [
@@ -204,6 +209,7 @@ the value of g must be corrected.
   "id": "measure-mu",
   "level": "college",
   "purpose": "transfer",
+  "objectives": ["ramp-slows"],
   "question": "How can you measure the static friction coefficient between a book and a board with nothing but the board and a protractor?",
   "rubric": ["Tilt the board slowly until the book starts to slide", "At that angle m g sin θ = μ_s m g cos θ", "μ_s = tan θ at the onset of sliding"],
   "sample_answer": "Raise one end of the board slowly. Just before the book slips, the force along the slope equals the maximum static friction: m g sin θ = μ_s m g cos θ, so μ_s = tan θ. Reading the angle gives μ_s.",
@@ -217,6 +223,7 @@ the value of g must be corrected.
   "id": "galileo-extrapolation",
   "level": "expert",
   "purpose": "transfer",
+  "objectives": ["t-squared"],
   "question": "Galileo measured rolling balls on gentle ramps and concluded that free fall obeys s ∝ t². Which step of this inference holds exactly, and which needs a correction?",
   "rubric": ["The t² law (constant acceleration) holds for any fixed angle", "The value of the acceleration does not extrapolate as g sin θ for a rolling ball", "Rolling adds the factor 1 / (1 + k), k = 2/5 for a solid sphere", "Fine for the form of the law, wrong by 5/7 for the value of g"],
   "sample_answer": "Any fixed slope gives constant acceleration, so s ∝ t² is established exactly, and it carries over to the vertical. But a rolling ball's acceleration is g sin θ / (1 + k) = 5/7 g sin θ for a solid sphere, so using rolling balls to infer the value of g underestimates it by the factor 5/7 unless rotation is accounted for.",
@@ -230,6 +237,7 @@ the value of g must be corrected.
   "id": "t-squared-ramp",
   "level": "expert",
   "purpose": "check",
+  "objectives": ["t-squared"],
   "misconception": "equal-distances-equal-times",
   "question": "A solid ball rolls without slipping down a 10° ramp. Which statement about its motion is correct?",
   "options": [
@@ -250,6 +258,42 @@ the value of g must be corrected.
     }
   ],
   "explanation": "Uniform acceleration along the slope gives s = ½ a t² for any constant a; rolling only scales a by 1 / (1 + k)."
+}
+```
+
+```ptf-question
+{
+  "kind": "estimate_number",
+  "id": "distance-after-two-seconds",
+  "level": "college",
+  "purpose": "check",
+  "objectives": [
+    "t-squared"
+  ],
+  "misconception": "constant-speed-on-slope",
+  "question": "A block slides from rest down a frictionless 30° ramp (g = 9.81 m/s²). How many metres has it covered after 2 s?",
+  "answer": 9.81,
+  "tolerance": 0.5,
+  "unit": "m",
+  "explanation": "a = g sin 30° = 4.905 m/s², s = ½ a t² = ½ · 4.905 · 4 = 9.81 m. After 1 s it was only 2.45 m: twice the time, four times the distance."
+}
+```
+
+```ptf-question
+{
+  "kind": "estimate_number",
+  "id": "friction-acceleration",
+  "level": "expert",
+  "purpose": "check",
+  "objectives": [
+    "ramp-slows"
+  ],
+  "misconception": "ramp-changes-gravity",
+  "question": "A block slides down a 30° ramp with sliding friction μ = 0.2 (g = 9.81 m/s²). What is its acceleration in m/s²?",
+  "answer": 3.21,
+  "tolerance": 0.15,
+  "unit": "m/s²",
+  "explanation": "a = g (sin θ − μ cos θ) = 9.81 · (0.5 − 0.2 · 0.866) = 3.21 m/s². Gravity is unchanged; the ramp takes up m g cos θ, and friction removes μ m g cos θ from the part along the slope."
 }
 ```
 

@@ -6,3 +6,5 @@ check("loss-cloze", () => {
   const atZero = -Math.log(0);
   return [-Math.log(1) + 0, Number.isFinite(atZero) ? atZero : "infinite"];
 });
+
+check("perplexity", () => Math.exp(1.48));

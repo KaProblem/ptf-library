@@ -9,3 +9,5 @@ check("x-and-y", () => {
   const chunk = [18, 47, 56, 57, 58], y = chunk.slice(1), ex = examples(chunk)[2];
   return [list(y), list(ex.context), ex.target];
 });
+
+check("predictions-per-step", () => 64 * 256);

@@ -7,8 +7,10 @@ description: Without air, every object falls with the same acceleration g, whate
 lang: en
 levels: [child, highschool, college, expert]
 objectives:
-  - Predict that a heavy and a light object fall equally fast without air, and explain why.
-  - Explain that the speed grows by about 9.8 m/s every second and the distance with the square of the time.
+  - id: equal-fall
+    text: Predict that a heavy and a light object fall equally fast without air, and explain why.
+  - id: speeding-up
+    text: Explain that the speed grows by about 9.8 m/s every second and the distance with the square of the time.
 tags: [physics, mechanics, gravity, free-fall, acceleration]
 about:
   - wikidata: Q140028
@@ -44,7 +46,7 @@ sources:
     title: "NASA NSSDCA: The Apollo 15 Hammer-Feather Drop"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.3.0
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -182,6 +184,7 @@ measurements of s ∝ t².
   "id": "moon-drop",
   "level": "child",
   "purpose": "check",
+  "objectives": ["equal-fall"],
   "misconception": "no-gravity-on-moon",
   "question": "On the Moon, someone drops a hammer and a feather at the same moment. What happens?",
   "options": [
@@ -199,6 +202,7 @@ measurements of s ∝ t².
   "id": "tower-time",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["speeding-up"],
   "misconception": "constant-fall-speed",
   "question": "How many seconds does a ball take to fall 56 m without air resistance (g = 9.81 m/s²)?",
   "answer": 3.38,
@@ -214,6 +218,7 @@ measurements of s ∝ t².
   "id": "speed-after-two-seconds",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["speeding-up"],
   "misconception": "constant-fall-speed",
   "question": "A stone falls freely from rest. After 1 s it moves at about 9.8 m/s. How fast is it after 2 s?",
   "options": [
@@ -231,6 +236,7 @@ measurements of s ∝ t².
   "id": "distances-per-step",
   "level": "highschool",
   "purpose": "transfer",
+  "objectives": ["speeding-up"],
   "instruction": "A ball falls from rest. Order the distances it covers in the 1st, 2nd, 3rd and 4th second, from smallest to largest (g ≈ 10 m/s²).",
   "items": ["5 m (1st second)", "15 m (2nd second)", "25 m (3rd second)", "35 m (4th second)"],
   "explanation": "The distances per second grow like the odd numbers 1 : 3 : 5 : 7, so the total after n seconds is 5 · n² m."
@@ -243,6 +249,7 @@ measurements of s ∝ t².
   "id": "two-masses",
   "level": "college",
   "purpose": "transfer",
+  "objectives": ["equal-fall"],
   "question": "Why is it not a mathematical necessity, but an experimental fact, that all bodies fall with the same acceleration?",
   "rubric": ["Distinguishes gravitational mass (in F = m g) from inertial mass (in F = m a)", "Equal acceleration requires their ratio to be the same for all bodies", "This ratio is measured (torsion balances, MICROSCOPE), not derived", "Links to the equivalence principle"],
   "sample_answer": "The force of gravity is proportional to a body's gravitational mass, its resistance to acceleration to its inertial mass. a = g only if the two are proportional with the same constant for every material. Nothing in Newton's laws demands that; it is measured, today to about one part in 10^15, and Einstein made it the starting point of general relativity.",
@@ -256,6 +263,7 @@ measurements of s ∝ t².
   "id": "galileo-argument",
   "level": "expert",
   "purpose": "transfer",
+  "objectives": ["equal-fall"],
   "question": "Reconstruct Galileo's thought experiment against 'heavier falls faster' and explain what exactly it refutes.",
   "rubric": ["Tie a heavy and a light body together", "Aristotle predicts both slower (light one drags) and faster (combined is heavier)", "Contradiction refutes speed depending on weight alone", "It does not by itself rule out dependence on material; that needs experiment"],
   "sample_answer": "If speed grew with weight, a light stone tied to a heavy one would hold it back, so the pair falls slower than the heavy stone alone; but the pair is heavier, so it should fall faster. Both cannot hold, so fall speed cannot depend on weight alone. The argument assumes speed is a function of weight only; whether bodies of different composition fall alike is an empirical question, answered by experiments up to MICROSCOPE.",
@@ -269,6 +277,7 @@ measurements of s ∝ t².
   "id": "tower-fall-calc",
   "level": "college",
   "purpose": "check",
+  "objectives": ["speeding-up"],
   "misconception": "constant-fall-speed",
   "title": "Fall from the tower",
   "intro": "An object is dropped from rest from 56 m, without air resistance, g = 9.81 m/s².",
@@ -313,6 +322,7 @@ measurements of s ∝ t².
   "id": "eotvos",
   "level": "expert",
   "purpose": "check",
+  "objectives": ["equal-fall"],
   "misconception": "heavier-falls-faster",
   "question": "A satellite experiment finds that two test masses of different materials fall with accelerations differing by 2 · 10⁻¹⁵ relative. What would this mean?",
   "options": [
@@ -333,6 +343,124 @@ measurements of s ∝ t².
     }
   ],
   "explanation": "MICROSCOPE bounds η at about 10⁻¹⁵; so far all materials fall alike within that precision."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "bridge-stone",
+  "level": "child",
+  "purpose": "check",
+  "objectives": [
+    "speeding-up"
+  ],
+  "misconception": "constant-fall-speed",
+  "question": "You drop a stone from a high bridge into the river. How does it move on its way down?",
+  "options": [
+    {
+      "text": "It gets faster and faster the longer it falls",
+      "correct": true,
+      "feedback": "Yes! Every second it gets a lot faster, so it covers more and more distance."
+    },
+    {
+      "text": "It falls at the same speed the whole way",
+      "correct": false,
+      "feedback": "No. It starts slowly and keeps speeding up."
+    },
+    {
+      "text": "It is fast at the start and slows down near the water",
+      "correct": false,
+      "feedback": "No. Gravity keeps pulling the whole way, so it keeps getting faster."
+    }
+  ],
+  "explanation": "Gravity pulls all the time, so a falling object keeps speeding up: about 10 m/s faster every second."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "five-and-one",
+  "level": "highschool",
+  "purpose": "check",
+  "objectives": [
+    "equal-fall"
+  ],
+  "misconception": "heavier-falls-faster",
+  "question": "Without air, a 5 kg and a 1 kg ball are dropped together. Which statement explains what happens?",
+  "options": [
+    {
+      "text": "They land together: the 5 kg ball is pulled 5 times as hard, but it is also 5 times harder to speed up",
+      "correct": true,
+      "feedback": "Right. a = F / m = m g / m = g: the mass cancels."
+    },
+    {
+      "text": "The 5 kg ball lands first because it is pulled harder",
+      "correct": false,
+      "feedback": "It is pulled harder, but it also needs more force to accelerate, so it gains no lead."
+    },
+    {
+      "text": "The 1 kg ball lands first because it is easier to move",
+      "correct": false,
+      "feedback": "It is easier to move, but it is also pulled less, so it gains no lead."
+    }
+  ],
+  "explanation": "Weight grows with mass, and so does the force needed to accelerate. Both effects cancel, so every object falls with g ≈ 9.81 m/s²."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "which-mass-cancels",
+  "level": "college",
+  "purpose": "check",
+  "objectives": [
+    "equal-fall"
+  ],
+  "misconception": "heavier-falls-faster",
+  "question": "In a = F / m with F = m g, the mass cancels. What has to be true for this to work?",
+  "options": [
+    {
+      "text": "The mass that gravity pulls on (gravitational mass) equals the mass that resists acceleration (inertial mass)",
+      "correct": true,
+      "feedback": "Right. Nothing in Newton's theory forces this; it is measured, today to about 1 part in 10¹⁵."
+    },
+    {
+      "text": "Nothing, cancelling is just algebra",
+      "correct": false,
+      "feedback": "The two m are defined by different laws. Their equality is an experimental fact."
+    },
+    {
+      "text": "The object must be small compared with the Earth",
+      "correct": false,
+      "feedback": "Size does not matter here; the cancellation is about the two kinds of mass."
+    }
+  ],
+  "explanation": "That gravitational and inertial mass are equal is the equivalence principle; Einstein built general relativity on it."
+}
+```
+
+```ptf-question
+{
+  "kind": "free_text",
+  "id": "odd-numbers-proof",
+  "level": "expert",
+  "purpose": "check",
+  "objectives": [
+    "speeding-up"
+  ],
+  "misconception": "constant-fall-speed",
+  "question": "Starting from constant acceleration g, show that the distances covered in successive equal time steps are in the ratio 1 : 3 : 5 : 7, and say what a measured deviation from this ratio would tell you.",
+  "rubric": [
+    "v = g t and s = ½ g t² from constant acceleration",
+    "Distance in step n: ½ g τ² (n² − (n − 1)²) = ½ g τ² (2n − 1)",
+    "So the steps are 1 : 3 : 5 : 7 (odd numbers)",
+    "A deviation means the acceleration is not constant, e.g. drag or a timing error"
+  ],
+  "sample_answer": "With v = g t, s(t) = ½ g t². The distance in the n-th step of length τ is s(nτ) − s((n−1)τ) = ½ g τ² (2n − 1), so the steps go 1 : 3 : 5 : 7. If a measurement deviates, the acceleration is not constant: air resistance makes later steps too short, a wrong clock distorts all of them.",
+  "explanation": "The odd-number rule is equivalent to s ∝ t² and therefore to constant acceleration; it is how Galileo tested the law with equal time intervals."
 }
 ```
 

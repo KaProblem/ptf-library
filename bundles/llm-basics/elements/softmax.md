@@ -7,8 +7,10 @@ description: Turns the model's raw scores (logits) into probabilities that are a
 lang: en
 levels: [highschool, college, expert]
 objectives:
-  - Turn a list of scores into probabilities and explain why they are all positive and add up to 1.
-  - Predict how raising one score or changing the temperature changes the distribution.
+  - id: probabilities
+    text: Turn a list of scores into probabilities and explain why they are all positive and add up to 1.
+  - id: predict-change
+    text: Predict how raising one score or changing the temperature changes the distribution.
 tags: [llm, probability, softmax, sampling, temperature]
 about:
   - wikidata: Q7554146
@@ -46,7 +48,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.4.0
+version: 0.5.0
 license: CC-BY-SA-4.0
 ---
 
@@ -158,6 +160,7 @@ which temperature scaling can partly correct.
   "id": "after-softmax",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["probabilities"],
   "misconception": "softmax-makes-zeros",
   "question": "The scores for three characters are [2, 1, 0]. What is true after softmax?",
   "options": [
@@ -175,6 +178,7 @@ which temperature scaling can partly correct.
   "id": "compute-softmax",
   "level": "highschool",
   "purpose": "transfer",
+  "objectives": ["probabilities"],
   "title": "Softmax by hand",
   "intro": "Logits for three characters: e = 2, a = 1, x = 0.",
   "columns": ["Character", "Logit z", "e^z", "Probability"],
@@ -190,6 +194,7 @@ which temperature scaling can partly correct.
   "id": "same-prompt",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["probabilities"],
   "misconception": "always-picks-top",
   "question": "You ask a language model the same question twice and get two different answers. Why?",
   "options": [
@@ -207,6 +212,7 @@ which temperature scaling can partly correct.
   "id": "temperature-order",
   "level": "college",
   "purpose": "transfer",
+  "objectives": ["predict-change"],
   "instruction": "Order these sampling temperatures from most predictable to most surprising text.",
   "items": ["T = 0.2", "T = 0.7", "T = 1.0", "T = 1.5"],
   "explanation": "Dividing logits by a small T exaggerates differences (sharper distribution); a large T shrinks them (flatter distribution)."
@@ -219,6 +225,7 @@ which temperature scaling can partly correct.
   "id": "attention-scaling",
   "level": "expert",
   "purpose": "transfer",
+  "objectives": ["predict-change"],
   "question": "Why do transformers divide attention scores by √d before the softmax?",
   "rubric": ["Dot products of d-dimensional vectors have variance growing with d", "Large scores saturate the softmax towards one-hot", "Saturation gives tiny gradients and attends to one token only", "Scaling keeps variance near 1 at initialisation"],
   "sample_answer": "q·k sums d products, so its variance grows with d. Without scaling, the softmax becomes nearly one-hot, gradients vanish and each query attends to a single key. Dividing by √d keeps the scores' variance around 1.",
@@ -232,6 +239,7 @@ which temperature scaling can partly correct.
   "id": "low-temperature",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["predict-change"],
   "misconception": "always-picks-top",
   "question": "You lower the temperature from 1.0 to 0.3. What happens to the generated text?",
   "options": [
@@ -261,6 +269,7 @@ which temperature scaling can partly correct.
   "id": "shift-logits",
   "level": "college",
   "purpose": "check",
+  "objectives": ["predict-change"],
   "misconception": "softmax-changes-order",
   "question": "Logits (2, 1, 0) give probabilities (0.67, 0.24, 0.09). What do the logits (12, 11, 10) give?",
   "options": [
@@ -290,6 +299,7 @@ which temperature scaling can partly correct.
   "id": "temperature-limits",
   "level": "expert",
   "purpose": "check",
+  "objectives": ["predict-change"],
   "misconception": "always-picks-top",
   "question": "Describe softmax(z / T) in the limits T → 0 and T → ∞ and what each means for sampled text.",
   "rubric": [
@@ -300,6 +310,59 @@ which temperature scaling can partly correct.
   ],
   "sample_answer": "As T → 0 the largest logit dominates and the distribution becomes one-hot (greedy decoding, entropy 0), which often loops. As T → ∞ all logits shrink towards 0 and the distribution becomes uniform with entropy ln V, so the text is random noise.",
   "explanation": "Temperature interpolates between argmax and uniform; T = 1 samples the model's own distribution."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "negative-logits",
+  "level": "college",
+  "purpose": "check",
+  "objectives": [
+    "probabilities"
+  ],
+  "misconception": "softmax-makes-zeros",
+  "question": "The logits are (3, −1, −5). Which statement about softmax of them is true?",
+  "options": [
+    {
+      "text": "All three probabilities are positive and sum to 1; the last one is about 0.0003, small but not zero",
+      "correct": true,
+      "feedback": "Right. e^3 ≈ 20.1, e^−1 ≈ 0.37, e^−5 ≈ 0.0067; divided by their sum 20.5 that gives 0.982, 0.018, 0.0003."
+    },
+    {
+      "text": "The negative logits get negative probabilities",
+      "correct": false,
+      "feedback": "No. e^z is positive for every real z."
+    },
+    {
+      "text": "The last token gets exactly 0",
+      "correct": false,
+      "feedback": "No. Only a logit of −∞ gives exactly 0."
+    }
+  ],
+  "explanation": "Exponentiate and normalise: positive, summing to 1, order kept."
+}
+```
+
+```ptf-question
+{
+  "kind": "free_text",
+  "id": "why-softmax",
+  "level": "expert",
+  "purpose": "check",
+  "objectives": [
+    "probabilities"
+  ],
+  "question": "Why is softmax a natural way to turn unconstrained real scores into a categorical distribution, and how do implementations compute it without overflow?",
+  "rubric": [
+    "exp maps any real score to a positive number, normalising makes the sum 1",
+    "It is monotonic and invariant to adding a constant",
+    "It is the gradient of log-sum-exp; with cross-entropy the gradient is softmax(z) − onehot(y)",
+    "Stable computation subtracts max z before exponentiating (or uses log-softmax / log-sum-exp)"
+  ],
+  "sample_answer": "exp makes every score positive and dividing by the sum makes the values add up to 1, so any vector in ℝ^V becomes a point inside the simplex; order is kept and only differences count. It is the gradient of log-sum-exp, and with cross-entropy its gradient is simply p − onehot(y). Because adding a constant changes nothing, implementations subtract max z first, so the largest exponent is e^0 = 1 and nothing overflows.",
+  "explanation": "Shift invariance is both a property and the trick that makes softmax numerically safe."
 }
 ```
 

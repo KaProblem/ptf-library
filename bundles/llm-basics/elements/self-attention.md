@@ -7,8 +7,10 @@ description: Each token sends a query, offers a key and hands over a value; quer
 lang: en
 levels: [child, highschool, college, expert]
 objectives:
-  - Explain query, key and value and how their match decides what a token collects.
-  - Explain why attention is learned from data and does not just look at the nearest word.
+  - id: query-key-value
+    text: Explain query, key and value and how their match decides what a token collects.
+  - id: learned-attention
+    text: Explain why attention is learned from data and does not just look at the nearest word.
 tags: [llm, attention, transformer, query, key, value]
 about:
   - wikidata: Q103701642
@@ -59,7 +61,7 @@ sources:
     title: "Vaswani et al.: Attention Is All You Need"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.4.0
+version: 0.5.0
 license: CC-BY-SA-4.0
 ---
 
@@ -216,6 +218,7 @@ in-context copying.
   "id": "qkv-roles",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["query-key-value"],
   "misconception": "key-equals-value",
   "text": "The {{1}} says what a token is looking for, the {{2}} says what a token offers, and the {{3}} is what it passes on when it is chosen.",
   "gaps": [
@@ -233,6 +236,7 @@ in-context copying.
   "id": "tiny-attention",
   "level": "highschool",
   "purpose": "transfer",
+  "objectives": ["query-key-value"],
   "title": "One attention step by hand",
   "intro": "The query of the current token is q = (1, 0). Three visible tokens have keys k1 = (2, 0), k2 = (0, 1), k3 = (1, 1). The vectors have d = 2 numbers, so the scores are divided by √2 ≈ 1.41 before the softmax.",
   "columns": ["Token", "q · k", "q · k / √2", "e^(score)", "Weight"],
@@ -248,6 +252,7 @@ in-context copying.
   "id": "dog-bites-man",
   "level": "college",
   "purpose": "check",
+  "objectives": ["learned-attention"],
   "misconception": "attention-knows-order",
   "question": "Without position embeddings, what does the final token of \"dog bites man .\" receive compared with \"man bites dog .\"?",
   "options": [
@@ -265,6 +270,7 @@ in-context copying.
   "id": "score-variance",
   "level": "expert",
   "purpose": "check",
+  "objectives": ["query-key-value"],
   "question": "q and k each have 64 independent entries with mean 0 and variance 1. What is the variance of q · k before scaling?",
   "answer": 64,
   "tolerance": 4,
@@ -279,6 +285,7 @@ in-context copying.
   "id": "self-vs-cross",
   "level": "expert",
   "purpose": "transfer",
+  "objectives": ["query-key-value"],
   "question": "Explain the difference between self-attention, cross-attention and an encoder (unmasked) head, and give one use for each.",
   "rubric": ["Self-attention: Q, K, V from the same sequence", "Cross-attention: Q from one sequence, K and V from another", "Masking is independent of self/cross: decoder masks, encoder does not", "Uses: GPT decoder, translation decoder attending to encoder, classification/BERT encoder"],
   "sample_answer": "In self-attention, queries, keys and values all come from the same tokens (GPT). In cross-attention the queries come from one sequence and keys and values from another, e.g. a translation decoder reading the encoded source sentence. Whether a head is masked is a separate choice: decoder heads use the causal mask to allow generation, encoder heads let every token see every token, which suits classification.",
@@ -292,6 +299,7 @@ in-context copying.
   "id": "question-and-sign",
   "level": "child",
   "purpose": "check",
+  "objectives": ["learned-attention"],
   "misconception": "attention-is-programmed",
   "question": "In \"The dog chased the ball because it was hungry\", the word \"it\" asks its little question. Who decided which word \"it\" listens to?",
   "options": [
@@ -312,6 +320,124 @@ in-context copying.
     }
   ],
   "explanation": "Each word's question and each word's sign are learned from text, so the model finds the word that helps most, near or far."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "question-meets-sign",
+  "level": "child",
+  "purpose": "check",
+  "objectives": [
+    "query-key-value"
+  ],
+  "misconception": "attention-is-nearest",
+  "question": "In attention, every word asks a little question and holds up a little sign saying what it is. When does a word take over a lot of another word's information?",
+  "options": [
+    {
+      "text": "When its question fits the other word's sign well",
+      "correct": true,
+      "feedback": "Yes! A good match means: listen to that word. Then it takes over that word's information."
+    },
+    {
+      "text": "When the other word is right next to it",
+      "correct": false,
+      "feedback": "Not necessarily. A word far away can match much better."
+    },
+    {
+      "text": "When the other word is the longest word in the sentence",
+      "correct": false,
+      "feedback": "No. Only how well the question and the sign fit decides."
+    }
+  ],
+  "explanation": "Question = query, sign = key, the information passed on = value. The match between query and key decides how much of the value a word collects."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "far-away-subject",
+  "level": "highschool",
+  "purpose": "check",
+  "objectives": [
+    "learned-attention"
+  ],
+  "misconception": "attention-is-nearest",
+  "question": "In \"The cat that the dogs chased all morning was tired\", the word \"was\" must find \"cat\", seven words back. How can attention do this?",
+  "options": [
+    {
+      "text": "The weights come from how well learned queries and keys match, not from distance, so \"was\" can pick \"cat\" wherever it is",
+      "correct": true,
+      "feedback": "Right. The model learned from many sentences which kinds of words should match."
+    },
+    {
+      "text": "It cannot: attention only looks at the nearest words",
+      "correct": false,
+      "feedback": "No. Every earlier word is visible; distance is not built into the scores."
+    },
+    {
+      "text": "A programmer wrote a grammar rule that links verbs to their subjects",
+      "correct": false,
+      "feedback": "No. W_Q, W_K and W_V are learned from data like every other parameter."
+    }
+  ],
+  "explanation": "Attention scores are q · k for every pair of visible tokens; training shapes the matrices so that useful pairs score high."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "matching-key-zero-value",
+  "level": "college",
+  "purpose": "check",
+  "objectives": [
+    "query-key-value"
+  ],
+  "misconception": "key-equals-value",
+  "question": "A token's query matches key k2 very strongly (weight 0.95), but token 2's value vector is (0, 0). What does the token receive?",
+  "options": [
+    {
+      "text": "Almost nothing from token 2: the key only decides the weight, what is passed on is the value",
+      "correct": true,
+      "feedback": "Right. The output is Σ weight · value, and token 2 contributes 0.95 · (0, 0)."
+    },
+    {
+      "text": "Mostly k2, because it matched",
+      "correct": false,
+      "feedback": "No. Keys are only used for matching; they are not passed on."
+    },
+    {
+      "text": "Its own query back",
+      "correct": false,
+      "feedback": "No. The output is a weighted sum of the values of the visible tokens."
+    }
+  ],
+  "explanation": "Query and key decide where to look; the value decides what is collected. Separate matrices let a token advertise one thing and pass on another."
+}
+```
+
+```ptf-question
+{
+  "kind": "free_text",
+  "id": "previous-token-head",
+  "level": "expert",
+  "purpose": "check",
+  "objectives": [
+    "learned-attention"
+  ],
+  "misconception": "attention-is-programmed",
+  "question": "In a trained model one head attends almost only to the previous token. Was that programmed? Explain how such a pattern arises and what makes it possible.",
+  "rubric": [
+    "Not programmed: W_Q, W_K, W_V are learned by gradient descent on next-token loss",
+    "The pattern helps prediction (e.g. bigram-like features, building block for induction heads)",
+    "It needs position information: position embeddings let q · k depend on relative position",
+    "Without positions attention works on a set and could not prefer the previous token"
+  ],
+  "sample_answer": "Nobody wrote it in. During training the query and key matrices are adjusted to lower the loss, and attending to the previous token is useful, for example as part of induction heads. It is only possible because position embeddings are added to x, so queries and keys carry position and q · k can be large exactly for position t − 1.",
+  "explanation": "Attention patterns are learned features; their form is limited by what the inputs (token and position) make expressible."
 }
 ```
 
