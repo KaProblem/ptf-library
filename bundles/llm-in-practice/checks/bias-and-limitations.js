@@ -8,6 +8,6 @@ check("letters", () => {
   return [true, false, false];
 });
 
-fact("Selection rates 60 % vs 80 % give a ratio of 0.75", () => 0.6 / 0.8 === 0.75);
+fact("Selection rates 60 % vs 80 % give a ratio of 0.75", () => ptf.near(0.6 / 0.8, 0.75));
 fact("0.60 / 0.80 = 0.75 < 0.8 flags a disparity", () => 0.6 / 0.8 < 0.8);
-fact("A: 72 / 120 = 0.60; B: 45 / 100 = 0.45", () => 72 / 120 === 0.6 && 45 / 100 === 0.45);
+fact("A: 72 / 120 = 0.60; B: 45 / 100 = 0.45", () => ptf.near(72 / 120, 0.6) && ptf.near(45 / 100, 0.45));
