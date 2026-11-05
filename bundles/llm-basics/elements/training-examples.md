@@ -7,8 +7,10 @@ description: One chunk of text holds many training examples at once; the context
 lang: en
 levels: [highschool, college, expert]
 objectives:
-  - Explain how one chunk of text contains many training examples at once.
-  - Describe what the context length limits and why batches do not influence each other.
+  - id: many-examples
+    text: Explain how one chunk of text contains many training examples at once.
+  - id: context-and-batches
+    text: Describe what the context length limits and why batches do not influence each other.
 tags: [llm, training, context-window, block-size, batch]
 about:
   - wikidata: Q125619872
@@ -37,7 +39,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.4.0
+version: 0.5.0
 license: CC-BY-SA-4.0
 ---
 
@@ -160,6 +162,7 @@ because otherwise packed documents would interact.
   "id": "long-chat",
   "level": "highschool",
   "purpose": "transfer",
+  "objectives": ["context-and-batches"],
   "misconception": "unlimited-memory",
   "question": "A model has a context window of 256 characters. In a long chat you mentioned your name 2,000 characters ago. What happens when it writes its next reply?",
   "options": [
@@ -177,6 +180,7 @@ because otherwise packed documents would interact.
   "id": "batch-independence",
   "level": "college",
   "purpose": "check",
+  "objectives": ["context-and-batches"],
   "misconception": "batch-elements-interact",
   "question": "A batch has shape (4, 8). How many independent sequences are processed, and can a token in sequence 1 attend to sequence 3?",
   "options": [
@@ -194,6 +198,7 @@ because otherwise packed documents would interact.
   "id": "x-and-y",
   "level": "college",
   "purpose": "check",
+  "objectives": ["many-examples"],
   "text": "For a chunk [18, 47, 56, 57, 58], the inputs are x = [18, 47, 56, 57] and the targets are y = {{1}}. The example at position 2 has context {{2}} and target {{3}}.",
   "gaps": [
     { "answer": "[47, 56, 57, 58]", "accepted": ["47, 56, 57, 58"] },
@@ -210,6 +215,7 @@ because otherwise packed documents would interact.
   "id": "worksheets",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["context-and-batches"],
   "misconception": "batch-elements-interact",
   "question": "A model trains on a batch of 4 chunks at the same time. One chunk is from Hamlet, one from a cookbook. What does the cookbook chunk learn from the Hamlet chunk?",
   "options": [
@@ -239,6 +245,7 @@ because otherwise packed documents would interact.
   "id": "packing",
   "level": "expert",
   "purpose": "check",
+  "objectives": ["context-and-batches"],
   "misconception": "batch-elements-interact",
   "question": "A pipeline packs three short documents into one row of 2,048 tokens. What goes wrong if it trains as usual, and how is it fixed?",
   "rubric": [
@@ -249,6 +256,55 @@ because otherwise packed documents would interact.
   ],
   "sample_answer": "The causal mask only blocks the future, so tokens of document 3 can attend to documents 1 and 2 and learn fake dependencies. Add separator tokens and a block-diagonal causal mask (and reset positions) so each document only sees itself.",
   "explanation": "Rows in a batch never interact, but positions within a row do, so packing needs its own mask."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "hello-examples",
+  "level": "highschool",
+  "purpose": "check",
+  "objectives": [
+    "many-examples"
+  ],
+  "misconception": "one-example-per-chunk",
+  "question": "The chunk \"hello\" (5 characters) is used for training. Which guessing examples does it contain?",
+  "options": [
+    {
+      "text": "h → e, he → l, hel → l, hell → o: four examples",
+      "correct": true,
+      "feedback": "Right. Every prefix is a context, and the character after it is the target."
+    },
+    {
+      "text": "Only one: hell → o",
+      "correct": false,
+      "feedback": "That is one of them, but every shorter prefix gives an example too."
+    },
+    {
+      "text": "Five, one for each character",
+      "correct": false,
+      "feedback": "The last character has nothing after it, so 5 characters give 4 examples."
+    }
+  ],
+  "explanation": "A chunk of T + 1 tokens gives T examples, one for each context length from 1 to T."
+}
+```
+
+```ptf-question
+{
+  "kind": "estimate_number",
+  "id": "predictions-per-step",
+  "level": "expert",
+  "purpose": "check",
+  "objectives": [
+    "many-examples"
+  ],
+  "misconception": "one-example-per-chunk",
+  "question": "A training step uses a batch of shape (64, 256). How many next-token predictions enter its loss?",
+  "answer": 16384,
+  "tolerance": 0,
+  "explanation": "Each of the 64 rows gives 256 examples (contexts of length 1 to 256): 64 · 256 = 16,384 predictions, all computed in one forward pass thanks to the causal mask."
 }
 ```
 

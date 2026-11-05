@@ -7,8 +7,10 @@ description: A pretrained decoder-only transformer only continues documents; fin
 lang: en
 levels: [child, highschool, college, expert]
 objectives:
-  - Explain why a pretrained model continues documents instead of answering questions.
-  - Describe the training stages that turn it into an assistant, and how large real models are.
+  - id: document-completer
+    text: Explain why a pretrained model continues documents instead of answering questions.
+  - id: training-stages
+    text: Describe the training stages that turn it into an assistant, and how large real models are.
 tags: [llm, pretraining, fine-tuning, rlhf, decoder-only, encoder-decoder, scale]
 about:
   - wikidata: Q117286419
@@ -47,7 +49,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.4.0
+version: 0.5.0
 license: CC-BY-SA-4.0
 ---
 
@@ -200,6 +202,7 @@ careful few-shot prompting.
   "id": "training-stages",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["training-stages"],
   "misconception": "pretraining-makes-assistant",
   "instruction": "Put the training stages of an assistant in order.",
   "items": ["Pretraining on huge amounts of text (next-token prediction)", "Fine-tuning on example conversations", "Training a reward model from human rankings", "Reinforcement learning against the reward model"],
@@ -245,6 +248,7 @@ careful few-shot prompting.
   "id": "kl-penalty",
   "level": "expert",
   "purpose": "check",
+  "objectives": ["training-stages"],
   "question": "In RLHF, why is the policy usually penalised for diverging from the supervised fine-tuned model (KL penalty)?",
   "rubric": ["The reward model is an imperfect proxy", "Unconstrained optimisation exploits its errors (reward hacking)", "The KL term keeps outputs close to the distribution the reward model was trained on", "It preserves language quality and diversity"],
   "sample_answer": "The reward model only approximates human preferences and is reliable near the outputs it was trained on. Without a constraint the policy finds outputs that score highly but are bad (reward hacking) and its language degrades. The KL penalty keeps it close to the SFT model, where the reward model's judgments are trustworthy.",
@@ -258,6 +262,7 @@ careful few-shot prompting.
   "id": "parrot-to-helper",
   "level": "child",
   "purpose": "check",
+  "objectives": ["training-stages"],
   "misconception": "pretraining-makes-assistant",
   "question": "The model has read lots and lots of texts. What do people do next so that it helps you instead of just continuing your text?",
   "options": [
@@ -287,6 +292,7 @@ careful few-shot prompting.
   "id": "post-training-order",
   "level": "college",
   "purpose": "check",
+  "objectives": ["training-stages"],
   "misconception": "pretraining-makes-assistant",
   "instruction": "Put the stages of building a chat assistant in order.",
   "items": [
@@ -296,6 +302,123 @@ careful few-shot prompting.
     "Policy optimisation against the reward model with a KL penalty"
   ],
   "explanation": "Pretraining gives a document completer; SFT teaches the answer format; the reward model and RL with a KL penalty shape which answers it prefers."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "quiz-continues",
+  "level": "child",
+  "purpose": "check",
+  "objectives": [
+    "document-completer"
+  ],
+  "misconception": "pretraining-makes-assistant",
+  "question": "A model has only read lots of texts from the internet. You type \"What is the capital of France?\" and it writes \"What is the capital of Spain? What is the capital of Italy?\". Why?",
+  "options": [
+    {
+      "text": "It learned to continue texts, and on many pages one quiz question is followed by more questions",
+      "correct": true,
+      "feedback": "Yes! It does what it practised: guess how the text goes on."
+    },
+    {
+      "text": "It does not know the answer",
+      "correct": false,
+      "feedback": "It may well 'know' Paris; it just was never taught to answer instead of continuing."
+    },
+    {
+      "text": "It is making fun of you",
+      "correct": false,
+      "feedback": "No. It has no intention; it continues the text the way texts usually go on."
+    }
+  ],
+  "explanation": "A model that only read texts is a text continuer. Answering helpfully has to be taught afterwards."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "base-model-output",
+  "level": "highschool",
+  "purpose": "check",
+  "objectives": [
+    "document-completer"
+  ],
+  "misconception": "pretraining-makes-assistant",
+  "question": "Which output is typical for a model that was only pretrained, when you give it \"How do I bake bread?\"",
+  "options": [
+    {
+      "text": "\"How do I bake a cake? How do I make pizza dough? Posted in Baking Questions\"",
+      "correct": true,
+      "feedback": "Right. It continues the document, as a forum page would go on."
+    },
+    {
+      "text": "A friendly step-by-step recipe with a short introduction",
+      "correct": false,
+      "feedback": "That is the behaviour fine-tuning adds; pretraining alone does not aim for it."
+    },
+    {
+      "text": "\"I am a language model and cannot bake.\"",
+      "correct": false,
+      "feedback": "Such answers are also learned in post-training; a base model has no idea it is an assistant."
+    }
+  ],
+  "explanation": "Pretraining teaches 'predict the next token of internet text'. The result is a document completer."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "why-completer",
+  "level": "college",
+  "purpose": "check",
+  "objectives": [
+    "document-completer"
+  ],
+  "misconception": "chatgpt-different-architecture",
+  "question": "Why does next-token prediction on internet text produce a document completer rather than an assistant?",
+  "options": [
+    {
+      "text": "The objective rewards the most likely continuation of real documents, and documents rarely consist of a question followed by a careful answer to that very user",
+      "correct": true,
+      "feedback": "Right. The model imitates its training distribution; helpful answers have to be made likely by fine-tuning."
+    },
+    {
+      "text": "Because pretraining uses a causal mask",
+      "correct": false,
+      "feedback": "The mask is needed for generation in both stages; it does not decide the behaviour."
+    },
+    {
+      "text": "Because the model is too small",
+      "correct": false,
+      "feedback": "Even GPT-3 with 175 billion parameters is a document completer after pretraining."
+    }
+  ],
+  "explanation": "Behaviour follows the data and the objective. Supervised fine-tuning on question–answer pairs and RLHF shift the distribution towards helpful answers."
+}
+```
+
+```ptf-question
+{
+  "kind": "free_text",
+  "id": "prompt-base-model",
+  "level": "expert",
+  "purpose": "check",
+  "objectives": [
+    "document-completer"
+  ],
+  "question": "You only have a pretrained base model. How can you still get useful answers to questions, and why does that work? What does fine-tuning add beyond that?",
+  "rubric": [
+    "Frame the input as the start of a document whose natural continuation is the answer",
+    "For example a few question–answer pairs (few-shot) or a FAQ format",
+    "Works because the model continues documents in their style",
+    "Fine-tuning and RLHF make answering the default, follow instructions without framing and shape style and refusals"
+  ],
+  "sample_answer": "Write a prompt that looks like a document where the answer comes next, e.g. a FAQ with three solved question–answer pairs and then my question with 'A:'. The base model continues the pattern because that is the likely continuation. Fine-tuning makes this the default behaviour without framing, and RLHF further shapes which answers are preferred.",
+  "explanation": "A base model's capabilities are there after pretraining; post-training changes which behaviour is the most likely one."
 }
 ```
 

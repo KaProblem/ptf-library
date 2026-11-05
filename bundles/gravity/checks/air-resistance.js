@@ -7,3 +7,8 @@ check("terminal-speed-paper-ball", () => {
   ptf.assert(ptf.near(k * vt * vt, W, 1e-12), "drag equals weight at terminal speed");
   return { rows: [A, k, W, vt], result: vt };
 });
+
+check("flat-vs-crumpled", () => {
+  // v_t = √(2 m g / (ρ c_d A)); same mass, so the ratio is √((c_d A)_flat / (c_d A)_ball).
+  return Math.sqrt((1.2 * 0.062) / (0.5 * 0.0028));
+});
