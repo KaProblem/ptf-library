@@ -16,6 +16,15 @@
   "packages": [
     {
       "kind": "bundle",
+      "id": "ahs-matura-mathe",
+      "version": "0.4.0",
+      "title": "Mathematics for the Austrian AHS Matura",
+      "summary": "The 70 basic competences (Grundkompetenzen) tested in the standardised AHS Matura in mathematics, as 17 learning elements in a course order that respects prerequisites, weighted by how often each area was tested from 2014 to 2026.",
+      "path": "bundles/ahs-matura-mathe",
+      "digest": "sha256-XIYG4WAyME00m3QNW/763hI8IG7ZGvIf522YSIQub0E="
+    },
+    {
+      "kind": "bundle",
       "id": "gravity",
       "version": "0.3.1",
       "title": "Gravity: from the leaning tower to curved spacetime",
