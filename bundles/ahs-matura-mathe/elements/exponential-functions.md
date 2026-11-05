@@ -23,7 +23,7 @@ tags: [mathematics, functions, exponential-function, growth, decay, half-life, m
 about:
   - wikidata: Q168698
     label: exponential function
-  - wikidata: Q98690
+  - wikidata: Q47270
     label: half-life
 duration_min: { highschool: 90 }
 figures:
@@ -37,7 +37,7 @@ sources:
     title: "BMBWF: Mathematische Grundkompetenzen für die SRP in Mathematik (AHS), Stand Februar 2021, Inhaltsbereich FA 5"
 generated: { by: claude/opus, at: 2026-11-05T17:00:00Z }
 status: draft
-version: 0.1.0
+version: 0.1.1
 license: CC-BY-SA-4.0
 ---
 
