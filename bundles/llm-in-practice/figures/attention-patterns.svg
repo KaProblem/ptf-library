@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 300" role="img" data-ptf-figure="1">
+  <title>Encoder and decoder: who may look at whom</title>
+  <desc>Two 6 × 6 grids for a sentence of 6 tokens; rows are the token that looks (query), columns the token looked at (key). Encoder: all 36 cells are allowed, every token sees every token, before and after it. Decoder: only the 21 cells on and below the diagonal are allowed, each token sees itself and the tokens before it. The mask is the only difference between the two.</desc>
+  <g>
+    <text class="t-s f-muted" x="170" y="16" text-anchor="middle">row = token that looks, column = token seen</text>
+  </g>
+  <g data-step="1" data-caption="Encoder: every token (row) may look at every token (column), before and after it. All 36 cells.">
+    <text class="t bold f-ink" x="97.0" y="40" text-anchor="middle">Encoder</text>
+    <text class="t-s f-muted" x="44.5" y="62" text-anchor="middle">1</text>
+    <text class="t-s f-muted" x="26" y="85.5" text-anchor="end">1</text>
+    <text class="t-s f-muted" x="65.5" y="62" text-anchor="middle">2</text>
+    <text class="t-s f-muted" x="26" y="106.5" text-anchor="end">2</text>
+    <text class="t-s f-muted" x="86.5" y="62" text-anchor="middle">3</text>
+    <text class="t-s f-muted" x="26" y="127.5" text-anchor="end">3</text>
+    <text class="t-s f-muted" x="107.5" y="62" text-anchor="middle">4</text>
+    <text class="t-s f-muted" x="26" y="148.5" text-anchor="end">4</text>
+    <text class="t-s f-muted" x="128.5" y="62" text-anchor="middle">5</text>
+    <text class="t-s f-muted" x="26" y="169.5" text-anchor="end">5</text>
+    <text class="t-s f-muted" x="149.5" y="62" text-anchor="middle">6</text>
+    <text class="t-s f-muted" x="26" y="190.5" text-anchor="end">6</text>
+    <rect class="f-accent-soft s-line" x="34" y="70" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="55" y="70" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="76" y="70" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="97" y="70" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="118" y="70" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="139" y="70" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="34" y="91" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="55" y="91" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="76" y="91" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="97" y="91" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="118" y="91" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="139" y="91" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="34" y="112" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="55" y="112" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="76" y="112" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="97" y="112" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="118" y="112" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="139" y="112" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="34" y="133" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="55" y="133" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="76" y="133" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="97" y="133" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="118" y="133" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="139" y="133" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="34" y="154" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="55" y="154" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="76" y="154" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="97" y="154" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="118" y="154" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="139" y="154" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="34" y="175" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="55" y="175" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="76" y="175" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="97" y="175" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="118" y="175" width="21" height="21"/>
+    <rect class="f-accent-soft s-line" x="139" y="175" width="21" height="21"/>
+    <text class="t-s f-ink" x="97.0" y="220" text-anchor="middle">36 of 36 allowed</text>
+  </g>
+  <g data-step="2" data-caption="Decoder: each token may look only at itself and the tokens before it. 21 of 36 cells.">
+    <text class="t bold f-ink" x="259.0" y="40" text-anchor="middle">Decoder</text>
+    <text class="t-s f-muted" x="206.5" y="62" text-anchor="middle">1</text>
+    <text class="t-s f-muted" x="188" y="85.5" text-anchor="end">1</text>
+    <text class="t-s f-muted" x="227.5" y="62" text-anchor="middle">2</text>
+    <text class="t-s f-muted" x="188" y="106.5" text-anchor="end">2</text>
+    <text class="t-s f-muted" x="248.5" y="62" text-anchor="middle">3</text>
+    <text class="t-s f-muted" x="188" y="127.5" text-anchor="end">3</text>
+    <text class="t-s f-muted" x="269.5" y="62" text-anchor="middle">4</text>
+    <text class="t-s f-muted" x="188" y="148.5" text-anchor="end">4</text>
+    <text class="t-s f-muted" x="290.5" y="62" text-anchor="middle">5</text>
+    <text class="t-s f-muted" x="188" y="169.5" text-anchor="end">5</text>
+    <text class="t-s f-muted" x="311.5" y="62" text-anchor="middle">6</text>
+    <text class="t-s f-muted" x="188" y="190.5" text-anchor="end">6</text>
+    <rect class="f-warn-soft s-line" x="196" y="70" width="21" height="21"/>
+    <rect class="f-surface s-line" x="217" y="70" width="21" height="21"/>
+    <rect class="f-surface s-line" x="238" y="70" width="21" height="21"/>
+    <rect class="f-surface s-line" x="259" y="70" width="21" height="21"/>
+    <rect class="f-surface s-line" x="280" y="70" width="21" height="21"/>
+    <rect class="f-surface s-line" x="301" y="70" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="196" y="91" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="217" y="91" width="21" height="21"/>
+    <rect class="f-surface s-line" x="238" y="91" width="21" height="21"/>
+    <rect class="f-surface s-line" x="259" y="91" width="21" height="21"/>
+    <rect class="f-surface s-line" x="280" y="91" width="21" height="21"/>
+    <rect class="f-surface s-line" x="301" y="91" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="196" y="112" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="217" y="112" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="238" y="112" width="21" height="21"/>
+    <rect class="f-surface s-line" x="259" y="112" width="21" height="21"/>
+    <rect class="f-surface s-line" x="280" y="112" width="21" height="21"/>
+    <rect class="f-surface s-line" x="301" y="112" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="196" y="133" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="217" y="133" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="238" y="133" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="259" y="133" width="21" height="21"/>
+    <rect class="f-surface s-line" x="280" y="133" width="21" height="21"/>
+    <rect class="f-surface s-line" x="301" y="133" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="196" y="154" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="217" y="154" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="238" y="154" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="259" y="154" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="280" y="154" width="21" height="21"/>
+    <rect class="f-surface s-line" x="301" y="154" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="196" y="175" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="217" y="175" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="238" y="175" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="259" y="175" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="280" y="175" width="21" height="21"/>
+    <rect class="f-warn-soft s-line" x="301" y="175" width="21" height="21"/>
+    <text class="t-s f-ink" x="259.0" y="220" text-anchor="middle">21 of 36 allowed</text>
+  </g>
+  <g data-step="3" data-caption="Same building blocks, different mask: reading a finished text versus writing one token after another.">
+    <text class="t f-ink" x="170" y="254" text-anchor="middle">Only the mask differs:</text>
+    <text class="t-s f-muted" x="170" y="276" text-anchor="middle">read everything vs. look back only</text>
+  </g>
+</svg>

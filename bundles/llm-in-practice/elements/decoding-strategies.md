@@ -36,6 +36,10 @@ simulators:
     levels: [highschool, college]
     role: explore
     use_when: the learner has never seen that generation is repeated sampling from a distribution
+figures:
+  - id: top-k-top-p
+    objectives: [filter-distribution]
+    use_when: after the learner has guessed which words survive top-k and top-p, to show the cut and the renormalised shares
 sources:
   - id: hf-llm-course-1-8
     resource: https://huggingface.co/learn/llm-course/chapter1/8

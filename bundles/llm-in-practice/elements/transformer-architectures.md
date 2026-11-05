@@ -36,6 +36,10 @@ simulators:
     levels: [highschool, college]
     role: explore
     use_when: the learner has not seen a causal mask yet or has forgotten why a decoder may not look ahead
+figures:
+  - id: attention-patterns
+    objectives: [what-tokens-see]
+    use_when: when the learner asks why a decoder cannot look ahead, to compare the full and the causal grid cell by cell
 sources:
   - id: hf-llm-course-1-6
     resource: https://huggingface.co/learn/llm-course/chapter1/6
