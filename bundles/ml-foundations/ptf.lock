@@ -1,0 +1,13 @@
+{
+  "lockfileVersion": 1,
+  "simulators": {
+    "ptf:sim/gradient-descent-lab": {
+      "version": "1.0.0",
+      "integrity": "sha256-yp+3tSmF8xY4Xo7chovrp4V6TYlqP6Fp9Mqsz6m3pR4="
+    },
+    "ptf:sim/threshold-lab": {
+      "version": "1.0.0",
+      "integrity": "sha256-5blpS2wxwlN79Q425UKVJVWfTbnnnqiAQeI6ONUf2jw="
+    }
+  }
+}

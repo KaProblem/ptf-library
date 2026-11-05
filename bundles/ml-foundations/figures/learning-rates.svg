@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 420" role="img" aria-labelledby="learning-rates-t learning-rates-d" data-ptf-figure="1">
+  <title id="learning-rates-t">Three learning rates on the same loss valley</title>
+  <desc id="learning-rates-d">Three copies of the loss curve L(w) = (w − 3)², each with gradient descent starting at w = 0. Top, α = 0.1: small steps 0, 0.6, 1.08, 1.46, 1.77, still far from the minimum at 3. Middle, α = 0.5: one step lands on w = 3. Bottom, α = 1.1: the steps overshoot and grow, 0, 6.6, −1.32, 8.18, so the loss rises and training diverges.</desc>
+  <defs><marker id="ptf-arrow-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-ink" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-muted" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-accent" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-warn" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-good" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+  <g data-step="1" data-caption="α = 0.1: each step shrinks the distance to the bottom only by the factor 0.8. After 4 steps w is 1.77, still far from 3.">
+    <line class="s-ink w1" x1="22.0" y1="114.0" x2="329.5" y2="114.0" marker-end="url(#ptf-arrow-ink)"/>
+    <line class="s-ink w1" x1="72.0" y1="114.0" x2="72.0" y2="118.0"/>
+    <text class="t-s f-muted" x="72.0" y="132.0" text-anchor="middle">0</text>
+    <line class="s-ink w1" x1="147.0" y1="114.0" x2="147.0" y2="118.0"/>
+    <text class="t-s f-muted" x="147.0" y="132.0" text-anchor="middle">3</text>
+    <line class="s-ink w1" x1="222.0" y1="114.0" x2="222.0" y2="118.0"/>
+    <text class="t-s f-muted" x="222.0" y="132.0" text-anchor="middle">6</text>
+    <line class="s-ink w1" x1="297.0" y1="114.0" x2="297.0" y2="118.0"/>
+    <text class="t-s f-muted" x="297.0" y="132.0" text-anchor="middle">9</text>
+    <text class="t-s f-ink math" x="329.5" y="108.0" text-anchor="end">w</text>
+    <polyline class="s-muted w2" points="22.0,49.0 24.5,51.6 27.0,54.1 29.5,56.6 32.0,59.0 34.5,61.4 37.0,63.7 39.5,65.9 42.0,68.1 44.5,70.3 47.0,72.4 49.5,74.5 52.0,76.5 54.5,78.4 57.0,80.3 59.5,82.2 62.0,83.9 64.5,85.7 67.0,87.4 69.5,89.0 72.0,90.6 74.5,92.1 77.0,93.6 79.5,95.0 82.0,96.4 84.5,97.8 87.0,99.0 89.5,100.2 92.0,101.4 94.5,102.5 97.0,103.6 99.5,104.6 102.0,105.6 104.5,106.5 107.0,107.3 109.5,108.2 112.0,108.9 114.5,109.6 117.0,110.3 119.5,110.9 122.0,111.4 124.5,111.9 127.0,112.3 129.5,112.7 132.0,113.1 134.5,113.3 137.0,113.6 139.5,113.8 142.0,113.9 144.5,114.0 147.0,114.0 149.5,114.0 152.0,113.9 154.5,113.8 157.0,113.6 159.5,113.3 162.0,113.1 164.5,112.7 167.0,112.3 169.5,111.9 172.0,111.4 174.5,110.9 177.0,110.3 179.5,109.6 182.0,108.9 184.5,108.2 187.0,107.3 189.5,106.5 192.0,105.6 194.5,104.6 197.0,103.6 199.5,102.5 202.0,101.4 204.5,100.2 207.0,99.0 209.5,97.8 212.0,96.4 214.5,95.0 217.0,93.6 219.5,92.1 222.0,90.6 224.5,89.0 227.0,87.4 229.5,85.7 232.0,83.9 234.5,82.2 237.0,80.3 239.5,78.4 242.0,76.5 244.5,74.5 247.0,72.4 249.5,70.3 252.0,68.1 254.5,65.9 257.0,63.7 259.5,61.4 262.0,59.0 264.5,56.6 267.0,54.1 269.5,51.6 272.0,49.0 274.5,46.4 277.0,43.7 279.5,41.0 282.0,38.2 284.5,35.3 287.0,32.5 289.5,29.5 292.0,26.5 294.5,23.5 297.0,20.4"/>
+    <path class="s-accent w2" d="M72.0 90.6 L87.0 99.0"/>
+    <path class="s-accent w2" d="M87.0 99.0 L99.0 104.4"/>
+    <path class="s-accent w2" d="M99.0 104.4 L108.6 107.9"/>
+    <path class="s-accent w2" d="M108.6 107.9 L116.3 110.1"/>
+    <circle class="f-accent" cx="72.0" cy="90.6" r="4"/>
+    <circle class="f-accent" cx="87.0" cy="99.0" r="4"/>
+    <circle class="f-accent" cx="99.0" cy="104.4" r="4"/>
+    <circle class="f-accent" cx="108.6" cy="107.9" r="4"/>
+    <circle class="f-accent" cx="116.3" cy="110.1" r="4"/>
+    <text class="t-s bold f-accent" x="26.0" y="16.0">α = 0.1: too small, slow progress</text>
+  </g>
+  <g data-step="2" data-caption="α = 0.5: for this valley the first step lands exactly on the bottom at w = 3.">
+    <line class="s-ink w1" x1="22.0" y1="250.0" x2="329.5" y2="250.0" marker-end="url(#ptf-arrow-ink)"/>
+    <line class="s-ink w1" x1="72.0" y1="250.0" x2="72.0" y2="254.0"/>
+    <text class="t-s f-muted" x="72.0" y="268.0" text-anchor="middle">0</text>
+    <line class="s-ink w1" x1="147.0" y1="250.0" x2="147.0" y2="254.0"/>
+    <text class="t-s f-muted" x="147.0" y="268.0" text-anchor="middle">3</text>
+    <line class="s-ink w1" x1="222.0" y1="250.0" x2="222.0" y2="254.0"/>
+    <text class="t-s f-muted" x="222.0" y="268.0" text-anchor="middle">6</text>
+    <line class="s-ink w1" x1="297.0" y1="250.0" x2="297.0" y2="254.0"/>
+    <text class="t-s f-muted" x="297.0" y="268.0" text-anchor="middle">9</text>
+    <text class="t-s f-ink math" x="329.5" y="244.0" text-anchor="end">w</text>
+    <polyline class="s-muted w2" points="22.0,185.0 24.5,187.6 27.0,190.1 29.5,192.6 32.0,195.0 34.5,197.3 37.0,199.7 39.5,201.9 42.0,204.1 44.5,206.3 47.0,208.4 49.5,210.5 52.0,212.5 54.5,214.4 57.0,216.3 59.5,218.2 62.0,219.9 64.5,221.7 67.0,223.4 69.5,225.0 72.0,226.6 74.5,228.1 77.0,229.6 79.5,231.0 82.0,232.4 84.5,233.8 87.0,235.0 89.5,236.2 92.0,237.4 94.5,238.5 97.0,239.6 99.5,240.6 102.0,241.6 104.5,242.5 107.0,243.3 109.5,244.2 112.0,244.9 114.5,245.6 117.0,246.3 119.5,246.9 122.0,247.4 124.5,247.9 127.0,248.3 129.5,248.7 132.0,249.1 134.5,249.3 137.0,249.6 139.5,249.8 142.0,249.9 144.5,250.0 147.0,250.0 149.5,250.0 152.0,249.9 154.5,249.8 157.0,249.6 159.5,249.3 162.0,249.1 164.5,248.7 167.0,248.3 169.5,247.9 172.0,247.4 174.5,246.9 177.0,246.3 179.5,245.6 182.0,244.9 184.5,244.2 187.0,243.3 189.5,242.5 192.0,241.6 194.5,240.6 197.0,239.6 199.5,238.5 202.0,237.4 204.5,236.2 207.0,235.0 209.5,233.8 212.0,232.4 214.5,231.0 217.0,229.6 219.5,228.1 222.0,226.6 224.5,225.0 227.0,223.4 229.5,221.7 232.0,219.9 234.5,218.2 237.0,216.3 239.5,214.4 242.0,212.5 244.5,210.5 247.0,208.4 249.5,206.3 252.0,204.1 254.5,201.9 257.0,199.7 259.5,197.3 262.0,195.0 264.5,192.6 267.0,190.1 269.5,187.6 272.0,185.0 274.5,182.4 277.0,179.7 279.5,177.0 282.0,174.2 284.5,171.3 287.0,168.5 289.5,165.5 292.0,162.5 294.5,159.5 297.0,156.4"/>
+    <path class="s-good w2" d="M72.0 226.6 L147.0 250.0" marker-end="url(#ptf-arrow-good)"/>
+    <path class="s-good w2" d="M147.0 250.0 L147.0 250.0"/>
+    <circle class="f-good" cx="72.0" cy="226.6" r="4"/>
+    <circle class="f-good" cx="147.0" cy="250.0" r="4"/>
+    <circle class="f-good" cx="147.0" cy="250.0" r="4"/>
+    <text class="t-s bold f-good" x="26.0" y="152.0">α = 0.5: right size, one step to 3</text>
+  </g>
+  <g data-step="3" data-caption="α = 1.1: every step overshoots further, 0 → 6.6 → −1.32 → 8.18. The loss grows: training diverges.">
+    <line class="s-ink w1" x1="22.0" y1="386.0" x2="329.5" y2="386.0" marker-end="url(#ptf-arrow-ink)"/>
+    <line class="s-ink w1" x1="72.0" y1="386.0" x2="72.0" y2="390.0"/>
+    <text class="t-s f-muted" x="72.0" y="404.0" text-anchor="middle">0</text>
+    <line class="s-ink w1" x1="147.0" y1="386.0" x2="147.0" y2="390.0"/>
+    <text class="t-s f-muted" x="147.0" y="404.0" text-anchor="middle">3</text>
+    <line class="s-ink w1" x1="222.0" y1="386.0" x2="222.0" y2="390.0"/>
+    <text class="t-s f-muted" x="222.0" y="404.0" text-anchor="middle">6</text>
+    <line class="s-ink w1" x1="297.0" y1="386.0" x2="297.0" y2="390.0"/>
+    <text class="t-s f-muted" x="297.0" y="404.0" text-anchor="middle">9</text>
+    <text class="t-s f-ink math" x="329.5" y="380.0" text-anchor="end">w</text>
+    <polyline class="s-muted w2" points="22.0,321.0 24.5,323.6 27.0,326.1 29.5,328.6 32.0,331.0 34.5,333.4 37.0,335.7 39.5,337.9 42.0,340.1 44.5,342.3 47.0,344.4 49.5,346.5 52.0,348.5 54.5,350.4 57.0,352.3 59.5,354.1 62.0,355.9 64.5,357.7 67.0,359.4 69.5,361.0 72.0,362.6 74.5,364.1 77.0,365.6 79.5,367.0 82.0,368.4 84.5,369.8 87.0,371.0 89.5,372.2 92.0,373.4 94.5,374.5 97.0,375.6 99.5,376.6 102.0,377.6 104.5,378.5 107.0,379.3 109.5,380.1 112.0,380.9 114.5,381.6 117.0,382.3 119.5,382.9 122.0,383.4 124.5,383.9 127.0,384.3 129.5,384.7 132.0,385.1 134.5,385.4 137.0,385.6 139.5,385.8 142.0,385.9 144.5,386.0 147.0,386.0 149.5,386.0 152.0,385.9 154.5,385.8 157.0,385.6 159.5,385.4 162.0,385.1 164.5,384.7 167.0,384.3 169.5,383.9 172.0,383.4 174.5,382.9 177.0,382.3 179.5,381.6 182.0,380.9 184.5,380.1 187.0,379.3 189.5,378.5 192.0,377.6 194.5,376.6 197.0,375.6 199.5,374.5 202.0,373.4 204.5,372.2 207.0,371.0 209.5,369.8 212.0,368.4 214.5,367.0 217.0,365.6 219.5,364.1 222.0,362.6 224.5,361.0 227.0,359.4 229.5,357.7 232.0,355.9 234.5,354.1 237.0,352.3 239.5,350.4 242.0,348.5 244.5,346.5 247.0,344.4 249.5,342.3 252.0,340.1 254.5,337.9 257.0,335.7 259.5,333.4 262.0,331.0 264.5,328.6 267.0,326.1 269.5,323.6 272.0,321.0 274.5,318.4 277.0,315.7 279.5,313.0 282.0,310.2 284.5,307.4 287.0,304.5 289.5,301.5 292.0,298.5 294.5,295.5 297.0,292.4"/>
+    <path class="s-warn w2" d="M72.0 362.6 L237.0 352.3" marker-end="url(#ptf-arrow-warn)"/>
+    <path class="s-warn w2" d="M237.0 352.3 L39.0 337.5" marker-end="url(#ptf-arrow-warn)"/>
+    <path class="s-warn w2" d="M39.0 337.5 L276.6 316.1" marker-end="url(#ptf-arrow-warn)"/>
+    <circle class="f-warn" cx="72.0" cy="362.6" r="4"/>
+    <circle class="f-warn" cx="237.0" cy="352.3" r="4"/>
+    <circle class="f-warn" cx="39.0" cy="337.5" r="4"/>
+    <circle class="f-warn" cx="276.6" cy="316.1" r="4"/>
+    <text class="t-s bold f-warn" x="26.0" y="288.0">α = 1.1: too large, runs away</text>
+  </g>
+</svg>

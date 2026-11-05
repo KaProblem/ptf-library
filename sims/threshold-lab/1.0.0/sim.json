@@ -1,0 +1,22 @@
+{
+  "ptf_sim": "0.1",
+  "id": "ptf:sim/threshold-lab",
+  "version": "1.0.0",
+  "title": "Threshold lab",
+  "description": "A spam filter's classification threshold in three small stations: twelve emails sorted into the confusion matrix, precision traded against recall, and the ROC curve and AUC of a well separated and an overlapping filter.",
+  "lang": ["en", "de"],
+  "concepts": ["classification-threshold", "confusion-matrix", "precision", "recall", "roc-curve", "auc"],
+  "levels": ["highschool", "college"],
+  "stations": [
+    { "id": "sort", "title": "Sort the emails", "levels": ["highschool", "college"] },
+    { "id": "trade-off", "title": "Precision against recall", "levels": ["highschool", "college"] },
+    { "id": "roc", "title": "The ROC curve", "levels": ["highschool", "college"] }
+  ],
+  "entry": "index.html",
+  "params": { "type": "object", "properties": {} },
+  "events": ["answered", "station_completed", "level_changed", "experienced"],
+  "capabilities": [],
+  "license": "MIT",
+  "authors": ["human:stefan", "claude/opus"],
+  "integrity": "sha256-5blpS2wxwlN79Q425UKVJVWfTbnnnqiAQeI6ONUf2jw="
+}

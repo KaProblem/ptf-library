@@ -51,6 +51,15 @@
       "digest": "sha256-x37FZm6mqfoj2wTi0ZiGsFXUGLh+qNpBHAFd++a3fwo="
     },
     {
+      "kind": "bundle",
+      "id": "ml-foundations",
+      "version": "0.1.0",
+      "title": "Machine learning foundations",
+      "summary": "The foundations of supervised machine learning in 16 learning elements, from linear regression and gradient descent through classification metrics, data preparation and overfitting to neural networks, embeddings, production systems and fairness, at highschool and college level.",
+      "path": "bundles/ml-foundations",
+      "digest": "sha256-cM9IWFwgJY4ksDFXxzyICWuB4/E0dAD28ilOXX5XOLw="
+    },
+    {
       "kind": "sim",
       "id": "ptf:sim/attention-lab",
       "version": "1.0.0",
@@ -166,6 +175,15 @@
       "summary": "All parts of a GPT together: put the stages in order, follow one prediction from text to the next character with tensor shapes, the context window during generation, and which parts are learned or fixed.",
       "path": "sims/gpt-pipeline/1.1.0",
       "digest": "sha256-SKMXJ0LmnhSYyPhVc6DFh6YOaaQSZdJ9Wuc6yxVe/Qw="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/gradient-descent-lab",
+      "version": "1.0.0",
+      "title": "Gradient descent lab",
+      "summary": "Gradient descent in three small stations: stepping down a one-weight loss valley by hand, comparing learning rates that crawl, converge, bounce or run away, and training a two-parameter line on eight points while the loss curve flattens out.",
+      "path": "sims/gradient-descent-lab/1.0.0",
+      "digest": "sha256-YPo+zdJmfxEjI8AY0uuTXm03StGUaAGJi9l5vDKJp5c="
     },
     {
       "kind": "sim",
@@ -337,6 +355,15 @@
       "summary": "Why deep transformers train at all: vanishing signals with and without residual connections, layer norm, dropout against memorising, and a parameter counter from a small model to GPT-3.",
       "path": "sims/residual-stream/1.2.0",
       "digest": "sha256-gnFHSRtt+nsBf/Ng8GAUhxIpNWLWi5hnRqpHhqSdi/k="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/threshold-lab",
+      "version": "1.0.0",
+      "title": "Threshold lab",
+      "summary": "A spam filter's classification threshold in three small stations: twelve emails sorted into the confusion matrix, precision traded against recall, and the ROC curve and AUC of a well separated and an overlapping filter.",
+      "path": "sims/threshold-lab/1.0.0",
+      "digest": "sha256-559H0o7ur6uuq0mizUC5dvXgD7xdaIwoGCiWzV23bqo="
     },
     {
       "kind": "sim",
