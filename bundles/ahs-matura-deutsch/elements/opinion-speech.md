@@ -201,6 +201,16 @@ audience.
 - Rhetorical means are a bonus, arguments are the basis: if the speech convinces only by sound, say so.
 - The survey, its figures and the school are invented for this course; tell the learner if they ask.
 
+## Blueprint for new tasks
+
+Rules for all tasks: exam-format element, "Making new writing tasks".
+
+- **Word range:** 405–495 or 540–660.
+- **Situation:** a named occasion and audience that decides or acts: Schulforum, Gemeinderat, school assembly, graduation, a youth conference, a club's annual meeting.
+- **Textbeilage:** material with facts the speech can use: survey results, a short report, an info sheet, a graphic; 150–500 words.
+- **Operators:** bullet 1 „Stellen Sie … dar“ / „Beschreiben Sie …“; bullet 2 „Begründen Sie …“ / „Erläutern Sie …“ / „Setzen Sie sich mit Einwänden auseinander“; bullet 3 „Appellieren Sie an …“ / „Fordern Sie …“.
+- **Rubric template:** Inhalt: material reproduced correctly and vividly; arguments chosen for this audience, answers to its concerns; concrete appeal; Textstruktur: address, hook, two or three arguments, appeal, closing formula; Stil: for listeners, rhetorical means with purpose, not colloquial; Sprachrichtigkeit; range.
+
 # Sources
 
 Grounding: [^srdp-textsorten]. Text, Textbeilage, examples and questions are original.

@@ -230,6 +230,20 @@ rest in proportion to the lengths.
 - The exact current regulations (allowed dictionary, dates) are announced by the school; when the learner asks about them, tell them to check with their teacher.
 - When the learner brings a past Matura task (photo or PDF), take it apart with them as in `take-task-apart` instead of writing it for them.
 
+## Making new writing tasks
+
+When the learner has done the tasks of this bundle, write new ones in the
+exam format. Each text-type element has a blueprint (operators, situations,
+source texts, rubric) in its tutor notes; these rules apply to all of them.
+
+- **Parts, in this order:** Thema (two to four words); text type with word range in brackets; situation (medium, readers or audience, occasion: „für die Schülerzeitung“, „vor dem Schulforum“); the Textbeilage(n) with author, title, medium and date; „Aufgabenstellung:“ with three bullet points, each starting with an operator. Write the task in German, in the „Sie“ form of the exam.
+- **Three bullet points from rising demand:** the first usually reproduces (I: wiedergeben, beschreiben, darstellen), the second works with the material (II: erläutern, analysieren, untersuchen, sich auseinandersetzen), the third judges or acts (III: Stellung nehmen, bewerten, beurteilen, erörtern, appellieren, deuten). Use only the operator combinations the element's blueprint lists, so the task stays within what the exam asks.
+- **Word range:** 270–330, 405–495 or 540–660, as the blueprint says for the text type.
+- **Textbeilage:** prefer a real, current text: a newspaper or magazine article, commentary, report, interview, speech or graphic the learner finds or brings, or that you can open. Give its exact source. For literature use a text the learner has in front of them (school reader, Projekt Gutenberg, Wikisource); never write a literary text from memory and attribute it to an author. If no real text is at hand, write your own non-fiction text and say that it is invented. Length: about one page (400–900 words) for analysis, summary and Erörterung; a shorter text or a graphic with figures is enough for Leserbrief, Kommentar and Meinungsrede.
+- **Theme package (Themenpaket) for a mock exam:** one theme, two independent tasks with different text types and their own Textbeilagen, one 270–330 + one 540–660 (or 405–495 + 405–495). For a full mock offer three packages; at least one of them contains a Textinterpretation. 300 minutes.
+- **Rubric before the learner writes:** for each bullet point one Inhalt line naming what a full answer contains (taken from the Textbeilage), then one line each for Textstruktur (the parts of the text type), Stil und Ausdruck (register for these readers), Sprachrichtigkeit, and the word range. Keep it to yourself until the learner has written; then give feedback along it as the assessment-grid element describes.
+- **Do not** present a task you wrote as a real Matura task, do not reuse the tasks of this bundle with a new theme only, and vary the themes (school, media, environment, work, society, culture, technology, health, language).
+
 # Sources
 
 Grounding: [^srdp-deutsch]. Text, examples and questions are original.

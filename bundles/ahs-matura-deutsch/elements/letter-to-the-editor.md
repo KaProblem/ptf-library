@@ -208,6 +208,16 @@ short headline that states your position helps readers.
 - If the learner only writes about the topic, ask: "Which sentence of the article does this answer?"
 - The Textbeilage and its newspaper are invented for this course; tell the learner if they ask.
 
+## Blueprint for new tasks
+
+Rules for all tasks: exam-format element, "Making new writing tasks".
+
+- **Word range:** 270–330 (sometimes 405–495).
+- **Situation:** a named newspaper, magazine or online medium that published the text; the learner writes as a reader with a role (student, young person, resident).
+- **Textbeilage:** one opinionated text the letter answers: commentary, column, interview or report with a clear demand, about 250–600 words; a current article is ideal.
+- **Operators:** bullet 1 „Beziehen Sie sich auf … und geben Sie … wieder“ / „Fassen Sie die Position … kurz zusammen“; bullet 2 „Setzen Sie sich mit … auseinander“ / „Nehmen Sie Stellung zu …“ / „Bewerten Sie …“; bullet 3 „Machen Sie Vorschläge …“ / „Appellieren Sie an …“ / „Formulieren Sie eine Forderung …“.
+- **Rubric template:** Inhalt: reference and position reproduced; two specific arguments of the text answered; proposal or appeal; Textstruktur: Betreff, headline, introduction with role, paragraphs per argument, demand, name and place; Stil: personal, pointed, not colloquial; Sprachrichtigkeit; range.
+
 # Sources
 
 Grounding: [^srdp-textsorten]. Text, Textbeilage, examples and questions are original.

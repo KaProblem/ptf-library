@@ -216,6 +216,16 @@ by exclamation marks.
 - The learner may reach any judgement; check that it follows from the weighing.
 - „Seit 2007 dürfen in Österreich 16-Jährige wählen“ is a real fact; the two positions in the Textbeilage and the magazine are invented for this course.
 
+## Blueprint for new tasks
+
+Rules for all tasks: exam-format element, "Making new writing tasks".
+
+- **Word range:** 540–660 (sometimes 405–495).
+- **Situation:** often none beyond the question; sometimes a publication („für eine Broschüre“, „für die Website …“).
+- **Textbeilage:** one or two texts or a graphic that present positions and facts on a general, debatable question (should …? is …?): two statements, a pro and contra piece, a report with figures; 300–900 words in total.
+- **Operators:** bullet 1 „Geben Sie … wieder“ / „Beschreiben Sie …“ / „Stellen Sie … dar“; bullet 2 „Erörtern Sie …“ / „Setzen Sie sich mit … auseinander“ / „Vergleichen Sie …“; bullet 3 „Kommen Sie zu einem begründeten Urteil“ / „Nehmen Sie Stellung …“ / „Entwickeln Sie …“.
+- **Rubric template:** Inhalt: positions of the Textbeilage reproduced; arguments on both sides developed with evidence, beyond the source; judgement follows from weighing; Textstruktur: lead-in and question, dialectical or alternating build, one argument per paragraph, transitions, conclusion without new arguments; Stil: factual, impersonal; Sprachrichtigkeit; range.
+
 # Sources
 
 Grounding: [^srdp-textsorten]. Text, Textbeilage, examples and questions are original.

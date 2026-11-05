@@ -217,6 +217,16 @@ today.
 - For practice with poems and drama scenes, use public-domain texts (for example by Goethe, Heine, Trakl, Rilke or Schnitzler) or texts the learner brings from school.
 - "Gibs auf!" is in the public domain (Kafka died in 1924); the quotations keep its original spelling.
 
+## Blueprint for new tasks
+
+Rules for all tasks: exam-format element, "Making new writing tasks".
+
+- **Word range:** 540–660.
+- **Situation:** usually none.
+- **Textbeilage:** a literary text the learner has in front of them: a short prose text, a passage from a novel or story with a short introduction to the context, a poem (two poems for a comparison), or a drama scene. Public-domain authors in German: Goethe, Schiller, Kleist, Büchner, Heine, Storm, Fontane, Schnitzler, Hofmannsthal, Rilke, Trakl, Kafka, Zweig; recent texts from the learner's school reader. Never reproduce a literary text from memory.
+- **Operators:** bullet 1 „Fassen Sie … zusammen“ / „Beschreiben Sie die Situation …“; bullet 2 „Analysieren Sie …“ / „Untersuchen Sie …“ (Figur, Erzählweise, sprachliche Gestaltung, Aufbau des Gedichts); bullet 3 „Interpretieren Sie …“ / „Deuten Sie …“ (Ende, Titel, Verhalten einer Figur) or „Setzen Sie … in Beziehung zu …“.
+- **Rubric template:** Inhalt: content brief; form analysed with quotations and connected to meaning; interpretation of the asked passage with readings supported by the text; hypothesis in the introduction; Textstruktur: introduction, content, analysis, interpretation, conclusion; Stil: factual, literary terms; Sprachrichtigkeit: exact quotations; range.
+
 # Sources
 
 Grounding: [^srdp-textsorten]; text: [^kafka-gibs-auf]. Explanations, examples, questions and the sample interpretation are original.

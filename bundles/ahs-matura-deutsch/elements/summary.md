@@ -209,6 +209,17 @@ tense and make clear that the views are the author's: „Die Autorin betont,
 - Before the learner writes, ask them to state the core statement of the whole text in one sentence; if they cannot, they have not understood the text yet.
 - The Textbeilage and its newspaper are invented for this course; tell the learner if they ask.
 
+## Blueprint for new tasks
+
+Rules for all tasks: exam-format element, "Making new writing tasks".
+
+- **Word range:** 270–330 (exam); 130–200 for practice on a shorter text.
+- **Situation:** a website, newsletter, school newspaper or information sheet whose readers have not read the source („für die Website Ihrer Schule“, „als Information für Ihre Klasse“).
+- **Textbeilage:** one non-fiction text of about 600–1,000 words with a clear line of thought (report, feature, interview, essay, study summary); no literature, no pure opinion piece without facts.
+- **Operators (all AFB I):** „Geben Sie … wieder“, „Fassen Sie … zusammen“, „Beschreiben Sie …“, „Stellen Sie … dar“. Bullet 1 usually the topic or problem, bullet 2 causes, positions or findings, bullet 3 proposals, consequences or the author's conclusion.
+- **Example frame:** „Verfassen Sie eine Zusammenfassung (270–330 Wörter) für … • Geben Sie wieder, welches Problem … • Beschreiben Sie, welche Ursachen … • Geben Sie die Lösungsvorschläge … wieder.“
+- **Rubric template:** Inhalt per bullet (the main statements of the matching sections); no own opinion; Textstruktur: introductory sentence with author, title, text type, source, date, core statement, line of the source; Stil: neutral, present tense, Konjunktiv I, generic terms; Sprachrichtigkeit; range.
+
 # Sources
 
 Grounding: [^srdp-textsorten]. Text, Textbeilage, examples and questions are original.

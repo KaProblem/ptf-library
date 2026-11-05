@@ -211,6 +211,16 @@ asked, your assessment: does the text convince, and why or why not?
 - Accept other means and interpretations of their effect if they are backed by quotations.
 - The Textbeilage and its newspaper are invented for this course; tell the learner if they ask. Real exam texts are usually longer and have line numbers.
 
+## Blueprint for new tasks
+
+Rules for all tasks: exam-format element, "Making new writing tasks".
+
+- **Word range:** 540–660.
+- **Situation:** usually none; the analysis is written for a reader who knows the text.
+- **Textbeilage:** one non-fiction text with a recognisable intention and visible linguistic means: commentary, column, speech, essay, interview, advertisement; 400–900 words; with paragraph or line numbers.
+- **Operators:** bullet 1 „Geben Sie … wieder“ / „Fassen Sie … zusammen“ / „Beschreiben Sie …“; bullet 2 „Analysieren Sie …“ / „Untersuchen Sie …“ (Aufbau, sprachliche Gestaltung, Argumentation, Bild und Text); bullet 3 „Bewerten Sie …“ / „Beurteilen Sie die Wirkung …“ / „Erläutern Sie die Intention …“.
+- **Rubric template:** Inhalt: content brief; structure and the main means analysed with quotation, reference and effect; intention; justified assessment with criteria if asked; Textstruktur: introduction naming the text, content, analysis, assessment; Stil: factual, terms for devices; Sprachrichtigkeit: exact quotations; range.
+
 # Sources
 
 Grounding: [^srdp-textsorten]. Text, Textbeilage, examples and questions are original.

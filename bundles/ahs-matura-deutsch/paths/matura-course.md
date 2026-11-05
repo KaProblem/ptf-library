@@ -66,7 +66,8 @@ important part: writing full texts under time and getting feedback.
 
 After the course (phase D, exam training): full theme packages under
 time, one short and one long text in five hours, with past Matura tasks
-the learner brings from school (outside this bundle). Start about two
+the learner brings (outside this bundle) or new packages the tutor builds
+from the blueprints in the elements. Start about two
 months before the exam; one package every one or two weeks.
 
 # Prior knowledge
@@ -83,6 +84,7 @@ are graded.
 - Writing is learned by writing: every text-type step ends with the full writing task. Give feedback along the four dimensions of the grid (see the assessment-grid element), name the single change that would gain most, and have the learner revise once.
 - Explain in the learner's language (usually German); the tasks, source texts and sample texts are German anyway. Show the sample text only after the learner has written their own.
 - Keep a list of the learner's typical language errors across all texts and return to them in step 5's routine.
+- When the bundle's own tasks are done, write new ones: the general rules are in the exam-format element ("Making new writing tasks"), the operators, situations, source texts and rubric template for each text type in that element's tutor notes ("Blueprint for new tasks"). Prefer real, current articles as Textbeilagen. For mock exams build theme packages as described there.
 - Do not write the learner's texts for them, not even "as an example" before they have tried.
 - The source texts are invented for this course (except Kafka's "Gibs auf!"); past Matura tasks are not part of it. When the learner brings one (photo or PDF), take it apart with them and let them write.
 - Regulations (allowed dictionary, exact dates) come from the school; refer the learner to their teacher.

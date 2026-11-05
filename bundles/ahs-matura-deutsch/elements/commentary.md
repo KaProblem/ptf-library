@@ -211,6 +211,16 @@ die teuerste Form des Sparens.“
 - Have the learner write the headline and the last sentence first; they force a clear position.
 - The Textbeilage and its newspaper are invented for this course; tell the learner if they ask.
 
+## Blueprint for new tasks
+
+Rules for all tasks: exam-format element, "Making new writing tasks".
+
+- **Word range:** 270–330 or 405–495.
+- **Situation:** a newspaper, school newspaper or news website; the learner comments as an author of that medium.
+- **Textbeilage:** a news report on a current, debatable decision or development, or a graphic with figures (survey, statistics) plus a short text; 200–600 words. Both sides should be visible in it.
+- **Operators:** bullet 1 „Stellen Sie … kurz dar“ / „Beschreiben Sie …“ / „Fassen Sie die Ergebnisse … zusammen“; bullet 2 „Bewerten Sie …“ / „Beurteilen Sie …“ / „Erläutern Sie …“; bullet 3 „Nehmen Sie Stellung zu …“ / „Entwickeln Sie einen Vorschlag …“.
+- **Rubric template:** Inhalt: occasion correct and brief; both sides weighed, not listed; clear justified judgement; facts and figures from the Textbeilage correct, none invented; Textstruktur: pointed headline, occasion, weighing, judgement, Pointe; Stil: journalistic, pointed, rhetorical means with purpose; Sprachrichtigkeit; range.
+
 # Sources
 
 Grounding: [^srdp-textsorten]. Text, Textbeilage, examples and questions are original.
