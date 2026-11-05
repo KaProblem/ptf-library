@@ -6,7 +6,7 @@ on:
 # Every tool is pinned, so a run only changes when this file changes.
 # Bump PTF_SPEC_REF to a newer ptf-spec commit on purpose, and the versions below with it.
 env:
-  PTF_SPEC_REF: bc67da046084c4199f195bce6b5e4d7baaec17ba
+  PTF_SPEC_REF: 2a1d811c9def1fa7c29e6ddffff1a82eb3343beb
   PLAYWRIGHT_VERSION: 1.63.0
   TORCH_VERSION: 2.5.1
 jobs:
