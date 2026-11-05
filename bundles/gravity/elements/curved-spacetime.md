@@ -53,7 +53,7 @@ sources:
     title: "Albert Einstein: The Foundation of the General Theory of Relativity (1916), English translation"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.3.0
+version: 0.3.1
 license: CC-BY-SA-4.0
 ---
 
@@ -237,7 +237,7 @@ correction of up to about 46 ns.
   "title": "Height effect on a GPS clock",
   "intro": "G M = 3.986 · 10¹⁴ m³/s², c = 2.998 · 10⁸ m/s, R = 6371 km, r = 26 571 km.",
   "columns": ["Step", "Expression", "Value"],
-  "rows": [["Potential difference", "G M (1/R − 1/r)", "4.757 · 10⁷ m²/s²"], ["Fractional rate", "ΔΦ / c²", "5.29 · 10⁻¹⁰"], ["Per day", "× 86 400 s", "45.7 µs"], ["Speed effect", "v² / (2c²) × 86 400 s, v = √(GM/r)", "−7.2 µs"]],
+  "rows": [["Potential difference", "G M (1/R − 1/r)", "4.756 · 10⁷ m²/s²"], ["Fractional rate", "ΔΦ / c²", "5.29 · 10⁻¹⁰"], ["Per day", "× 86 400 s", "45.7 µs"], ["Speed effect", "v² / (2c²) × 86 400 s, v = √(GM/r)", "−7.2 µs"]],
   "result": { "label": "Net offset per day", "value": "+38.5 µs" },
   "explanation": "Weak-field time dilation plus special-relativistic time dilation."
 }
