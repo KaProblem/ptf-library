@@ -7,8 +7,10 @@ description: Deep stacks of blocks only train well with residual connections (a 
 lang: en
 levels: [highschool, college, expert]
 objectives:
-  - Explain why deep stacks are hard to train and how residual connections help.
-  - Say in one sentence each what layer norm and dropout do.
+  - id: residual-helps
+    text: Explain why deep stacks are hard to train and how residual connections help.
+  - id: norm-and-dropout
+    text: Say in one sentence each what layer norm and dropout do.
 tags: [llm, residual, layer-norm, dropout, scaling, optimisation]
 about:
   - wikidata: Q43744058
@@ -55,7 +57,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.4.0
+version: 0.5.0
 license: CC-BY-SA-4.0
 ---
 
@@ -190,6 +192,7 @@ tokens per parameter in the Chinchilla analysis).
   "id": "why-residual",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["residual-helps"],
   "misconception": "residual-adds-capacity",
   "question": "Why do residual connections help train deep models?",
   "options": [
@@ -207,6 +210,7 @@ tokens per parameter in the Chinchilla analysis).
   "id": "dropout-when",
   "level": "college",
   "purpose": "check",
+  "objectives": ["norm-and-dropout"],
   "misconception": "dropout-at-inference",
   "question": "When is dropout active?",
   "options": [
@@ -224,6 +228,7 @@ tokens per parameter in the Chinchilla analysis).
   "id": "layernorm-by-hand",
   "level": "college",
   "purpose": "transfer",
+  "objectives": ["norm-and-dropout"],
   "title": "Layer norm by hand",
   "intro": "One token's vector is x = (2, 4, 6, 8). γ = 1, β = 0, ε ignored.",
   "columns": ["Step", "Value"],
@@ -253,6 +258,7 @@ tokens per parameter in the Chinchilla analysis).
   "id": "pre-norm",
   "level": "expert",
   "purpose": "transfer",
+  "objectives": ["norm-and-dropout"],
   "question": "Why do GPT-style models put layer norm before each sub-layer (pre-norm) rather than after the residual addition (post-norm)?",
   "rubric": ["Pre-norm keeps an un-normalised identity path in the residual stream", "Gradients flow through the identity path unchanged", "Post-norm puts LN on the main path, rescaling gradients at every layer", "Pre-norm trains deep models stably with less warm-up"],
   "sample_answer": "With pre-norm, x + f(LN(x)), the residual stream itself is never normalised, so there is a clean identity path from the loss to every layer. Post-norm, LN(x + f(x)), places the normalisation on that path, which rescales gradients at each layer and makes deep models unstable without careful learning-rate warm-up.",
@@ -266,6 +272,7 @@ tokens per parameter in the Chinchilla analysis).
   "id": "dropout-once",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["norm-and-dropout"],
   "misconception": "dropout-at-inference",
   "question": "Which sentence describes dropout correctly?",
   "options": [
@@ -295,6 +302,7 @@ tokens per parameter in the Chinchilla analysis).
   "id": "residual-init",
   "level": "expert",
   "purpose": "check",
+  "objectives": ["residual-helps"],
   "misconception": "residual-adds-capacity",
   "question": "Explain why residual connections make depth trainable and why GPT-2 scales residual-branch output weights by 1/√(2L) at initialisation.",
   "rubric": [
@@ -305,6 +313,70 @@ tokens per parameter in the Chinchilla analysis).
   ],
   "sample_answer": "∂x_L/∂x_l = Π (I + J_k) always contains I, so the signal does not vanish however deep the stack is. But 2L branches (attention and MLP per block) each add a random contribution, so the stream variance grows with L; scaling their output weights by 1/√(2L) keeps it near 1 at the start.",
   "explanation": "The highway keeps gradients alive; the initialisation keeps the highway from overflowing."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "gradient-one",
+  "level": "college",
+  "purpose": "check",
+  "objectives": [
+    "residual-helps"
+  ],
+  "misconception": "residual-adds-capacity",
+  "question": "The derivative of x + f(x) is 1 + f′(x). What does the 1 mean for a network of 40 such layers?",
+  "options": [
+    {
+      "text": "The gradient has a direct path with factor 1 from the loss to every layer, so it neither vanishes nor explodes just because of depth",
+      "correct": true,
+      "feedback": "Right. Without the 1 the gradient would be a product of 40 factors, e.g. 0.8^40 ≈ 0.0001."
+    },
+    {
+      "text": "Each layer adds one extra parameter",
+      "correct": false,
+      "feedback": "No. Residual connections add no parameters at all."
+    },
+    {
+      "text": "The layers are skipped and do nothing",
+      "correct": false,
+      "feedback": "No. Each block still adds its f(x); the skip path only keeps the signal and the gradient alive."
+    }
+  ],
+  "explanation": "Residual connections make the stack trainable: early in training the network is close to the identity, and blocks 'come online' as they learn."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "layernorm-not-batchnorm",
+  "level": "expert",
+  "purpose": "check",
+  "objectives": [
+    "norm-and-dropout"
+  ],
+  "misconception": "layernorm-across-batch",
+  "question": "Why do language models use layer norm rather than batch norm?",
+  "options": [
+    {
+      "text": "Layer norm normalises each token's features on its own, so it does not depend on the batch or on other positions and works the same with batch size 1 at inference",
+      "correct": true,
+      "feedback": "Right. Batch statistics would mix sequences and differ between training and generation."
+    },
+    {
+      "text": "Batch norm cannot be implemented on GPUs",
+      "correct": false,
+      "feedback": "It can; it is standard in vision models."
+    },
+    {
+      "text": "Layer norm switches itself off at inference like dropout",
+      "correct": false,
+      "feedback": "No. Layer norm is active in training and inference; only dropout is switched off."
+    }
+  ],
+  "explanation": "Layer norm: mean 0 and variance 1 over the features of one token, then learned γ and β. Dropout, by contrast, is a training-only regulariser."
 }
 ```
 

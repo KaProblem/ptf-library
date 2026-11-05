@@ -7,8 +7,10 @@ description: The loss measures how surprised the model is by the real next token
 lang: en
 levels: [highschool, college, expert]
 objectives:
-  - Explain the loss as the model's surprise at the real next token, and compute −ln p for an example.
-  - Explain why training means making the average loss smaller.
+  - id: surprise
+    text: Explain the loss as the model's surprise at the real next token, and compute −ln p for an example.
+  - id: average-loss
+    text: Explain why training means making the average loss smaller.
 tags: [llm, loss, cross-entropy, training]
 about:
   - wikidata: Q1685498
@@ -46,7 +48,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T12:30:00Z }
 status: draft
-version: 0.4.0
+version: 0.5.0
 license: CC-BY-SA-4.0
 ---
 
@@ -155,6 +157,7 @@ after fine-tuning.
   "id": "loss-meaning",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["surprise"],
   "misconception": "loss-counts-errors",
   "question": "Two models predict the next character. The right character is 'e'. Model A gives 'e' 45 % (but 'a' 50 %), model B gives 'e' 2 %. Which has the lower loss on this character?",
   "options": [
@@ -172,6 +175,7 @@ after fine-tuning.
   "id": "uniform-loss",
   "level": "highschool",
   "purpose": "transfer",
+  "objectives": ["surprise"],
   "question": "A model that knows nothing gives each of 65 characters the same probability. What is its loss per character (−ln of 1/65)?",
   "answer": 4.17,
   "tolerance": 0.3,
@@ -185,6 +189,7 @@ after fine-tuning.
   "id": "loss-cloze",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["surprise"],
   "misconception": "zero-probability-ok",
   "text": "If the model gives the right token 100 %, the loss is {{1}}. If it gives the right token 0 %, the loss is {{2}}.",
   "gaps": [
@@ -201,6 +206,7 @@ after fine-tuning.
   "id": "overfitting",
   "level": "college",
   "purpose": "transfer",
+  "objectives": ["average-loss"],
   "misconception": "training-loss-enough",
   "question": "Training loss keeps falling to 0.9 while validation loss rises from 1.6 to 1.9. What is happening?",
   "options": [
@@ -218,6 +224,7 @@ after fine-tuning.
   "id": "confident-mistake",
   "level": "college",
   "purpose": "check",
+  "objectives": ["surprise", "average-loss"],
   "misconception": "zero-probability-ok",
   "question": "Model A gives the true next token 0.4, model B gives it 0.001 but was right on all other positions. Why can B still end up with the higher average loss?",
   "options": [
@@ -247,6 +254,7 @@ after fine-tuning.
   "id": "loss-floor",
   "level": "expert",
   "purpose": "check",
+  "objectives": ["average-loss"],
   "misconception": "training-loss-enough",
   "question": "A team's training loss keeps falling, but the validation loss has been flat at 1.6 for a while. What is the best reading?",
   "options": [
@@ -267,6 +275,54 @@ after fine-tuning.
     }
   ],
   "explanation": "H(p, q) = H(p) + KL(p ‖ q); the validation curve shows how much of the KL term is left and when memorising starts."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "loss-goes-down",
+  "level": "highschool",
+  "purpose": "check",
+  "objectives": [
+    "average-loss"
+  ],
+  "misconception": "loss-counts-errors",
+  "question": "During training the reported loss drops from 4.2 to 2.5. What does that mean?",
+  "options": [
+    {
+      "text": "On average, the model now gives the real next character a higher probability",
+      "correct": true,
+      "feedback": "Right. The loss is the average surprise; less surprise means better predictions."
+    },
+    {
+      "text": "The model now makes 2.5 mistakes instead of 4.2",
+      "correct": false,
+      "feedback": "No. The loss is not a count of mistakes but −ln of the probability for the right answer, averaged."
+    },
+    {
+      "text": "The model has stored more of the training text",
+      "correct": false,
+      "feedback": "No. Training only adjusts numbers so that real next characters get more probability."
+    }
+  ],
+  "explanation": "Training means making the average of −ln p(correct) over many examples smaller."
+}
+```
+
+```ptf-question
+{
+  "kind": "estimate_number",
+  "id": "perplexity",
+  "level": "expert",
+  "purpose": "check",
+  "objectives": [
+    "surprise"
+  ],
+  "question": "A character model reaches an average validation loss of 1.48 nats. What is its perplexity, the effective number of characters it is choosing between?",
+  "answer": 4.4,
+  "tolerance": 0.2,
+  "explanation": "Perplexity = e^loss = e^1.48 ≈ 4.4, against 65 for uniform guessing (loss 4.17) and about 12 for a bigram model (loss 2.5)."
 }
 ```
 

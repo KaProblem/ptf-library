@@ -7,8 +7,10 @@ description: All parts of a GPT in one picture, from text to the next token, wha
 lang: en
 levels: [highschool, college, expert]
 objectives:
-  - Trace one prediction through all parts of a GPT, from text to the next token.
-  - Say which parts are learned in training and which are fixed, and what the context window limits.
+  - id: trace-prediction
+    text: Trace one prediction through all parts of a GPT, from text to the next token.
+  - id: learned-vs-fixed
+    text: Say which parts are learned in training and which are fixed, and what the context window limits.
 tags: [llm, gpt, transformer, generation, context-window, parameters, summary]
 about:
   - wikidata: Q116777014
@@ -61,7 +63,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T14:30:00Z }
 status: draft
-version: 0.3.0
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -190,6 +192,7 @@ element.
   "id": "passes",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["trace-prediction"],
   "misconception": "generates-all-at-once",
   "question": "To write 100 characters, how often does the model run through all its blocks?",
   "options": [
@@ -207,6 +210,7 @@ element.
   "id": "window",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["learned-vs-fixed"],
   "misconception": "model-remembers-everything",
   "question": "A model with a context of 8 characters has written 'to be or not to be'. Which characters does it use to predict the next one?",
   "options": [
@@ -224,6 +228,7 @@ element.
   "id": "learned-parts",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["learned-vs-fixed"],
   "misconception": "mask-is-learned",
   "question": "Which of these does training change?",
   "options": [
@@ -241,6 +246,7 @@ element.
   "id": "logits-shape",
   "level": "college",
   "purpose": "check",
+  "objectives": ["trace-prediction"],
   "misconception": "attention-weights-shape",
   "question": "Batch B = 4, context T = 8, width C = 32, vocabulary V = 65. What is the shape of the logits that the model returns in training?",
   "options": [
@@ -258,6 +264,7 @@ element.
   "id": "pipeline-cloze",
   "level": "college",
   "purpose": "check",
+  "objectives": ["trace-prediction"],
   "misconception": "softmax-before-blocks",
   "text": "ids → token + position {{1}} → transformer {{2}} → final linear layer → {{3}} → sample.",
   "gaps": [
@@ -288,6 +295,7 @@ element.
   "id": "fixed-or-learned",
   "level": "expert",
   "purpose": "check",
+  "objectives": ["learned-vs-fixed"],
   "misconception": "model-remembers-everything",
   "question": "A user pastes 10,000 tokens into a model with a 4,096-token window and asks about the first paragraph. Which statement is correct?",
   "options": [
@@ -308,6 +316,60 @@ element.
     }
   ],
   "explanation": "Context length is fixed by the architecture (and position encoding) and by cost; memory beyond it needs a system around the model, such as retrieval."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "longer-context",
+  "level": "college",
+  "purpose": "check",
+  "objectives": [
+    "learned-vs-fixed"
+  ],
+  "misconception": "model-remembers-everything",
+  "question": "A model was trained with block_size 256. You feed it 512 tokens. What happens?",
+  "options": [
+    {
+      "text": "The input is cropped to the last 256 tokens, because there are only 256 learned position embeddings; the earlier tokens have no influence",
+      "correct": true,
+      "feedback": "Right. The context window is fixed by the position table learned in training."
+    },
+    {
+      "text": "It reads all 512 tokens, attention works on any length",
+      "correct": false,
+      "feedback": "Attention would, but the position embedding table has only 256 rows, so the implementation crops the input."
+    },
+    {
+      "text": "It learns the new positions while you use it",
+      "correct": false,
+      "feedback": "No. Parameters do not change during use."
+    }
+  ],
+  "explanation": "The position embeddings are learned parameters of a fixed size; the cropping rule is fixed code."
+}
+```
+
+```ptf-question
+{
+  "kind": "free_text",
+  "id": "trace-shapes",
+  "level": "expert",
+  "purpose": "check",
+  "objectives": [
+    "trace-prediction"
+  ],
+  "misconception": "softmax-before-blocks",
+  "question": "Follow the generation of one token through a GPT with batch 1, context T = 256, width C = 384, 6 blocks and vocabulary V = 65: give the shape after each stage and say where the next token is chosen.",
+  "rubric": [
+    "ids (1, 256) → token + position embeddings (1, 256, 384)",
+    "Each of the 6 blocks keeps (1, 256, 384)",
+    "Final layer norm and linear layer give logits (1, 256, 65)",
+    "Only the last position (1, 65) is used; softmax then sampling gives (1, 1), appended to the input"
+  ],
+  "sample_answer": "ids (1, 256) → embeddings (1, 256, 384) → 6 blocks, shape unchanged → final layer norm and linear layer → logits (1, 256, 65) → take position 256: (1, 65) → softmax → sample one token (1, 1) → append and crop to 256 for the next pass.",
+  "explanation": "Softmax comes once, at the very end; each new token needs a full forward pass."
 }
 ```
 

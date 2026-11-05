@@ -7,8 +7,10 @@ description: A rolling body has to spin up as well as speed up, so it is slower 
 lang: en
 levels: [child, highschool, college, expert]
 objectives:
-  - Predict which of a ball, a ring and a sliding block reaches the bottom of a ramp first.
-  - Explain that rolling is slower because energy also goes into spinning, and that only the mass distribution matters.
+  - id: race-order
+    text: Predict which of a ball, a ring and a sliding block reaches the bottom of a ramp first.
+  - id: spin-energy
+    text: Explain that rolling is slower because energy also goes into spinning, and that only the mass distribution matters.
 tags: [physics, mechanics, rolling, moment-of-inertia, energy, friction]
 about:
   - wikidata: Q2192732
@@ -40,7 +42,7 @@ sources:
     title: "The Feynman Lectures on Physics, Vol. I, ch. 19: Center of Mass; Moment of Inertia"
 generated: { by: claude/opus, at: 2026-10-26T14:00:00Z }
 status: draft
-version: 0.3.0
+version: 0.4.0
 license: CC-BY-SA-4.0
 ---
 
@@ -171,6 +173,7 @@ simpler and right.
   "id": "race-ranking",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["race-order"],
   "misconception": "all-roll-equally",
   "instruction": "Order these from first to last at the bottom of the same ramp (same mass and radius, no slipping):",
   "items": ["Block sliding on ice", "Solid ball", "Solid cylinder", "Hollow ball", "Ring"],
@@ -184,6 +187,7 @@ simpler and right.
   "id": "bowling-marble",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["spin-energy"],
   "misconception": "small-rolls-faster",
   "question": "A bowling ball and a glass marble, both solid balls, roll down the same ramp. Which is first?",
   "options": [
@@ -201,6 +205,7 @@ simpler and right.
   "id": "sphere-acceleration",
   "level": "college",
   "purpose": "check",
+  "objectives": ["spin-energy"],
   "title": "A solid sphere on a 30° ramp",
   "intro": "Rolling without slipping, g = 9.81 m/s², k = 2/5.",
   "columns": ["Step", "Expression", "Value"],
@@ -216,6 +221,7 @@ simpler and right.
   "id": "rolling-friction-work",
   "level": "college",
   "purpose": "transfer",
+  "objectives": ["spin-energy"],
   "misconception": "friction-always-wastes-energy",
   "question": "A ball rolls without slipping down a ramp. Friction acts at the contact point. How much energy does it turn into heat?",
   "options": [
@@ -233,6 +239,7 @@ simpler and right.
   "id": "engine-disc",
   "level": "expert",
   "purpose": "transfer",
+  "objectives": ["spin-energy"],
   "question": "A 2D physics engine simulates a ball rolling down a 20° ramp and reports a = 2.24 m/s². A student says the engine is wrong. Who is right, and what would you change?",
   "rubric": ["2/3 · 9.81 · sin 20° ≈ 2.24: the engine models a disc (k = 1/2)", "A solid sphere gives 5/7 · g sin θ ≈ 2.40 m/s²", "Both are right for their model: disc vs. sphere", "Fix: set the rotational inertia to 2/5 m r² or use an analytic model; state the assumption"],
   "sample_answer": "2.24 m/s² is exactly 2/3 g sin 20°, the result for a solid disc. A real ball (solid sphere) gives 5/7 g sin 20° ≈ 2.40 m/s². The engine is correct for a disc; to model a sphere, override the body's moment of inertia to 2/5 m r², or skip the engine and use a = g sin θ / (1 + k). Either way, the simulation should say which body it models.",
@@ -246,6 +253,7 @@ simpler and right.
   "id": "tape-or-marble",
   "level": "child",
   "purpose": "check",
+  "objectives": ["race-order", "spin-energy"],
   "misconception": "ring-faster",
   "question": "A roll of tape and a ball of the same size roll down a slope side by side. Which one is slower, and why?",
   "options": [
@@ -275,6 +283,7 @@ simpler and right.
   "id": "slip-limit",
   "level": "expert",
   "purpose": "check",
+  "objectives": ["spin-energy"],
   "misconception": "friction-always-wastes-energy",
   "question": "Show that a solid sphere rolls without slipping on an incline only if tan θ ≤ 3.5 μ_s, and explain why static friction does not reduce its kinetic energy.",
   "rubric": [
@@ -285,6 +294,70 @@ simpler and right.
   ],
   "sample_answer": "From m a = m g sin θ − f and f r = I a / r with I = (2/5) m r², f = (2/7) m g sin θ. Rolling needs f ≤ μ_s m g cos θ, so tan θ ≤ 3.5 μ_s. The contact point does not move relative to the surface, so f does no work; it only shifts energy from translation into rotation.",
   "explanation": "Static friction enables rolling without dissipating energy; only slipping (kinetic friction) or deformation dissipates."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "cylinder-or-hollow-ball",
+  "level": "college",
+  "purpose": "check",
+  "objectives": [
+    "race-order"
+  ],
+  "misconception": "all-roll-equally",
+  "question": "A solid cylinder and a thin hollow sphere of the same mass and radius roll down the same ramp without slipping. Which arrives first?",
+  "options": [
+    {
+      "text": "The solid cylinder: a = 2/3 g sin θ against 3/5 g sin θ for the hollow sphere",
+      "correct": true,
+      "feedback": "Right. k = 1/2 for the cylinder and 2/3 for the hollow sphere; smaller k means faster."
+    },
+    {
+      "text": "The hollow sphere, because a sphere always beats a cylinder",
+      "correct": false,
+      "feedback": "The shape class does not decide; how far the mass sits from the axis does. The hollow sphere has more of it far out."
+    },
+    {
+      "text": "They arrive together, because mass and radius are equal",
+      "correct": false,
+      "feedback": "Mass and radius cancel, but k does not: a = g sin θ / (1 + k)."
+    }
+  ],
+  "explanation": "a = g sin θ / (1 + k) with I = k m r². Order: block (k = 0) > solid sphere (2/5) > cylinder (1/2) > hollow sphere (2/3) > ring (1)."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "soup-cans",
+  "level": "expert",
+  "purpose": "check",
+  "objectives": [
+    "race-order"
+  ],
+  "misconception": "all-roll-equally",
+  "question": "Two identical cans roll down a ramp: one filled with liquid soup, one with the same soup frozen solid. Which arrives first?",
+  "options": [
+    {
+      "text": "The liquid soup: the liquid hardly turns with the can, so little energy goes into spin and the can behaves almost like a sliding mass with a thin shell",
+      "correct": true,
+      "feedback": "Right. Only the shell is spun up; the frozen can must spin all its mass (k = 1/2)."
+    },
+    {
+      "text": "The frozen soup, because a rigid body rolls without losses",
+      "correct": false,
+      "feedback": "Pure rolling is lossless in both cases, but the frozen can puts a third of its energy into spin."
+    },
+    {
+      "text": "They arrive together, because mass, radius and shape of the can are identical",
+      "correct": false,
+      "feedback": "What matters is how much of the mass is spun up, which differs."
+    }
+  ],
+  "explanation": "The race order depends on the effective k: the share of mass that rotates and how far it sits from the axis. Viscous friction in the liquid makes the difference smaller but does not reverse it on a short ramp."
 }
 ```
 

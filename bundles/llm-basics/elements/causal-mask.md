@@ -7,8 +7,10 @@ description: Each position may gather information from itself and earlier positi
 lang: en
 levels: [highschool, college, expert]
 objectives:
-  - Explain why a position may only use earlier positions, never later ones.
-  - Describe how a lower-triangular weight matrix gathers the past in one step.
+  - id: only-past
+    text: Explain why a position may only use earlier positions, never later ones.
+  - id: triangle-matrix
+    text: Describe how a lower-triangular weight matrix gathers the past in one step.
 tags: [llm, attention, causal-mask, matrix-multiplication]
 requires:
   - ptf:el/llm-basics/training-examples
@@ -45,7 +47,7 @@ sources:
     title: "Andrej Karpathy: Let's build GPT: from scratch, in code, spelled out"
 generated: { by: claude/opus, at: 2026-10-26T13:30:00Z }
 status: draft
-version: 0.4.0
+version: 0.5.0
 license: CC-BY-SA-4.0
 ---
 
@@ -176,6 +178,7 @@ would break normalisation.
   "id": "no-mask-loss",
   "level": "highschool",
   "purpose": "transfer",
+  "objectives": ["only-past"],
   "misconception": "attention-sees-future",
   "question": "Someone trains a model without the mask. Its training loss drops almost to 0. What is going on?",
   "options": [
@@ -193,6 +196,7 @@ would break normalisation.
   "id": "triangle-row-3",
   "level": "college",
   "purpose": "check",
+  "objectives": ["triangle-matrix"],
   "title": "Masked softmax for row 3",
   "intro": "T = 4. Row 3 (position 3) has scores [0, 0, 0, 0] before masking.",
   "columns": ["Column", "Score", "After mask", "e^score", "Weight"],
@@ -208,6 +212,7 @@ would break normalisation.
   "id": "why-minus-infinity",
   "level": "college",
   "purpose": "check",
+  "objectives": ["triangle-matrix"],
   "misconception": "mask-by-zero-scores",
   "question": "Why are future scores set to −∞ rather than 0 before the softmax?",
   "options": [
@@ -225,6 +230,7 @@ would break normalisation.
   "id": "matmul-trick",
   "level": "expert",
   "purpose": "transfer",
+  "objectives": ["only-past", "triangle-matrix"],
   "question": "Why do decoder-only models compute the loss for all T positions of a sequence in one forward pass, and what guarantees that this is equivalent to T separate predictions?",
   "rubric": ["Teacher forcing: the true prefix is the input", "The causal mask makes output t depend only on tokens ≤ t", "Hence all T conditionals p(x_t | x_<t) are computed in parallel", "Efficiency: one pass instead of T"],
   "sample_answer": "Training uses the true text as input (teacher forcing). The causal mask ensures that the representation at position t depends only on tokens up to t, so the logits at each position are exactly the conditional p(x_t+1 | x_≤t). All T of them come out of one parallel pass instead of T sequential ones.",
@@ -238,6 +244,7 @@ would break normalisation.
   "id": "triangle-check",
   "level": "highschool",
   "purpose": "check",
+  "objectives": ["only-past", "triangle-matrix"],
   "misconception": "attention-sees-future",
   "question": "In the table of weights for 4 positions, which cells of row 2 can be filled?",
   "options": [
@@ -267,6 +274,7 @@ would break normalisation.
   "id": "mask-placement",
   "level": "expert",
   "purpose": "check",
+  "objectives": ["triangle-matrix"],
   "misconception": "mask-by-zero-scores",
   "question": "Why must the causal mask be applied to the logits before the softmax, and not by zeroing weights after it?",
   "rubric": [
@@ -277,6 +285,70 @@ would break normalisation.
   ],
   "sample_answer": "Softmax normalises over all entries, so zeroing afterwards breaks the row sums (or needs renormalising). Adding −∞ before the softmax gives e^(−∞) = 0, so future positions get exactly zero weight and the rest are normalised correctly; a 0 score would still give weight.",
   "explanation": "masked_fill(tril == 0, −inf) followed by softmax is the standard, numerically clean form."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "why-hide-the-future",
+  "level": "college",
+  "purpose": "check",
+  "objectives": [
+    "only-past"
+  ],
+  "misconception": "attention-sees-future",
+  "question": "In training the whole chunk of text is known. Why may position 5 still not use position 6?",
+  "options": [
+    {
+      "text": "Position 6 holds position 5's target; reading it would teach copying, and when generating, position 6 does not exist yet",
+      "correct": true,
+      "feedback": "Right. The mask makes training match generation, where only the past is available."
+    },
+    {
+      "text": "To save computation",
+      "correct": false,
+      "feedback": "No. The full matrix is computed anyway; the mask only sets the future to −∞."
+    },
+    {
+      "text": "Because later tokens are less important for meaning",
+      "correct": false,
+      "feedback": "No. For understanding tasks they are useful; for next-token prediction they would give the answer away."
+    }
+  ],
+  "explanation": "Each position predicts the next token, so the future is the answer. The mask makes all T predictions honest in one pass."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "encoder-next-token",
+  "level": "expert",
+  "purpose": "check",
+  "objectives": [
+    "only-past"
+  ],
+  "misconception": "attention-sees-future",
+  "question": "Someone trains an encoder with unmasked attention on next-token prediction at every position. What happens?",
+  "options": [
+    {
+      "text": "Every position can read its own target from the next position, so the loss collapses towards 0 while the model learns nothing usable for generation",
+      "correct": true,
+      "feedback": "Right. That is why encoders are trained with other objectives, such as masked-token prediction."
+    },
+    {
+      "text": "It learns better, because it sees more context",
+      "correct": false,
+      "feedback": "The extra context contains the answer, so the task becomes trivial copying."
+    },
+    {
+      "text": "Training fails with an error, because the shapes do not match",
+      "correct": false,
+      "feedback": "No. The shapes are identical; only the information flow differs."
+    }
+  ],
+  "explanation": "Causal masking is what turns 'predict every next token in parallel' into a meaningful task. Encoders such as BERT hide input tokens instead."
 }
 ```
 
