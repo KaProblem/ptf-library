@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gradient descent lab</title>
+<style>
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
+  --accent:#0E6E68; --accent-soft:#D5ECEA; --warn:#C2410C; --warn-soft:#FBE3D6;
+  --f-display:"Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.3rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+header{display:flex;flex-direction:column;gap:12px}
+.levels{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start;background:var(--surface);max-width:100%}
+.levels button{font:600 1rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:10px 16px;min-height:44px;cursor:pointer}
+.levels button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.station{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.station .num{font:600 .8rem var(--f-mono);color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:600 .95rem var(--f-body);min-height:44px;padding:8px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--accent)}
+button.btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-height:44px;min-width:0}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+label{color:var(--muted);font-size:.95rem}
+.note{color:var(--muted);font-size:.95rem}
+.stat{font:600 1.5rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:24px}
+.stats div{display:flex;flex-direction:column}
+.scroll{overflow-x:auto;max-width:100%}
+.out{font:.95rem/1.5 var(--f-mono);white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px}
+.feedback{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:4px}
+.feedback.bad{border-color:var(--warn);background:var(--warn-soft)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices button{text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.choices button.right{border-color:var(--accent);background:var(--accent-soft)}
+.choices button.wrong{border-color:var(--warn);background:var(--warn-soft)}
+table.grid{border-collapse:collapse;font:.85rem var(--f-mono);font-variant-numeric:tabular-nums}
+table.grid th{color:var(--muted);font-weight:600;padding:4px 6px}
+table.grid td{width:46px;height:40px;text-align:center;border:1px solid var(--line);padding:0}
+table.grid td button{width:100%;height:100%;min-height:40px;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.bars{display:flex;flex-direction:column;gap:4px;font:.9rem var(--f-mono)}
+.bar{display:grid;grid-template-columns:5.5em 1fr 4em;gap:8px;align-items:center}
+.bar .fill{height:18px;background:var(--accent);border-radius:3px;min-width:2px}
+.bar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.tok{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:4px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font:1rem var(--f-mono);color:var(--ink);cursor:pointer}
+.tok[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+svg text{font-family:var(--f-mono)}
+details summary{cursor:pointer;font-weight:600;min-height:32px}
+footer{color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+html:not([lang="de"]) i-de,html[lang="de"] i-en{display:none!important}
+i-en,i-de{font-style:inherit}
+.focus-nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;bottom:0;background:var(--bg);padding:10px 0;border-top:1px solid var(--line)}
+.focus-nav #focusAll{margin-left:auto}
+.focus-nav button:disabled{opacity:.4;cursor:default}
+body.focused header > :not(.row){display:none}
+body.focused #focusStart{display:none}
+body.focused footer{display:none}
+.choices button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
+.choices button:disabled{cursor:default}
+.stepper{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.stepper .step{min-width:44px;min-height:44px;border-radius:22px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:600 1rem var(--f-mono);cursor:pointer}
+.stepper .step.done{border-color:var(--accent);color:var(--accent)}
+.stepper .step[aria-current="step"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.gated{display:flex;flex-direction:column;gap:14px}
+input[type=text],textarea,select{max-width:100%;font:1rem var(--f-mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;min-height:44px}
+input[type=text]{flex:1 1 220px;min-width:0}
+textarea{width:100%;min-height:140px;resize:vertical}
+canvas{display:block;max-width:100%;height:auto}
+pre.code{font:.85rem/1.5 var(--f-mono);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px;overflow-x:auto;margin:0}
+textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:520px){
+  body{font-size:16px;padding-block:12px 0}
+  .wrap{gap:16px}
+  .station{padding:14px;gap:12px}
+  h2{font-size:1.15rem}
+  .levels button{padding:8px 12px}
+  .focus-nav{flex-wrap:nowrap;gap:8px}
+  .focus-nav button.btn{padding:8px 12px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow"><i-en>Machine learning foundations · Training</i-en><i-de>Grundlagen des maschinellen Lernens · Training</i-de></span>
+  <h1><i-en>Gradient descent lab</i-en><i-de>Gradientenabstieg-Labor</i-de></h1>
+  <p><i-en>Training a model means searching for the weights with the smallest loss. Gradient descent does it in small steps: look at the slope where you stand, then step downhill. Here you take the steps yourself, try different step sizes, and then let it fit a line to data.</i-en><i-de>Ein Modell trainieren heißt, die Gewichte mit dem kleinsten Loss zu suchen. Der Gradientenabstieg macht das in kleinen Schritten: Schau, wie steil es dort ist, wo du stehst, und geh dann bergab. Hier machst du die Schritte selbst, probierst verschiedene Schrittweiten und lässt dann eine Gerade an Daten anpassen.</i-de></p>
+  <div class="levels" role="group" aria-label="Level">
+    <button data-level="1" aria-pressed="true"><i-en>High school</i-en><i-de>Schule</i-de></button><button data-level="2" aria-pressed="false"><i-en>College</i-en><i-de>Studium</i-de></button>
+  </div>
+</header>
+
+<section class="station" data-station="downhill" data-show="1 2">
+  <span class="num"><i-en>Station 1 · One weight, one valley</i-en><i-de>Station 1 · Ein Gewicht, ein Tal</i-de></span>
+  <h2><i-en>Step downhill</i-en><i-de>Schritt bergab</i-de></h2>
+  <p><i-en>The model has a single weight w. Its loss is L(w) = (w − 3)², a valley with the lowest point at w = 3. You start at w = 0. Each step moves w against the slope, by the slope times the learning rate α = 0.1.</i-en><i-de>Das Modell hat ein einziges Gewicht w. Sein Loss ist L(w) = (w − 3)², ein Tal mit dem tiefsten Punkt bei w = 3. Du startest bei w = 0. Jeder Schritt verschiebt w gegen die Steigung, um Steigung mal Lernrate α = 0,1.</i-de></p>
+  <p><b><i-en>Guess first:</i-en><i-de>Erst raten:</i-de></b> <i-en>At w = 0 the slope of the loss is −6 (the curve goes down to the right). Which way does the first step go?</i-en><i-de>Bei w = 0 ist die Steigung des Loss −6 (die Kurve fällt nach rechts). In welche Richtung geht der erste Schritt?</i-de></p>
+  <div class="choices gate" data-gate="direction">
+    <button data-ok data-fb-en="Right. The step is minus α times the slope: −0.1 · (−6) = +0.6, so w moves right, towards the bottom of the valley at 3." data-fb-de="Richtig. Der Schritt ist minus α mal Steigung: −0,1 · (−6) = +0,6, also wandert w nach rechts, zum Talboden bei 3."><i-en>To the right, to a larger w</i-en><i-de>Nach rechts, zu größerem w</i-de></button>
+    <button data-mis="step-towards-gradient" data-fb-en="No. Following the slope would go uphill. Gradient descent steps against the slope: a negative slope means w gets larger." data-fb-de="Nein. Mit der Steigung zu gehen hieße bergauf. Der Gradientenabstieg geht gegen die Steigung: Eine negative Steigung heißt, w wird größer."><i-en>To the left, because the slope is negative</i-en><i-de>Nach links, weil die Steigung negativ ist</i-de></button>
+    <button data-fb-en="No. w only stays put where the slope is 0, at the bottom of the valley. At w = 0 the slope is −6." data-fb-de="Nein. w bleibt nur stehen, wo die Steigung 0 ist, am Talboden. Bei w = 0 ist die Steigung −6."><i-en>It stays at 0</i-en><i-de>Es bleibt bei 0</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="gated" data-gated="direction" hidden data-judge-on="#ddStep, #ddStep5">
+    <div class="row"><button class="btn" id="ddStep"><i-en>1 step</i-en><i-de>1 Schritt</i-de></button><button class="btn ghost" id="ddStep5"><i-en>5 steps</i-en><i-de>5 Schritte</i-de></button><button class="btn ghost" id="ddReset"><i-en>Start over</i-en><i-de>Neu starten</i-de></button></div>
+    <div class="scroll"><canvas id="ddPlot" width="420" height="260" aria-label="Loss curve with the current weight"></canvas></div>
+    <div class="stats">
+      <div><span class="note">w</span><span class="stat" id="ddW"></span></div>
+      <div><span class="note"><i-en>Slope</i-en><i-de>Steigung</i-de></span><span class="stat" id="ddSlope"></span></div>
+      <div><span class="note">Loss</span><span class="stat" id="ddLoss"></span></div>
+      <div><span class="note"><i-en>Steps</i-en><i-de>Schritte</i-de></span><span class="stat" id="ddSteps"></span></div>
+    </div>
+    <p class="note" id="ddTip"></p>
+    <p class="note" data-after="direction" hidden><i-en>Notice that the steps get shorter by themselves: near the bottom the slope is small, so slope times α is small too. Nobody has to tell the algorithm to slow down.</i-en><i-de>Die Schritte werden von selbst kürzer: Nahe am Boden ist die Steigung klein, also auch Steigung mal α. Niemand muss dem Verfahren sagen, dass es langsamer werden soll.</i-de></p>
+    <p class="note" data-show="2"><i-en>The update rule is w ← w − α · L′(w) with L′(w) = 2(w − 3). Each step multiplies the distance to the minimum by (1 − 2α) = 0.8.</i-en><i-de>Die Update-Regel ist w ← w − α · L′(w) mit L′(w) = 2(w − 3). Jeder Schritt multipliziert den Abstand zum Minimum mit (1 − 2α) = 0,8.</i-de></p>
+  </div>
+</section>
+
+<section class="station" data-station="learning-rate" data-show="1 2">
+  <span class="num"><i-en>Station 2 · Step size</i-en><i-de>Station 2 · Schrittweite</i-de></span>
+  <h2><i-en>Choose the learning rate</i-en><i-de>Die Lernrate wählen</i-de></h2>
+  <p><i-en>Same valley, same start at w = 0. Each button runs 10 steps with a different learning rate α and draws the path and the loss after every step.</i-en><i-de>Dasselbe Tal, derselbe Start bei w = 0. Jeder Knopf macht 10 Schritte mit einer anderen Lernrate α und zeichnet den Weg und den Loss nach jedem Schritt.</i-de></p>
+  <p><b><i-en>Guess first:</i-en><i-de>Erst raten:</i-de></b> <i-en>With α = 0.1 it takes many steps to get close to 3. What happens with α = 1.0?</i-en><i-de>Mit α = 0,1 braucht es viele Schritte bis nahe an 3. Was passiert mit α = 1,0?</i-de></p>
+  <div class="choices gate" data-gate="big-rate">
+    <button data-mis="bigger-rate-faster" data-fb-en="No. The first step is −1.0 · (−6) = +6, which jumps from 0 right over the bottom to 6. There the slope is +6 and the next step jumps back to 0." data-fb-de="Nein. Der erste Schritt ist −1,0 · (−6) = +6, er springt von 0 über den Boden hinweg auf 6. Dort ist die Steigung +6, und der nächste Schritt springt zurück auf 0."><i-en>It reaches 3 in a few big steps</i-en><i-de>Es erreicht 3 in wenigen großen Schritten</i-de></button>
+    <button data-ok data-fb-en="Right. The first step jumps from 0 to 6, right over the bottom; from 6 the slope sends it back to 0. It bounces between 0 and 6 forever and the loss stays at 9." data-fb-de="Richtig. Der erste Schritt springt von 0 auf 6, über den Boden hinweg; von 6 schickt die Steigung es zurück auf 0. Es pendelt ewig zwischen 0 und 6, der Loss bleibt bei 9."><i-en>It jumps back and forth and never gets closer</i-en><i-de>Es springt hin und her und kommt nie näher</i-de></button>
+    <button data-fb-en="No, creeping is what a too small learning rate does. α = 1.0 is ten times larger than α = 0.1." data-fb-de="Nein, Kriechen passiert bei zu kleiner Lernrate. α = 1,0 ist zehnmal größer als α = 0,1."><i-en>It creeps towards 3 even more slowly</i-en><i-de>Es kriecht noch langsamer auf 3 zu</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="gated" data-gated="big-rate" hidden data-judge-on="button[data-a]">
+    <div class="row" id="lrBtns"><button class="btn ghost" data-a="0.05">α = 0.05</button><button class="btn ghost" data-a="0.5">α = 0.5</button><button class="btn ghost" data-a="1">α = 1.0</button><button class="btn ghost" data-a="1.1">α = 1.1</button></div>
+    <div class="scroll"><canvas id="lrPlot" width="420" height="250" aria-label="Path of w on the loss curve"></canvas></div>
+    <div class="scroll"><canvas id="lrLoss" width="420" height="150" aria-label="Loss after each step"></canvas></div>
+    <div class="stats">
+      <div><span class="note"><i-en>w after 10 steps</i-en><i-de>w nach 10 Schritten</i-de></span><span class="stat" id="lrW">–</span></div>
+      <div><span class="note"><i-en>Loss after 10 steps</i-en><i-de>Loss nach 10 Schritten</i-de></span><span class="stat" id="lrL">–</span></div>
+      <div data-show="2"><span class="note">|1 − 2α|</span><span class="stat" id="lrF">–</span></div>
+    </div>
+    <p class="note" id="lrTip"><i-en>Try at least three learning rates, including one of the large ones.</i-en><i-de>Probier mindestens drei Lernraten aus, darunter eine der großen.</i-de></p>
+    <p class="note" data-show="2"><i-en>Each step multiplies the distance to the minimum by (1 − 2α). It shrinks only if |1 − 2α| &lt; 1, that is 0 &lt; α &lt; 1. At α = 0.5 the factor is 0 and one step lands exactly on the minimum; that only works because this valley is a perfect parabola.</i-en><i-de>Jeder Schritt multipliziert den Abstand zum Minimum mit (1 − 2α). Er schrumpft nur, wenn |1 − 2α| &lt; 1 ist, also 0 &lt; α &lt; 1. Bei α = 0,5 ist der Faktor 0, und ein Schritt landet genau im Minimum; das klappt nur, weil dieses Tal eine perfekte Parabel ist.</i-de></p>
+  </div>
+</section>
+
+<section class="station" data-station="fit-line" data-show="1 2">
+  <span class="num"><i-en>Station 3 · A real model</i-en><i-de>Station 3 · Ein echtes Modell</i-de></span>
+  <h2><i-en>Fit a line</i-en><i-de>Eine Gerade anpassen</i-de></h2>
+  <p><i-en>Now the model is a line y′ = w·x + b with two parameters, and the loss is the mean squared error (MSE) over eight data points. Training starts at w = 0, b = 0 and uses α = 0.15. One epoch is one pass over all points, followed by one step.</i-en><i-de>Jetzt ist das Modell eine Gerade y′ = w·x + b mit zwei Parametern, und der Loss ist der mittlere quadratische Fehler (MSE) über acht Datenpunkte. Das Training startet bei w = 0, b = 0 mit α = 0,15. Eine Epoche ist ein Durchgang über alle Punkte, danach folgt ein Schritt.</i-de></p>
+  <p><b><i-en>Guess first:</i-en><i-de>Erst raten:</i-de></b> <i-en>What will the loss curve (loss after each epoch) look like?</i-en><i-de>Wie wird die Loss-Kurve (Loss nach jeder Epoche) aussehen?</i-de></p>
+  <div class="choices gate" data-gate="curve-shape">
+    <button data-ok data-fb-en="Right. Far from the best line the slopes are steep, so the first epochs cut the loss a lot; later the steps shrink and the curve flattens out above zero." data-fb-de="Richtig. Weit weg von der besten Geraden sind die Steigungen groß, also senken die ersten Epochen den Loss stark; später werden die Schritte kleiner und die Kurve flacht über null ab."><i-en>It drops fast at first, then flattens out</i-en><i-de>Erst fällt sie schnell, dann flacht sie ab</i-de></button>
+    <button data-mis="converged-means-zero-loss" data-fb-en="No. The points do not lie exactly on a line, so even the best line keeps some error: the loss levels off above zero. And it does not fall evenly, because the steps shrink." data-fb-de="Nein. Die Punkte liegen nicht genau auf einer Geraden, also bleibt selbst bei der besten Geraden ein Fehler: Der Loss pendelt sich über null ein. Und er fällt nicht gleichmäßig, weil die Schritte kleiner werden."><i-en>A straight line down to zero</i-en><i-de>Eine gerade Linie bis auf null</i-de></button>
+    <button data-fb-en="No. Every point is used in every epoch, so nothing is random here; with this learning rate each step lowers the loss." data-fb-de="Nein. In jeder Epoche werden alle Punkte verwendet, hier ist also nichts zufällig; mit dieser Lernrate senkt jeder Schritt den Loss."><i-en>It jumps up and down at random</i-en><i-de>Sie springt zufällig auf und ab</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="gated" data-gated="curve-shape" hidden data-judge-on="#fit1, #fit10, #fit50">
+    <div class="row"><button class="btn" id="fit1"><i-en>1 epoch</i-en><i-de>1 Epoche</i-de></button><button class="btn" id="fit10"><i-en>10 epochs</i-en><i-de>10 Epochen</i-de></button><button class="btn ghost" id="fit50"><i-en>50 epochs</i-en><i-de>50 Epochen</i-de></button><button class="btn ghost" id="fitReset"><i-en>Start over</i-en><i-de>Neu starten</i-de></button></div>
+    <div class="scroll"><canvas id="fitPlot" width="420" height="250" aria-label="Data points and the current line"></canvas></div>
+    <div class="scroll"><canvas id="fitLoss" width="420" height="150" aria-label="Loss curve"></canvas></div>
+    <div class="stats">
+      <div><span class="note"><i-en>Epochs</i-en><i-de>Epochen</i-de></span><span class="stat" id="fitE"></span></div>
+      <div><span class="note">w</span><span class="stat" id="fitW"></span></div>
+      <div><span class="note">b</span><span class="stat" id="fitB"></span></div>
+      <div><span class="note">MSE</span><span class="stat" id="fitM"></span></div>
+      <div><span class="note"><i-en>Best possible MSE</i-en><i-de>Kleinstmöglicher MSE</i-de></span><span class="stat" id="fitOpt"></span></div>
+    </div>
+    <p class="note" id="fitTip"></p>
+    <p class="note" data-show="2"><i-en>Gradients of the MSE: ∂L/∂w = (2/n) Σ (y′ − y)·x and ∂L/∂b = (2/n) Σ (y′ − y). Current values: </i-en><i-de>Gradienten des MSE: ∂L/∂w = (2/n) Σ (y′ − y)·x und ∂L/∂b = (2/n) Σ (y′ − y). Aktuelle Werte: </i-de><span class="mono" id="fitGrad"></span></p>
+  </div>
+</section>
+<footer><i-en>All numbers are made up for practice.</i-en><i-de>Alle Zahlen sind zum Üben ausgedacht.</i-de></footer>
+</div>
+
+<script src="ptf-sim.js"></script>
+<script>
+const SIM_ID = "ptf:sim/gradient-descent-lab", SIM_VERSION = "1.0.0";
+const SIM_LOCALES = ["en", "de"];
+const PTF_LEVELS = {"1": "highschool", "2": "college"};
+const START_LEVEL = "1";
+/* Shared PTF glue: levels, stations, focus mode, progress, predictions, resume state, snapshot (SIMULATOR-SPEC.md §4).
+   The simulator defines SIM_ID, SIM_VERSION, SIM_LOCALES, PTF_LEVELS, START_LEVEL before this block, and optionally
+   simState() / simRestore(st) / simSnapshot() / rerender() / onGuess(gate, ok) after it. */
+let CURRENT_LEVEL = START_LEVEL, LOCALE = "en", READY = false, FOCUS = null;
+var completed = new Set();   /* var: hoisted, so applyVisibility can run before this line */
+/* UI language (en, de): static text as <i-en>/<i-de> pairs, dynamic text via L(en, de). */
+const L = (en, de) => LOCALE === "de" ? de : en;
+const fmt = (x, d = 2) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+const txt = el => (el.querySelector(LOCALE === "de" ? "i-de" : "i-en") || el).textContent.trim();
+/* SIM_LOCALES matches "lang" in sim.json; unsupported locales fall back to the first entry (§4.6). */
+function setLocale(loc) {
+  LOCALE = /^de/i.test(loc || "") && SIM_LOCALES.includes("de") ? "de" : SIM_LOCALES[0];
+  document.documentElement.lang = LOCALE;
+  renderStepper();
+  if (READY && typeof rerender === "function") rerender();
+}
+const stationsAtLevel = () => [...document.querySelectorAll("section[data-station]")].filter(s => s.dataset.show.split(" ").includes(CURRENT_LEVEL)).map(s => s.dataset.station);
+function setLevel(l) {
+  document.querySelectorAll(".levels button").forEach(b => b.setAttribute("aria-pressed", b.dataset.level === l));
+  CURRENT_LEVEL = l;
+  if (FOCUS && !stationsAtLevel().includes(FOCUS)) FOCUS = stationsAtLevel()[0] || null;
+  applyVisibility();
+  persist();
+}
+/* Focus mode (SIMULATOR-SPEC.md §4.7): one station at a time with Back / Next. */
+function applyVisibility() {
+  document.querySelectorAll("[data-show]").forEach(s => {
+    const lvl = s.dataset.show.split(" ").includes(CURRENT_LEVEL);
+    s.hidden = !lvl || (FOCUS !== null && s.matches("section[data-station]") && s.dataset.station !== FOCUS);
+  });
+  document.body.classList.toggle("focused", FOCUS !== null);
+  renderStepper();
+  const nav = document.getElementById("focusNav");
+  if (!nav) return;
+  nav.hidden = FOCUS === null;
+  if (FOCUS === null) return;
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS);
+  document.getElementById("focusBack").disabled = i <= 0;
+  document.getElementById("focusNext").disabled = i >= list.length - 1;
+  document.getElementById("focusPos").textContent = `${i + 1} / ${list.length}`;
+  if (READY && typeof onFocus === "function") onFocus(FOCUS);
+}
+/* Progress: one numbered step per station at the current level; done steps get a tick, any step can be opened directly. */
+function renderStepper() {
+  const nav = document.getElementById("stepper");
+  if (!nav) return;
+  nav.innerHTML = "";
+  stationsAtLevel().forEach((id, i) => {
+    const h = document.querySelector(`section[data-station="${id}"] h2`), title = h ? txt(h) : id;
+    const b = document.createElement("button");
+    b.className = "step" + (completed.has(id) ? " done" : "");
+    b.textContent = completed.has(id) ? "✓" : String(i + 1);
+    b.title = title; b.setAttribute("aria-label", `${i + 1}. ${title}${completed.has(id) ? L(" (done)", " (erledigt)") : ""}`);
+    if (id === FOCUS) b.setAttribute("aria-current", "step");
+    b.onclick = () => { setFocus(id); ptf.event("experienced", { station: id, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: id } }); window.scrollTo({ top: 0, behavior: "auto" }); };
+    nav.append(b);
+  });
+}
+function setFocus(id) { FOCUS = id; applyVisibility(); persist(); }
+function moveFocus(step) {
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS), next = list[i + step];
+  if (!next) return;
+  setFocus(next);
+  ptf.event("experienced", { station: next, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: next } });
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+(function buildFocusNav() {
+  const nav = document.createElement("nav");
+  nav.id = "focusNav"; nav.className = "focus-nav"; nav.hidden = true;
+  nav.setAttribute("aria-label", "Stations");
+  nav.innerHTML = `<button class="btn ghost" id="focusBack"><i-en>Back</i-en><i-de>Zurück</i-de></button><span class="mono note" id="focusPos"></span><button class="btn" id="focusNext"><i-en>Next</i-en><i-de>Weiter</i-de></button><button class="btn ghost" id="focusAll"><i-en>Show all</i-en><i-de>Alles zeigen</i-de></button>`;
+  const footer = document.querySelector(".wrap > footer");
+  footer ? footer.before(nav) : document.querySelector(".wrap").append(nav);
+  nav.querySelector("#focusBack").onclick = () => moveFocus(-1);
+  nav.querySelector("#focusNext").onclick = () => moveFocus(1);
+  nav.querySelector("#focusAll").onclick = () => setFocus(null);
+  const start = document.createElement("button");
+  start.id = "focusStart"; start.className = "btn ghost";
+  start.innerHTML = "<i-en>Step by step</i-en><i-de>Schritt für Schritt</i-de>";
+  start.onclick = () => { setFocus(stationsAtLevel()[0]); ptf.event("experienced", { station: FOCUS, data: { focus: FOCUS } }); };
+  const stepper = document.createElement("nav");
+  stepper.id = "stepper"; stepper.className = "stepper"; stepper.setAttribute("aria-label", "Progress");
+  document.querySelector(".wrap > header").after(stepper);
+  const levels = document.querySelector("header .levels");
+  const row = document.createElement("div"); row.className = "row";
+  levels.before(row); row.append(levels, start);
+})();
+setLocale(navigator.language);
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", () => {
+  setLevel(b.dataset.level);
+  ptf.event("level_changed", { level: PTF_LEVELS[b.dataset.level] });
+}));
+function answered(station, correct, misconception, response) {
+  const result = { correct };
+  if (misconception && !correct) result.misconception = misconception;
+  if (response !== undefined) result.response = String(response);
+  ptf.event("answered", { station, level: PTF_LEVELS[CURRENT_LEVEL], result });
+  persist();
+}
+/* Every experiment reports what the learner tried, so the tutor can talk about it. */
+function report(station, data) { ptf.event("experienced", { station, level: PTF_LEVELS[CURRENT_LEVEL], data }); persist(); }
+function done(station) {
+  if (completed.has(station)) return;
+  completed.add(station);
+  ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
+  renderStepper(); persist();
+}
+/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb-en / data-fb-de,
+   followed by <p class="feedback" hidden>. A station completes when all its visible graded boxes are answered correctly. */
+function showFeedback(box, b, ok) {
+  const fb = box.nextElementSibling;
+  if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+}
+function markChoice(box, b) {
+  const ok = b.hasAttribute("data-ok");
+  box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
+  b.classList.add(ok ? "right" : "wrong");
+  showFeedback(box, b, ok);
+  box.dataset.choice = [...box.querySelectorAll("button")].indexOf(b);
+  if (ok) box.dataset.solved = "1"; else delete box.dataset.solved;
+  return ok;
+}
+/* Predict, observe, explain (SIMULATOR-SPEC.md §7 rule 5): a .choices.gate box is a prediction. Picking an option only
+   records it and shows the hidden part [data-gated="<its data-gate>"]. The prediction is judged and reported as answered
+   at the learner's first use of a control there (or of one matching its data-judge-on), once the result is in view,
+   and it never completes the station. Elements with data-after="<gate>" (explanations) stay hidden until then. */
+function initGuess(box) {
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { if (!box.dataset.judged) pickGuess(box, b); }));
+  document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => ["click", "input"].forEach(t =>
+    el.addEventListener(t, e => { if (e.target.closest(el.dataset.judgeOn || "button, input, select, textarea")) setTimeout(() => judgeGuess(box)); })));
+}
+function pickGuess(box, b) {
+  box.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  box.dataset.pick = [...box.querySelectorAll("button")].indexOf(b);
+  document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => { el.hidden = false; });
+  ptf.event("experienced", { station: box.closest("[data-station]").dataset.station, level: PTF_LEVELS[CURRENT_LEVEL], data: { prediction: txt(b) } });
+  if (typeof onReveal === "function") onReveal(box.dataset.gate);
+  persist();
+}
+function judgeGuess(box, restoring) {
+  const b = box.dataset.pick === undefined ? null : box.querySelectorAll("button")[+box.dataset.pick];
+  if (!b || box.dataset.judged) return;
+  box.dataset.judged = "1";
+  const ok = b.hasAttribute("data-ok");
+  b.classList.add(ok ? "right" : "wrong");
+  box.querySelectorAll("button").forEach(x => { x.disabled = true; });
+  showFeedback(box, b, ok);
+  document.querySelectorAll(`[data-after="${box.dataset.gate}"]`).forEach(el => { el.hidden = false; });
+  if (!restoring) answered(box.closest("[data-station]").dataset.station, ok, b.dataset.mis, txt(b));
+  if (typeof onGuess === "function") onGuess(box.dataset.gate, ok);
+}
+function initChoices() {
+  document.querySelectorAll("[data-station] .choices").forEach(box => {
+    const sec = box.closest("[data-station]");
+    if (box.dataset.gate) return initGuess(box);
+    box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+      const ok = markChoice(box, b);
+      answered(sec.dataset.station, ok, b.dataset.mis, txt(b));
+      const graded = [...sec.querySelectorAll(".choices:not(.gate)")].filter(x => !x.closest("[hidden]"));
+      if (graded.length && graded.every(x => x.dataset.solved)) done(sec.dataset.station);
+    }));
+  });
+}
+/* Resume state (ptf/state): level, focus, progress, predictions, quiz answers, plus whatever simState() returns. */
+let RESTORING = true, persistTimer = null;
+function persist() {
+  if (RESTORING) return;
+  clearTimeout(persistTimer);
+  persistTimer = setTimeout(() => {
+    const guesses = {}, quiz = {};
+    document.querySelectorAll(".choices.gate").forEach(x => { if (x.dataset.pick !== undefined) guesses[x.dataset.gate] = { pick: +x.dataset.pick, judged: !!x.dataset.judged }; });
+    document.querySelectorAll(".choices[data-q]").forEach(x => { if (x.dataset.choice !== undefined) quiz[x.dataset.q] = +x.dataset.choice; });
+    ptf.saveState(Object.assign({ level: PTF_LEVELS[CURRENT_LEVEL], focus: FOCUS, completed: [...completed], guesses, quiz },
+      typeof simState === "function" ? simState() : {}));
+  }, 200);
+}
+function restore(st) {
+  if (!st || typeof st !== "object") return;
+  if (typeof simRestore === "function") simRestore(st);
+  if (st.guesses && typeof st.guesses === "object") document.querySelectorAll(".choices.gate").forEach(box => {
+    const g = st.guesses[box.dataset.gate], b = g && Number.isInteger(g.pick) && box.querySelectorAll("button")[g.pick];
+    if (!b) return;
+    pickGuess(box, b);
+    if (g.judged) judgeGuess(box, true);
+  });
+  if (st.quiz && typeof st.quiz === "object") document.querySelectorAll(".choices[data-q]").forEach(box => {
+    const b = Number.isInteger(st.quiz[box.dataset.q]) && box.querySelectorAll("button")[st.quiz[box.dataset.q]];
+    if (b) markChoice(box, b);
+  });
+  if (Array.isArray(st.completed)) st.completed.forEach(id => { if (document.querySelector(`section[data-station="${id}"]`)) completed.add(id); });
+  if (st.focus === null || (typeof st.focus === "string" && stationsAtLevel().includes(st.focus))) FOCUS = st.focus;
+  applyVisibility();
+}
+const ptf = PTF.connect({
+  id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS[START_LEVEL],
+  onInit(ctx) {
+    RESTORING = true;
+    try {
+      if (ctx.locale) setLocale(ctx.locale);
+      const lvl = (ctx.state && ctx.state.level) || ctx.level;
+      if (lvl) applyLevel(lvl);
+      restore(ctx.state);
+      if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus !== false });
+      if (typeof rerender === "function") rerender();
+    } finally { RESTORING = false; }
+  },
+  onSetLevel: applyLevel,
+  onGoto: gotoStation,
+  onTheme() { if (READY && typeof rerender === "function") rerender(); },
+  snapshot() {
+    const shown = [...document.querySelectorAll("section[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `UI language: ${LOCALE}`, `Visible stations: ${shown.join(", ")}`];
+    if (FOCUS) parts.push(`Focus mode on station: ${FOCUS}`);
+    if (completed.size) parts.push(`Completed: ${[...document.querySelectorAll("section[data-station]")].map(s => s.dataset.station).filter(id => completed.has(id)).join(", ")}`);
+    const preds = [...document.querySelectorAll(".choices.gate")].filter(x => x.dataset.pick !== undefined)
+      .map(x => { const b = x.querySelectorAll("button")[+x.dataset.pick]; return `${x.dataset.gate} ${JSON.stringify(b.textContent.trim().replace(/\s+/g, " "))}${x.dataset.judged ? (b.hasAttribute("data-ok") ? " (right)" : " (wrong)") : " (not yet judged)"}`; });
+    if (preds.length) parts.push(`Predictions: ${preds.join("; ")}`);
+    if (typeof simSnapshot === "function") parts.push(simSnapshot());
+    return parts.join(". ");
+  }
+});
+function applyLevel(level) {
+  const n = Object.keys(PTF_LEVELS).find(k => PTF_LEVELS[k] === level);
+  if (n) setLevel(n);
+}
+function gotoStation(id, opts) {
+  const s = id ? document.querySelector(`section[data-station="${id}"]`) : null;
+  if (opts && opts.focus === false) setFocus(null);
+  if (!s) return;
+  if (!s.dataset.show.split(" ").includes(CURRENT_LEVEL)) setLevel(s.dataset.show.split(" ")[0]);
+  if (opts && opts.focus === true) { setFocus(id); window.scrollTo({ top: 0, behavior: "auto" }); return; }
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+/* Theme tokens for canvas (§4.5): a host may set a token to anything CSS accepts (light-dark(), var(), color-mix()),
+   which a 2D context cannot parse, so resolve it to a plain colour or font list through the browser first. */
+const tokenProbe = document.createElement("i");
+tokenProbe.hidden = true; document.body.append(tokenProbe);
+function css(name) {
+  const font = name.startsWith("--f-");
+  tokenProbe.style[font ? "fontFamily" : "color"] = `var(${name})`;
+  return getComputedStyle(tokenProbe)[font ? "fontFamily" : "color"];
+}
+const $ = id => document.getElementById(id);
+
+/* ---- Drawing helpers ---- */
+function niceTicks(a, b, n = 5) {
+  const raw = (b - a) / n, p = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 5, 10].map(k => k * p).find(s => s >= raw) || 10 * p;
+  const out = [];
+  for (let v = Math.ceil(a / step) * step; v <= b + 1e-9; v += step) out.push(+v.toFixed(10));
+  return { ticks: out, step };
+}
+function frame(cv, xr, yr, labels) {
+  const ctx = cv.getContext("2d"), W = cv.width, H = cv.height, m = { l: 46, r: 20, t: 10, b: 30 };
+  const X = x => m.l + (x - xr[0]) / (xr[1] - xr[0]) * (W - m.l - m.r);
+  const Y = y => H - m.b - (y - yr[0]) / (yr[1] - yr[0]) * (H - m.t - m.b);
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = css("--surface"); ctx.fillRect(0, 0, W, H);
+  ctx.font = `15px ${css("--f-mono")}`; ctx.lineWidth = 1;
+  const xt = niceTicks(xr[0], xr[1], 6), yt = niceTicks(yr[0], yr[1], 4);
+  const dec = s => s >= 1 ? 0 : s >= 0.1 ? 1 : 2;
+  ctx.strokeStyle = css("--line"); ctx.fillStyle = css("--muted");
+  ctx.textAlign = "center"; ctx.textBaseline = "top";
+  xt.ticks.forEach(v => { ctx.beginPath(); ctx.moveTo(X(v), m.t); ctx.lineTo(X(v), H - m.b); ctx.stroke(); ctx.fillText(fmt(v, dec(xt.step)), X(v), H - m.b + 6); });
+  ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  yt.ticks.forEach(v => { ctx.beginPath(); ctx.moveTo(m.l, Y(v)); ctx.lineTo(W - m.r, Y(v)); ctx.stroke(); ctx.fillText(fmt(v, dec(yt.step)), m.l - 6, Y(v)); });
+  if (labels) {
+    ctx.fillStyle = css("--muted"); ctx.textAlign = "right"; ctx.textBaseline = "bottom";
+    ctx.fillText(labels[0], W - m.r, H - m.b - 4);
+    ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillText(labels[1], m.l + 6, m.t + 2);
+  }
+  return { ctx, X, Y, W, H, m };
+}
+function curve(f, fn, x0, x1, color, width = 2.5) {
+  const { ctx, X, Y } = f;
+  ctx.save(); ctx.beginPath(); ctx.rect(f.m.l, f.m.t, f.W - f.m.l - f.m.r, f.H - f.m.t - f.m.b); ctx.clip();
+  ctx.strokeStyle = color; ctx.lineWidth = width; ctx.beginPath();
+  for (let i = 0; i <= 200; i++) { const x = x0 + (x1 - x0) * i / 200; i ? ctx.lineTo(X(x), Y(fn(x))) : ctx.moveTo(X(x), Y(fn(x))); }
+  ctx.stroke(); ctx.restore();
+}
+function dot(f, x, y, color, r = 6) { const { ctx, X, Y } = f; ctx.fillStyle = color; ctx.beginPath(); ctx.arc(X(x), Y(y), r, 0, 2 * Math.PI); ctx.fill(); }
+function polyline(f, pts, color, dots = true) {
+  const { ctx, X, Y } = f;
+  ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath();
+  pts.forEach(([x, y], i) => i ? ctx.lineTo(X(x), Y(y)) : ctx.moveTo(X(x), Y(y))); ctx.stroke();
+  if (dots) pts.forEach(([x, y]) => dot(f, x, y, color, 3.5));
+}
+
+/* ---- The valley L(w) = (w − 3)² ---- */
+const loss = w => (w - 3) ** 2, slope = w => 2 * (w - 3);
+function path(alpha, n, w0 = 0) { const ws = [w0]; for (let i = 0; i < n; i++) ws.push(ws[i] - alpha * slope(ws[i])); return ws; }
+
+/* Station 1: downhill */
+let ddSteps = 0;
+const ddAlpha = 0.1;
+const ddW = () => path(ddAlpha, ddSteps)[ddSteps];
+function ddStep(k) {
+  ddSteps = Math.min(ddSteps + k, 200);
+  const w = ddW();
+  report("downhill", { steps: ddSteps, w: +w.toFixed(3), loss: +loss(w).toFixed(4) });
+  renderDownhill();
+  if (Math.abs(w - 3) < 0.1) done("downhill");
+}
+function renderDownhill() {
+  const ws = path(ddAlpha, ddSteps), w = ws[ddSteps];
+  $("ddW").textContent = fmt(w); $("ddSlope").textContent = fmt(slope(w)); $("ddLoss").textContent = fmt(loss(w), 3); $("ddSteps").textContent = ddSteps;
+  $("ddTip").textContent = Math.abs(w - 3) < 0.1
+    ? L(`Within 0.1 of the bottom after ${ddSteps} steps. The last step was only ${fmt(Math.abs(ws[ddSteps] - ws[ddSteps - 1]), 3)} long.`, `Nach ${ddSteps} Schritten weniger als 0,1 vom Boden entfernt. Der letzte Schritt war nur ${fmt(Math.abs(ws[ddSteps] - ws[ddSteps - 1]), 3)} lang.`)
+    : ddSteps ? L(`Next step: −0.1 · (${fmt(slope(w))}) = ${fmt(-ddAlpha * slope(w))}. Keep going until you are within 0.1 of w = 3.`, `Nächster Schritt: −0,1 · (${fmt(slope(w))}) = ${fmt(-ddAlpha * slope(w))}. Mach weiter, bis du weniger als 0,1 von w = 3 entfernt bist.`) : "";
+  const f = frame($("ddPlot"), [-1, 7], [0, 16], ["w", "L(w)"]);
+  curve(f, loss, -1, 7, css("--muted"));
+  const s = slope(w);
+  curve(f, x => loss(w) + s * (x - w), w - 1.2, w + 1.2, css("--warn"), 2);
+  ws.slice(0, -1).forEach(x => dot(f, x, loss(x), css("--accent"), 3));
+  dot(f, w, loss(w), css("--accent"), 8);
+}
+
+/* Station 2: learning rate */
+const lrTried = new Set();
+let lrLast = null;
+function lrRun(a) {
+  lrTried.add(a); lrLast = a;
+  const ws = path(a, 10), w = ws[10];
+  report("learning-rate", { alpha: a, w_after_10: +w.toFixed(3), loss_after_10: +loss(w).toFixed(3), behaviour: lrKind(a) });
+  renderLR();
+  if (lrTried.size >= 3 && (lrTried.has(1) || lrTried.has(1.1))) done("learning-rate");
+}
+const lrKind = a => { const q = Math.abs(1 - 2 * a); return q < 1 ? "converges" : q === 1 ? "bounces" : "diverges"; };
+const lrWord = a => ({ converges: L("converges", "kommt an"), bounces: L("bounces forever", "pendelt ewig"), diverges: L("runs away", "läuft davon") })[lrKind(a)];
+function renderLR() {
+  document.querySelectorAll("#lrBtns button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.a === lrLast));
+  const a = lrLast ?? 0.05, ws = path(a, 10);
+  const lo = Math.min(-1, ...ws) - 0.5, hi = Math.max(7, ...ws) + 0.5, top = Math.max(loss(lo), loss(hi));
+  const f = frame($("lrPlot"), [lo, hi], [0, top * 1.05], ["w", "L(w)"]);
+  curve(f, loss, lo, hi, css("--muted"));
+  if (lrLast !== null) {
+    polyline(f, ws.map(w => [w, loss(w)]), css("--accent"));
+    dot(f, ws[10], loss(ws[10]), css("--warn"), 7);
+  }
+  const ls = ws.map(loss), g = frame($("lrLoss"), [0, 10], [0, Math.max(...ls, 1) * 1.08], [L("step", "Schritt"), "loss"]);
+  if (lrLast !== null) polyline(g, ls.map((l, i) => [i, l]), css("--accent"));
+  if (lrLast === null) return;
+  $("lrW").textContent = fmt(ws[10]); $("lrL").textContent = fmt(loss(ws[10]), 3); $("lrF").textContent = fmt(Math.abs(1 - 2 * a), 1);
+  const tried = [...lrTried].sort((x, y) => x - y).map(x => `α = ${fmt(x, x < 0.1 ? 2 : 1)}: ${lrWord(x)}`).join(" · ");
+  $("lrTip").textContent = completed.has("learning-rate") ? tried
+    : `${tried}. ${L("Try at least three learning rates, including one of the large ones.", "Probier mindestens drei Lernraten aus, darunter eine der großen.")}`;
+}
+
+/* Station 3: fit a line with two parameters */
+const XS = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5], YS = [1.4, 1.4, 3.3, 3.8, 5.5, 5.6, 7.1, 7.9], N = XS.length, FA = 0.15;
+const mse = (w, b) => XS.reduce((s, x, i) => s + (w * x + b - YS[i]) ** 2, 0) / N;
+const grads = (w, b) => [XS.reduce((s, x, i) => s + (w * x + b - YS[i]) * x, 0) * 2 / N, XS.reduce((s, x, i) => s + (w * x + b - YS[i]), 0) * 2 / N];
+const OPT = (() => {
+  const mx = XS.reduce((a, b) => a + b) / N, my = YS.reduce((a, b) => a + b) / N;
+  const w = XS.reduce((s, x, i) => s + (x - mx) * (YS[i] - my), 0) / XS.reduce((s, x) => s + (x - mx) ** 2, 0);
+  return { w, b: my - w * mx, mse: mse(w, my - w * mx) };
+})();
+let fitE = 0;
+function fitRun(n) {
+  const out = [{ w: 0, b: 0, mse: mse(0, 0) }];
+  for (let e = 0; e < n; e++) { const { w, b } = out[e], [gw, gb] = grads(w, b); out.push({ w: w - FA * gw, b: b - FA * gb, mse: mse(w - FA * gw, b - FA * gb) }); }
+  return out;
+}
+const fitClose = m => m - OPT.mse <= 0.01 * OPT.mse;
+function fitTrain(k) {
+  fitE = Math.min(fitE + k, 500);
+  const h = fitRun(fitE), c = h[fitE];
+  report("fit-line", { epochs: fitE, w: +c.w.toFixed(3), b: +c.b.toFixed(3), mse: +c.mse.toFixed(4), best_mse: +OPT.mse.toFixed(4) });
+  renderFit();
+  if (fitClose(c.mse)) done("fit-line");
+}
+function renderFit() {
+  const h = fitRun(fitE), c = h[fitE];
+  $("fitE").textContent = fitE; $("fitW").textContent = fmt(c.w); $("fitB").textContent = fmt(c.b); $("fitM").textContent = fmt(c.mse, 3); $("fitOpt").textContent = fmt(OPT.mse, 3);
+  const [gw, gb] = grads(c.w, c.b);
+  $("fitGrad").textContent = `∂L/∂w = ${fmt(gw, 3)}, ∂L/∂b = ${fmt(gb, 3)}`;
+  $("fitTip").textContent = fitClose(c.mse)
+    ? L(`Within 1 % of the best possible line (w = ${fmt(OPT.w)}, b = ${fmt(OPT.b)}). More epochs would hardly change anything now.`, `Weniger als 1 % von der bestmöglichen Geraden entfernt (w = ${fmt(OPT.w)}, b = ${fmt(OPT.b)}). Mehr Epochen würden jetzt kaum noch etwas ändern.`)
+    : fitE ? L("Keep training until the MSE is within 1 % of the best possible value.", "Trainiere weiter, bis der MSE weniger als 1 % über dem kleinstmöglichen Wert liegt.") : "";
+  const f = frame($("fitPlot"), [-0.25, 3.75], [0, 9], ["x", "y"]);
+  if (fitE) {
+    const { ctx, X, Y } = f; ctx.strokeStyle = css("--warn"); ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+    XS.forEach((x, i) => { ctx.beginPath(); ctx.moveTo(X(x), Y(YS[i])); ctx.lineTo(X(x), Y(c.w * x + c.b)); ctx.stroke(); });
+    ctx.setLineDash([]);
+  }
+  curve(f, x => c.w * x + c.b, -0.25, 3.75, css("--accent"));
+  XS.forEach((x, i) => dot(f, x, YS[i], css("--ink"), 5));
+  const g = frame($("fitLoss"), [0, Math.max(10, fitE)], [0, h[0].mse * 1.05], [L("epoch", "Epoche"), "MSE"]);
+  curve(g, () => OPT.mse, 0, Math.max(10, fitE), css("--muted"), 1);
+  polyline(g, h.map((p, i) => [i, p.mse]), css("--accent"), fitE <= 60);
+}
+
+$("ddStep").onclick = () => ddStep(1);
+$("ddStep5").onclick = () => ddStep(5);
+$("ddReset").onclick = () => { ddSteps = 0; report("downhill", { reset: true }); renderDownhill(); };
+document.querySelectorAll("#lrBtns button").forEach(b => b.onclick = () => lrRun(+b.dataset.a));
+$("fit1").onclick = () => fitTrain(1);
+$("fit10").onclick = () => fitTrain(10);
+$("fit50").onclick = () => fitTrain(50);
+$("fitReset").onclick = () => { fitE = 0; report("fit-line", { reset: true }); renderFit(); };
+
+function rerender() { renderDownhill(); renderLR(); renderFit(); renderStepper(); }
+function simState() { return { ddSteps, lrTried: [...lrTried], lrLast, fitE }; }
+function simRestore(st) {
+  const int = (x, max) => Number.isInteger(x) && x >= 0 && x <= max;
+  if (int(st.ddSteps, 200)) ddSteps = st.ddSteps;
+  const ok = [0.05, 0.5, 1, 1.1];
+  if (Array.isArray(st.lrTried)) st.lrTried.filter(a => ok.includes(a)).forEach(a => lrTried.add(a));
+  if (ok.includes(st.lrLast)) lrLast = st.lrLast;
+  if (int(st.fitE, 500)) fitE = st.fitE;
+}
+function simSnapshot() {
+  const w = ddW(), c = fitRun(fitE)[fitE];
+  const parts = [`Downhill (L(w) = (w-3)^2, alpha 0.1, start w = 0): ${ddSteps} steps, w = ${w.toFixed(3)}, slope ${slope(w).toFixed(3)}, loss ${loss(w).toFixed(4)}`];
+  if (lrTried.size) parts.push(`Learning rates tried (10 steps from w = 0): ${[...lrTried].sort((a, b) => a - b).map(a => `alpha ${a} ${lrKind(a)}, w after 10 steps ${path(a, 10)[10].toFixed(3)}`).join("; ")}`);
+  parts.push(`Line fit (alpha 0.15, 8 points): ${fitE} epochs, w = ${c.w.toFixed(3)}, b = ${c.b.toFixed(3)}, MSE ${c.mse.toFixed(4)}, best possible MSE ${OPT.mse.toFixed(4)} at w = ${OPT.w.toFixed(3)}, b = ${OPT.b.toFixed(3)}`);
+  return parts.join(". ");
+}
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (READY) rerender(); });
+initChoices();
+setLevel(START_LEVEL);
+setFocus(stationsAtLevel()[0] || null);
+rerender();
+READY = true; RESTORING = false;
+</script>
+</body>
+</html>

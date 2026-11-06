@@ -26,11 +26,11 @@
     {
       "kind": "bundle",
       "id": "ahs-matura-mathe",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "title": "Mathematics for the Austrian AHS Matura",
       "summary": "The 70 basic competences (Grundkompetenzen) tested in the standardised AHS Matura in mathematics, as 17 learning elements in a course order that respects prerequisites, weighted by how often each area was tested from 2014 to 2026.",
       "path": "bundles/ahs-matura-mathe",
-      "digest": "sha256-XIYG4WAyME00m3QNW/763hI8IG7ZGvIf522YSIQub0E="
+      "digest": "sha256-7QGi5ANXsSGBxPK6zHcARCnBTEEf18fOUCV9sDdj7ZQ="
     },
     {
       "kind": "bundle",
@@ -58,6 +58,15 @@
       "summary": "From \"guess the next character\" to the transformer, built up step by step with hands-on simulators.",
       "path": "bundles/llm-basics",
       "digest": "sha256-x37FZm6mqfoj2wTi0ZiGsFXUGLh+qNpBHAFd++a3fwo="
+    },
+    {
+      "kind": "bundle",
+      "id": "ml-foundations",
+      "version": "0.1.0",
+      "title": "Machine learning foundations",
+      "summary": "The foundations of supervised machine learning in 17 learning elements, from linear regression and gradient descent through classification metrics, data preparation and overfitting to neural networks, embeddings, language models, production systems and AutoML, and fairness, at highschool and college level.",
+      "path": "bundles/ml-foundations",
+      "digest": "sha256-qQYFYAEdc5GM9D3lzXX764GtyOOKajFuSQy4Trvvp90="
     },
     {
       "kind": "sim",
@@ -175,6 +184,15 @@
       "summary": "All parts of a GPT together: put the stages in order, follow one prediction from text to the next character with tensor shapes, the context window during generation, and which parts are learned or fixed.",
       "path": "sims/gpt-pipeline/1.1.0",
       "digest": "sha256-SKMXJ0LmnhSYyPhVc6DFh6YOaaQSZdJ9Wuc6yxVe/Qw="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/gradient-descent-lab",
+      "version": "1.0.0",
+      "title": "Gradient descent lab",
+      "summary": "Gradient descent in three small stations: stepping down a one-weight loss valley by hand, comparing learning rates that crawl, converge, bounce or run away, and training a two-parameter line on eight points while the loss curve flattens out.",
+      "path": "sims/gradient-descent-lab/1.0.0",
+      "digest": "sha256-YPo+zdJmfxEjI8AY0uuTXm03StGUaAGJi9l5vDKJp5c="
     },
     {
       "kind": "sim",
@@ -346,6 +364,15 @@
       "summary": "Why deep transformers train at all: vanishing signals with and without residual connections, layer norm, dropout against memorising, and a parameter counter from a small model to GPT-3.",
       "path": "sims/residual-stream/1.2.0",
       "digest": "sha256-gnFHSRtt+nsBf/Ng8GAUhxIpNWLWi5hnRqpHhqSdi/k="
+    },
+    {
+      "kind": "sim",
+      "id": "ptf:sim/threshold-lab",
+      "version": "1.0.0",
+      "title": "Threshold lab",
+      "summary": "A spam filter's classification threshold in three small stations: twelve emails sorted into the confusion matrix, precision traded against recall, and the ROC curve and AUC of a well separated and an overlapping filter.",
+      "path": "sims/threshold-lab/1.0.0",
+      "digest": "sha256-559H0o7ur6uuq0mizUC5dvXgD7xdaIwoGCiWzV23bqo="
     },
     {
       "kind": "sim",
