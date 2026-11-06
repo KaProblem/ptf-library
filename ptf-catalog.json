@@ -43,6 +43,15 @@
     },
     {
       "kind": "bundle",
+      "id": "genai-apps",
+      "version": "0.1.0",
+      "title": "Building with generative AI",
+      "summary": "How to use and build applications on large language models, from prompts and sampling settings to chat apps, semantic search, retrieval-augmented generation, function calling and agents, and how to ship them responsibly, securely and with evaluation.",
+      "path": "bundles/genai-apps",
+      "digest": "sha256-01F6/whVaa4zyAN/3p0+5ppReYyHKOTGbpfoYIWHXow="
+    },
+    {
+      "kind": "bundle",
       "id": "gravity",
       "version": "0.4.0",
       "title": "Gravity: from the leaning tower to curved spacetime",
@@ -58,6 +67,15 @@
       "summary": "From \"guess the next character\" to the transformer, built up step by step with hands-on simulators.",
       "path": "bundles/llm-basics",
       "digest": "sha256-x37FZm6mqfoj2wTi0ZiGsFXUGLh+qNpBHAFd++a3fwo="
+    },
+    {
+      "kind": "bundle",
+      "id": "llm-in-practice",
+      "version": "0.1.0",
+      "title": "Working with large language models",
+      "summary": "Twenty learning elements on using and adapting large language models, from pipelines, tokenizers and fine-tuning to decoding, chat models, LoRA, evaluation, preference training and GRPO, with one learning path.",
+      "path": "bundles/llm-in-practice",
+      "digest": "sha256-NdOtcGTLX6cdfGAig3PbzjzHWTvpDX63WHpwtXOI4GA="
     },
     {
       "kind": "bundle",
