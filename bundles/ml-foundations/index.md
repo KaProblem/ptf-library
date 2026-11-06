@@ -4,7 +4,7 @@ okf_version: "0.2"
 ptf_version: "0.1"
 id: ml-foundations
 title: Machine learning foundations
-description: The foundations of supervised machine learning in 16 learning elements, from linear regression and gradient descent through classification metrics, data preparation and overfitting to neural networks, embeddings, production systems and fairness, at highschool and college level.
+description: The foundations of supervised machine learning in 17 learning elements, from linear regression and gradient descent through classification metrics, data preparation and overfitting to neural networks, embeddings, language models, production systems and AutoML, and fairness, at highschool and college level.
 lang: en
 license: CC-BY-SA-4.0
 version: 0.1.0
@@ -18,7 +18,9 @@ A course on the foundations of machine learning for learners without prior
 experience, at highschool and college level. Its scope and order follow
 Google's Machine Learning Crash Course (Google for Developers, text licensed
 CC BY 4.0, code samples Apache 2.0), which is credited in the `sources` of
-every element. All texts, questions, examples, figures and simulators in
+every element (the first element follows Google's Introduction to
+Machine Learning, the course's recommended prework, also CC BY 4.0). The
+order of the elements follows the course's modules. All texts, questions, examples, figures and simulators in
 this bundle are original; nothing was copied from the course.
 
 Two simulators belong to the bundle: `gradient-descent-lab` (step downhill
@@ -38,7 +40,7 @@ matching script in `checks/` (`ptf-check` runs them).
 | [Linear regression and loss](elements/linear-regression.md) | | 12 |
 | [Gradient descent and hyperparameters](elements/gradient-descent.md) | `gradient-descent-lab`, figure `learning-rates` | 13 |
 | [Logistic regression](elements/logistic-regression.md) | | 12 |
-| [Thresholds, the confusion matrix and its metrics](elements/classification-metrics.md) | `threshold-lab` | 11 |
+| [Thresholds, the confusion matrix and its metrics](elements/classification-metrics.md) | `threshold-lab` | 13 |
 | [ROC curve and AUC](elements/roc-auc.md) | `threshold-lab`, figure `roc-curve` | 11 |
 | [Preparing numerical features](elements/numerical-data.md) | | 12 |
 | [Encoding categorical features](elements/categorical-data.md) | | 12 |
@@ -48,7 +50,8 @@ matching script in `checks/` (`ptf-check` runs them).
 | [Training neural networks with backpropagation](elements/backpropagation.md) | | 12 |
 | [Multi-class classification and softmax](elements/multiclass-classification.md) | | 12 |
 | [Embeddings](elements/embeddings.md) | | 12 |
-| [Machine learning in production](elements/production-ml.md) | | 12 |
+| [Language models and LLMs](elements/language-models.md) | | 14 |
+| [Machine learning in production](elements/production-ml.md) | | 13 |
 | [Fairness in machine learning](elements/ml-fairness.md) | | 12 |
 
 The follow-up course is `llm-basics`, which builds a small GPT from the same

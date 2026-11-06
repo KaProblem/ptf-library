@@ -55,9 +55,9 @@
       "id": "ml-foundations",
       "version": "0.1.0",
       "title": "Machine learning foundations",
-      "summary": "The foundations of supervised machine learning in 16 learning elements, from linear regression and gradient descent through classification metrics, data preparation and overfitting to neural networks, embeddings, production systems and fairness, at highschool and college level.",
+      "summary": "The foundations of supervised machine learning in 17 learning elements, from linear regression and gradient descent through classification metrics, data preparation and overfitting to neural networks, embeddings, language models, production systems and AutoML, and fairness, at highschool and college level.",
       "path": "bundles/ml-foundations",
-      "digest": "sha256-cM9IWFwgJY4ksDFXxzyICWuB4/E0dAD28ilOXX5XOLw="
+      "digest": "sha256-qQYFYAEdc5GM9D3lzXX764GtyOOKajFuSQy4Trvvp90="
     },
     {
       "kind": "sim",

@@ -3,7 +3,7 @@ type: Learning Element
 ptf_version: "0.1"
 id: ptf:el/ml-foundations/classification-metrics
 title: Thresholds, the confusion matrix and its metrics
-description: A threshold turns probabilities into yes/no answers; the confusion matrix counts the four outcomes, and accuracy, precision, recall and the false positive rate summarize them for different purposes.
+description: A threshold turns probabilities into yes/no answers; the confusion matrix counts the four outcomes, accuracy, precision, recall and the false positive rate summarize them for different purposes, and prediction bias is a quick check that the model's average matches reality.
 lang: en
 levels: [highschool, college]
 objectives:
@@ -13,6 +13,8 @@ objectives:
     text: Compute accuracy, precision, recall (true positive rate) and false positive rate from a confusion matrix.
   - id: choose-metric
     text: Choose the metric that matters for a task, explain why accuracy misleads on imbalanced data, and predict how moving the threshold trades precision against recall.
+  - id: prediction-bias
+    text: Compute prediction bias (average prediction minus average label), and name what a large bias points to.
 tags: [machine-learning, classification, threshold, confusion-matrix, precision, recall, accuracy]
 about:
   - wikidata: Q2359161
@@ -40,7 +42,7 @@ simulators:
 sources:
   - id: google-mlcc
     resource: https://developers.google.com/machine-learning/crash-course
-    title: "Google for Developers: Machine Learning Crash Course (text CC BY 4.0, code Apache 2.0), module Classification: thresholds, confusion matrix, accuracy, precision and recall"
+    title: "Google for Developers: Machine Learning Crash Course (text CC BY 4.0, code Apache 2.0), module Classification: thresholds, confusion matrix, accuracy, precision and recall, prediction bias"
 generated: { by: claude/opus, at: 2026-11-06T02:00:00Z }
 status: draft
 version: 0.1.0
@@ -65,7 +67,11 @@ says how often a positive prediction is right; recall, also called true
 positive rate, TP / (TP + FN) says how many actual positives were found;
 the false positive rate FP / (FP + TN) says how many actual negatives were
 falsely flagged. Raising the threshold usually raises precision and lowers
-recall; the right choice depends on what each kind of error costs.
+recall; the right choice depends on what each kind of error costs. A quick
+sanity check before any of these metrics is prediction bias: the average
+of the predicted probabilities minus the share of actual positives. It
+should be close to zero; a large gap points to a problem in the data, the
+features, the training code or too strong regularization.
 
 # Key facts
 
@@ -75,6 +81,7 @@ recall; the right choice depends on what each kind of error costs.
 - A model that always says "not spam" on the same emails has accuracy 0.90 but recall 0 and finds no spam at all: accuracy misleads on imbalanced data.
 - Eight emails with scores and labels (S = spam): 0.95 S, 0.85 S, 0.70 not, 0.60 S, 0.45 not, 0.40 S, 0.20 not, 0.10 not. Threshold 0.5 → TP 3, FP 1, TN 3, FN 1, precision 0.75, recall 0.75. Threshold 0.3 → TP 4, FP 2, TN 2, FN 0, precision ≈ 0.67, recall 1.
 - Lower threshold → more positives predicted → recall rises (or stays), FPR rises (or stays), precision usually falls. Higher threshold → the reverse.
+- Prediction bias = mean of predictions − mean of labels. Spam is 5 % of the emails but the average predicted spam probability is 0.20 → prediction bias 0.15: something is wrong (sampling, missing features, a pipeline bug, too much regularization). Zero prediction bias alone does not make a model good.
 - Choose by cost: misses are expensive (disease screening, fraud) → favour recall; false alarms are expensive (deleting real email, accusing someone) → favour precision; balanced classes and similar costs → accuracy is acceptable.
 
 # Level: highschool
@@ -110,6 +117,14 @@ is worse than seeing one more advert, so a spam filter usually favours
 precision. A screening test for a serious disease favours recall, because
 missing someone is worse than a second check.
 
+One more check comes before all of these: does the model's average match
+reality? If 5 % of all emails are spam, the model's spam probabilities
+should average about 0.05 too. If they average 0.20, the model has a
+**prediction bias** of 0.15, and something is broken: maybe the training
+emails were not a fair sample, maybe a useful feature is missing, or the
+training code has a bug. A bias near 0 does not prove the model is good,
+but a large one proves something is wrong.
+
 # Level: college
 
 <!-- ptf:text v1 -->
@@ -140,12 +155,22 @@ calibrated scores, predict positive when s > c_FP / (c_FP + c_FN)). The
 next step, ROC and AUC, evaluates the ranking across all thresholds at
 once.
 
+Before reading any threshold metric, compare the mean prediction with the
+base rate: prediction bias = (1/N) Σ sᵢ − (1/N) Σ yᵢ. A calibrated model
+has bias near zero overall (and, ideally, within slices); a large bias
+flags biased sampling or label noise, insufficient features, overly strong
+regularization, or a bug in the training or serving pipeline. Zero bias is
+necessary, not sufficient: predicting the base rate for every example has
+zero bias and no discrimination. Checking the bias per slice (e.g. per
+language or region) catches problems the overall mean hides.
+
 # Misconceptions
 
 - **accuracy-is-enough**: High accuracy means a good classifier → on imbalanced data a useless "always negative" model has high accuracy; look at precision and recall.
 - **precision-recall-same**: Precision and recall are two names for "how often it is right" → precision is about the predicted positives, recall about the actual positives.
 - **threshold-always-half**: The threshold is always 0.5 → it is a choice; 0.5 is only a default, and the right value depends on costs and class balance.
 - **raise-both**: A better threshold raises precision and recall together → for a fixed model, moving the threshold trades one against the other; raising both needs a better model.
+- **zero-bias-means-good**: A model with zero prediction bias is a good model → predicting the base rate for every example has zero bias and is useless; prediction bias only detects certain problems.
 - **fpr-is-one-minus-precision**: The false positive rate is 1 − precision → FPR divides by the actual negatives, precision by the predicted positives.
 
 # Questions
@@ -331,6 +356,39 @@ once.
 
 ```ptf-question
 {
+  "kind": "estimate_number",
+  "id": "prediction-bias-hs",
+  "level": "highschool",
+  "purpose": "check",
+  "objectives": ["prediction-bias"],
+  "question": "In a test set, 5 % of the emails are spam. The model's predicted spam probabilities average 0.20. What is the prediction bias (average prediction minus average label)?",
+  "answer": 0.15,
+  "tolerance": 0,
+  "explanation": "0.20 − 0.05 = 0.15. Such a large gap means something is wrong with the data, the features or the training."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
+  "id": "prediction-bias-college",
+  "level": "college",
+  "purpose": "check",
+  "objectives": ["prediction-bias"],
+  "misconception": "zero-bias-means-good",
+  "question": "Labels of 10 examples: 1, 0, 0, 1, 0, 0, 0, 0, 1, 0. Predictions: 0.6, 0.2, 0.1, 0.5, 0.3, 0.2, 0.1, 0.4, 0.4, 0.2. Which two statements are correct?",
+  "options": [
+    { "text": "The prediction bias is 0.0, because the mean prediction 0.30 equals the base rate 0.30", "correct": true, "feedback": "Sum of predictions 3.0 / 10 = 0.30; three positives / 10 = 0.30." },
+    { "text": "A model predicting 0.30 for every example would also have prediction bias 0 but could not separate the classes", "correct": true, "feedback": "Zero bias is necessary, not sufficient." },
+    { "text": "Zero prediction bias proves the model is well calibrated in every region of the input space", "correct": false, "feedback": "Biases in different slices can cancel; check per slice." },
+    { "text": "Stronger L2 regularization always reduces prediction bias", "correct": false, "feedback": "Too strong regularization is one of the causes of prediction bias." }
+  ],
+  "explanation": "Prediction bias compares means; it catches gross problems but says nothing about ranking quality."
+}
+```
+
+```ptf-question
+{
   "kind": "free_text",
   "id": "moderation-transfer",
   "level": "college",
@@ -362,4 +420,4 @@ once.
 
 Grounding: [^google-mlcc]. Text, examples and questions are original.
 
-[^google-mlcc]: Google for Developers, Machine Learning Crash Course, module "Classification" (thresholds and the confusion matrix; accuracy, recall, precision), https://developers.google.com/machine-learning/crash-course, text licensed CC BY 4.0, code samples Apache 2.0. Used for scope and order; nothing was copied.
+[^google-mlcc]: Google for Developers, Machine Learning Crash Course, module "Classification" (thresholds and the confusion matrix; accuracy, recall, precision; prediction bias), https://developers.google.com/machine-learning/crash-course, text licensed CC BY 4.0, code samples Apache 2.0. Used for scope and order; nothing was copied.

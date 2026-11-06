@@ -3,7 +3,7 @@ type: Learning Path
 ptf_version: "0.1"
 id: ptf:path/ml-foundations/crash-course
 title: Machine learning crash course
-description: The foundations of machine learning in 16 steps, from what a model is through linear and logistic regression, evaluation, data preparation and overfitting to neural networks, embeddings, production systems and fairness.
+description: The foundations of machine learning in 17 steps, from what a model is through linear and logistic regression, evaluation, data preparation and overfitting to neural networks, embeddings, language models, production systems and fairness.
 lang: en
 goal: Understand how supervised machine learning models are built, trained, evaluated and deployed well enough to read about them critically and to train a first model yourself.
 objectives:
@@ -26,6 +26,7 @@ steps:
   - element: ptf:el/ml-foundations/backpropagation
   - element: ptf:el/ml-foundations/multiclass-classification
   - element: ptf:el/ml-foundations/embeddings
+  - element: ptf:el/ml-foundations/language-models
   - element: ptf:el/ml-foundations/production-ml
   - element: ptf:el/ml-foundations/ml-fairness
 status: draft
@@ -44,7 +45,7 @@ Machine learning lets a computer find a rule from examples instead of being
 programmed with it. This course starts with the simplest model, a straight
 line fitted to data, and shows how it learns by reducing its error step by
 step. The same idea then carries a spam filter, a neural network and the
-embeddings behind recommendations and language models. Along the way the
+embeddings behind recommendations, up to the large language models behind chatbots. Along the way the
 learner meets the questions that decide whether a model is any good: which
 metric to trust, how to prepare data, how to tell learning from memorizing,
 and what can go wrong once a model is used by real people.
@@ -72,15 +73,16 @@ highschool level, a little more at college level.
 | 12 | D Neural networks | [Training neural networks with backpropagation](../elements/backpropagation.md) |
 | 13 | D Neural networks | [Multi-class classification and softmax](../elements/multiclass-classification.md) |
 | 14 | D Neural networks | [Embeddings](../elements/embeddings.md) |
-| 15 | E Real-world ML | [Machine learning in production](../elements/production-ml.md) |
-| 16 | E Real-world ML | [Fairness in machine learning](../elements/ml-fairness.md) |
+| 15 | D Neural networks | [Language models and LLMs](../elements/language-models.md) |
+| 16 | E Real-world ML | [Machine learning in production](../elements/production-ml.md) |
+| 17 | E Real-world ML | [Fairness in machine learning](../elements/ml-fairness.md) |
 
 # Prior knowledge
 
 Highschool level needs fractions, percentages, reading graphs and the idea
 of a function y = f(x); slopes help for step 3. College level also uses
 derivatives (steps 3 and 12), vectors and dot products (steps 11 and 14)
-and the logarithm (steps 4 and 13). Start with the `probe` question of each
+and the logarithm (steps 4, 13 and 15). Start with the `probe` question of each
 element: steps where every objective is shown can be completed as placement.
 Phase C hardly depends on phase B and can come first for a learner who
 wants to work with data right away.
@@ -94,4 +96,4 @@ wants to work with data right away.
 - Steps 5 and 6 belong together: the learner should compute one confusion matrix by hand before moving the threshold in the simulator.
 - Interleave: after each step of phases C to E, mix in one question from an earlier step, preferably on metrics or overfitting.
 - Typical pace at highschool level: phase A in one session, phase B in one, phase C in two, phase D in two, phase E in one.
-- Follow-up course: `llm-basics` (path `gpt-from-scratch`) builds a small GPT from the same ideas: loss, gradient descent, softmax and embeddings.
+- Step 15 is a conceptual overview of language models. Follow-up course: `llm-basics` (path `gpt-from-scratch`) builds a small GPT from the same ideas: loss, gradient descent, softmax, embeddings and self-attention.

@@ -22,7 +22,7 @@ about:
 requires:
   - ptf:el/ml-foundations/multiclass-classification
 leads_to:
-  - ptf:el/ml-foundations/production-ml
+  - ptf:el/ml-foundations/language-models
 duration_min: { highschool: 30, college: 35 }
 sources:
   - id: google-mlcc

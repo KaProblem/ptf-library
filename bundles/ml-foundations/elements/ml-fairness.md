@@ -25,7 +25,7 @@ duration_min: { highschool: 35, college: 40 }
 sources:
   - id: google-mlcc
     resource: https://developers.google.com/machine-learning/crash-course
-    title: "Google for Developers: Machine Learning Crash Course (text CC BY 4.0, code Apache 2.0), module Fairness: types of bias, identifying bias, mitigating bias, evaluating for bias"
+    title: "Google for Developers: Machine Learning Crash Course (text CC BY 4.0, code Apache 2.0), module Fairness: types of bias, identifying, mitigating and evaluating bias, demographic parity, equality of opportunity, counterfactual fairness"
 generated: { by: claude/opus, at: 2026-11-06T02:00:00Z }
 status: draft
 version: 0.1.0

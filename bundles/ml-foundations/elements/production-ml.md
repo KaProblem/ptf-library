@@ -3,7 +3,7 @@ type: Learning Element
 ptf_version: "0.1"
 id: ptf:el/ml-foundations/production-ml
 title: Machine learning in production
-description: A trained model is a small part of a working ML system; static or dynamic training and inference, training-serving skew, data drift, monitoring and tests decide whether it keeps working after launch.
+description: A trained model is a small part of a working ML system; static or dynamic training and inference, training-serving skew, data drift, monitoring and tests decide whether it keeps working after launch, and AutoML can automate part of building it.
 lang: en
 levels: [highschool, college]
 objectives:
@@ -13,6 +13,8 @@ objectives:
     text: Recognise training-serving skew and data or concept drift, measure a feature shift, and say what to monitor.
   - id: pipeline-checks
     text: Name the checks a pipeline needs before and after deploying a model (data validation, quality gates against the current model, reproducibility, rollback).
+  - id: automl
+    text: Say what AutoML automates, name its benefits and limits, and decide whether it fits a project.
 tags: [machine-learning, mlops, production, deployment, monitoring, data-drift, automl]
 about:
   - wikidata: Q60753505
@@ -67,7 +69,9 @@ reproducible, monitors inputs and prediction quality, and can roll back.
 - Quality gates before deploying: the new model must beat (or match) the current one on a fixed evaluation set and on important slices; sanity checks (no NaN, prediction range) and a canary or shadow launch before full rollout.
 - Reproducibility: fixed data snapshot, code version, random seeds and dependency versions, so a model can be rebuilt and compared. Keep the previous model for rollback.
 - Ask whether ML is needed and whether it is worth maintaining: a simple rule or heuristic is a valid baseline.
-- AutoML tools search model types, features and hyperparameters automatically; they save expert time, but the data, the problem framing and the monitoring stay the team's job.
+- AutoML tools automate feature engineering and selection, the choice of model type and the hyperparameter search, and report evaluation metrics.
+- AutoML benefits: saves expert time, needs fewer specialist skills, gives a quick baseline ("is there any signal in this dataset?"), shows which features matter, applies good practice by default.
+- AutoML limits: an expert with time can often build a better model; the search is hard to see into and the result hard to reproduce by hand; repeated runs can end at noticeably different models; little room to customize training; it still needs plenty of good data. Data, problem framing and monitoring stay the team's job.
 
 # Level: highschool
 
@@ -100,6 +104,15 @@ Before a new model replaces the old one, it has to prove itself on the
 same test data and should first run quietly next to the old one. If
 something goes wrong anyway, you switch back. And sometimes the honest
 answer is that a simple rule does the job and no ML is needed at all.
+
+Building the model itself can be partly automated. **AutoML** tools try
+many model types, feature transformations and settings for you and report
+the best one. That saves time and lets a team without ML specialists get
+a working model, and even experts use it for a quick first answer to "is
+there anything to learn in this data at all?". The price: you see little
+of how the tool decided, two runs can give different models, you cannot
+tweak the training much, and a skilled person with time often does
+better. And AutoML cannot fix bad data or a badly framed question.
 
 # Level: college
 
@@ -139,7 +152,12 @@ on critical slices, sanity tests (no NaN, sensible output ranges, latency),
 reproducible training (data versions, code, seeds, dependencies), staged
 rollout (shadow or canary) and rollback. AutoML automates model and
 hyperparameter search within this loop; it does not remove the need for
-problem framing, data quality or monitoring.
+problem framing, data quality or monitoring. Its search is a large
+hyperparameter optimization over feature transforms, model families and
+settings, so it can overfit the validation set, its runs vary, and its
+result is hard to inspect or reproduce; it pays off for baselines, for
+"is there signal?" smoke tests, for ranking features and for teams without
+ML specialists, less where model quality or custom training matter most.
 
 # Misconceptions
 
@@ -325,10 +343,29 @@ problem framing, data quality or monitoring.
 ```ptf-question
 {
   "kind": "multiple_choice",
+  "id": "automl-hs",
+  "level": "highschool",
+  "purpose": "check",
+  "objectives": ["automl"],
+  "misconception": "automl-replaces-thinking",
+  "question": "A small bakery chain without data scientists wants to predict tomorrow's bread demand from two years of sales records. A friend suggests an AutoML tool. Which two statements are true?",
+  "options": [
+    { "text": "AutoML can try many model types and settings and give them a working model without a specialist", "correct": true, "feedback": "Yes: that is its main benefit." },
+    { "text": "They still have to check that the sales records are complete and correct", "correct": true, "feedback": "Yes: AutoML cannot fix bad data." },
+    { "text": "AutoML always finds a better model than an expert would", "correct": false, "feedback": "An expert with time can often do better; AutoML is fast, not always best." },
+    { "text": "Running AutoML twice always gives exactly the same model", "correct": false, "feedback": "Different runs can search differently and end at different models." }
+  ],
+  "explanation": "AutoML automates the model search; data quality and judging the result stay human work."
+}
+```
+
+```ptf-question
+{
+  "kind": "multiple_choice",
   "id": "automl-college",
   "level": "college",
   "purpose": "check",
-  "objectives": ["pipeline-checks", "system-choices"],
+  "objectives": ["automl", "pipeline-checks"],
   "misconception": "automl-replaces-thinking",
   "question": "A team uses AutoML to build a churn model. Which statement is correct?",
   "options": [
@@ -364,7 +401,7 @@ problem framing, data quality or monitoring.
 
 - This step is about judgement, not formulas: ask the learner to design for one concrete use case (their own if they have one).
 - Highschool: static vs dynamic and "the world changes" are the core; skew with the euro/cent example is memorable.
-- AutoML is mentioned for completeness; spend little time on it.
+- AutoML: keep it short; the point is what it automates and what it cannot do (bad data, framing, monitoring).
 
 # Sources
 

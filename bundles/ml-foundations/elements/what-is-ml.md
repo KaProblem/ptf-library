@@ -23,9 +23,9 @@ leads_to:
   - ptf:el/ml-foundations/linear-regression
 duration_min: { highschool: 20, college: 20 }
 sources:
-  - id: google-mlcc
-    resource: https://developers.google.com/machine-learning/crash-course
-    title: "Google for Developers: Machine Learning Crash Course (text CC BY 4.0, code Apache 2.0), introduction and prework"
+  - id: google-intro-ml
+    resource: https://developers.google.com/machine-learning/intro-to-ml
+    title: "Google for Developers: Introduction to Machine Learning (text CC BY 4.0, code Apache 2.0), the prework of the Machine Learning Crash Course"
 generated: { by: claude/opus, at: 2026-11-06T02:00:00Z }
 status: draft
 version: 0.1.0
@@ -319,6 +319,6 @@ solve the problem reliably, they are cheaper to build, test and explain.
 
 # Sources
 
-Grounding: [^google-mlcc]. Text, examples and questions are original.
+Grounding: [^google-intro-ml]. Text, examples and questions are original.
 
-[^google-mlcc]: Google for Developers, Machine Learning Crash Course, https://developers.google.com/machine-learning/crash-course, text licensed CC BY 4.0, code samples Apache 2.0. Used for scope and order; nothing was copied.
+[^google-intro-ml]: Google for Developers, Introduction to Machine Learning (the prework recommended by the Machine Learning Crash Course), https://developers.google.com/machine-learning/intro-to-ml, text licensed CC BY 4.0, code samples Apache 2.0. Used for scope; nothing was copied.

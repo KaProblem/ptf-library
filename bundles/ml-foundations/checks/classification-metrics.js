@@ -85,3 +85,14 @@ fact("threshold 0.5: TP 3, FP 1, TN 3, FN 1; precision = recall = 0.75", () => {
 fact("threshold 0.3: TP 4, FP 2, TN 2, FN 0; precision ≈ 0.67, recall 1", () => { const c = cm(emails, 0.3); return c.tp === 4 && c.fp === 2 && c.tn === 2 && c.fn === 0 && ptf.round(prec(c), 2) === 0.67 && rec(c) === 1; });
 fact("TPR 0.9, FPR 0.05: precision ≈ 0.15 at 1 %, ≈ 0.67 at 10 %", () => ptf.round(prec(pop(0.01, 0.9, 0.05)), 2) === 0.15 && ptf.round(prec(pop(0.1, 0.9, 0.05)), 2) === 0.67);
 fact("110 flagged, 80 spam: 0.73", () => ptf.round(80 / 110, 2) === 0.73);
+
+check("prediction-bias-hs", () => 0.20 - 0.05);
+
+check("prediction-bias-college", () => {
+  const y = [1, 0, 0, 1, 0, 0, 0, 0, 1, 0], p = [0.6, 0.2, 0.1, 0.5, 0.3, 0.2, 0.1, 0.4, 0.4, 0.2];
+  const mean = (a) => a.reduce((s, v) => s + v, 0) / a.length;
+  const bias = mean(p) - mean(y);
+  return [ptf.near(bias, 0) && ptf.near(mean(p), 0.3), ptf.near(mean(Array(10).fill(0.3)) - mean(y), 0), false, false];
+});
+
+fact("prediction bias 0.20 − 0.05 = 0.15", () => ptf.near(0.20 - 0.05, 0.15));
