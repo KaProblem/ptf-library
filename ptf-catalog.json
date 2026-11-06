@@ -16,6 +16,15 @@
   "packages": [
     {
       "kind": "bundle",
+      "id": "ahs-matura-deutsch",
+      "version": "0.1.0",
+      "title": "German for the Austrian AHS Matura",
+      "summary": "The standardised written Matura in German (Unterrichtssprache) at an Austrian AHS. The exam format, the assessment grid, argumentation, structure, style and language accuracy, and the seven text types, each with an original writing task, a rubric based on the official assessment grid and a sample text.",
+      "path": "bundles/ahs-matura-deutsch",
+      "digest": "sha256-pFMoLtJsnNqDkoGfbs37nBsk/0jacyFWPBOHPDsmyOQ="
+    },
+    {
+      "kind": "bundle",
       "id": "ahs-matura-latein",
       "version": "0.1.0",
       "title": "Latin for the Austrian AHS Matura",
@@ -67,8 +76,8 @@
       "summary": "Twenty learning elements on using and adapting large language models, from pipelines, tokenizers and fine-tuning to decoding, chat models, LoRA, evaluation, preference training and GRPO, with one learning path.",
       "path": "bundles/llm-in-practice",
       "digest": "sha256-NdOtcGTLX6cdfGAig3PbzjzHWTvpDX63WHpwtXOI4GA="
-     },
-     {
+    },
+    {
       "kind": "bundle",
       "id": "ml-foundations",
       "version": "0.1.0",
