@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 300" role="img" aria-labelledby="overfitting-curves-t overfitting-curves-d" data-ptf-figure="1">
+  <title id="overfitting-curves-t">Training and validation loss while overfitting</title>
+  <desc id="overfitting-curves-d">Loss over six epochs. Training loss falls steadily: 0.85, 0.52, 0.36, 0.28, 0.21, 0.15. Validation loss falls 0.90, 0.60, 0.45, reaches its minimum 0.41 at epoch 4 and then rises to 0.43 and 0.48 while the training loss keeps falling: overfitting. Early stopping keeps the parameters from epoch 4.</desc>
+  <defs><marker id="ptf-arrow-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-ink" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-muted" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-accent" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-warn" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-good" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+  <g>
+    <line class="s-line w1" x1="50.0" y1="250.0" x2="338.0" y2="250.0"/>
+    <text class="t-s f-muted" x="44.0" y="255.0" text-anchor="end">0</text>
+    <line class="s-line w1" x1="50.0" y1="195.0" x2="338.0" y2="195.0"/>
+    <text class="t-s f-muted" x="44.0" y="200.0" text-anchor="end">0.25</text>
+    <line class="s-line w1" x1="50.0" y1="140.0" x2="338.0" y2="140.0"/>
+    <text class="t-s f-muted" x="44.0" y="145.0" text-anchor="end">0.5</text>
+    <line class="s-line w1" x1="50.0" y1="85.0" x2="338.0" y2="85.0"/>
+    <text class="t-s f-muted" x="44.0" y="90.0" text-anchor="end">0.75</text>
+    <line class="s-line w1" x1="50.0" y1="30.0" x2="338.0" y2="30.0"/>
+    <text class="t-s f-muted" x="44.0" y="35.0" text-anchor="end">1</text>
+    <text class="t-s f-muted" x="64.0" y="268.0" text-anchor="middle">1</text>
+    <text class="t-s f-muted" x="116.0" y="268.0" text-anchor="middle">2</text>
+    <text class="t-s f-muted" x="168.0" y="268.0" text-anchor="middle">3</text>
+    <text class="t-s f-muted" x="220.0" y="268.0" text-anchor="middle">4</text>
+    <text class="t-s f-muted" x="272.0" y="268.0" text-anchor="middle">5</text>
+    <text class="t-s f-muted" x="324.0" y="268.0" text-anchor="middle">6</text>
+    <text class="t-s f-ink" x="338.0" y="286.0" text-anchor="end">epoch</text>
+    <text class="t-s f-ink" x="10.0" y="22.0">loss</text>
+  </g>
+  <g data-step="1" data-caption="Training loss falls every epoch: 0.85, 0.52, 0.36, 0.28, 0.21, 0.15.">
+    <polyline class="s-accent w3" points="64.0,63.0 116.0,135.6 168.0,170.8 220.0,188.4 272.0,203.8 324.0,217.0"/>
+    <circle class="f-accent" cx="64.0" cy="63.0" r="4"/>
+    <circle class="f-accent" cx="116.0" cy="135.6" r="4"/>
+    <circle class="f-accent" cx="168.0" cy="170.8" r="4"/>
+    <circle class="f-accent" cx="220.0" cy="188.4" r="4"/>
+    <circle class="f-accent" cx="272.0" cy="203.8" r="4"/>
+    <circle class="f-accent" cx="324.0" cy="217.0" r="4"/>
+    <text class="t-s f-accent" x="324.0" y="239.0" text-anchor="end">training</text>
+  </g>
+  <g data-step="2" data-caption="Validation loss falls at first, is lowest at epoch 4 (0.41) and then rises again: 0.43, 0.48.">
+    <polyline class="s-warn w3" points="64.0,52.0 116.0,118.0 168.0,151.0 220.0,159.8 272.0,155.4 324.0,144.4"/>
+    <circle class="f-warn" cx="64.0" cy="52.0" r="4"/>
+    <circle class="f-warn" cx="116.0" cy="118.0" r="4"/>
+    <circle class="f-warn" cx="168.0" cy="151.0" r="4"/>
+    <circle class="f-warn" cx="220.0" cy="159.8" r="4"/>
+    <circle class="f-warn" cx="272.0" cy="155.4" r="4"/>
+    <circle class="f-warn" cx="324.0" cy="144.4" r="4"/>
+    <text class="t-s f-warn" x="324.0" y="132.4" text-anchor="end">validation</text>
+  </g>
+  <g data-step="3" data-caption="From epoch 5 on the model memorizes the training data. Early stopping keeps the model from epoch 4.">
+    <line class="s-good w2 dash" x1="220.0" y1="250.0" x2="220.0" y2="30.0"/>
+    <circle class="f-none s-good w2" cx="220.0" cy="159.8" r="7"/>
+    <text class="t-s f-good bold" x="214.0" y="47.6" text-anchor="end">best: epoch 4</text>
+    <text class="t-s f-muted" x="226.0" y="47.6">overfitting →</text>
+  </g>
+</svg>
