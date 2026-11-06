@@ -8,6 +8,7 @@
 - Answer checks (ptf-spec SPEC.md §7.1): every element with computed answers has a script `checks/<element>.js` that recomputes them, and `ptf-check` compares the results with the question blocks (6 scripts in `gravity` 0.3.1, 11 in `llm-basics` 0.5.1, 25 questions). Requires the ptf-spec commit that adds §7.1.
 
 ### Fixed
+- `ahs-matura-mathe` 0.4.1: exponential-functions names half-life as Q47270; Q98690 is a person (`ptf-wikidata verify`).
 - `gravity` 0.3.1: the potential difference in `gps-gravity-shift` (curved-spacetime 0.3.1) is 4.756 · 10⁷ m²/s², not 4.757; found by the new check.
 
 ### Changed

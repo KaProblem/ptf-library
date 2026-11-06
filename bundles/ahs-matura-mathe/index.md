@@ -7,7 +7,7 @@ title: "Mathematics for the Austrian AHS Matura"
 description: The 70 basic competences (Grundkompetenzen) tested in the standardised AHS Matura in mathematics, as 17 learning elements in a course order that respects prerequisites, weighted by how often each area was tested from 2014 to 2026.
 lang: en
 license: CC-BY-SA-4.0
-version: 0.4.0
+version: 0.4.1
 tags: [mathematics, matura, austria, ahs, srp, exam-preparation]
 generated: { by: claude/opus, at: 2026-11-06T00:30:00Z }
 ---
