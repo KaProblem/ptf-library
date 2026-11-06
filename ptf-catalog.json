@@ -61,6 +61,15 @@
     },
     {
       "kind": "bundle",
+      "id": "llm-in-practice",
+      "version": "0.1.0",
+      "title": "Working with large language models",
+      "summary": "Twenty learning elements on using and adapting large language models, from pipelines, tokenizers and fine-tuning to decoding, chat models, LoRA, evaluation, preference training and GRPO, with one learning path.",
+      "path": "bundles/llm-in-practice",
+      "digest": "sha256-NdOtcGTLX6cdfGAig3PbzjzHWTvpDX63WHpwtXOI4GA="
+     },
+     {
+      "kind": "bundle",
       "id": "ml-foundations",
       "version": "0.1.0",
       "title": "Machine learning foundations",

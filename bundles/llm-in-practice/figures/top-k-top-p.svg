@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 266" role="img" data-ptf-figure="1">
+  <title>Top-k and top-p on the same next-word probabilities</title>
+  <desc>Next-word probabilities after “a cup of”: coffee 50 %, tea 20 %, cocoa 15 %, milk 10 %, soup 5 %. Top-k with k = 2 keeps coffee and tea and rescales them to 71 % and 29 %. Top-p with p = 0.8 adds words until the sum reaches 80 %: 50 + 20 + 15 = 85 %, so coffee, tea and cocoa stay, rescaled to 59 %, 24 % and 18 %.</desc>
+  <g>
+    <text class="t-s f-muted" x="8" y="22" text-anchor="start">next word after “a cup of”</text>
+  </g>
+  <g data-step="1" data-caption="What the model says about the next word after “a cup of”.">
+    <text class="t-s f-ink" x="60" y="73" text-anchor="end">coffee</text>
+    <rect class="f-muted" x="66" y="60" width="110.0" height="18" rx="2"/>
+    <text class="t-s f-muted" x="182.0" y="74" text-anchor="start">50 %</text>
+    <text class="t-s f-ink" x="60" y="107" text-anchor="end">tea</text>
+    <rect class="f-muted" x="66" y="94" width="44.0" height="18" rx="2"/>
+    <text class="t-s f-muted" x="116.0" y="108" text-anchor="start">20 %</text>
+    <text class="t-s f-ink" x="60" y="141" text-anchor="end">cocoa</text>
+    <rect class="f-muted" x="66" y="128" width="33.0" height="18" rx="2"/>
+    <text class="t-s f-muted" x="105.0" y="142" text-anchor="start">15 %</text>
+    <text class="t-s f-ink" x="60" y="175" text-anchor="end">milk</text>
+    <rect class="f-muted" x="66" y="162" width="22.0" height="18" rx="2"/>
+    <text class="t-s f-muted" x="94.0" y="176" text-anchor="start">10 %</text>
+    <text class="t-s f-ink" x="60" y="209" text-anchor="end">soup</text>
+    <rect class="f-muted" x="66" y="196" width="11.0" height="18" rx="2"/>
+    <text class="t-s f-muted" x="83.0" y="210" text-anchor="start">5 %</text>
+  </g>
+  <g data-step="2" data-caption="Top-k = 2 keeps the two most likely words and rescales them to add up to 100 %.">
+    <text class="t-s bold f-accent" x="252" y="48" text-anchor="middle">k = 2</text>
+    <text class="t-s f-accent" x="252" y="74" text-anchor="middle">71 %</text>
+    <text class="t-s f-accent" x="252" y="108" text-anchor="middle">29 %</text>
+    <text class="t-s f-muted" x="252" y="142" text-anchor="middle">–</text>
+    <text class="t-s f-muted" x="252" y="176" text-anchor="middle">–</text>
+    <text class="t-s f-muted" x="252" y="210" text-anchor="middle">–</text>
+  </g>
+  <g data-step="3" data-caption="Top-p = 0.8 keeps words until their sum reaches 80 %: 50 + 20 + 15 = 85 %, so three words stay.">
+    <text class="t-s bold f-warn" x="310" y="48" text-anchor="middle">p = 0.8</text>
+    <text class="t-s f-warn" x="310" y="74" text-anchor="middle">59 %</text>
+    <text class="t-s f-warn" x="310" y="108" text-anchor="middle">24 %</text>
+    <text class="t-s f-warn" x="310" y="142" text-anchor="middle">18 %</text>
+    <text class="t-s f-muted" x="310" y="176" text-anchor="middle">–</text>
+    <text class="t-s f-muted" x="310" y="210" text-anchor="middle">–</text>
+    <path class="s-warn w2" d="M330 58 H336 V154 H330"/>
+    <text class="t-s f-warn" x="170" y="248" text-anchor="middle">sum of the kept words: 85 % ≥ 80 %</text>
+  </g>
+</svg>
