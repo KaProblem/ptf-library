@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 380" role="img" aria-labelledby="agent-loop-t agent-loop-d" data-ptf-figure="1">
+  <title id="agent-loop-t">An agent is a loop</title>
+  <desc id="agent-loop-d">An AI agent as a loop. A goal from the user goes to the model, which decides the next step. If it chooses an action, a tool runs (search, code, an API), and its result is added to the state that the model sees next. The loop repeats until the model decides it is done or a step limit is reached; then it gives a final answer. Risky actions wait for approval by a person.</desc>
+  <defs><marker id="ptf-arrow-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-ink" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-accent" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-warn" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-good" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-muted" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+  <g data-step="1" data-caption="The user gives a goal; the model decides what to do first.">
+    <rect class="f-surface s-ink w2" x="10" y="10" width="180" height="46" rx="8"/>
+    <text class="t-s f-ink" x="100" y="38" text-anchor="middle">Goal from the user</text>
+    <line class="s-ink w2" x1="100" y1="56" x2="100" y2="98" marker-end="url(#ptf-arrow-ink)"/>
+    <rect class="f-accent-soft s-accent w2" x="10" y="100" width="180" height="64" rx="8"/>
+    <text class="t-s f-ink" x="100" y="128" text-anchor="middle">Model decides the</text>
+    <text class="t-s f-ink" x="100" y="146" text-anchor="middle">next step</text>
+  </g>
+  <g data-step="2" data-caption="It picks an action, and a tool runs it: a search, a piece of code, an API call.">
+    <line class="s-warn w2" x1="150" y1="164" x2="228" y2="238" marker-end="url(#ptf-arrow-warn)"/>
+    <text class="t-s f-warn" x="214" y="196">action</text>
+    <rect class="f-warn-soft s-warn w2" x="170" y="240" width="160" height="64" rx="8"/>
+    <text class="t-s f-ink" x="250" y="268" text-anchor="middle">Tool runs</text>
+    <text class="t-s f-ink" x="250" y="286" text-anchor="middle">(search, code, API)</text>
+  </g>
+  <g data-step="3" data-caption="The result goes back into the state the model sees, and the model decides again.">
+    <line class="s-good w2" x1="170" y1="272" x2="152" y2="272" marker-end="url(#ptf-arrow-good)"/>
+    <rect class="f-good-soft s-good w2" x="10" y="240" width="140" height="64" rx="8"/>
+    <text class="t-s f-ink" x="80" y="268" text-anchor="middle">Result is added</text>
+    <text class="t-s f-ink" x="80" y="286" text-anchor="middle">to the state</text>
+    <line class="s-good w2" x1="60" y1="240" x2="60" y2="166" marker-end="url(#ptf-arrow-good)"/>
+    <text class="t-s f-good" x="68" y="208">observe</text>
+  </g>
+  <g data-step="4" data-caption="The loop ends when the model is done or a step limit is hit. Risky actions need a person's approval.">
+    <line class="s-ink w2" x1="190" y1="132" x2="220" y2="132" marker-end="url(#ptf-arrow-ink)"/>
+    <text class="t-s f-ink" x="206" y="100" text-anchor="middle">done</text>
+    <rect class="f-good-soft s-good w2" x="222" y="109" width="108" height="46" rx="8"/>
+    <text class="t-s f-ink" x="276" y="137" text-anchor="middle">Final answer</text>
+    <text class="t-s f-ink" x="170" y="336" text-anchor="middle">Also stops at a step limit.</text>
+    <text class="t-s bold f-warn" x="170" y="360" text-anchor="middle">Risky actions wait for a person.</text>
+  </g>
+</svg>

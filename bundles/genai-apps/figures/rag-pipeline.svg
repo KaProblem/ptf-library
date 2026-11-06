@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 610" role="img" aria-labelledby="rag-pipeline-t rag-pipeline-d" data-ptf-figure="1">
+  <title id="rag-pipeline-t">Retrieval-augmented generation</title>
+  <desc id="rag-pipeline-d">A RAG system in two parts. Once, ahead of time: documents are split into chunks, each chunk is embedded, and the vectors are stored in a vector index. For every question: the question is embedded with the same model, the index returns the k chunks with the most similar vectors, and the prompt is built from the instructions, those k chunks and the question. The LLM writes an answer that cites the chunks. If the right chunk is not among the k retrieved, the model cannot use it.</desc>
+  <defs><marker id="ptf-arrow-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-ink" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-accent" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-warn" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-good" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-muted" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+  <g data-step="1" data-caption="Ahead of time: documents are split into chunks, each chunk is embedded and stored in a vector index.">
+    <text class="t-s bold f-muted" x="87" y="12" text-anchor="middle">Once, ahead of time</text>
+    <rect class="f-surface s-ink w2" x="12" y="20" width="150" height="46" rx="8"/>
+    <text class="t-s f-ink" x="87" y="48" text-anchor="middle">Documents</text>
+    <line class="s-ink w2" x1="87" y1="66" x2="87" y2="94" marker-end="url(#ptf-arrow-ink)"/>
+    <rect class="f-surface s-ink w2" x="12" y="96" width="150" height="46" rx="8"/>
+    <text class="t-s f-ink" x="87" y="124" text-anchor="middle">Split into chunks</text>
+    <line class="s-ink w2" x1="87" y1="142" x2="87" y2="170" marker-end="url(#ptf-arrow-ink)"/>
+    <rect class="f-surface s-ink w2" x="12" y="172" width="150" height="46" rx="8"/>
+    <text class="t-s f-ink" x="87" y="200" text-anchor="middle">Embed each chunk</text>
+    <line class="s-ink w2" x1="87" y1="218" x2="87" y2="246" marker-end="url(#ptf-arrow-ink)"/>
+    <rect class="f-surface s-ink w2" x="12" y="248" width="150" height="46" rx="8"/>
+    <text class="t-s f-ink" x="87" y="276" text-anchor="middle">Vector index</text>
+  </g>
+  <g data-step="2" data-caption="For each question: embed it with the same model and fetch the k chunks with the most similar vectors.">
+    <text class="t-s bold f-accent" x="253" y="12" text-anchor="middle">For every question</text>
+    <rect class="f-accent-soft s-accent w2" x="178" y="20" width="150" height="46" rx="8"/>
+    <text class="t-s f-ink" x="253" y="48" text-anchor="middle">Question</text>
+    <line class="s-accent w2" x1="253" y1="66" x2="253" y2="94" marker-end="url(#ptf-arrow-accent)"/>
+    <rect class="f-accent-soft s-accent w2" x="178" y="96" width="150" height="46" rx="8"/>
+    <text class="t-s f-ink" x="253" y="124" text-anchor="middle">Embed the question</text>
+    <line class="s-accent w2" x1="253" y1="142" x2="253" y2="170" marker-end="url(#ptf-arrow-accent)"/>
+    <rect class="f-accent-soft s-accent w2" x="178" y="172" width="150" height="46" rx="8"/>
+    <text class="t-s f-ink" x="253" y="200" text-anchor="middle">Find top-k chunks</text>
+    <line class="s-accent w2 dash" x1="162" y1="271" x2="190" y2="218" marker-end="url(#ptf-arrow-accent)"/>
+  </g>
+  <g data-step="3" data-caption="The prompt combines instructions, the retrieved chunks and the question; the model answers and cites the chunks.">
+    <line class="s-accent w2" x1="253" y1="218" x2="253" y2="328" marker-end="url(#ptf-arrow-accent)"/>
+    <rect class="f-good-soft s-good w2" x="12" y="330" width="316" height="64" rx="8"/>
+    <text class="t-s f-ink" x="170" y="358" text-anchor="middle">Prompt: instructions + the</text>
+    <text class="t-s f-ink" x="170" y="376" text-anchor="middle">k chunks + the question</text>
+    <line class="s-good w2" x1="170" y1="394" x2="170" y2="422" marker-end="url(#ptf-arrow-good)"/>
+    <rect class="f-surface s-good w2" x="52" y="424" width="236" height="46" rx="8"/>
+    <text class="t-s f-ink" x="170" y="452" text-anchor="middle">LLM</text>
+    <line class="s-good w2" x1="170" y1="470" x2="170" y2="498" marker-end="url(#ptf-arrow-good)"/>
+    <rect class="f-good-soft s-good w2" x="12" y="500" width="316" height="46" rx="8"/>
+    <text class="t-s f-ink" x="170" y="528" text-anchor="middle">Answer that cites the chunks</text>
+  </g>
+  <g data-step="4" data-caption="Retrieval is the weak point: a chunk that is not retrieved does not exist for the model.">
+    <text class="t-s f-warn" x="170" y="580" text-anchor="middle">If the right chunk is not retrieved,</text>
+    <text class="t-s f-warn" x="170" y="598" text-anchor="middle">the model cannot use it.</text>
+  </g>
+</svg>
