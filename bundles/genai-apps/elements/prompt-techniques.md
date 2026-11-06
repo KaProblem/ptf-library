@@ -65,6 +65,8 @@ still need a source, a tool or a test.
 - Step-by-step (chain-of-thought) prompting: "Work through this step by step, then give the final answer on the last line." Helps on arithmetic, logic and multi-step questions; little effect on simple lookups. Reasoning models do this internally without being asked.
 - The written-out steps are not guaranteed to be how the model really reached the answer; they can look convincing and still be wrong.
 - Prompt chaining (decomposition): split a job into steps with one prompt each, for example extract facts → check facts → write summary. Each step is simpler, testable and replaceable.
+- Related named techniques: least-to-most (first ask the model to break the problem into subproblems, then solve them in order, each using the earlier answers); generated knowledge (first ask the model, or a retrieval step, for relevant facts, then answer with those facts in the prompt); maieutic prompting (ask the model to explain each part of its answer and drop the parts whose explanations contradict each other).
+- A worked example also works as chain-of-thought: show one solved problem with its steps written out, then the new problem.
 - Structured output: describe the fields and give one example, or use the provider's JSON or schema mode. Always parse and validate in code (required fields, types, allowed values) and handle failures (retry, fallback).
 - Self-check or critique: a second prompt asks "Does this answer follow the rules? List problems." It catches format slips and some reasoning errors; it does not reliably catch invented facts the model believes.
 - Arithmetic and exact counting: better done by code or a tool than by the model (see the element on function calling).

@@ -59,6 +59,7 @@ a way back, and quality, latency, cost and safety are monitored.
 # Key facts
 
 - Lifecycle: explore (prototype prompts, try models) → build (prompts, retrieval, tools, guardrails) → evaluate (offline test set) → deploy (gradual rollout) → monitor (online metrics, feedback, incidents) → improve (new cases into the test set) → evaluate again.
+- LLMOps: the practice of running this lifecycle for LLM applications. Compared with classic MLOps the team usually consumes a model as a service rather than training one, and the main work moves to prompts, retrieval, evaluation and safety. A simple scorecard: quality, harm, honesty (groundedness), cost and latency. Around the whole cycle runs governance: security, compliance and data protection.
 - Artefacts to version: prompts and templates, model name and version, sampling settings, tool definitions, retrieval index and chunking settings, evaluation sets.
 - Evaluation set: realistic inputs from real users (anonymised), edge cases, adversarial cases, and every bug found so far, each with an expected answer or a rubric. Typical sizes: tens of cases to start, hundreds for confident comparisons.
 - Metrics: correctness (matches reference), groundedness or faithfulness (every claim supported by the provided sources), relevance (answers the question), completeness, format validity (parses, schema), safety (no harmful content), plus latency and cost per request.

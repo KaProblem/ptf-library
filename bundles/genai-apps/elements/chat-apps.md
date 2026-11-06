@@ -62,6 +62,8 @@ users to give feedback, and honesty that they are talking to an AI.
 - Example: system message 500 tokens, each user message 50 and each reply 150 tokens. Turn n sends 500 + 200 · (n − 1) + 50 input tokens: 550 in turn 1, 2,350 in turn 10, and 14,500 input tokens over all 10 turns.
 - History strategies: sliding window (keep the last k turns), summarisation (replace old turns with a running summary), retrieval (store old turns or facts and pull back the relevant ones), plus pinning the system message and key facts.
 - System message: role ("You are the homework helper of …"), audience, tone, scope (what to do with off-topic requests), rules (do not give full solutions; say when unsure), format.
+- A common checklist for system messages: (1) who the assistant is for, what it can do and what it cannot, (2) the output format, (3) examples of the intended behaviour, (4) guardrails for off-topic, unsafe or manipulative requests.
+- Stored context and personalisation (history, profiles, remembered facts) improve answers but hold personal data: show users what is stored, let them delete it, and set a retention period after which it is removed.
 - Streaming sends tokens as they are generated; the total time is the same, but the time until the user sees something (time to first token) drops a lot.
 - Monitor: latency (time to first token, total), tokens and cost per conversation, error and refusal rates, user feedback (thumbs up/down, corrections), conversation length, and samples of real conversations for review (with privacy rules).
 - Responsible basics: tell users it is an AI, filter or decline harmful requests, offer a route to a human where it matters, be accessible (screen readers, clear language).

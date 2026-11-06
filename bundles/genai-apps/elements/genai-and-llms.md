@@ -66,6 +66,8 @@ differently each time.
 - Generative AI: models that create content. Language models (text, code), image models (text → image), speech and music models; multimodal models take or give several kinds.
 - LLM: a transformer network with millions to trillions of parameters, trained on text to predict the next token. A token is a word or a piece of a word (see the next element).
 - Generation loop: prompt → probabilities for every possible next token → pick one → append it → repeat until a stop token or a length limit.
+- The input is called the prompt and the generated text the completion (or response).
+- Short history: keyword-triggered chatbots with hand-written answers (from the 1960s) → statistical machine learning that learns patterns from labelled examples (1990s) → neural networks, for text first recurrent networks that read word by word (2010s) → the transformer (2017), whose attention mechanism weighs every part of a long input against every other, which made today's LLMs possible.
 - Training stages: pretraining on a large text collection gives a base model (document completer); instruction tuning on example dialogues and preference training (for example reinforcement learning from human feedback, RLHF) give an assistant (chat model).
 - Hallucination: a fluent, confident output that is false or not supported by any source. It follows from predicting likely text; it is not a rare bug that will simply disappear.
 - Knowledge cutoff: the model only knows what was in its training data up to some date. Newer facts, private documents and live data (prices, weather, your calendar) come only from the application: in the prompt, through search (RAG) or through tools.

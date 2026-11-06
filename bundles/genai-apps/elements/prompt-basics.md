@@ -59,6 +59,8 @@ real inputs, look at the outputs, change one thing, try again.
 - Say what to do rather than only what not to do: "Answer in plain English for a 12-year-old" works better than "Don't be technical".
 - Roles: `system` (lasting instructions, persona, rules; set by the app developer), `user` (the person's input), `assistant` (earlier model replies, or example replies written by the developer).
 - Prompt order matters: in long prompts put the task clearly, and repeat the key instruction near the end if the material is long.
+- Cue: start the answer for the model ("Summary in three bullet points:\n-" or the first line of a table); it continues in that shape.
+- Template: a tested prompt with placeholders (`{audience}`, `{text}`) that the app fills for each request; collections of templates for one domain (for example lesson planning) are prompt libraries.
 - Iterate: keep a handful of real test inputs, change one thing at a time, compare outputs side by side. A prompt that works on one input may fail on the next.
 - Different models respond differently to the same prompt; retest when changing the model.
 

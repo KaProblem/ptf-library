@@ -70,11 +70,14 @@ with attacks (red teaming) and keep monitoring.
 - Improper output handling: model output used unchecked as HTML (cross-site scripting), SQL, shell commands or code. Treat it like user input: validate, encode, sandbox.
 - Excessive agency: tools with broad permissions, or actions without confirmation, so a manipulated model can cause real damage.
 - Data and model poisoning: manipulated training, fine-tuning or retrieval data that plants wrong facts, biases or hidden triggers; also untrusted model files and packages (supply chain).
+- Forms of poisoning: flipped labels (spam marked as normal mail), injected fake examples (fake reviews), and backdoors, a hidden trigger pattern that makes the model misbehave only when it appears. Defences: know where data comes from (provenance), control who can write to training and retrieval stores (role-based access), and review changes to them.
 - Unbounded consumption: huge or endless requests that drive up cost ("denial of wallet") or block service. Example: a bot sending 1,000 requests of 100,000 input tokens each costs $200 at $2 per million tokens.
 - Defences: separate and label untrusted content; least-privilege tools acting with the end user's permissions; human approval for consequential actions; access control applied at retrieval time; output validation and encoding; allow-lists for URLs and recipients; rate, size and budget limits; input and output classifiers as one extra layer; logging and alerting.
 - No prompt wording ("never follow instructions in documents") gives a guarantee; it lowers the success rate of attacks but must not be the only control.
 - Red teaming: people (and automated generators) attack the system on purpose with jailbreaks, injections in documents, data-extraction attempts and tool misuse, record what works, fix it, and keep the attacks as a regression test set.
 - Reference: the OWASP Top 10 for LLM Applications lists these risks and is updated regularly.
+- Reference: MITRE ATLAS collects real attack techniques against AI systems, in the style of the ATT&CK framework for ordinary IT security.
+- AI red teaming covers more than security: it also probes for harmful, biased or ungrounded output, and for failures ordinary users run into without any bad intent.
 
 # Level: highschool
 

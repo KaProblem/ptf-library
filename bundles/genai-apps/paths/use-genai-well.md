@@ -17,6 +17,7 @@ steps:
   - element: ptf:el/genai-apps/prompt-basics
   - element: ptf:el/genai-apps/prompt-techniques
   - { element: ptf:el/genai-apps/sampling-parameters, optional: true }
+  - { element: ptf:el/genai-apps/image-generation, optional: true }
   - element: ptf:el/genai-apps/responsible-genai
 status: draft
 version: 0.1.0
@@ -37,8 +38,8 @@ and where the answers can go wrong, from invented facts to unfair or
 harmful content. At the end the learner writes good prompts, improves them
 by testing, and knows when an answer has to be checked.
 
-It takes about two hours, or three with the two optional steps on tokens
-and settings. No programming is needed. Having a chatbot to try things in
+It takes about two hours, or three with the optional steps on tokens,
+settings and images. No programming is needed. Having a chatbot to try things in
 helps.
 
 # Steps
@@ -50,7 +51,8 @@ helps.
 | 3 | [Writing a good prompt](../elements/prompt-basics.md) | |
 | 4 | [Prompting techniques](../elements/prompt-techniques.md) | |
 | 5 | [Temperature, top-p and output limits](../elements/sampling-parameters.md) | optional: why answers vary |
-| 6 | [Using generative AI responsibly](../elements/responsible-genai.md) | |
+| 6 | [Generating and editing images](../elements/image-generation.md) | optional: image prompts and fake pictures |
+| 7 | [Using generative AI responsibly](../elements/responsible-genai.md) | |
 
 The full course [Building applications with generative AI](build-genai-apps.md)
 continues from here for learners who want to build their own AI applications.
@@ -64,4 +66,4 @@ step 1 (the model does not look things up) and step 3.
 # Tutor notes
 
 - Stay at highschool level and use the learner's own tasks (homework, emails, hobbies) as examples; let them try prompts in their own chatbot if they have one.
-- In step 6, focus on the user's side: checking facts, recognising bias, not pasting private data, and being careful with content from unknown sources.
+- In step 7, focus on the user's side: checking facts, recognising bias, not pasting private data, and being careful with content from unknown sources.

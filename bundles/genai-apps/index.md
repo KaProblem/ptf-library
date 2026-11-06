@@ -19,7 +19,7 @@ for learners who want to use and build with generative AI rather than
 study the network inside (that is the bundle llm-basics). It covers what
 a model does and costs, prompting and sampling settings, chat
 applications, embeddings and retrieval-augmented generation, function
-calling and agents, the choice between prompting, retrieval and
+calling and agents, image generation, the choice between prompting, retrieval and
 fine-tuning, and responsible use, security, user experience and
 evaluation. Every element has a highschool and a college level text,
 a `probe` question for placement and `check` questions for every
@@ -33,7 +33,7 @@ questions and figures are original. Prices in examples are illustrative
 
 ## Learning paths
 
-- [Building applications with generative AI](paths/build-genai-apps.md): all 16 elements, highschool and college.
+- [Building applications with generative AI](paths/build-genai-apps.md): 16 elements plus the optional one on images, highschool and college.
 - [Using AI chatbots well](paths/use-genai-well.md): 4 elements plus 2 optional ones for everyone who uses chatbots, highschool.
 
 ## Elements
@@ -49,6 +49,7 @@ matching script in `checks/` (`ptf-check` runs them).
 | [Writing a good prompt](elements/prompt-basics.md) | 8 |
 | [Prompting techniques](elements/prompt-techniques.md) | 8 |
 | [Temperature, top-p and output limits](elements/sampling-parameters.md) | 8 |
+| [Generating and editing images](elements/image-generation.md) | 9 |
 | [Building a chat application](elements/chat-apps.md) | 8 |
 | [Embeddings and semantic search](elements/embeddings-search.md) | 8 |
 | [Retrieval-augmented generation (RAG)](elements/rag.md) | 8 |
@@ -67,4 +68,4 @@ matching script in `checks/` (`ptf-check` runs them).
 
 ## Sources
 
-Microsoft, Generative AI for Beginners, https://github.com/microsoft/generative-ai-for-beginners, MIT License, lessons 1 to 8 and 11 to 19 used for scope and order. OWASP Top 10 for LLM Applications (CC BY-SA 4.0) for the list of security risks.
+Microsoft, Generative AI for Beginners, https://github.com/microsoft/generative-ai-for-beginners, MIT License, lessons 1 to 9 and 11 to 19 used for scope and order (compared again with the repository as of 2026-11-02). OWASP Top 10 for LLM Applications (CC BY-SA 4.0) for the list of security risks.

@@ -60,6 +60,7 @@ enough, and small error rates become many harmed people at scale.
 
 - Harms: ungrounded or false output; harmful content (hate, harassment, violence, sexual content, self-harm, dangerous instructions); unfairness (stereotypes, unequal quality across languages, dialects or groups); privacy (personal data in outputs, in prompts, or memorised from training); overreliance (users trusting output they should check); misuse (deception, spam).
 - Principles (as commonly used in industry frameworks): fairness, reliability and safety, privacy and security, inclusiveness, transparency, accountability.
+- Some courses say "fabrication" instead of "hallucination" to avoid suggesting the model perceives anything; both mean confident output that is false or unsupported.
 - Scale: an error rate of 3 % at 10,000 uses a day is 300 bad outputs a day.
 - Cycle: (1) identify harms for this use case and its users, (2) measure them with a test set of normal and adversarial prompts (red teaming), (3) mitigate, (4) operate: monitor, respond to incidents, re-measure after every change.
 - Mitigation layers: model (choose a model with suitable safety training), safety system (input and output filters, abuse detection), system message and grounding (scope, rules, retrieval with citations), user experience (disclose AI, show sources, limit inputs and outputs to the use case, make reporting easy, keep humans in decisions that matter).

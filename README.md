@@ -18,7 +18,7 @@ the questions. The content is open; the explanation is personal.
 | [gravity](bundles/gravity/index.md) | Gravity, from the leaning tower to curved spacetime | free fall, air resistance, inclined plane, rolling, universal gravitation, curved spacetime |
 | [ahs-matura-mathe](bundles/ahs-matura-mathe/index.md) | Mathematics for the Austrian AHS Matura | 17 chapters of the basic competences (algebra and geometry, functions, analysis, statistics and probability), 198 original questions in the Matura answer formats, learning path `matura-course` |
 | [ahs-matura-latein](bundles/ahs-matura-latein/index.md) | Latin for the Austrian AHS Matura | Translation method and checkpoint grammar, interpretation task formats, two practice exams (4-year and 6-year Latin), 129 original questions, learning paths `latin-4` and `latin-6` |
-| [genai-apps](bundles/genai-apps/index.md) | Building applications with generative AI | what an LLM does, tokens and cost, choosing a model, prompting, sampling settings, chat apps, embeddings, RAG, function calling, agents, prompt vs. RAG vs. fine-tuning, responsible use, security, UX, evaluation; learning paths `build-genai-apps` and `use-genai-well` |
+| [genai-apps](bundles/genai-apps/index.md) | Building applications with generative AI | what an LLM does, tokens and cost, choosing a model, prompting, sampling settings, image generation, chat apps, embeddings, RAG, function calling, agents, prompt vs. RAG vs. fine-tuning, responsible use, security, UX, evaluation; learning paths `build-genai-apps` and `use-genai-well` |
 
 | Simulator | Versions | UI language | Concepts |
 | --- | --- | --- | --- |

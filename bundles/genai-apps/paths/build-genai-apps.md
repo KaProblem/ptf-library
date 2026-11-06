@@ -3,7 +3,7 @@ type: Learning Path
 ptf_version: "0.1"
 id: ptf:path/genai-apps/build-genai-apps
 title: Building applications with generative AI
-description: Sixteen steps from what a language model does to a chat app with search, tools and agents that is evaluated, secured and run responsibly.
+description: Sixteen steps, plus an optional one on images, from what a language model does to a chat app with search, tools and agents that is evaluated, secured and run responsibly.
 lang: en
 goal: Design, build and run an application on top of a large language model that is useful, grounded in the right data, safe and measurably good.
 objectives:
@@ -18,6 +18,7 @@ steps:
   - element: ptf:el/genai-apps/prompt-basics
   - element: ptf:el/genai-apps/prompt-techniques
   - element: ptf:el/genai-apps/sampling-parameters
+  - { element: ptf:el/genai-apps/image-generation, optional: true }
   - element: ptf:el/genai-apps/chat-apps
   - element: ptf:el/genai-apps/embeddings-search
   - element: ptf:el/genai-apps/rag
@@ -65,16 +66,17 @@ but is not required.
 | 4 | B Prompting | [Writing a good prompt](../elements/prompt-basics.md) |
 | 5 | B Prompting | [Prompting techniques](../elements/prompt-techniques.md) |
 | 6 | B Prompting | [Temperature, top-p and output limits](../elements/sampling-parameters.md) |
-| 7 | C Building apps | [Building a chat application](../elements/chat-apps.md) |
-| 8 | C Building apps | [Embeddings and semantic search](../elements/embeddings-search.md) |
-| 9 | C Building apps | [Retrieval-augmented generation (RAG)](../elements/rag.md) |
-| 10 | C Building apps | [Function calling (tool use)](../elements/function-calling.md) |
-| 11 | C Building apps | [AI agents](../elements/ai-agents.md) |
-| 12 | D Customising | [Prompt, RAG or fine-tune?](../elements/adapting-models.md) |
-| 13 | E Shipping | [Using generative AI responsibly](../elements/responsible-genai.md) |
-| 14 | E Shipping | [Securing generative AI applications](../elements/securing-genai-apps.md) |
-| 15 | E Shipping | [Designing the user experience of AI features](../elements/ux-for-ai.md) |
-| 16 | E Shipping | [Evaluating and running a generative AI application](../elements/genai-lifecycle.md) |
+| 7 | B Prompting | [Generating and editing images](../elements/image-generation.md) (optional) |
+| 8 | C Building apps | [Building a chat application](../elements/chat-apps.md) |
+| 9 | C Building apps | [Embeddings and semantic search](../elements/embeddings-search.md) |
+| 10 | C Building apps | [Retrieval-augmented generation (RAG)](../elements/rag.md) |
+| 11 | C Building apps | [Function calling (tool use)](../elements/function-calling.md) |
+| 12 | C Building apps | [AI agents](../elements/ai-agents.md) |
+| 13 | D Customising | [Prompt, RAG or fine-tune?](../elements/adapting-models.md) |
+| 14 | E Shipping | [Using generative AI responsibly](../elements/responsible-genai.md) |
+| 15 | E Shipping | [Securing generative AI applications](../elements/securing-genai-apps.md) |
+| 16 | E Shipping | [Designing the user experience of AI features](../elements/ux-for-ai.md) |
+| 17 | E Shipping | [Evaluating and running a generative AI application](../elements/genai-lifecycle.md) |
 
 # Prior knowledge
 
@@ -82,7 +84,7 @@ Many learners use chatbots daily and believe they know steps 1, 4 and 6.
 Ask the `probe` question of these elements before skipping them: the
 beliefs that the model looks facts up, remembers the conversation, or
 becomes correct at temperature 0 are common even among regular users.
-Developers who have built a chat app before can often show steps 2 and 7
+Developers who have built a chat app before can often show steps 2 and 8
 quickly. Learners who took the course on how LLMs work (llm-basics) can
 skip the internals in step 1 and the softmax part of step 6, but not the
 rest of those steps.
@@ -91,6 +93,7 @@ rest of those steps.
 
 - This is an application course: when the learner asks how the network works inside, answer briefly and point to the course on how LLMs work instead of going deep.
 - Do not recommend specific models, providers or frameworks as current best choices; names and prices change monthly. Teach the criteria and procedures, and use the example prices in the elements.
-- Steps 8 to 11 build on each other: embeddings before RAG, function calling before agents. Phase E can be taken in any order.
+- Step 7 (images) is optional and can be skipped by learners who only build text applications.
+- Steps 9 to 12 build on each other: embeddings before RAG, function calling before agents. Phase E can be taken in any order.
 - Keep one running example through the course if the learner has none of their own, for example a study helper for a school class: it needs prompts, a chat, the class notes (RAG), a calendar tool, responsible behaviour, security, good UX and evaluation.
 - At highschool level, keep the calculations short and focus on the decisions; at college level, let the learner do every calculation.

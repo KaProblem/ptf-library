@@ -73,6 +73,7 @@ misread the chunks it gets, so answers need citations and testing.
 - Typical failures: the relevant chunk is not retrieved (poor embedding match, query uses other words, chunk too big or too small), the index is stale, sources contradict each other, the answer is spread over many chunks, or the model mixes in its own knowledge.
 - Evaluate the two halves separately: retrieval (is the right chunk among the top k? recall at k) and generation (is the answer correct, complete and supported by the cited chunks, often called groundedness).
 - Improvements: hybrid search (keywords plus embeddings), better chunking along headings, metadata filters (date, product), re-ranking, rewriting the question before searching.
+- No good match: retrieval always returns the k nearest chunks, even when none is relevant. A minimum similarity (or a re-ranker score threshold) lets the app say "not in the documents" instead of answering from weak matches.
 - RAG vs. alternatives: RAG for knowledge that is large, private, changing or must be cited; a long context window when the material is small enough to send whole; fine-tuning for style, format or narrow behaviour, not for adding facts reliably.
 
 # Level: highschool
