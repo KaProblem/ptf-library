@@ -67,6 +67,7 @@ whole conversation again, so long chats cost ever more tokens.
 - **Messages** are given as a list such as `[{"role": "system", "content": "…"}, {"role": "user", "content": "…"}]`.
 - **ChatML** style (used for example by Qwen and SmolLM2): each message is `<|im_start|>role` + newline + content + `<|im_end|>` + newline. With the generation prompt the text ends in `<|im_start|>assistant` + newline.
 - **Llama 3** style: `<|begin_of_text|>`, then per message `<|start_header_id|>role<|end_header_id|>`, two newlines, content, `<|eot_id|>`.
+- **[INST] style** (Llama 2, Mistral): user turns are wrapped in `[INST] … [/INST]`, the answer follows, and `<s>` / `</s>` mark the boundaries; Mistral's templates have no separate system role and put system text into the first user turn.
 - In the Transformers library `tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)` produces the string; the template itself is a Jinja template stored in the tokenizer configuration.
 - `add_generation_prompt=True` appends the assistant header so the model answers instead of writing another user message. For training on complete conversations it is left off.
 - The model stops when it produces the end marker of its turn (`<|im_end|>`, `<|eot_id|>`), which serves as the stop token.

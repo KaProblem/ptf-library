@@ -68,7 +68,7 @@ model can serve many tasks by swapping small adapters.
 - Example: d = k = 4,096, r = 8: 8 · 8,192 = 65,536 trainable parameters instead of 16,777,216, about 0.39 %.
 - Whole model: adapting the query and value projections (4,096 × 4,096) in all 32 layers with r = 8 gives 32 · 2 · 65,536 = 4,194,304 ≈ 4.2 million parameters, about 0.06 % of 7 billion.
 - **Initialisation**: A random, B = 0, so ΔW = 0 at the start.
-- **Scaling**: the update is multiplied by α / r; with α fixed, changing r does not change the size of the update much, so the learning rate need not be retuned. Common choices: r = 8 to 64, α = r or 2r (for example r = 16, α = 32), dropout about 0.05.
+- **Scaling**: the update is multiplied by α / r; with α fixed, changing r does not change the size of the update much, so the learning rate need not be retuned. Common choices: r = 4 to 32 (start small, for example 8, and raise it if the adapter underfits; 64 for hard tasks), α often 2r (for example r = 16, α = 32), dropout 0.05 to 0.1.
 - **Target modules**: the original paper adapted the attention query and value projections; adapting all linear layers (attention and MLP) usually gives better results at somewhat more parameters.
 - **Memory**: full fine-tuning with Adam in mixed precision needs about 16 bytes per parameter (weights, gradients and two optimizer states): about 112 GB for 7 billion parameters. With LoRA the frozen base needs only its 16-bit weights (14 GB) plus small adapter states.
 - **QLoRA**: the frozen base is stored in 4 bits (about 0.5 bytes per parameter, 3.5 GB for 7 billion) and the adapters are trained in 16 bits, so a 7B model can be fine-tuned on one consumer GPU.

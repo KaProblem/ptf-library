@@ -61,6 +61,7 @@ still cheaper, faster and easier to run privately when the task is fixed.
 - **Text-to-text (sequence-to-sequence)**: summarisation and translation. Input: a text; output: a new text of a different length.
 - **Text generation**: continue a prompt, one token after another. Chat assistants are text generation with a conversation as the prompt.
 - **Zero-shot classification**: the labels are given only at run time ("is this about sport, politics or cooking?"), without training examples for them.
+- **In-context (few-shot) learning**: a large language model can pick up a task from two or three worked examples placed in the prompt, without any change to its weights.
 - Beyond text the same architectures handle speech (speech recognition: audio → text), images (classification, captioning) and mixtures of them (multimodal models).
 - Sizes for comparison: BERT-base about 110 million parameters (2018), DistilBERT about 66 million, GPT-2 1.5 billion (2019), GPT-3 175 billion (2020).
 - Language is hard for programs because words are ambiguous ("bank"), meaning depends on context and on world knowledge ("The trophy did not fit in the suitcase because it was too big": what was too big?), and the same meaning has many forms.

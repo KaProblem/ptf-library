@@ -34,3 +34,8 @@ fact("Rewards [1, 0, 0, 0]: mean 0.25, std ≈ 0.433 → [1.732, −0.577, −0.
 fact("Ratio 1.5 with a positive advantage and ε = 0.2 counts as 1.2", () => clipObjective(1.5, 1, 0.2) === 1.2);
 fact("(1 − 0.5) / 0.5 = 1; a wrong attempt gets (0 − 0.5) / 0.5 = −1", () => (1 - 0.5) / 0.5 === 1 && (0 - 0.5) / 0.5 === -1);
 fact("ρ Â = 3.0, clip(1.5) = 1.2 → 2.4", () => 1.5 * 2 === 3 && ptf.near(1.2 * 2, 2.4));
+const stdSample = (r) => { const m = mean(r); return Math.sqrt(r.reduce((s, x) => s + (x - m) ** 2, 0) / (r.length - 1)); };
+fact("for [1, 0, 0, 1] that gives std ≈ 0.577 and advantages ±0.866", () => {
+  const s = stdSample([1, 0, 0, 1]);
+  return ptf.round(s, 3) === 0.577 && ptf.round(0.5 / s, 3) === 0.866;
+});

@@ -25,6 +25,15 @@ Scope and order follow the Hugging Face LLM Course (Apache License 2.0);
 all text, questions, examples and figures in this bundle are original.
 Each element lists the course chapter it draws on under `sources`.
 
+The bundle teaches the concepts, not the tooling. Parts of that course that
+are about using particular libraries and services (the model hub and model
+cards, the Datasets library, debugging and asking for help, Gradio demos,
+Argilla annotation) and the task-by-task fine-tuning recipes (token
+classification, masked language modelling, translation, question answering)
+are not covered as separate elements. Where the course and well-established
+facts differ (for example how the KV cache grows with context, or the Llama 3
+chat format), the elements follow the established facts.
+
 ## Elements
 
 The course order is the learning path [Working with large language models](paths/llm-course.md).

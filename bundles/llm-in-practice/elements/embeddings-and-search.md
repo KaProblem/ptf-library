@@ -72,6 +72,7 @@ and names, so practical systems often combine both.
 - Memory: 1 million passages × 768 dimensions × 4 bytes (float32) ≈ 3.1 GB.
 - Keyword search (for example BM25) is strong for exact terms, names, product codes; embeddings for paraphrases and synonyms. **Hybrid search** combines both.
 - Query and documents must be embedded with the same model; vectors of different models live in different spaces.
+- **Symmetric vs asymmetric search**: finding near-duplicates (question ↔ similar question) is symmetric; a short query against longer passages is asymmetric and works best with models trained on question–passage pairs (for example the multi-qa models of the sentence-transformers library). Models trained for dot-product scoring give unnormalised scores (for example 22.9), not values between −1 and 1; use the score function the model was trained with.
 - Retrieval-augmented generation (RAG): the retrieved passages are put into an LLM's prompt so it can answer from them.
 
 # Level: highschool
