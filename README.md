@@ -17,6 +17,7 @@ the questions. The content is open; the explanation is personal.
 | [llm-basics](bundles/llm-basics/index.md) | How large language models work | tokenizer, training examples, softmax, cross-entropy, bigram model, causal mask, self-attention, transformer block, residual stream, the whole machine, from babbler to assistant |
 | [gravity](bundles/gravity/index.md) | Gravity, from the leaning tower to curved spacetime | free fall, air resistance, inclined plane, rolling, universal gravitation, curved spacetime |
 | [ahs-matura-mathe](bundles/ahs-matura-mathe/index.md) | Mathematics for the Austrian AHS Matura | 17 chapters of the basic competences (algebra and geometry, functions, analysis, statistics and probability), 198 original questions in the Matura answer formats, learning path `matura-course` |
+| [ahs-matura-latein](bundles/ahs-matura-latein/index.md) | Latin for the Austrian AHS Matura | Translation method and checkpoint grammar, interpretation task formats, two practice exams (4-year and 6-year Latin), 129 original questions, learning paths `latin-4` and `latin-6` |
 
 | Simulator | Versions | UI language | Concepts |
 | --- | --- | --- | --- |

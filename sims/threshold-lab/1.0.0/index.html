@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Threshold lab</title>
+<style>
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18212E; --muted:#5B6676; --line:#D9DFE6;
+  --accent:#0E6E68; --accent-soft:#D5ECEA; --warn:#C2410C; --warn-soft:#FBE3D6;
+  --f-display:"Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --surface:#18212B; --ink:#E6EBF0; --muted:#97A3B2; --line:#2B3744;
+  --accent:#4FC2B8; --accent-soft:#16383A; --warn:#FB8B55; --warn-soft:#3A2218; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.3rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font:600 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+header{display:flex;flex-direction:column;gap:12px}
+.levels{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start;background:var(--surface);max-width:100%}
+.levels button{font:600 1rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:10px 16px;min-height:44px;cursor:pointer}
+.levels button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.station{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.station .num{font:600 .8rem var(--f-mono);color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.btn{font:600 .95rem var(--f-body);min-height:44px;padding:8px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--accent)}
+button.btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-height:44px;min-width:0}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+label{color:var(--muted);font-size:.95rem}
+.note{color:var(--muted);font-size:.95rem}
+.stat{font:600 1.5rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:24px}
+.stats div{display:flex;flex-direction:column}
+.scroll{overflow-x:auto;max-width:100%}
+.out{font:.95rem/1.5 var(--f-mono);white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px}
+.feedback{border-left:4px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:4px}
+.feedback.bad{border-color:var(--warn);background:var(--warn-soft)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices button{text-align:left;font:1rem var(--f-body);min-height:44px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.choices button.right{border-color:var(--accent);background:var(--accent-soft)}
+.choices button.wrong{border-color:var(--warn);background:var(--warn-soft)}
+table.grid{border-collapse:collapse;font:.85rem var(--f-mono);font-variant-numeric:tabular-nums}
+table.grid th{color:var(--muted);font-weight:600;padding:4px 6px}
+table.grid td{width:46px;height:40px;text-align:center;border:1px solid var(--line);padding:0}
+table.grid td button{width:100%;height:100%;min-height:40px;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.bars{display:flex;flex-direction:column;gap:4px;font:.9rem var(--f-mono)}
+.bar{display:grid;grid-template-columns:5.5em 1fr 4em;gap:8px;align-items:center}
+.bar .fill{height:18px;background:var(--accent);border-radius:3px;min-width:2px}
+.bar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.tok{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:4px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font:1rem var(--f-mono);color:var(--ink);cursor:pointer}
+.tok[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+svg text{font-family:var(--f-mono)}
+details summary{cursor:pointer;font-weight:600;min-height:32px}
+footer{color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+html:not([lang="de"]) i-de,html[lang="de"] i-en{display:none!important}
+i-en,i-de{font-style:inherit}
+.focus-nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;bottom:0;background:var(--bg);padding:10px 0;border-top:1px solid var(--line)}
+.focus-nav #focusAll{margin-left:auto}
+.focus-nav button:disabled{opacity:.4;cursor:default}
+body.focused header > :not(.row){display:none}
+body.focused #focusStart{display:none}
+body.focused footer{display:none}
+.choices button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
+.choices button:disabled{cursor:default}
+.stepper{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.stepper .step{min-width:44px;min-height:44px;border-radius:22px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:600 1rem var(--f-mono);cursor:pointer}
+.stepper .step.done{border-color:var(--accent);color:var(--accent)}
+.stepper .step[aria-current="step"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.gated{display:flex;flex-direction:column;gap:14px}
+input[type=text],textarea,select{max-width:100%;font:1rem var(--f-mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;min-height:44px}
+input[type=text]{flex:1 1 220px;min-width:0}
+textarea{width:100%;min-height:140px;resize:vertical}
+canvas{display:block;max-width:100%;height:auto}
+pre.code{font:.85rem/1.5 var(--f-mono);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px;overflow-x:auto;margin:0}
+textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:520px){
+  body{font-size:16px;padding-block:12px 0}
+  .wrap{gap:16px}
+  .station{padding:14px;gap:12px}
+  h2{font-size:1.15rem}
+  .levels button{padding:8px 12px}
+  .focus-nav{flex-wrap:nowrap;gap:8px}
+  .focus-nav button.btn{padding:8px 12px}
+}
+
+table.cm{border-collapse:collapse;font:.95rem var(--f-body);font-variant-numeric:tabular-nums}
+table.cm th{color:var(--muted);font-weight:600;padding:6px 8px;text-align:left;font-size:.85rem}
+table.cm td{border:1px solid var(--line);padding:8px 10px;min-width:96px;vertical-align:top}
+table.cm td b{font:700 1.4rem var(--f-mono);display:block}
+table.cm td.good{background:var(--accent-soft)}
+table.cm td.bad{background:var(--warn-soft)}
+.bar{grid-template-columns:6.5em 1fr 3.5em}
+.bar .fill.alt{background:var(--warn)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow"><i-en>Machine learning foundations · Classification</i-en><i-de>Grundlagen des maschinellen Lernens · Klassifikation</i-de></span>
+  <h1><i-en>Threshold lab</i-en><i-de>Schwellenwert-Labor</i-de></h1>
+  <p><i-en>A spam filter gives every email a score between 0 and 1. Only the threshold turns scores into decisions: at or above it, the email goes to spam. Here you move the threshold over twelve emails and watch the mistakes, precision and recall, and the ROC curve change.</i-en><i-de>Ein Spamfilter gibt jeder E-Mail eine Punktzahl zwischen 0 und 1. Erst der Schwellenwert macht daraus Entscheidungen: ab ihm landet die E-Mail im Spam. Hier verschiebst du den Schwellenwert über zwölf E-Mails und siehst, wie sich die Fehler, Precision und Recall und die ROC-Kurve ändern.</i-de></p>
+  <div class="levels" role="group" aria-label="Level">
+    <button data-level="1" aria-pressed="true"><i-en>High school</i-en><i-de>Schule</i-de></button><button data-level="2" aria-pressed="false"><i-en>College</i-en><i-de>Studium</i-de></button>
+  </div>
+</header>
+
+<section class="station" data-station="sort" data-show="1 2">
+  <span class="num"><i-en>Station 1 · Four kinds of outcome</i-en><i-de>Station 1 · Vier Arten von Ergebnis</i-de></span>
+  <h2><i-en>Sort the emails</i-en><i-de>Die E-Mails sortieren</i-de></h2>
+  <p><i-en>Six of the twelve emails are really spam (filled dots), six are normal (rings). Every email lands in one cell of the confusion matrix: spam caught (true positive), spam missed (false negative), normal email flagged (false positive, a false alarm) or normal email let through (true negative).</i-en><i-de>Sechs der zwölf E-Mails sind wirklich Spam (volle Punkte), sechs sind normal (Ringe). Jede E-Mail landet in einer Zelle der Konfusionsmatrix: Spam erkannt (richtig positiv), Spam verpasst (falsch negativ), normale E-Mail markiert (falsch positiv, ein Fehlalarm) oder normale E-Mail durchgelassen (richtig negativ).</i-de></p>
+  <p><b><i-en>Guess first:</i-en><i-de>Erst raten:</i-de></b> <i-en>The threshold is 0.5. You lower it to 0.3 so that less spam slips through. What happens to the false alarms?</i-en><i-de>Der Schwellenwert ist 0,5. Du senkst ihn auf 0,3, damit weniger Spam durchrutscht. Was passiert mit den Fehlalarmen?</i-de></p>
+  <div class="choices gate" data-gate="lower">
+    <button data-ok data-fb-en="Right. A lower threshold flags more emails of every kind: more spam is caught, but more normal emails are flagged too." data-fb-de="Richtig. Ein niedrigerer Schwellenwert markiert mehr E-Mails jeder Art: Mehr Spam wird erkannt, aber auch mehr normale E-Mails werden markiert."><i-en>There are more false alarms</i-en><i-de>Es gibt mehr Fehlalarme</i-de></button>
+    <button data-fb-en="No. Lowering the threshold flags more emails, including normal ones, so false alarms can only stay the same or grow." data-fb-de="Nein. Ein niedrigerer Schwellenwert markiert mehr E-Mails, auch normale; Fehlalarme können also nur gleich bleiben oder mehr werden."><i-en>There are fewer false alarms</i-en><i-de>Es gibt weniger Fehlalarme</i-de></button>
+    <button data-fb-en="Only if no normal email has a score between 0.3 and 0.5. Here two of them do." data-fb-de="Nur wenn keine normale E-Mail eine Punktzahl zwischen 0,3 und 0,5 hat. Hier haben zwei eine."><i-en>Nothing changes for normal emails</i-en><i-de>Für normale E-Mails ändert sich nichts</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="gated" data-gated="lower" hidden data-judge-on="input">
+    <div class="row"><label for="thr1"><i-en>Threshold</i-en><i-de>Schwellenwert</i-de></label><input type="range" class="thr" id="thr1" min="0" max="1" step="0.01" value="0.5"><span class="mono thrVal"></span></div>
+    <div class="scroll"><canvas id="sortPlot" width="420" height="150" aria-label="Emails on a score line with the threshold"></canvas></div>
+    <div class="scroll"><table class="cm" id="cm"></table></div>
+    <p class="note dsName"></p>
+    <p class="note" id="sortTip"><i-en>Goal: catch every spam email, with no misses. What does that cost?</i-en><i-de>Ziel: jede Spam-E-Mail erwischen, ohne eine zu verpassen. Was kostet das?</i-de></p>
+    <p class="note" data-show="2"><i-en>Accuracy = (TP + TN) / all emails. It hides which kind of mistake you make, and on rare positives it is high even for a filter that flags nothing.</i-en><i-de>Accuracy = (TP + TN) / alle E-Mails. Sie verschweigt, welche Art von Fehler passiert, und ist bei seltenen Positiven sogar für einen Filter hoch, der nichts markiert.</i-de> <span class="mono" id="accVal"></span></p>
+  </div>
+</section>
+
+<section class="station" data-station="trade-off" data-show="1 2">
+  <span class="num"><i-en>Station 2 · Two questions</i-en><i-de>Station 2 · Zwei Fragen</i-de></span>
+  <h2><i-en>Precision against recall</i-en><i-de>Precision gegen Recall</i-de></h2>
+  <p><i-en>Precision asks: of the emails sent to spam, how many really are spam? Recall asks: of the real spam, how much did the filter catch?</i-en><i-de>Precision fragt: Von den E-Mails im Spamordner, wie viele sind wirklich Spam? Recall fragt: Vom echten Spam, wie viel hat der Filter erwischt?</i-de></p>
+  <p><b><i-en>Guess first:</i-en><i-de>Erst raten:</i-de></b> <i-en>You raise the threshold. What happens?</i-en><i-de>Du erhöhst den Schwellenwert. Was passiert?</i-de></p>
+  <div class="choices gate" data-gate="raise">
+    <button data-mis="raise-both" data-fb-en="No. For a fixed filter the threshold trades one against the other: raising it makes the spam folder cleaner but lets more spam through." data-fb-de="Nein. Bei einem festen Filter tauscht der Schwellenwert das eine gegen das andere: Höher macht den Spamordner sauberer, lässt aber mehr Spam durch."><i-en>Both go up: a stricter filter is better</i-en><i-de>Beide steigen: Ein strengerer Filter ist besser</i-de></button>
+    <button data-ok data-fb-en="Right. Only very confident emails are flagged, so the spam folder gets cleaner (precision up), but more spam slips through (recall down)." data-fb-de="Richtig. Nur sehr sichere E-Mails werden markiert, der Spamordner wird sauberer (Precision steigt), aber mehr Spam rutscht durch (Recall sinkt)."><i-en>Precision tends to go up, recall goes down</i-en><i-de>Precision steigt eher, Recall sinkt</i-de></button>
+    <button data-fb-en="No. Recall cannot rise when fewer emails are flagged, and precision usually rises." data-fb-de="Nein. Recall kann nicht steigen, wenn weniger E-Mails markiert werden, und Precision steigt meistens."><i-en>Precision goes down, recall goes up</i-en><i-de>Precision sinkt, Recall steigt</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="gated" data-gated="raise" hidden data-judge-on="input">
+    <div class="row"><label for="thr2"><i-en>Threshold</i-en><i-de>Schwellenwert</i-de></label><input type="range" class="thr" id="thr2" min="0" max="1" step="0.01" value="0.5"><span class="mono thrVal"></span></div>
+    <div class="bars" id="prBars"></div>
+    <p class="note dsName"></p>
+    <p class="note" id="trTip"><i-en>Goal: a spam folder in which at least 90 % of the emails really are spam. How much spam do you still catch?</i-en><i-de>Ziel: ein Spamordner, in dem mindestens 90 % der E-Mails wirklich Spam sind. Wie viel Spam erwischst du dann noch?</i-de></p>
+    <p class="note" data-show="2"><i-en>Precision = TP / (TP + FP), recall = TP / (TP + FN), false positive rate FPR = FP / (FP + TN), F1 = 2 · P · R / (P + R).</i-en><i-de>Precision = TP / (TP + FP), Recall = TP / (TP + FN), Falsch-positiv-Rate FPR = FP / (FP + TN), F1 = 2 · P · R / (P + R).</i-de></p>
+  </div>
+</section>
+
+<section class="station" data-station="roc" data-show="1 2">
+  <span class="num"><i-en>Station 3 · All thresholds at once</i-en><i-de>Station 3 · Alle Schwellenwerte auf einmal</i-de></span>
+  <h2><i-en>The ROC curve</i-en><i-de>Die ROC-Kurve</i-de></h2>
+  <p><i-en>For every threshold, plot the share of spam caught (true positive rate, up) against the share of normal emails flagged (false positive rate, right). Joining all these points gives the ROC curve; the area under it (AUC) summarises how well the scores separate the two groups.</i-en><i-de>Für jeden Schwellenwert trägt man den Anteil erwischten Spams (Richtig-positiv-Rate, nach oben) gegen den Anteil markierter normaler E-Mails (Falsch-positiv-Rate, nach rechts) ein. Alle Punkte verbunden ergeben die ROC-Kurve; die Fläche darunter (AUC) fasst zusammen, wie gut die Punktzahlen die beiden Gruppen trennen.</i-de></p>
+  <p><b><i-en>Guess first:</i-en><i-de>Erst raten:</i-de></b> <i-en>Filter A gives spam and normal emails clearly different scores; filter B's scores overlap a lot. Which has the larger AUC?</i-en><i-de>Filter A gibt Spam und normalen E-Mails deutlich verschiedene Punktzahlen; bei Filter B überlappen sie stark. Welcher hat die größere AUC?</i-de></p>
+  <div class="choices gate" data-gate="auc">
+    <button data-ok data-fb-en="Right. With well separated scores almost every spam email ranks above almost every normal one, so the curve hugs the top left corner." data-fb-de="Richtig. Bei gut getrennten Punktzahlen liegt fast jede Spam-E-Mail über fast jeder normalen, die Kurve schmiegt sich an die linke obere Ecke."><i-en>Filter A</i-en><i-de>Filter A</i-de></button>
+    <button data-fb-en="No. Overlap means many normal emails outrank spam, which pulls the curve towards the diagonal and shrinks the area." data-fb-de="Nein. Überlappung heißt, viele normale E-Mails liegen über Spam; das zieht die Kurve zur Diagonalen und verkleinert die Fläche."><i-en>Filter B</i-en><i-de>Filter B</i-de></button>
+    <button data-mis="auc-picks-threshold" data-fb-en="No. The AUC does not depend on any one threshold; it sums up all of them, and it depends on how the scores are ordered." data-fb-de="Nein. Die AUC hängt von keinem einzelnen Schwellenwert ab; sie fasst alle zusammen und hängt von der Reihenfolge der Punktzahlen ab."><i-en>The same: it depends only on the threshold you pick</i-en><i-de>Gleich: Sie hängt nur vom gewählten Schwellenwert ab</i-de></button>
+  </div>
+  <p class="feedback" hidden></p>
+  <div class="gated" data-gated="auc" hidden data-judge-on="#dsA, #dsB, input">
+    <div class="row" id="dsBtns"><button class="btn ghost" id="dsA" data-ds="A"><i-en>Filter A (separated)</i-en><i-de>Filter A (getrennt)</i-de></button><button class="btn ghost" id="dsB" data-ds="B"><i-en>Filter B (overlapping)</i-en><i-de>Filter B (überlappend)</i-de></button></div>
+    <div class="row"><label for="thr3"><i-en>Threshold</i-en><i-de>Schwellenwert</i-de></label><input type="range" class="thr" id="thr3" min="0" max="1" step="0.01" value="0.5"><span class="mono thrVal"></span></div>
+    <div class="scroll"><canvas id="rocPlot" width="420" height="380" aria-label="ROC curve with the current threshold"></canvas></div>
+    <div class="stats">
+      <div><span class="note">AUC</span><span class="stat" id="aucVal"></span></div>
+      <div><span class="note">TPR</span><span class="stat" id="tprVal"></span></div>
+      <div><span class="note">FPR</span><span class="stat" id="fprVal"></span></div>
+    </div>
+    <p class="note" id="rocTip"><i-en>Look at both filters and move the threshold along the curve.</i-en><i-de>Schau dir beide Filter an und fahr mit dem Schwellenwert die Kurve entlang.</i-de></p>
+    <p class="note" data-show="2"><i-en>The AUC equals the chance that a randomly picked spam email scores higher than a randomly picked normal one. Count the pairs: here 6 × 6 = 36 pairs.</i-en><i-de>Die AUC ist die Wahrscheinlichkeit, dass eine zufällige Spam-E-Mail eine höhere Punktzahl hat als eine zufällige normale. Zähl die Paare: hier 6 × 6 = 36 Paare.</i-de> <span class="mono" id="pairVal"></span></p>
+  </div>
+</section>
+<footer><i-en>The emails and scores are made up for practice.</i-en><i-de>Die E-Mails und Punktzahlen sind zum Üben ausgedacht.</i-de></footer>
+</div>
+
+<script src="ptf-sim.js"></script>
+<script>
+const SIM_ID = "ptf:sim/threshold-lab", SIM_VERSION = "1.0.0";
+const SIM_LOCALES = ["en", "de"];
+const PTF_LEVELS = {"1": "highschool", "2": "college"};
+const START_LEVEL = "1";
+/* Shared PTF glue: levels, stations, focus mode, progress, predictions, resume state, snapshot (SIMULATOR-SPEC.md §4).
+   The simulator defines SIM_ID, SIM_VERSION, SIM_LOCALES, PTF_LEVELS, START_LEVEL before this block, and optionally
+   simState() / simRestore(st) / simSnapshot() / rerender() / onGuess(gate, ok) after it. */
+let CURRENT_LEVEL = START_LEVEL, LOCALE = "en", READY = false, FOCUS = null;
+var completed = new Set();   /* var: hoisted, so applyVisibility can run before this line */
+/* UI language (en, de): static text as <i-en>/<i-de> pairs, dynamic text via L(en, de). */
+const L = (en, de) => LOCALE === "de" ? de : en;
+const fmt = (x, d = 2) => x.toLocaleString(LOCALE === "de" ? "de-DE" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+const txt = el => (el.querySelector(LOCALE === "de" ? "i-de" : "i-en") || el).textContent.trim();
+/* SIM_LOCALES matches "lang" in sim.json; unsupported locales fall back to the first entry (§4.6). */
+function setLocale(loc) {
+  LOCALE = /^de/i.test(loc || "") && SIM_LOCALES.includes("de") ? "de" : SIM_LOCALES[0];
+  document.documentElement.lang = LOCALE;
+  renderStepper();
+  if (READY && typeof rerender === "function") rerender();
+}
+const stationsAtLevel = () => [...document.querySelectorAll("section[data-station]")].filter(s => s.dataset.show.split(" ").includes(CURRENT_LEVEL)).map(s => s.dataset.station);
+function setLevel(l) {
+  document.querySelectorAll(".levels button").forEach(b => b.setAttribute("aria-pressed", b.dataset.level === l));
+  CURRENT_LEVEL = l;
+  if (FOCUS && !stationsAtLevel().includes(FOCUS)) FOCUS = stationsAtLevel()[0] || null;
+  applyVisibility();
+  persist();
+}
+/* Focus mode (SIMULATOR-SPEC.md §4.7): one station at a time with Back / Next. */
+function applyVisibility() {
+  document.querySelectorAll("[data-show]").forEach(s => {
+    const lvl = s.dataset.show.split(" ").includes(CURRENT_LEVEL);
+    s.hidden = !lvl || (FOCUS !== null && s.matches("section[data-station]") && s.dataset.station !== FOCUS);
+  });
+  document.body.classList.toggle("focused", FOCUS !== null);
+  renderStepper();
+  const nav = document.getElementById("focusNav");
+  if (!nav) return;
+  nav.hidden = FOCUS === null;
+  if (FOCUS === null) return;
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS);
+  document.getElementById("focusBack").disabled = i <= 0;
+  document.getElementById("focusNext").disabled = i >= list.length - 1;
+  document.getElementById("focusPos").textContent = `${i + 1} / ${list.length}`;
+  if (READY && typeof onFocus === "function") onFocus(FOCUS);
+}
+/* Progress: one numbered step per station at the current level; done steps get a tick, any step can be opened directly. */
+function renderStepper() {
+  const nav = document.getElementById("stepper");
+  if (!nav) return;
+  nav.innerHTML = "";
+  stationsAtLevel().forEach((id, i) => {
+    const h = document.querySelector(`section[data-station="${id}"] h2`), title = h ? txt(h) : id;
+    const b = document.createElement("button");
+    b.className = "step" + (completed.has(id) ? " done" : "");
+    b.textContent = completed.has(id) ? "✓" : String(i + 1);
+    b.title = title; b.setAttribute("aria-label", `${i + 1}. ${title}${completed.has(id) ? L(" (done)", " (erledigt)") : ""}`);
+    if (id === FOCUS) b.setAttribute("aria-current", "step");
+    b.onclick = () => { setFocus(id); ptf.event("experienced", { station: id, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: id } }); window.scrollTo({ top: 0, behavior: "auto" }); };
+    nav.append(b);
+  });
+}
+function setFocus(id) { FOCUS = id; applyVisibility(); persist(); }
+function moveFocus(step) {
+  const list = stationsAtLevel(), i = list.indexOf(FOCUS), next = list[i + step];
+  if (!next) return;
+  setFocus(next);
+  ptf.event("experienced", { station: next, level: PTF_LEVELS[CURRENT_LEVEL], data: { focus: next } });
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+(function buildFocusNav() {
+  const nav = document.createElement("nav");
+  nav.id = "focusNav"; nav.className = "focus-nav"; nav.hidden = true;
+  nav.setAttribute("aria-label", "Stations");
+  nav.innerHTML = `<button class="btn ghost" id="focusBack"><i-en>Back</i-en><i-de>Zurück</i-de></button><span class="mono note" id="focusPos"></span><button class="btn" id="focusNext"><i-en>Next</i-en><i-de>Weiter</i-de></button><button class="btn ghost" id="focusAll"><i-en>Show all</i-en><i-de>Alles zeigen</i-de></button>`;
+  const footer = document.querySelector(".wrap > footer");
+  footer ? footer.before(nav) : document.querySelector(".wrap").append(nav);
+  nav.querySelector("#focusBack").onclick = () => moveFocus(-1);
+  nav.querySelector("#focusNext").onclick = () => moveFocus(1);
+  nav.querySelector("#focusAll").onclick = () => setFocus(null);
+  const start = document.createElement("button");
+  start.id = "focusStart"; start.className = "btn ghost";
+  start.innerHTML = "<i-en>Step by step</i-en><i-de>Schritt für Schritt</i-de>";
+  start.onclick = () => { setFocus(stationsAtLevel()[0]); ptf.event("experienced", { station: FOCUS, data: { focus: FOCUS } }); };
+  const stepper = document.createElement("nav");
+  stepper.id = "stepper"; stepper.className = "stepper"; stepper.setAttribute("aria-label", "Progress");
+  document.querySelector(".wrap > header").after(stepper);
+  const levels = document.querySelector("header .levels");
+  const row = document.createElement("div"); row.className = "row";
+  levels.before(row); row.append(levels, start);
+})();
+setLocale(navigator.language);
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", () => {
+  setLevel(b.dataset.level);
+  ptf.event("level_changed", { level: PTF_LEVELS[b.dataset.level] });
+}));
+function answered(station, correct, misconception, response) {
+  const result = { correct };
+  if (misconception && !correct) result.misconception = misconception;
+  if (response !== undefined) result.response = String(response);
+  ptf.event("answered", { station, level: PTF_LEVELS[CURRENT_LEVEL], result });
+  persist();
+}
+/* Every experiment reports what the learner tried, so the tutor can talk about it. */
+function report(station, data) { ptf.event("experienced", { station, level: PTF_LEVELS[CURRENT_LEVEL], data }); persist(); }
+function done(station) {
+  if (completed.has(station)) return;
+  completed.add(station);
+  ptf.stationCompleted(station, { level: PTF_LEVELS[CURRENT_LEVEL] });
+  renderStepper(); persist();
+}
+/* Multiple-choice boxes: <div class="choices"> with buttons carrying data-ok / data-mis / data-fb-en / data-fb-de,
+   followed by <p class="feedback" hidden>. A station completes when all its visible graded boxes are answered correctly. */
+function showFeedback(box, b, ok) {
+  const fb = box.nextElementSibling;
+  if (fb && fb.classList.contains("feedback")) { fb.hidden = false; fb.classList.toggle("bad", !ok); fb.textContent = (LOCALE === "de" ? b.dataset.fbDe : b.dataset.fbEn) || L(ok ? "Right." : "Not quite.", ok ? "Richtig." : "Nicht ganz."); }
+}
+function markChoice(box, b) {
+  const ok = b.hasAttribute("data-ok");
+  box.querySelectorAll("button").forEach(x => x.classList.remove("right", "wrong"));
+  b.classList.add(ok ? "right" : "wrong");
+  showFeedback(box, b, ok);
+  box.dataset.choice = [...box.querySelectorAll("button")].indexOf(b);
+  if (ok) box.dataset.solved = "1"; else delete box.dataset.solved;
+  return ok;
+}
+/* Predict, observe, explain (SIMULATOR-SPEC.md §7 rule 5): a .choices.gate box is a prediction. Picking an option only
+   records it and shows the hidden part [data-gated="<its data-gate>"]. The prediction is judged and reported as answered
+   at the learner's first use of a control there (or of one matching its data-judge-on), once the result is in view,
+   and it never completes the station. Elements with data-after="<gate>" (explanations) stay hidden until then. */
+function initGuess(box) {
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { if (!box.dataset.judged) pickGuess(box, b); }));
+  document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => ["click", "input"].forEach(t =>
+    el.addEventListener(t, e => { if (e.target.closest(el.dataset.judgeOn || "button, input, select, textarea")) setTimeout(() => judgeGuess(box)); })));
+}
+function pickGuess(box, b) {
+  box.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  box.dataset.pick = [...box.querySelectorAll("button")].indexOf(b);
+  document.querySelectorAll(`[data-gated="${box.dataset.gate}"]`).forEach(el => { el.hidden = false; });
+  ptf.event("experienced", { station: box.closest("[data-station]").dataset.station, level: PTF_LEVELS[CURRENT_LEVEL], data: { prediction: txt(b) } });
+  if (typeof onReveal === "function") onReveal(box.dataset.gate);
+  persist();
+}
+function judgeGuess(box, restoring) {
+  const b = box.dataset.pick === undefined ? null : box.querySelectorAll("button")[+box.dataset.pick];
+  if (!b || box.dataset.judged) return;
+  box.dataset.judged = "1";
+  const ok = b.hasAttribute("data-ok");
+  b.classList.add(ok ? "right" : "wrong");
+  box.querySelectorAll("button").forEach(x => { x.disabled = true; });
+  showFeedback(box, b, ok);
+  document.querySelectorAll(`[data-after="${box.dataset.gate}"]`).forEach(el => { el.hidden = false; });
+  if (!restoring) answered(box.closest("[data-station]").dataset.station, ok, b.dataset.mis, txt(b));
+  if (typeof onGuess === "function") onGuess(box.dataset.gate, ok);
+}
+function initChoices() {
+  document.querySelectorAll("[data-station] .choices").forEach(box => {
+    const sec = box.closest("[data-station]");
+    if (box.dataset.gate) return initGuess(box);
+    box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+      const ok = markChoice(box, b);
+      answered(sec.dataset.station, ok, b.dataset.mis, txt(b));
+      const graded = [...sec.querySelectorAll(".choices:not(.gate)")].filter(x => !x.closest("[hidden]"));
+      if (graded.length && graded.every(x => x.dataset.solved)) done(sec.dataset.station);
+    }));
+  });
+}
+/* Resume state (ptf/state): level, focus, progress, predictions, quiz answers, plus whatever simState() returns. */
+let RESTORING = true, persistTimer = null;
+function persist() {
+  if (RESTORING) return;
+  clearTimeout(persistTimer);
+  persistTimer = setTimeout(() => {
+    const guesses = {}, quiz = {};
+    document.querySelectorAll(".choices.gate").forEach(x => { if (x.dataset.pick !== undefined) guesses[x.dataset.gate] = { pick: +x.dataset.pick, judged: !!x.dataset.judged }; });
+    document.querySelectorAll(".choices[data-q]").forEach(x => { if (x.dataset.choice !== undefined) quiz[x.dataset.q] = +x.dataset.choice; });
+    ptf.saveState(Object.assign({ level: PTF_LEVELS[CURRENT_LEVEL], focus: FOCUS, completed: [...completed], guesses, quiz },
+      typeof simState === "function" ? simState() : {}));
+  }, 200);
+}
+function restore(st) {
+  if (!st || typeof st !== "object") return;
+  if (typeof simRestore === "function") simRestore(st);
+  if (st.guesses && typeof st.guesses === "object") document.querySelectorAll(".choices.gate").forEach(box => {
+    const g = st.guesses[box.dataset.gate], b = g && Number.isInteger(g.pick) && box.querySelectorAll("button")[g.pick];
+    if (!b) return;
+    pickGuess(box, b);
+    if (g.judged) judgeGuess(box, true);
+  });
+  if (st.quiz && typeof st.quiz === "object") document.querySelectorAll(".choices[data-q]").forEach(box => {
+    const b = Number.isInteger(st.quiz[box.dataset.q]) && box.querySelectorAll("button")[st.quiz[box.dataset.q]];
+    if (b) markChoice(box, b);
+  });
+  if (Array.isArray(st.completed)) st.completed.forEach(id => { if (document.querySelector(`section[data-station="${id}"]`)) completed.add(id); });
+  if (st.focus === null || (typeof st.focus === "string" && stationsAtLevel().includes(st.focus))) FOCUS = st.focus;
+  applyVisibility();
+}
+const ptf = PTF.connect({
+  id: SIM_ID, version: SIM_VERSION, defaultLevel: PTF_LEVELS[START_LEVEL],
+  onInit(ctx) {
+    RESTORING = true;
+    try {
+      if (ctx.locale) setLocale(ctx.locale);
+      const lvl = (ctx.state && ctx.state.level) || ctx.level;
+      if (lvl) applyLevel(lvl);
+      restore(ctx.state);
+      if (ctx.station) gotoStation(ctx.station, { focus: ctx.focus !== false });
+      if (typeof rerender === "function") rerender();
+    } finally { RESTORING = false; }
+  },
+  onSetLevel: applyLevel,
+  onGoto: gotoStation,
+  onTheme() { if (READY && typeof rerender === "function") rerender(); },
+  snapshot() {
+    const shown = [...document.querySelectorAll("section[data-station]")].filter(s => !s.hidden).map(s => s.dataset.station);
+    const parts = [`Level: ${PTF_LEVELS[CURRENT_LEVEL]}`, `UI language: ${LOCALE}`, `Visible stations: ${shown.join(", ")}`];
+    if (FOCUS) parts.push(`Focus mode on station: ${FOCUS}`);
+    if (completed.size) parts.push(`Completed: ${[...document.querySelectorAll("section[data-station]")].map(s => s.dataset.station).filter(id => completed.has(id)).join(", ")}`);
+    const preds = [...document.querySelectorAll(".choices.gate")].filter(x => x.dataset.pick !== undefined)
+      .map(x => { const b = x.querySelectorAll("button")[+x.dataset.pick]; return `${x.dataset.gate} ${JSON.stringify(b.textContent.trim().replace(/\s+/g, " "))}${x.dataset.judged ? (b.hasAttribute("data-ok") ? " (right)" : " (wrong)") : " (not yet judged)"}`; });
+    if (preds.length) parts.push(`Predictions: ${preds.join("; ")}`);
+    if (typeof simSnapshot === "function") parts.push(simSnapshot());
+    return parts.join(". ");
+  }
+});
+function applyLevel(level) {
+  const n = Object.keys(PTF_LEVELS).find(k => PTF_LEVELS[k] === level);
+  if (n) setLevel(n);
+}
+function gotoStation(id, opts) {
+  const s = id ? document.querySelector(`section[data-station="${id}"]`) : null;
+  if (opts && opts.focus === false) setFocus(null);
+  if (!s) return;
+  if (!s.dataset.show.split(" ").includes(CURRENT_LEVEL)) setLevel(s.dataset.show.split(" ")[0]);
+  if (opts && opts.focus === true) { setFocus(id); window.scrollTo({ top: 0, behavior: "auto" }); return; }
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+/* Theme tokens for canvas (§4.5): a host may set a token to anything CSS accepts (light-dark(), var(), color-mix()),
+   which a 2D context cannot parse, so resolve it to a plain colour or font list through the browser first. */
+const tokenProbe = document.createElement("i");
+tokenProbe.hidden = true; document.body.append(tokenProbe);
+function css(name) {
+  const font = name.startsWith("--f-");
+  tokenProbe.style[font ? "fontFamily" : "color"] = `var(${name})`;
+  return getComputedStyle(tokenProbe)[font ? "fontFamily" : "color"];
+}
+const $ = id => document.getElementById(id);
+/* ---- Drawing helpers ---- */
+function niceTicks(a, b, n = 5) {
+  const raw = (b - a) / n, p = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 5, 10].map(k => k * p).find(s => s >= raw) || 10 * p;
+  const out = [];
+  for (let v = Math.ceil(a / step) * step; v <= b + 1e-9; v += step) out.push(+v.toFixed(10));
+  return { ticks: out, step };
+}
+function frame(cv, xr, yr, labels, noY) {
+  const ctx = cv.getContext("2d"), W = cv.width, H = cv.height, m = { l: 46, r: 20, t: 10, b: 30 };
+  const X = x => m.l + (x - xr[0]) / (xr[1] - xr[0]) * (W - m.l - m.r);
+  const Y = y => H - m.b - (y - yr[0]) / (yr[1] - yr[0]) * (H - m.t - m.b);
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = css("--surface"); ctx.fillRect(0, 0, W, H);
+  ctx.font = `15px ${css("--f-mono")}`; ctx.lineWidth = 1;
+  const xt = niceTicks(xr[0], xr[1], 6), yt = niceTicks(yr[0], yr[1], 4);
+  const dec = s => s >= 1 ? 0 : s >= 0.1 ? 1 : 2;
+  ctx.strokeStyle = css("--line"); ctx.fillStyle = css("--muted");
+  ctx.textAlign = "center"; ctx.textBaseline = "top";
+  xt.ticks.forEach(v => { ctx.beginPath(); ctx.moveTo(X(v), m.t); ctx.lineTo(X(v), H - m.b); ctx.stroke(); ctx.fillText(fmt(v, dec(xt.step)), X(v), H - m.b + 6); });
+  ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  if (!noY) yt.ticks.forEach(v => { ctx.beginPath(); ctx.moveTo(m.l, Y(v)); ctx.lineTo(W - m.r, Y(v)); ctx.stroke(); ctx.fillText(fmt(v, dec(yt.step)), m.l - 6, Y(v)); });
+  if (labels) {
+    ctx.fillStyle = css("--muted"); ctx.textAlign = "right"; ctx.textBaseline = "bottom";
+    ctx.fillText(labels[0], W - m.r, H - m.b - 4);
+    ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillText(labels[1], m.l + 6, m.t + 2);
+  }
+  return { ctx, X, Y, W, H, m };
+}
+function curve(f, fn, x0, x1, color, width = 2.5) {
+  const { ctx, X, Y } = f;
+  ctx.save(); ctx.beginPath(); ctx.rect(f.m.l, f.m.t, f.W - f.m.l - f.m.r, f.H - f.m.t - f.m.b); ctx.clip();
+  ctx.strokeStyle = color; ctx.lineWidth = width; ctx.beginPath();
+  for (let i = 0; i <= 200; i++) { const x = x0 + (x1 - x0) * i / 200; i ? ctx.lineTo(X(x), Y(fn(x))) : ctx.moveTo(X(x), Y(fn(x))); }
+  ctx.stroke(); ctx.restore();
+}
+function dot(f, x, y, color, r = 6) { const { ctx, X, Y } = f; ctx.fillStyle = color; ctx.beginPath(); ctx.arc(X(x), Y(y), r, 0, 2 * Math.PI); ctx.fill(); }
+function polyline(f, pts, color, dots = true) {
+  const { ctx, X, Y } = f;
+  ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath();
+  pts.forEach(([x, y], i) => i ? ctx.lineTo(X(x), Y(y)) : ctx.moveTo(X(x), Y(y))); ctx.stroke();
+  if (dots) pts.forEach(([x, y]) => dot(f, x, y, color, 3.5));
+}
+
+
+/* ---- Data: twelve emails, six spam and six normal, for two filters ---- */
+const DATA = {
+  A: { spam: [0.95, 0.88, 0.80, 0.72, 0.55, 0.38], normal: [0.66, 0.47, 0.30, 0.22, 0.12, 0.05] },
+  B: { spam: [0.90, 0.70, 0.60, 0.45, 0.35, 0.20], normal: [0.85, 0.65, 0.50, 0.40, 0.25, 0.10] }
+};
+let DS = "A", T = 0.5;
+const seen = new Set(["A"]);
+let rocMoved = false;
+function counts(ds = DS, t = T) {
+  const d = DATA[ds], tp = d.spam.filter(s => s >= t - 1e-9).length, fp = d.normal.filter(s => s >= t - 1e-9).length;
+  return { tp, fn: d.spam.length - tp, fp, tn: d.normal.length - fp };
+}
+function rates(c) {
+  const p = c.tp + c.fp ? c.tp / (c.tp + c.fp) : null, r = c.tp / (c.tp + c.fn), fpr = c.fp / (c.fp + c.tn);
+  return { p, r, fpr, f1: p && r ? 2 * p * r / (p + r) : null, acc: (c.tp + c.tn) / (c.tp + c.fn + c.fp + c.tn) };
+}
+function auc(ds = DS) { const d = DATA[ds]; let w = 0; d.spam.forEach(s => d.normal.forEach(n => { w += s > n ? 1 : s === n ? 0.5 : 0; })); return { wins: w, pairs: d.spam.length * d.normal.length, auc: w / (d.spam.length * d.normal.length) }; }
+function rocPoints(ds = DS) { const d = DATA[ds], ts = [1.01, ...[...d.spam, ...d.normal].sort((a, b) => b - a)]; return ts.map(t => { const r = rates(counts(ds, t)); return [r.fpr, r.r]; }); }
+const pct = x => x === null ? "–" : `${fmt(100 * x, 0)} %`;
+const dsLabel = () => DS === "A" ? L("Filter A (separated)", "Filter A (getrennt)") : L("Filter B (overlapping)", "Filter B (überlappend)");
+
+function setT(v, station) {
+  T = Math.round(v * 100) / 100;
+  document.querySelectorAll("input.thr").forEach(i => { i.value = T; });
+  const c = counts(), r = rates(c);
+  if (station === "roc") rocMoved = true;
+  report(station, { threshold: T, filter: DS, tp: c.tp, fn: c.fn, fp: c.fp, tn: c.tn, precision: r.p === null ? null : +r.p.toFixed(3), recall: +r.r.toFixed(3) });
+  checkDone(station);
+  render();
+}
+function checkDone(station) {
+  const c = counts(), r = rates(c);
+  if (station === "sort" && c.fn === 0) done("sort");
+  if (station === "trade-off" && r.p !== null && r.p >= 0.9) done("trade-off");
+  if (station === "roc" && seen.size === 2 && rocMoved) done("roc");
+}
+function setDS(ds) {
+  DS = ds; seen.add(ds);
+  const a = auc();
+  report("roc", { filter: ds, auc: +a.auc.toFixed(3) });
+  checkDone("roc"); render();
+}
+
+function renderSort() {
+  const d = DATA[DS], c = counts(), r = rates(c);
+  const f = frame($("sortPlot"), [0, 1], [0, 3], [L("score", "Punktzahl"), ""], true);
+  const { ctx, X, Y } = f;
+  ctx.fillStyle = css("--warn-soft"); ctx.fillRect(X(T), Y(3), X(1) - X(T), Y(0) - Y(3));
+  ctx.strokeStyle = css("--warn"); ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(X(T), Y(0)); ctx.lineTo(X(T), Y(3)); ctx.stroke();
+  ctx.fillStyle = css("--warn"); ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillText(L("→ spam", "→ Spam"), Math.min(X(T) + 6, f.W - 70), Y(3) + 2);
+  d.spam.forEach(s => dot(f, s, 2, css("--ink"), 7));
+  d.normal.forEach(s => { ctx.strokeStyle = css("--accent"); ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(X(s), Y(1), 6.5, 0, 2 * Math.PI); ctx.stroke(); });
+  ctx.fillStyle = css("--muted"); ctx.textAlign = "left"; ctx.textBaseline = "middle";
+  const cell = (n, en, de, cls) => `<td class="${cls}"><b>${n}</b>${L(en, de)}</td>`;
+  $("cm").innerHTML = `<tr><th></th><th>${L("Flagged as spam", "Als Spam markiert")}</th><th>${L("Let through", "Durchgelassen")}</th></tr>`
+    + `<tr><th>${L("Really spam", "Wirklich Spam")}</th>${cell(c.tp, "caught (TP)", "erwischt (TP)", "good")}${cell(c.fn, "missed (FN)", "verpasst (FN)", "bad")}</tr>`
+    + `<tr><th>${L("Really normal", "Wirklich normal")}</th>${cell(c.fp, "false alarm (FP)", "Fehlalarm (FP)", "bad")}${cell(c.tn, "fine (TN)", "korrekt (TN)", "good")}</tr>`;
+  $("accVal").textContent = `${L("Now", "Jetzt")}: ${pct(r.acc)}`;
+  $("sortTip").textContent = completed.has("sort") && c.fn === 0
+    ? L(`No spam missed, at the price of ${c.fp} false alarm${c.fp === 1 ? "" : "s"}: ${c.fp} of 6 normal emails end up in the spam folder.`, `Kein Spam verpasst, um den Preis von ${c.fp} Fehlalarm${c.fp === 1 ? "" : "en"}: ${c.fp} von 6 normalen E-Mails landen im Spamordner.`)
+    : L("Goal: catch every spam email, with no misses. What does that cost?", "Ziel: jede Spam-E-Mail erwischen, ohne eine zu verpassen. Was kostet das?");
+}
+function renderTrade() {
+  const c = counts(), r = rates(c);
+  const rows = [[L("Precision", "Precision"), r.p, ""], [L("Recall", "Recall"), r.r, ""]];
+  if (CURRENT_LEVEL === "2") rows.push(["FPR", r.fpr, " alt"], ["F1", r.f1, ""]);
+  $("prBars").innerHTML = rows.map(([n, v, cls]) => `<div class="bar"><span>${n}</span><div class="fill${cls}" style="width:${v === null ? 0 : 100 * v}%"></div><span class="v">${pct(v)}</span></div>`).join("");
+  $("trTip").textContent = r.p !== null && r.p >= 0.9
+    ? L(`Precision ${pct(r.p)}: the spam folder is clean, but recall is only ${pct(r.r)}, so ${c.fn} of 6 spam emails still reach the inbox.`, `Precision ${pct(r.p)}: Der Spamordner ist sauber, aber Recall ist nur ${pct(r.r)}, also landen noch ${c.fn} von 6 Spam-E-Mails im Posteingang.`)
+    : L("Goal: a spam folder in which at least 90 % of the emails really are spam. How much spam do you still catch?", "Ziel: ein Spamordner, in dem mindestens 90 % der E-Mails wirklich Spam sind. Wie viel Spam erwischst du dann noch?");
+}
+function renderRoc() {
+  document.querySelectorAll("#dsBtns button").forEach(b => b.setAttribute("aria-pressed", b.dataset.ds === DS));
+  const a = auc(), c = counts(), r = rates(c), pts = rocPoints();
+  const f = frame($("rocPlot"), [0, 1], [0, 1], ["FPR", "TPR"]);
+  const { ctx, X, Y } = f;
+  ctx.setLineDash([4, 4]); ctx.strokeStyle = css("--muted"); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(1), Y(1)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = css("--accent-soft"); ctx.beginPath(); ctx.moveTo(X(0), Y(0)); pts.forEach(([x, y]) => ctx.lineTo(X(x), Y(y))); ctx.lineTo(X(1), Y(0)); ctx.closePath(); ctx.fill();
+  polyline(f, pts, css("--accent"));
+  dot(f, r.fpr, r.r, css("--warn"), 8);
+  $("aucVal").textContent = fmt(a.auc, 3); $("tprVal").textContent = pct(r.r); $("fprVal").textContent = pct(r.fpr);
+  $("pairVal").textContent = L(`${dsLabel()}: spam ahead in ${fmt(a.wins, 0)} of ${a.pairs} pairs = ${fmt(a.auc, 3)}.`, `${dsLabel()}: Spam vorn in ${fmt(a.wins, 0)} von ${a.pairs} Paaren = ${fmt(a.auc, 3)}.`);
+  $("rocTip").textContent = completed.has("roc")
+    ? L(`Filter A: AUC ${fmt(auc("A").auc, 3)}. Filter B: AUC ${fmt(auc("B").auc, 3)}. Moving the threshold only moves the point along the curve; the curve and its area stay the same.`, `Filter A: AUC ${fmt(auc("A").auc, 3)}. Filter B: AUC ${fmt(auc("B").auc, 3)}. Der Schwellenwert verschiebt nur den Punkt auf der Kurve; Kurve und Fläche bleiben gleich.`)
+    : L("Look at both filters and move the threshold along the curve.", "Schau dir beide Filter an und fahr mit dem Schwellenwert die Kurve entlang.");
+}
+function render() {
+  document.querySelectorAll(".thrVal").forEach(s => { s.textContent = fmt(T, 2); });
+  document.querySelectorAll(".dsName").forEach(s => { s.textContent = `${L("Scores from", "Punktzahlen von")} ${dsLabel()}.`; });
+  renderSort(); renderTrade(); renderRoc();
+}
+
+$("thr1").addEventListener("input", e => setT(+e.target.value, "sort"));
+$("thr2").addEventListener("input", e => setT(+e.target.value, "trade-off"));
+$("thr3").addEventListener("input", e => setT(+e.target.value, "roc"));
+$("dsA").onclick = () => setDS("A");
+$("dsB").onclick = () => setDS("B");
+
+function rerender() { render(); renderStepper(); }
+function onFocus() { if (READY) render(); }
+function simState() { return { T, DS, seen: [...seen], rocMoved }; }
+function simRestore(st) {
+  if (Number.isFinite(st.T) && st.T >= 0 && st.T <= 1) T = Math.round(st.T * 100) / 100;
+  if (st.DS === "A" || st.DS === "B") DS = st.DS;
+  if (Array.isArray(st.seen)) st.seen.filter(x => x === "A" || x === "B").forEach(x => seen.add(x));
+  rocMoved = st.rocMoved === true;
+  document.querySelectorAll("input.thr").forEach(i => { i.value = T; });
+}
+function simSnapshot() {
+  const c = counts(), r = rates(c), a = auc();
+  return [`Filter ${DS} (${DS === "A" ? "separated" : "overlapping"} scores), threshold ${T.toFixed(2)} (score >= threshold means spam)`,
+    `Confusion matrix: TP ${c.tp}, FN ${c.fn}, FP ${c.fp}, TN ${c.tn}`,
+    `Precision ${r.p === null ? "undefined (nothing flagged)" : r.p.toFixed(3)}, recall ${r.r.toFixed(3)}, FPR ${r.fpr.toFixed(3)}, accuracy ${r.acc.toFixed(3)}`,
+    `AUC of filter ${DS} ${a.auc.toFixed(3)} (${a.wins} of ${a.pairs} spam-normal pairs ranked correctly); filters viewed: ${[...seen].sort().join(", ")}`].join(". ");
+}
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (READY) rerender(); });
+document.querySelectorAll(".levels button").forEach(b => b.addEventListener("click", () => render()));
+initChoices();
+setLevel(START_LEVEL);
+setFocus(stationsAtLevel()[0] || null);
+rerender();
+READY = true; RESTORING = false;
+</script>
+</body>
+</html>

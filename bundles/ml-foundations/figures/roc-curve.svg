@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 340" role="img" aria-labelledby="roc-curve-t roc-curve-d" data-ptf-figure="1">
+  <title id="roc-curve-t">ROC curve of eight emails</title>
+  <desc id="roc-curve-d">ROC curve for eight emails with scores 0.95 spam, 0.85 spam, 0.70 normal, 0.60 spam, 0.45 normal, 0.40 spam, 0.20 normal, 0.10 normal. Lowering the threshold step by step gives the points (0, 0), (0, 0.25), (0, 0.5), (0.25, 0.5), (0.25, 0.75), (0.5, 0.75), (0.5, 1), (0.75, 1), (1, 1); threshold 0.5 is the point (0.25, 0.75). The area under the curve is 0.8125 (13 of 16 pairs ranked correctly), compared with 0.5 for the dashed diagonal of random guessing.</desc>
+  <defs><marker id="ptf-arrow-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-ink" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-muted" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-accent" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-warn" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-good" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+  <g>
+    <line class="s-line w1" x1="56.0" y1="286.0" x2="56.0" y2="30.0"/>
+    <line class="s-line w1" x1="56.0" y1="286.0" x2="312.0" y2="286.0"/>
+    <text class="t-s f-muted" x="56.0" y="304.0" text-anchor="middle">0</text>
+    <text class="t-s f-muted" x="50.0" y="291.0" text-anchor="end">0</text>
+    <line class="s-line w1" x1="120.0" y1="286.0" x2="120.0" y2="30.0"/>
+    <line class="s-line w1" x1="56.0" y1="222.0" x2="312.0" y2="222.0"/>
+    <text class="t-s f-muted" x="120.0" y="304.0" text-anchor="middle">0.25</text>
+    <text class="t-s f-muted" x="50.0" y="227.0" text-anchor="end">0.25</text>
+    <line class="s-line w1" x1="184.0" y1="286.0" x2="184.0" y2="30.0"/>
+    <line class="s-line w1" x1="56.0" y1="158.0" x2="312.0" y2="158.0"/>
+    <text class="t-s f-muted" x="184.0" y="304.0" text-anchor="middle">0.5</text>
+    <text class="t-s f-muted" x="50.0" y="163.0" text-anchor="end">0.5</text>
+    <line class="s-line w1" x1="248.0" y1="286.0" x2="248.0" y2="30.0"/>
+    <line class="s-line w1" x1="56.0" y1="94.0" x2="312.0" y2="94.0"/>
+    <text class="t-s f-muted" x="248.0" y="304.0" text-anchor="middle">0.75</text>
+    <text class="t-s f-muted" x="50.0" y="99.0" text-anchor="end">0.75</text>
+    <line class="s-line w1" x1="312.0" y1="286.0" x2="312.0" y2="30.0"/>
+    <line class="s-line w1" x1="56.0" y1="30.0" x2="312.0" y2="30.0"/>
+    <text class="t-s f-muted" x="312.0" y="304.0" text-anchor="middle">1</text>
+    <text class="t-s f-muted" x="50.0" y="35.0" text-anchor="end">1</text>
+    <text class="t-s f-ink" x="312.0" y="322.0" text-anchor="end">false positive rate (FPR)</text>
+    <text class="t-s f-ink" x="12.0" y="18.0">true positive rate (TPR)</text>
+  </g>
+  <g data-step="1" data-caption="Each threshold gives one point (FPR, TPR). From the highest to the lowest score: (0, 0.25), (0, 0.5), (0.25, 0.5), … up to (1, 1). Threshold 0.5 gives (0.25, 0.75).">
+    <circle class="f-accent" cx="56.0" cy="286.0" r="4.5"/>
+    <circle class="f-accent" cx="56.0" cy="222.0" r="4.5"/>
+    <circle class="f-accent" cx="56.0" cy="158.0" r="4.5"/>
+    <circle class="f-accent" cx="120.0" cy="158.0" r="4.5"/>
+    <circle class="f-accent" cx="120.0" cy="94.0" r="4.5"/>
+    <circle class="f-accent" cx="184.0" cy="94.0" r="4.5"/>
+    <circle class="f-accent" cx="184.0" cy="30.0" r="4.5"/>
+    <circle class="f-accent" cx="248.0" cy="30.0" r="4.5"/>
+    <circle class="f-accent" cx="312.0" cy="30.0" r="4.5"/>
+    <circle class="f-none s-warn w2" cx="120.0" cy="94.0" r="7"/>
+    <text class="t-s f-warn" x="66.2" y="50.5">threshold 0.5:</text>
+    <text class="t-s f-warn" x="66.2" y="71.0">(0.25, 0.75)</text>
+  </g>
+  <g data-step="2" data-caption="Joining the points gives the ROC curve. The area under it is 0.8125: 13 of the 16 spam/normal pairs are ranked correctly.">
+    <path class="f-accent-soft" d="M56.0 286.0 L56.0 286.0 L56.0 222.0 L56.0 158.0 L120.0 158.0 L120.0 94.0 L184.0 94.0 L184.0 30.0 L248.0 30.0 L312.0 30.0 L312.0 286.0 Z"/>
+    <polyline class="s-accent w3" points="56.0,286.0 56.0,222.0 56.0,158.0 120.0,158.0 120.0,94.0 184.0,94.0 184.0,30.0 248.0,30.0 312.0,30.0"/>
+    <text class="t f-accent bold" x="196.8" y="196.4">AUC = 0.8125</text>
+  </g>
+  <g data-step="3" data-caption="The diagonal is random guessing, AUC 0.5. The closer the curve hugs the top left corner, the better the scores separate the classes.">
+    <line class="s-muted w2 dash" x1="56.0" y1="286.0" x2="312.0" y2="30.0"/>
+    <text class="t-s f-muted" x="308.0" y="270.6" text-anchor="end">random: AUC 0.5</text>
+  </g>
+</svg>
