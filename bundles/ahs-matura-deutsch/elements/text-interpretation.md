@@ -20,7 +20,7 @@ duration_min: { highschool: 120 }
 sources:
   - id: srdp-textsorten
     resource: https://www.matura.gv.at/srdp/unterrichtssprache
-    title: "BMBWF: Textsortenkatalog zur SRDP in der Unterrichtssprache, Textinterpretation"
+    title: "BMBWF: Textsortenkatalog zur SRDP in der Unterrichtssprache (2020), Textinterpretation"
   - id: kafka-gibs-auf
     resource: https://de.wikisource.org/wiki/Franz_Kafka
     title: "Franz Kafka, „Gibs auf!“ (written around 1922, first published 1936), public domain"
@@ -50,15 +50,19 @@ present. Interpretation is backed by the text, not by guessing.
 
 # Key facts
 
-- Introduction: author, title, genre (parable, short story, poem, drama scene), time of writing, topic; an interpretation hypothesis in one sentence.
+- Introduction: the basic data (text type such as parable, short story, poem, drama scene; title; author; year of writing or publication) and the topic; often an interpretation hypothesis in one sentence.
+- Main part: a comprehensible summary of the topic or plot; analysis of the relevant formal, syntactic and content elements; developing or testing an interpretation hypothesis (the task may give one to test); recognising and explaining symbols; the analysed elements clearly named with technical terms and worked into the whole text.
+- Conclusion: a brief summary of the results of the interpretation.
 - Prose tools: narrator (first-person, third-person; inside or outside view), time (narrated time vs time of narration, tempo, sudden change), space (city, road, open/closed), figures (relation, power, dialogue), sentence structure (parataxis, hypotaxis, long sentences that reflect breathlessness), symbols (clock, way, station).
 - Poem tools: lyrical I, stanza and line, rhyme scheme, metre, enjambment, images and metaphors, sound.
 - Drama tools: dialogue and monologue, stage directions, conflict, the scene's place in the plot.
 - Evidence: quotation with line or paragraph, then interpretation: „Das Ich ‚fragte ihn atemlos nach dem Weg‘, was …“.
 - Openness: a parable or modern poem often allows several readings (existential, religious, social); name them and say which the text supports best.
-- Context (author, period) is used only to support a reading, not instead of analysis.
+- Context (history, culture, the author's life, other texts) may be brought into the reading, but only to support it, not instead of analysis.
+- Language: technical terms used correctly and consistently; own vocabulary, detached from the text, without taking over its style; direct and indirect quotations clearly marked.
+- Textinterpretation vs Textanalyse: the interpretation goes on where the analysis stops; it rests on the analysis but enters the space of meaning.
 - "Gibs auf!": written around 1922 by Franz Kafka (1883–1924), published after his death; a very short first-person parable; it ends without resolution. Quotations keep the original spelling (daß, mußte).
-- Usual length in the exam: 540–660 words.
+- Length in the exam: always 540–660 words; no situation beyond the exam. Too short an interpretation usually lacks depth; a somewhat longer one can show quality.
 
 # Level: highschool
 
@@ -196,14 +200,15 @@ today.
   "misconception": "form-without-meaning",
   "question": "Schreibauftrag\nThema: Orientierung\nVerfassen Sie eine Textinterpretation (540–660 Wörter). Lesen Sie Franz Kafkas Text „Gibs auf!“ (Textbeilage; entstanden um 1922, nach Kafkas Tod veröffentlicht; Rechtschreibung des Originals).\nAufgabenstellung:\n• Fassen Sie den Inhalt des Textes kurz zusammen.\n• Analysieren Sie, wie die zunehmende Verunsicherung des Ich-Erzählers dargestellt wird.\n• Deuten Sie die Antwort des Schutzmanns und das Ende des Textes.\n\nTextbeilage: Franz Kafka, „Gibs auf!“\n\nEs war sehr früh am Morgen, die Straßen rein und leer, ich ging zum Bahnhof. Als ich eine Turmuhr mit meiner Uhr verglich, sah ich, daß es schon viel später war, als ich geglaubt hatte, ich mußte mich sehr beeilen, der Schrecken über diese Entdeckung ließ mich im Weg unsicher werden, ich kannte mich in dieser Stadt noch nicht sehr gut aus, glücklicherweise war ein Schutzmann in der Nähe, ich lief zu ihm und fragte ihn atemlos nach dem Weg. Er lächelte und sagte: »Von mir willst du den Weg erfahren?« »Ja«, sagte ich, »da ich ihn selbst nicht finden kann.« »Gibs auf, gibs auf«, sagte er und wandte sich mit einem großen Schwunge ab, so wie Leute, die mit ihrem Lachen allein sein wollen.",
   "rubric": [
+    "Inhalt, writing acts: a Textinterpretation (summarising, analysing, interpreting), not a retelling with opinion",
     "Inhalt, bullet 1: content brief and correct (early morning, way to the station, clocks show it is later, panic and uncertainty in an unfamiliar city, asks a policeman, who laughs, says give it up and turns away)",
     "Inhalt, bullet 2: the growing uncertainty analysed with quotations: order at the start („rein und leer“), break through the clocks, the long breathless sentence, „unsicher“, „atemlos“, the unfamiliar city, the reversal of the policeman's role, the short dialogue",
     "Inhalt, bullet 3: the answer and the ending interpreted, with at least two readings (e.g. existential: no way can be shown from outside; criticism of authority: the institution refuses help and mocks; religious or metaphysical: no guidance from above) and a justified preference",
-    "Inhalt: interpretation hypothesis in the introduction; observations connected to meaning; no biography instead of analysis",
-    "Textstruktur: introduction with author, title, genre, time, hypothesis; brief content; analysis; interpretation; conclusion",
-    "Stil und Ausdruck: factual, present tense, precise terms (Ich-Erzähler, Parabel, Parataxe), quotations integrated",
-    "Sprachrichtigkeit: quotations exact (including the original spelling), commas, Konjunktiv",
-    "Length 540–660 words"
+    "Inhalt: the text grasped; interpretation hypothesis stated and tested; observations connected to meaning, symbols explained (clock, way, policeman); context only in support, no biography instead of analysis",
+    "Textstruktur: introduction with text type, title, author, year, hypothesis; brief content; analysis; interpretation; brief conclusion; quotations with references worked into the text",
+    "Stil und Ausdruck: factual, present tense, precise and consistent terms (Ich-Erzähler, Parabel, Parataxe); own vocabulary, not Kafka's style",
+    "Sprachnormen: quotations exact (including the original spelling) and marked, punctuation (commas), grammar (Konjunktiv)",
+    "Length 540–660 words; much shorter lacks depth"
   ],
   "sample_answer": "Franz Kafkas kurzer Prosatext „Gibs auf!“, entstanden um 1922 und erst nach dem Tod des Autors veröffentlicht, erzählt von einem Mann, der sich auf dem Weg zum Bahnhof verirrt. Der Text lässt sich als Parabel lesen: Er zeigt einen Menschen, der in einer fremd gewordenen Welt die Orientierung verliert und dort, wo er Hilfe erwartet, Spott und Abweisung erfährt.\n\nDer Ich-Erzähler geht früh am Morgen durch leere Straßen zum Bahnhof. Als er seine Uhr mit einer Turmuhr vergleicht, merkt er, dass es viel später ist, als er dachte. Erschrocken und in der fremden Stadt unsicher, fragt er einen Schutzmann nach dem Weg. Dieser lächelt, fragt zurück, ob er den Weg wirklich von ihm erfahren wolle, rät ihm „Gibs auf, gibs auf“ und wendet sich lachend ab.\n\nZu Beginn herrscht Ordnung. Die Straßen sind „rein und leer“, der Satz ist ruhig, das Ziel klar: „ich ging zum Bahnhof“. Diese Sicherheit bricht mit dem Blick auf die Turmuhr. Die eigene Uhr und die öffentliche Zeit stimmen nicht mehr überein, und der Erzähler vertraut nicht sich, sondern der Turmuhr. Von diesem Moment an verändert sich die Sprache. Der zweite Satz ist eine einzige Kette von Hauptsätzen, die nur durch Kommas getrennt sind, vom „Schrecken über diese Entdeckung“ bis zum „atemlos“ gestellten Fragen. Die Parataxe ohne Punkt bildet die Hast und die wachsende Panik ab: Ein Gedanke stolpert über den nächsten. Begriffe wie „unsicher“ und „atemlos“ und der Hinweis, er kenne sich „in dieser Stadt noch nicht sehr gut aus“, verstärken den Eindruck der Fremdheit. Auffällig ist auch, was fehlt: Weder der Erzähler noch die Stadt noch der Schutzmann haben einen Namen, und den Bahnhof erreicht der Text nie. Diese Leerstellen lösen die Geschichte von einem konkreten Ort und machen sie allgemein. Auch die Ich-Perspektive verstärkt die Wirkung, denn die Leserinnen und Leser wissen nie mehr als der Erzähler und teilen seine Verwirrung.\n\nDer Schutzmann ist die einzige weitere Figur. Er verkörpert eine Ordnungsmacht, deren Aufgabe es wäre, Auskunft zu geben. Seine Gegenfrage „Von mir willst du den Weg erfahren?“ stellt diese Rolle jedoch in Frage, und das Duzen wirkt herablassend. Der Erzähler antwortet ehrlich, er könne den Weg „selbst nicht finden“. Statt einer Wegbeschreibung folgt der doppelte Rat „Gibs auf, gibs auf“, und der Schutzmann wendet sich „mit einem großen Schwunge ab, so wie Leute, die mit ihrem Lachen allein sein wollen“. Der Text endet hier, ohne Auflösung.\n\nDie Antwort lässt mehrere Deutungen zu. Existenziell gelesen sagt sie, dass es für den Einzelnen keinen Weg gibt, den ein anderer ihm zeigen könnte; wer seinen Weg nicht selbst findet, findet ihn auch durch Fragen nicht. Gesellschaftskritisch gelesen zeigt die Szene eine Autorität, die ihre Aufgabe verweigert und den Hilfesuchenden verspottet. Eine dritte, religiöse Lesart sieht im Schutzmann eine höhere Instanz, die keine Führung mehr bietet. Am stärksten stützt der Text die erste Deutung, weil alles auf die Orientierungslosigkeit des Ich zuläuft und der Schutzmann ihm nicht einmal widerspricht, sondern das Suchen selbst für sinnlos erklärt. Das Lachen am Ende macht diese Einsicht grausam, denn der Verlorene bleibt allein zurück.\n\nKafkas Parabel verdichtet in wenigen Sätzen die Erfahrung, in einer Welt zu leben, deren Ordnung man nicht mehr versteht. Ähnlich wie in Kafkas Romanen sucht hier eine Figur vergeblich nach einer Instanz, die ihr Orientierung gibt, und gerade die Institution, die helfen sollte, bleibt unzugänglich. Für heutige Leserinnen und Leser lässt sich die Parabel auf jede Situation übertragen, in der man sich zwischen Regeln, Ämtern oder Lebensentscheidungen verloren fühlt. Gerade weil sie offen endet, bleibt sie bis heute verstörend aktuell.",
   "explanation": "The sample states a hypothesis, summarises briefly, analyses order and its break, syntax, word choice, gaps and the figure of the policeman with quotations, offers three readings of the ending and argues for one."
@@ -221,8 +226,8 @@ today.
 
 Rules for all tasks: exam-format element, "Making new writing tasks".
 
-- **Word range:** 540–660.
-- **Situation:** usually none.
+- **Word range:** 540–660 (the only range for a Textinterpretation).
+- **Situation:** none beyond the exam.
 - **Textbeilage:** a literary text the learner has in front of them or that you download from a public-domain source below: a short prose text, a passage from a novel or story with a short introduction to the context, a poem (two poems for a comparison), or a drama scene. Never reproduce a literary text from memory; copy it from the source and name the source and edition.
 - **Public-domain sources:** in Austria a text is free 70 years after the author's death (in 2026: authors who died before 1956; Brecht, who died in 1956, from 1 January 2027). Texts by living or recently deceased authors (Bachmann, Bernhard, Handke, Jelinek …) come only from the learner's school reader.
   - Wikisource (de.wikisource.org): checked transcriptions with the printed source; the raw text of a page via `https://de.wikisource.org/w/index.php?title=<Seite>&action=raw`.
@@ -231,11 +236,11 @@ Rules for all tasks: exam-format element, "Making new writing tasks".
   - Zeno.org: large collection of German literature in reading editions.
 - **Short texts that suit a practice interpretation** (look them up there; the Matura has no reading list, so any period can come): poems by Goethe („Prometheus“, „Erlkönig“), Heine („Die Lorelei“), Eichendorff („Mondnacht“), Rilke („Der Panther“), Trakl („Grodek“); prose by Hebel („Unverhofftes Wiedersehen“), Kleist (anecdotes), Kafka („Vor dem Gesetz“, „Kleine Fabel“, „Eine kaiserliche Botschaft“), Schnitzler (a passage from „Leutnant Gustl“), Zweig (a passage from „Schachnovelle“); drama scenes from Büchner („Woyzeck“) or Schiller („Kabale und Liebe“).
 - **Operators:** bullet 1 „Fassen Sie … zusammen“ / „Beschreiben Sie die Situation …“; bullet 2 „Analysieren Sie …“ / „Untersuchen Sie …“ (Figur, Erzählweise, sprachliche Gestaltung, Aufbau des Gedichts); bullet 3 „Interpretieren Sie …“ / „Deuten Sie …“ (Ende, Titel, Verhalten einer Figur) or „Setzen Sie … in Beziehung zu …“.
-- **Rubric template:** Inhalt: content brief; form analysed with quotations and connected to meaning; interpretation of the asked passage with readings supported by the text; hypothesis in the introduction; Textstruktur: introduction, content, analysis, interpretation, conclusion; Stil: factual, literary terms; Sprachrichtigkeit: exact quotations; range.
+- **Rubric template:** follow the rubric of the task above. Inhalt: writing acts; one line per bullet; form analysed with quotations and connected to meaning; hypothesis tested; readings supported by the text; symbols. Textstruktur: introduction with basic data, content, analysis, interpretation, brief conclusion. Stil: factual, consistent terms, own vocabulary. Sprachnormen: exact quotations. Range (too short hurts here).
 
 # Sources
 
 Grounding: [^srdp-textsorten]; text: [^kafka-gibs-auf]. Explanations, examples, questions and the sample interpretation are original.
 
-[^srdp-textsorten]: Bundesministerium für Bildung, Wissenschaft und Forschung, Textsortenkatalog zur SRDP in der Unterrichtssprache, Textinterpretation, matura.gv.at.
+[^srdp-textsorten]: Bundesministerium für Bildung, Wissenschaft und Forschung, Textsortenkatalog zur SRDP in der Unterrichtssprache (Stand 2020), Textinterpretation, matura.gv.at.
 [^kafka-gibs-auf]: Franz Kafka, „Gibs auf!“, written around 1922, first published 1936 in „Beschreibung eines Kampfes“; public domain.

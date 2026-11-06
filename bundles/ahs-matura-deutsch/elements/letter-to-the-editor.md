@@ -8,7 +8,7 @@ lang: en
 levels: [highschool]
 objectives:
   - id: features
-    text: Name the features of a Leserbrief (reference to a published text, reader's perspective, own position, addressed to the newspaper's readers, name and place at the end).
+    text: Name the features of a Leserbrief (direct address in letter form, reference to a published text with its basic data, reader's perspective, own position, closing with name and, where relevant, age and place).
   - id: engage
     text: Reproduce the position of the text referred to briefly and take up its arguments by agreeing, limiting or refuting them.
   - id: write
@@ -21,7 +21,7 @@ duration_min: { highschool: 90 }
 sources:
   - id: srdp-textsorten
     resource: https://www.matura.gv.at/srdp/unterrichtssprache
-    title: "BMBWF: Textsortenkatalog zur SRDP in der Unterrichtssprache, Leserbrief"
+    title: "BMBWF: Textsortenkatalog zur SRDP in der Unterrichtssprache (2020), Leserbrief"
 generated: { by: claude/opus, at: 2026-11-05T22:00:00Z }
 status: draft
 version: 0.1.0
@@ -41,18 +41,22 @@ It names that text (title, author, medium, date), reproduces its position
 briefly, takes up its arguments by agreeing, limiting or refuting them,
 and states the writer's own justified position, often with a demand. It is
 written from the writer's perspective (an "ich" with a role, such as
-student, parent, resident), for the readers of the medium, in a personal
-but not colloquial style, and ends with the writer's name and place.
+student, parent, resident). As a letter it opens with a direct address (to
+the editors, the author or the readers) and closes with the writer's name,
+and age and place where they matter. The style can range from factual to
+sharply critical or polemical, but never insulting, and never colloquial.
 
 # Key facts
 
-- Reference: at the start, often as a line „Betrifft: ‚Titel‘ von [Autor], [Medium], [Datum]“ and in the first paragraph.
-- Headline: a short headline that states the position is usual and helps („Handyfreie Stunden ja, handyfreie Schule nein“).
+- Opening formula (Eröffnungsformel): required. A direct address to the editors („Sehr geehrte Redaktion“), the author („Sehr geehrter Herr Weber“) or the readers. A letterhead with addresses is not needed in the Matura.
+- Reference: the introduction names the occasion and the text answered with its basic data (text type, title, author, medium, date); a line „Betrifft: …“ above the address is a common way to start.
+- Headline: optional; a short headline that states the position can help („Handyfreie Stunden ja, handyfreie Schule nein“).
 - Perspective: say who is writing and why it concerns you („Als Schülerin einer achten Klasse …“).
 - Engagement: reproduce the position in one or two sentences (Konjunktiv), then answer specific arguments of the text, not only the topic.
-- Structure: Betreff, headline, introduction with reference and own role, main part with arguments on the text's arguments, conclusion with demand or appeal, name and place.
-- Style: personal, pointed, factual; a salutation („Sehr geehrte Redaktion“) is possible but not necessary; no colloquial language.
-- Usual length in the exam: 270–330 words.
+- Structure: opening formula; introduction with occasion, reference and own role; main part with the own position as agreement, rejection, addition or contradiction on the text's arguments; conclusion with appeal, evaluation, summary or outlook tied to the occasion; closing formula with name (age and place if relevant).
+- Style: compressed; from factual to subjective-critical or polemical and provocative, but no insults; not colloquial.
+- Length in the exam: always 270–330 words, with a situation (the medium). A much longer letter loses the compression the text type needs.
+- Leserbrief vs offener Brief: an open letter addresses the general public, not a medium whose article it answers.
 
 # Level: highschool
 
@@ -71,14 +75,17 @@ them and answer each: agree where the author is right, limit where he goes
 too far, refute where he is wrong. That shows you have read the text, not
 only its headline.
 
-Finish with your own proposal or demand, and sign with name and place. A
-short headline that states your position helps readers.
+Remember it is a letter: open with an address („Sehr geehrte
+Redaktion,“) and finish with your own proposal or demand and your name, and
+your place or age if they matter. You may be sharp, even polemical, but
+never insulting.
 
 # Misconceptions
 
 - **topic-not-text**: A Leserbrief gives my opinion on the topic → it answers a specific text and takes up its arguments.
 - **must-disagree**: A Leserbrief must contradict the article → it may agree, limit or contradict; what counts is a justified position.
-- **letter-format**: A Leserbrief is a private letter with "Liebe …" and "Liebe Grüße" → it is published for the paper's readers; personal, but not private or colloquial.
+- **letter-format**: A Leserbrief is a private letter with "Liebe …" and "Liebe Grüße" → it is a published letter: a formal address (Redaktion, author or readers) and a closing with name, personal but not private or colloquial.
+- **no-address**: A Leserbrief can start straight with the argument, like a Kommentar → the opening formula and the closing formula with name are part of the text type; leaving them out costs in Textstruktur.
 - **no-reference**: The readers know which article is meant → the text referred to is named with title, author, medium and date.
 
 # Questions
@@ -130,14 +137,13 @@ short headline that states your position helps readers.
   "misconception": "letter-format",
   "instruction": "Order the parts of a Leserbrief.",
   "items": [
-    "Betrifft: title, author, medium, date of the text referred to",
-    "Headline that states the position",
-    "Introduction: position of the text and own role",
+    "Opening formula: „Sehr geehrte Redaktion,“",
+    "Introduction: occasion, title, author, medium and date of the text, its position and own role",
     "Main part: answers to two arguments of the text",
     "Conclusion: own proposal or demand",
-    "Name and place"
+    "Closing formula: name, and place or age if relevant"
   ],
-  "explanation": "Reference, headline, introduction, main part, conclusion, signature."
+  "explanation": "Opening formula, introduction with reference, main part, conclusion, closing formula."
 }
 ```
 
@@ -187,17 +193,19 @@ short headline that states your position helps readers.
   "purpose": "check",
   "objectives": ["write", "engage", "features"],
   "misconception": "topic-not-text",
-  "question": "Schreibauftrag\nThema: Digitale Schule\nVerfassen Sie einen Leserbrief an die Zeitung Tagesblick (270–330 Wörter). Lesen Sie den Kommentar „Weg mit den Handys!“ (Textbeilage, für diesen Kurs verfasst).\nAufgabenstellung:\n• Beziehen Sie sich auf den Kommentar und geben Sie die Position des Autors kurz wieder.\n• Setzen Sie sich mit zwei Argumenten des Autors auseinander.\n• Machen Sie einen eigenen Vorschlag, wie Schulen mit privaten Handys umgehen sollten.\n\nTextbeilage: Martin Weber, „Weg mit den Handys!“, Kommentar, Tagesblick, 3. März 2026\n\nIn vielen Schulen herrscht in der Pause eine seltsame Stille. Statt zu reden, zu streiten oder Fußball zu spielen, starren Jugendliche auf ihre Bildschirme. Es ist Zeit, diesen Zustand zu beenden: Handys sollten an allen Schulen ab der ersten Stunde bis zum Unterrichtsende weggesperrt werden, auch in den Pausen.\n\nDie Gründe liegen auf der Hand. Wer ständig Nachrichten bekommt, kann sich nicht konzentrieren. Jede Benachrichtigung reißt aus dem Gedanken, und es dauert, bis man wieder bei der Sache ist. Lehrerinnen und Lehrer berichten seit Jahren, dass die Aufmerksamkeit ihrer Klassen nachlässt.\n\nDazu kommt das soziale Klima. Beleidigende Nachrichten, heimlich gefilmte Videos und Gruppenchats, aus denen einzelne ausgeschlossen werden, machen vielen Jugendlichen das Leben schwer. Ohne Handy in der Schule hätten sie wenigstens sechs Stunden am Tag Ruhe davor.\n\nKritikerinnen und Kritiker wenden ein, Jugendliche müssten den verantwortungsvollen Umgang mit digitalen Medien lernen. Das stimmt, aber man lernt Schwimmen auch nicht, indem man ins tiefe Becken geworfen wird. Medienkompetenz kann man im Unterricht mit Schulgeräten üben, dafür braucht es nicht das private Handy in jeder Pause.\n\nEinige Schulen haben das Verbot bereits eingeführt. Die Erfahrungen sind gut: In den Pausen wird wieder geredet und gespielt, und Konflikte im Netz sind seltener geworden. Die Politik sollte nicht länger zögern und ein Verbot für alle Schulen beschließen. Unsere Kinder werden es uns danken.",
+  "question": "Schreibauftrag\nThema: Digitale Schule\nVerfassen Sie einen Leserbrief an die Zeitung Tagesblick (270–330 Wörter). Lesen Sie den Kommentar „Weg mit den Handys!“ (Textbeilage, für diesen Kurs verfasst).\nAufgabenstellung:\n• Geben Sie die Position, die der Autor in seinem Kommentar vertritt, kurz wieder.\n• Setzen Sie sich mit zwei Argumenten des Autors auseinander.\n• Machen Sie einen eigenen Vorschlag, wie Schulen mit privaten Handys umgehen sollten.\n\nTextbeilage: Martin Weber, „Weg mit den Handys!“, Kommentar, Tagesblick, 3. März 2026\n\nIn vielen Schulen herrscht in der Pause eine seltsame Stille. Statt zu reden, zu streiten oder Fußball zu spielen, starren Jugendliche auf ihre Bildschirme. Es ist Zeit, diesen Zustand zu beenden: Handys sollten an allen Schulen ab der ersten Stunde bis zum Unterrichtsende weggesperrt werden, auch in den Pausen.\n\nDie Gründe liegen auf der Hand. Wer ständig Nachrichten bekommt, kann sich nicht konzentrieren. Jede Benachrichtigung reißt aus dem Gedanken, und es dauert, bis man wieder bei der Sache ist. Lehrerinnen und Lehrer berichten seit Jahren, dass die Aufmerksamkeit ihrer Klassen nachlässt.\n\nDazu kommt das soziale Klima. Beleidigende Nachrichten, heimlich gefilmte Videos und Gruppenchats, aus denen einzelne ausgeschlossen werden, machen vielen Jugendlichen das Leben schwer. Ohne Handy in der Schule hätten sie wenigstens sechs Stunden am Tag Ruhe davor.\n\nKritikerinnen und Kritiker wenden ein, Jugendliche müssten den verantwortungsvollen Umgang mit digitalen Medien lernen. Das stimmt, aber man lernt Schwimmen auch nicht, indem man ins tiefe Becken geworfen wird. Medienkompetenz kann man im Unterricht mit Schulgeräten üben, dafür braucht es nicht das private Handy in jeder Pause.\n\nEinige Schulen haben das Verbot bereits eingeführt. Die Erfahrungen sind gut: In den Pausen wird wieder geredet und gespielt, und Konflikte im Netz sind seltener geworden. Die Politik sollte nicht länger zögern und ein Verbot für alle Schulen beschließen. Unsere Kinder werden es uns danken.",
   "rubric": [
-    "Inhalt, bullet 1: names the commentary (title, author, medium, date) and reproduces its demand (ban including breaks) briefly",
+    "Inhalt, writing acts: a Leserbrief that answers the commentary (reporting, arguing, evaluating), not a Kommentar on the topic",
+    "Inhalt, bullet 1: refers to the commentary and reproduces its demand (ban including breaks) briefly and correctly",
     "Inhalt, bullet 2: takes up two specific arguments of the text (concentration, social climate/bullying, the swimming comparison, good experiences) and agrees, limits or refutes each with a reason",
     "Inhalt, bullet 3: a concrete own proposal for dealing with private phones",
-    "Textstruktur: Betreff or reference, headline, introduction with own role, one paragraph per argument, conclusion with demand, name and place",
-    "Stil und Ausdruck: personal and pointed but not colloquial; addressed to the readers of the paper; reported speech for the author's views",
-    "Sprachrichtigkeit: das/dass, commas before subordinate clauses, Konjunktiv",
-    "Length 270–330 words"
+    "Inhalt, quality: own thought beyond the text (experience from the own school, a counter-example), no invented facts",
+    "Textstruktur: opening formula (address), introduction with occasion, title, author, medium, date and own role, one paragraph per argument, conclusion tied to the occasion, closing formula with name and place; the author's views marked as reported speech",
+    "Stil und Ausdruck: personal and pointed, possibly polemical but not insulting, not colloquial; addressed to the paper and its readers; own formulations",
+    "Sprachnormen: spelling (das/dass), punctuation (commas before subordinate clauses), grammar (Konjunktiv)",
+    "Length 270–330 words; much longer loses the compression a Leserbrief needs"
   ],
-  "sample_answer": "Betrifft: „Weg mit den Handys!“ von Martin Weber, Tagesblick, 3. März 2026\n\nHandyfreie Stunden ja, handyfreie Schule nein\n\nAls Schüler einer achten Klasse habe ich Martin Webers Kommentar mit Interesse gelesen. Weber fordert, Handys an allen Schulen bis zum Unterrichtsende wegzusperren, auch in den Pausen, weil sie die Konzentration störten und Mobbing förderten.\n\nBeim ersten Argument stimme ich ihm zu. Wer im Unterricht auf jede Nachricht reagiert, verliert den Faden, und Konzentration ist die Voraussetzung für jedes Lernen. An meiner Schule liegen die Handys deshalb während der Stunden in einer Box, und niemand vermisst sie. Für den Unterricht braucht es also kein neues Gesetz, sondern klare Regeln, die viele Schulen längst haben.\n\nBeim zweiten Argument macht es sich Weber jedoch zu leicht. Beleidigende Nachrichten verschwinden nicht, weil das Handy sechs Stunden in einem Kasten liegt. Sie werden dann eben am Nachmittag verschickt, und die Schule bekommt davon noch weniger mit. Gegen Mobbing im Netz helfen Ansprechpersonen, Workshops und Lehrkräfte, die eingreifen, nicht ein Verbot, das das Problem nur in den Nachmittag verschiebt.\n\nAuch sein Vergleich mit dem Schwimmen überzeugt mich nicht. Gerade wer schwimmen lernt, braucht irgendwann echtes Wasser. Den Umgang mit dem eigenen Handy lernt man nicht mit einem Schulgerät, sondern im Alltag, und die Pause ist ein Teil davon.\n\nIch schlage deshalb einen Mittelweg vor: Handys bleiben im Unterricht weggesperrt, in den Pausen aber gelten Regeln, die Schülervertretung und Lehrkräfte gemeinsam festlegen, etwa handyfreie Zonen im Hof und ein Filmverbot im ganzen Haus. Regeln, die wir selbst mitbestimmen, halten wir eher ein als ein Verbot von oben.\n\nDie Politik sollte den Schulen also kein Verbot vorschreiben, sondern ihnen Zeit und Fachleute geben, damit sie gemeinsam mit uns gute Regeln finden. Dann wird es in den Pausen vielleicht wieder lauter, ganz ohne Kasten.\n\nJonas Berger, Linz",
+  "sample_answer": "Betrifft: „Weg mit den Handys!“ von Martin Weber, Tagesblick, 3. März 2026\n\nHandyfreie Stunden ja, handyfreie Schule nein\n\nSehr geehrte Redaktion,\n\nals Schüler einer achten Klasse habe ich Martin Webers Kommentar mit Interesse gelesen. Weber fordert, Handys an allen Schulen bis zum Unterrichtsende wegzusperren, auch in den Pausen, weil sie die Konzentration störten und Mobbing förderten.\n\nBeim ersten Argument stimme ich ihm zu. Wer im Unterricht auf jede Nachricht reagiert, verliert den Faden, und Konzentration ist die Voraussetzung für jedes Lernen. An meiner Schule liegen die Handys deshalb während der Stunden in einer Box, und niemand vermisst sie. Für den Unterricht braucht es also kein neues Gesetz, sondern klare Regeln, die viele Schulen längst haben.\n\nBeim zweiten Argument macht es sich Weber jedoch zu leicht. Beleidigende Nachrichten verschwinden nicht, weil das Handy sechs Stunden in einem Kasten liegt. Sie werden dann eben am Nachmittag verschickt, und die Schule bekommt davon noch weniger mit. Gegen Mobbing im Netz helfen Ansprechpersonen, Workshops und Lehrkräfte, die eingreifen, nicht ein Verbot, das das Problem nur in den Nachmittag verschiebt.\n\nAuch sein Vergleich mit dem Schwimmen überzeugt mich nicht. Gerade wer schwimmen lernt, braucht irgendwann echtes Wasser. Den Umgang mit dem eigenen Handy lernt man nicht mit einem Schulgerät, sondern im Alltag, und die Pause ist ein Teil davon.\n\nIch schlage deshalb einen Mittelweg vor: Handys bleiben im Unterricht weggesperrt, in den Pausen aber gelten Regeln, die Schülervertretung und Lehrkräfte gemeinsam festlegen, etwa handyfreie Zonen im Hof und ein Filmverbot im ganzen Haus. Regeln, die wir selbst mitbestimmen, halten wir eher ein als ein Verbot von oben.\n\nDie Politik sollte den Schulen also kein Verbot vorschreiben, sondern ihnen Zeit und Fachleute geben, damit sie gemeinsam mit uns gute Regeln finden. Dann wird es in den Pausen vielleicht wieder lauter, ganz ohne Kasten.\n\nJonas Berger, Linz",
   "explanation": "The sample names the text, reproduces its demand, answers two (here three) of its arguments with reasons and ends with a concrete proposal."
 }
 ```
@@ -212,14 +220,14 @@ short headline that states your position helps readers.
 
 Rules for all tasks: exam-format element, "Making new writing tasks".
 
-- **Word range:** 270–330 (sometimes 405–495).
-- **Situation:** a named newspaper, magazine or online medium that published the text; the learner writes as a reader with a role (student, young person, resident).
+- **Word range:** 270–330 (the only range the catalogue allows for a Leserbrief).
+- **Situation (required):** a named newspaper, magazine or online medium that published the text; the learner writes as a reader with a role (student, young person, resident).
 - **Textbeilage:** one opinionated text the letter answers: commentary, column, interview or report with a clear demand, about 250–600 words; a current article is ideal.
-- **Operators:** bullet 1 „Beziehen Sie sich auf … und geben Sie … wieder“ / „Fassen Sie die Position … kurz zusammen“; bullet 2 „Setzen Sie sich mit … auseinander“ / „Nehmen Sie Stellung zu …“ / „Bewerten Sie …“; bullet 3 „Machen Sie Vorschläge …“ / „Appellieren Sie an …“ / „Formulieren Sie eine Forderung …“.
-- **Rubric template:** Inhalt: reference and position reproduced; two specific arguments of the text answered; proposal or appeal; Textstruktur: Betreff, headline, introduction with role, paragraphs per argument, demand, name and place; Stil: personal, pointed, not colloquial; Sprachrichtigkeit; range.
+- **Operators:** bullet 1 „Geben Sie die Position … kurz wieder“ / „Fassen Sie … kurz zusammen“; bullet 2 „Setzen Sie sich mit … auseinander“ / „Nehmen Sie Stellung zu …“ / „Bewerten Sie …“; bullet 3 „Machen Sie Vorschläge …“ / „Appellieren Sie an …“ / „Formulieren Sie eine Forderung …“.
+- **Rubric template:** follow the rubric of the task above. Inhalt: writing acts of a Leserbrief; one line per bullet; Textbeilage grasped and reproduced correctly; own thought beyond it. Textstruktur: opening formula, introduction with reference and role, paragraphs per argument, conclusion tied to the occasion, closing formula. Stil: personal, compressed, possibly polemical but not insulting, own formulations. Sprachnormen. Range (too long hurts here).
 
 # Sources
 
 Grounding: [^srdp-textsorten]. Text, Textbeilage, examples and questions are original.
 
-[^srdp-textsorten]: Bundesministerium für Bildung, Wissenschaft und Forschung, Textsortenkatalog zur SRDP in der Unterrichtssprache, Leserbrief, matura.gv.at.
+[^srdp-textsorten]: Bundesministerium für Bildung, Wissenschaft und Forschung, Textsortenkatalog zur SRDP in der Unterrichtssprache (Stand 2020), Leserbrief, matura.gv.at.

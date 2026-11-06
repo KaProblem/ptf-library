@@ -34,7 +34,12 @@ one literary text, Franz Kafka's "Gibs auf!" (1922), is in the public domain.
 
 Every writing task has a rubric whose lines follow the four dimensions of
 the official assessment grid (Inhalt, Textstruktur, Stil und Ausdruck,
-normative Sprachrichtigkeit). `checks/` recomputes the numbers (word ranges,
+normative Sprachrichtigkeit) and its criteria. Format, text types,
+operators and grid follow the official BMBWF documents (Textsortenkatalog
+2020, Operatorenkatalog, Beurteilungsraster valid from 2022/23 with its
+Handreichung 2024 and the Korrektur- und Beurteilungsanleitung 2025/26);
+the bundle paraphrases them and quotes only names and level labels.
+`checks/` recomputes the numbers (word ranges,
 time plans) and checks that every sample text has the length its task
 demands.
 
@@ -45,7 +50,7 @@ The course order is the learning path [German Matura (AHS)](paths/matura-course.
 | Element | What the learner can do afterwards | Questions |
 | --- | --- | --- |
 | [The written exam](elements/exam-format.md) | Choose a package, read a Schreibauftrag, plan time and length | 7 |
-| [The assessment grid](elements/assessment-grid.md) | Judge a text by the four dimensions and know how the grade follows | 6 |
+| [The assessment grid](elements/assessment-grid.md) | Judge a text by the four dimensions and know how the grade follows from the three competence areas | 7 |
 | [Arguing](elements/argumentation.md) | Build complete arguments, answer counter-arguments, use a source | 7 |
 | [Structure and style](elements/structure-and-style.md) | Write introductions, paragraphs and conclusions, link sentences, fit the register | 7 |
 | [Language accuracy](elements/language-accuracy.md) | Avoid the error types that cost the most: das/dass, commas, capitals, Konjunktiv I | 8 |

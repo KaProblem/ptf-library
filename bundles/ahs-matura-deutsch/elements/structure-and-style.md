@@ -53,7 +53,9 @@ of fillers make a text clear.
 - Conclusions that work: the position in one sentence, a demand or appeal, an outlook, a return to the opening case (frame). Avoid: new arguments, „Das wars“, a mere repetition of the introduction.
 - One paragraph = one function (one argument, one aspect of an analysis); a blank line or indent marks it; the first sentence (topic sentence) says what it is about.
 - Connectors by relation: addition („außerdem“, „zudem“, „darüber hinaus“), contrast („hingegen“, „jedoch“, „dennoch“), cause („denn“, „da“, „weil“), consequence („deshalb“, „folglich“, „daher“), concession („zwar … aber“, „obwohl“), example („etwa“, „zum Beispiel“), order („zunächst“, „schließlich“).
-- Register: factual and impersonal in Zusammenfassung and Textanalyse; personal and pointed in Kommentar and Leserbrief; addressing and appealing in the Meinungsrede. „Ich“ is fine where an opinion is asked, never in a Zusammenfassung.
+- Register: factual and impersonal in Zusammenfassung and Textanalyse; impersonal but pointed in the Kommentar (as a rule no „ich“); personal and pointed in the Leserbrief; addressing and appealing in the Meinungsrede. „Ich“ is fine where a personal opinion is asked (Leserbrief, Meinungsrede, the judgement of an Erörterung), never in a Zusammenfassung.
+- The Textbeilage in the structure: the grid checks under Textstruktur how a text is linked with its Textbeilage: name the source (author, title, medium), mark quotations with „…“ and reported views with Konjunktiv or „laut“, and work them in where they serve the argument.
+- Own formulations: under Stil und Ausdruck the grid asks for the writer's own wording; sentences leaned on or copied from the Textbeilage count against it, and a text mostly copied is "nicht erfüllt".
 - Expression: a precise verb instead of „machen“, „tun“, „geben“ („Die Autorin kritisiert …“ instead of „Die Autorin macht Kritik …“); vary sentence openings; cut fillers („eigentlich“, „halt“, „irgendwie“); avoid colloquial words („voll“, „mega“).
 - Verbs for writing about texts: „behauptet“, „fordert“, „kritisiert“, „veranschaulicht“, „belegt“, „räumt ein“, „widerspricht“, „schlussfolgert“.
 

@@ -21,7 +21,7 @@ duration_min: { highschool: 120 }
 sources:
   - id: srdp-textsorten
     resource: https://www.matura.gv.at/srdp/unterrichtssprache
-    title: "BMBWF: Textsortenkatalog zur SRDP in der Unterrichtssprache, Textanalyse"
+    title: "BMBWF: Textsortenkatalog zur SRDP in der Unterrichtssprache (2020), Textanalyse"
 generated: { by: claude/opus, at: 2026-11-05T22:00:00Z }
 status: draft
 version: 0.1.0
@@ -42,21 +42,25 @@ topic, reproduces the content briefly, describes the structure, analyses
 the linguistic and rhetorical means with quotations and references and
 explains their effect, and identifies the intention and the intended
 readers. Every claim about the text is backed by evidence from it: the
-pattern is "observation, quotation, effect". If the task asks for it, the
-analysis ends with a justified assessment of how far the text achieves its
-aim.
+pattern is "observation, quotation, effect". It stays with what analysis
+can show and does not interpret. The conclusion sums up the analysis and,
+where asked, assesses the text's qualities or how far it fulfils its
+function, based on the evidence, never on personal taste.
 
 # Key facts
 
-- Introduction: author, title, text type, source, date, topic and core statement, in one or two sentences.
+- Introduction (short): the basic data of the Textbeilage (text type, title, author, medium, date of publication), topic and core statement, in one or two sentences.
 - Content: brief, in the present tense, in one's own words, as much as the analysis needs.
 - Structure: sections and their functions (scenic opening, thesis, counter-argument, demand, Pointe), the line of argument.
 - Language: word choice (colloquial, technical, evaluative), sentence structure (short, elliptical, long), perspective (ich, wir), and rhetorical means: metaphor, comparison, hyperbole, irony, rhetorical question, anaphora, tricolon, antithesis, neologism, direct address.
 - Evidence: quotation in „…“ with reference (paragraph or line: Abs. 2, Z. 14), then the effect: „Der Vergleich mit einem Bumerang (Abs. 2) macht anschaulich, dass …“.
 - Intention and addressees: inform, convince, appeal, entertain; for whom.
-- Assessment (if asked): how convincing, with criteria (evidence, fairness to the other side, appropriateness of the means).
+- Conclusion: a summary of the analysis and, if asked, an assessment of how far the text fulfils its function, with criteria (evidence, fairness to the other side, appropriateness of the means). It must follow from the analysis and be comprehensible to others; „Ich fand den Text spannend“ is a taste judgement and does not belong here.
+- Only analysis: no interpretation of hidden meaning, no own opinion on the topic.
+- Precision: name the elements exactly, quote exactly, use technical terms correctly.
+- Style: factual, abstracting, informative.
 - Difference: Zusammenfassung reproduces content only; Textinterpretation deals with literary texts and their meaning; Textanalyse explains how a non-fiction text works.
-- Usual length in the exam: 540–660 words.
+- Length in the exam: 405–495 or 540–660 words; no situation beyond the exam. Too short an analysis usually lacks the depth the text type needs.
 
 # Level: highschool
 
@@ -192,13 +196,15 @@ asked, your assessment: does the text convince, and why or why not?
   "misconception": "list-devices",
   "question": "Schreibauftrag\nThema: Bequem einkaufen\nVerfassen Sie eine Textanalyse (540–660 Wörter). Lesen Sie den Kommentar „Gratis zurück“ (Textbeilage, für diesen Kurs verfasst).\nAufgabenstellung:\n• Geben Sie die zentralen Aussagen des Kommentars wieder.\n• Untersuchen Sie Aufbau und sprachliche Gestaltung des Textes.\n• Bewerten Sie, inwieweit es der Autorin gelingt, ihre Leserinnen und Leser zu überzeugen.\n\nTextbeilage: Nina Hartl, „Gratis zurück“, Kommentar, Stadtanzeiger, 9. Februar 2026\n\n(1) Es ist Dienstag, 19 Uhr, und vor meiner Wohnungstür stapeln sich drei Pakete. Zwei davon gehören dem Nachbarn, eines mir. Darin: eine Jacke in drei Größen. Zwei werde ich morgen zurückschicken. Kostenlos, selbstverständlich. Wer würde schon für eine Rücksendung bezahlen?\n\n(2) Genau hier liegt das Problem. Die Gratis-Rücksendung ist zum Menschenrecht des Onlinehandels geworden. Wir bestellen, probieren, schicken zurück, als wäre das Paket ein Bumerang, der von selbst heimfliegt. Doch er fliegt nicht von selbst. Er fährt, im Lieferwagen, durch die Stadt, ins Lager, wird geprüft, neu verpackt oder, wenn sich das nicht rechnet, gleich entsorgt.\n\n(3) Die Händler wissen das. Sie nehmen die Kosten trotzdem in Kauf, weil sie fürchten, Kundinnen und Kunden an die Konkurrenz zu verlieren. Bezahlt wird am Ende trotzdem: über höhere Preise, über schlecht bezahlte Arbeit in Lagern und Lieferwagen, über Müll, den niemand sehen will.\n\n(4) Natürlich ist es praktisch, die Jacke zu Hause anzuprobieren. Natürlich ist es fair, Fehlkäufe zurückgeben zu dürfen. Aber zwischen Rückgaberecht und Rückgabe-Sport liegt ein Unterschied. Wer drei Größen bestellt, um eine zu behalten, kauft nicht ein, sondern lagert sein Probieren aus, an alle anderen.\n\n(5) Eine kleine Gebühr für Rücksendungen wäre kein Angriff auf die Kundschaft, sondern ein Preisschild für etwas, das nie gratis war. Vielleicht würden wir dann wieder öfter in Geschäfte gehen. Oder wenigstens nur eine Größe bestellen.",
   "rubric": [
+    "Inhalt, writing acts: a Textanalyse (describing, explaining with evidence), not an interpretation or a Kommentar on the topic",
     "Inhalt, bullet 1: central statements reproduced briefly (free returns taken for granted; they cause transport, checking, disposal; traders accept the costs out of fear of competition; others pay through prices, poor working conditions, waste; right to return vs excessive returning; demand for a small fee)",
     "Inhalt, bullet 2: structure (scenic opening with irony and rhetorical question, thesis, hidden costs, concession and counter, demand and Pointe) and language analysed with quotations, references and effects (e.g. ich-scene and ellipsis, irony „Kostenlos, selbstverständlich“, hyperbole „Menschenrecht“, boomerang comparison and its reversal, anaphora/tricolon „über …“, anaphora „Natürlich …“, neologism „Rückgabe-Sport“, antithesis „kauft nicht ein, sondern …“, inclusive „wir“, Pointe)",
-    "Inhalt, bullet 3: justified assessment of persuasiveness with criteria (vividness, fairness, lack of figures or evidence)",
-    "Textstruktur: introduction naming the text; brief content; analysis in ordered paragraphs; assessment at the end",
-    "Stil und Ausdruck: factual, present tense, precise terms for devices, varied verbs for effects (veranschaulicht, provoziert, betont)",
-    "Sprachrichtigkeit: quotations exact and marked, Konjunktiv for reported statements, commas",
-    "Length 540–660 words"
+    "Inhalt, bullet 3: assessment of persuasiveness with criteria that follows from the analysis (vividness, fairness, lack of figures or evidence), no taste judgement",
+    "Inhalt: the Textbeilage grasped and described correctly; devices named correctly",
+    "Textstruktur: short introduction with text type, title, author, medium, date; brief content; analysis in ordered paragraphs; conclusion summing up with the assessment; quotations with references worked into the text",
+    "Stil und Ausdruck: factual and abstracting, present tense, technical terms used correctly, varied verbs for effects (veranschaulicht, provoziert, betont); own formulations around the quotations",
+    "Sprachnormen: punctuation (quotation marks, commas), grammar (Konjunktiv for reported statements), spelling",
+    "Length 540–660 words; much shorter lacks the depth an analysis needs"
   ],
   "sample_answer": "In ihrem Kommentar „Gratis zurück“, erschienen am 9. Februar 2026 im Stadtanzeiger, kritisiert Nina Hartl kostenlose Rücksendungen im Onlinehandel und plädiert für eine kleine Rücksendegebühr.\n\nDie Autorin geht von einer alltäglichen Szene aus: Sie selbst hat eine Jacke in drei Größen bestellt und will zwei davon gratis zurückschicken. Darin sieht sie das Problem. Rücksendungen würden als selbstverständlich betrachtet, verursachten aber Transporte, Prüfungen, neue Verpackung und manchmal die Entsorgung der Ware. Die Händler nähmen diese Kosten aus Angst vor der Konkurrenz hin, bezahlt werde aber trotzdem: über höhere Preise, schlecht bezahlte Arbeit und Müll. Hartl räumt ein, dass Anprobieren zu Hause praktisch und ein Rückgaberecht fair sei, unterscheidet aber zwischen diesem Recht und übertriebenem Zurückschicken. Abschließend fordert sie eine kleine Gebühr.\n\nDer Text ist klar aufgebaut. Auf den szenischen Einstieg (Abs. 1) folgt die These (Abs. 2), dann die Darstellung der versteckten Kosten (Abs. 3), ein Zugeständnis an die Gegenseite mit anschließender Abgrenzung (Abs. 4) und schließlich die Forderung mit einer Pointe (Abs. 5). Diese Abfolge führt die Leserinnen und Leser schrittweise von der eigenen Erfahrung zur Forderung.\n\nBesonders wirkungsvoll ist der Einstieg. Mit Uhrzeit, Paketstapel und kurzen, teils elliptischen Sätzen („Darin: eine Jacke in drei Größen.“, Abs. 1) entsteht eine Szene, die viele aus dem eigenen Alltag kennen. Die Ich-Perspektive zeigt, dass die Autorin sich nicht über andere erhebt. Der knappe Nachsatz „Kostenlos, selbstverständlich.“ und die rhetorische Frage „Wer würde schon für eine Rücksendung bezahlen?“ sind ironisch: Sie sprechen aus, was die Leserschaft denkt, und stellen es zugleich in Frage.\n\nIm zweiten Absatz provoziert Hartl mit der Übertreibung, die Gratis-Rücksendung sei „zum Menschenrecht des Onlinehandels geworden“. Der Vergleich mit einem Bumerang, „der von selbst heimfliegt“, veranschaulicht, wie mühelos Rücksendungen erscheinen. Gleich darauf bricht die Autorin dieses Bild: „Doch er fliegt nicht von selbst.“ Die folgende Aufzählung der Stationen macht den Aufwand sichtbar, den das Bild verdeckt.\n\nDie Anapher in Absatz 3, „über höhere Preise, über schlecht bezahlte Arbeit […], über Müll“, ist zugleich ein Trikolon und lässt die versteckten Kosten Schritt für Schritt anwachsen. In Absatz 4 greift Hartl mit dem wiederholten „Natürlich …“ die Argumente der Gegenseite auf und wirkt dadurch fair, bevor sie mit „Aber“ die entscheidende Unterscheidung trifft. Der Neologismus „Rückgabe-Sport“ und die Antithese „kauft nicht ein, sondern lagert sein Probieren aus“ bringen ihre Kritik auf den Punkt. Das inklusive „wir“ und die augenzwinkernde Pointe „Oder wenigstens nur eine Größe bestellen“ verhindern, dass der Text belehrend wirkt.\n\nAuffällig ist auch die Wortwahl. Neben alltagssprachlichen Wendungen stehen wertende Begriffe wie „Müll, den niemand sehen will“, die an das schlechte Gewissen appellieren, ohne zu moralisieren. Die Metapher vom „Preisschild für etwas, das nie gratis war“ (Abs. 5) fasst die These in einem Bild zusammen.\n\nDie Autorin will ihre Leserinnen und Leser, also die Kundschaft des Onlinehandels, zum Nachdenken über ihr eigenes Bestellverhalten bringen und sie für eine Rücksendegebühr gewinnen. Ihr Ton ist dabei eher augenzwinkernd als anklagend.\n\nInsgesamt gelingt es Hartl weitgehend, zu überzeugen. Die alltägliche Szene, die Selbstironie und das faire Zugeständnis an die Gegenseite machen den Text glaubwürdig, und die sprachlichen Mittel unterstützen die Argumentation, statt sie zu ersetzen. Eine Schwäche liegt jedoch darin, dass die Autorin keine Zahlen oder Quellen nennt: Wie viele Rücksendungen tatsächlich entsorgt werden und wie hoch die Kosten sind, bleibt offen. Leserinnen und Leser, die bereits skeptisch sind, könnten die Forderung daher als bloße Meinung abtun.",
   "explanation": "The sample names the text, summarises it briefly, describes the structure, analyses the main means with quotation, reference and effect, names the intention and assesses persuasiveness with criteria."
@@ -215,14 +221,14 @@ asked, your assessment: does the text convince, and why or why not?
 
 Rules for all tasks: exam-format element, "Making new writing tasks".
 
-- **Word range:** 540–660.
-- **Situation:** usually none; the analysis is written for a reader who knows the text.
+- **Word range:** 405–495 or 540–660.
+- **Situation:** none beyond the exam.
 - **Textbeilage:** one non-fiction text with a recognisable intention and visible linguistic means: commentary, column, speech, essay, interview, advertisement; 400–900 words; with paragraph or line numbers.
 - **Operators:** bullet 1 „Geben Sie … wieder“ / „Fassen Sie … zusammen“ / „Beschreiben Sie …“; bullet 2 „Analysieren Sie …“ / „Untersuchen Sie …“ (Aufbau, sprachliche Gestaltung, Argumentation, Bild und Text); bullet 3 „Bewerten Sie …“ / „Beurteilen Sie die Wirkung …“ / „Erläutern Sie die Intention …“.
-- **Rubric template:** Inhalt: content brief; structure and the main means analysed with quotation, reference and effect; intention; justified assessment with criteria if asked; Textstruktur: introduction naming the text, content, analysis, assessment; Stil: factual, terms for devices; Sprachrichtigkeit: exact quotations; range.
+- **Rubric template:** follow the rubric of the task above. Inhalt: writing acts (analysis, no interpretation); one line per bullet; Textbeilage grasped, devices named correctly; assessment based on the analysis. Textstruktur: short introduction with basic data, analysis in order, summing-up conclusion, quotations with references. Stil: factual, technical terms, own formulations. Sprachnormen: exact quotations. Range (too short hurts here).
 
 # Sources
 
 Grounding: [^srdp-textsorten]. Text, Textbeilage, examples and questions are original.
 
-[^srdp-textsorten]: Bundesministerium für Bildung, Wissenschaft und Forschung, Textsortenkatalog zur SRDP in der Unterrichtssprache, Textanalyse, matura.gv.at.
+[^srdp-textsorten]: Bundesministerium für Bildung, Wissenschaft und Forschung, Textsortenkatalog zur SRDP in der Unterrichtssprache (Stand 2020), Textanalyse, matura.gv.at.

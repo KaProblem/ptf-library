@@ -21,8 +21,9 @@
       "title": "German for the Austrian AHS Matura",
       "summary": "The standardised written Matura in German (Unterrichtssprache) at an Austrian AHS. The exam format, the assessment grid, argumentation, structure, style and language accuracy, and the seven text types, each with an original writing task, a rubric based on the official assessment grid and a sample text.",
       "path": "bundles/ahs-matura-deutsch",
-      "digest": "sha256-+9dsXSZgGULYq6oh/QwNMzh970pANHS+SAMh9I5eD3g=" },
-   {
+      "digest": "sha256-pFMoLtJsnNqDkoGfbs37nBsk/0jacyFWPBOHPDsmyOQ="
+    },
+    {
       "kind": "bundle",
       "id": "ahs-matura-latein",
       "version": "0.1.0",

@@ -35,7 +35,7 @@ license: CC-BY-SA-4.0
 # Introduction
 
 - Try it: how many errors are in this sentence? „Ich glaube das, das Wichtigste beim lesen ist das man sich Zeit nimmt.“
-- Language accuracy is one of the four dimensions, and it is the easiest to improve quickly: most errors in Matura texts come from a handful of rules.
+- Language accuracy (Sprachnormen: spelling, punctuation, grammar) is one of the four dimensions, and it is the easiest to improve quickly: most errors in Matura texts come from a handful of rules. The grid judges it by overall impression, not by counting errors, so frequent error types matter more than single slips.
 - Afterwards the learner avoids the frequent error types and reports what a text says in correct indirect speech.
 
 # Core
