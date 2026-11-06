@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 470" role="img" aria-labelledby="function-calling-t function-calling-d" data-ptf-figure="1">
+  <title id="function-calling-t">Function calling: the model asks, the app acts</title>
+  <desc id="function-calling-d">A sequence between the app and the model. 1: the app sends the question with a list of tools, here get_weather(city). 2: the model replies with a tool call, get_weather(&quot;Graz&quot;), instead of an answer. 3: the app checks the call and runs the function itself, which returns {&quot;temp_c&quot;: 12}. 4: the app sends the result back to the model. 5: the model writes the final answer, &quot;It is 12 °C in Graz.&quot; The model never runs code; only the app does.</desc>
+  <defs><marker id="ptf-arrow-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-ink" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-accent" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-warn" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-good" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-muted" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+  <g>
+    <rect class="f-surface s-ink w2" x="10" y="8" width="100" height="36" rx="8"/>
+    <text class="t-s bold f-ink" x="60" y="31" text-anchor="middle">App</text>
+    <rect class="f-accent-soft s-accent w2" x="230" y="8" width="100" height="36" rx="8"/>
+    <text class="t-s bold f-accent" x="280" y="31" text-anchor="middle">Model</text>
+    <line class="s-line w2 dash" x1="60" y1="44" x2="60" y2="460"/>
+    <line class="s-line w2 dash" x1="280" y1="44" x2="280" y2="460"/>
+  </g>
+  <g data-step="1" data-caption="The app sends the question together with descriptions of the tools the model may ask for.">
+    <text class="t-s bold f-ink" x="170" y="78" text-anchor="middle">1  question + tool list</text>
+    <text class="t-s f-muted" x="170" y="94" text-anchor="middle">get_weather(city)</text>
+    <line class="s-ink w2" x1="64" y1="104" x2="276" y2="104" marker-end="url(#ptf-arrow-ink)"/>
+  </g>
+  <g data-step="2" data-caption="The model does not answer yet: it replies with a structured request to call a tool, with arguments.">
+    <text class="t-s bold f-accent" x="170" y="152" text-anchor="middle">2  tool call, not an answer</text>
+    <text class="t-s f-muted" x="170" y="168" text-anchor="middle">get_weather(&quot;Graz&quot;)</text>
+    <line class="s-accent w2" x1="276" y1="178" x2="64" y2="178" marker-end="url(#ptf-arrow-accent)"/>
+  </g>
+  <g data-step="3" data-caption="The app, not the model, checks the request and runs the function.">
+    <rect class="f-warn-soft s-warn w2" x="12" y="218" width="156" height="52" rx="8"/>
+    <text class="t-s f-ink" x="90" y="240" text-anchor="middle">3  app checks and</text>
+    <text class="t-s f-ink" x="90" y="258" text-anchor="middle">runs the function</text>
+    <text class="t-s f-warn" x="188" y="250">{&quot;temp_c&quot;: 12}</text>
+  </g>
+  <g data-step="4" data-caption="The app sends the function's result back to the model as a new message.">
+    <text class="t-s bold f-ink" x="170" y="300" text-anchor="middle">4  tool result</text>
+    <text class="t-s f-muted" x="170" y="316" text-anchor="middle">{&quot;temp_c&quot;: 12}</text>
+    <line class="s-ink w2" x1="64" y1="326" x2="276" y2="326" marker-end="url(#ptf-arrow-ink)"/>
+  </g>
+  <g data-step="5" data-caption="Now the model can answer in words, using the result.">
+    <text class="t-s bold f-good" x="170" y="374" text-anchor="middle">5  final answer</text>
+    <text class="t-s f-muted" x="170" y="390" text-anchor="middle">&quot;It is 12 °C in Graz.&quot;</text>
+    <line class="s-good w2" x1="276" y1="400" x2="64" y2="400" marker-end="url(#ptf-arrow-good)"/>
+  </g>
+</svg>

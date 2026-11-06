@@ -34,6 +34,15 @@
     },
     {
       "kind": "bundle",
+      "id": "genai-apps",
+      "version": "0.1.0",
+      "title": "Building with generative AI",
+      "summary": "How to use and build applications on large language models, from prompts and sampling settings to chat apps, semantic search, retrieval-augmented generation, function calling and agents, and how to ship them responsibly, securely and with evaluation.",
+      "path": "bundles/genai-apps",
+      "digest": "sha256-01F6/whVaa4zyAN/3p0+5ppReYyHKOTGbpfoYIWHXow="
+    },
+    {
+      "kind": "bundle",
       "id": "gravity",
       "version": "0.4.0",
       "title": "Gravity: from the leaning tower to curved spacetime",

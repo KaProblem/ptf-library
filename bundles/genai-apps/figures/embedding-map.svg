@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 350" role="img" aria-labelledby="embedding-map-t embedding-map-d" data-ptf-figure="1">
+  <title id="embedding-map-t">Embeddings: similar meaning, similar direction</title>
+  <desc id="embedding-map-d">Two notes and a question as two-dimensional embedding vectors of length 1, drawn as arrows from the origin. A, &quot;Chlorophyll breaks down in autumn.&quot;, is (0.8, 0.6). B, &quot;Turn left at the yellow house.&quot;, is (0.96, −0.28). The question q, &quot;Why do leaves turn yellow?&quot;, is (0.6, 0.8). q and A are 16° apart, cosine similarity 0.96; q and B are 69° apart, cosine similarity 0.35, although B shares the word &quot;yellow&quot; with the question. Real embeddings have hundreds of dimensions; the idea is the same.</desc>
+  <defs><marker id="ptf-arrow-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-ink" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-accent" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-warn" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-good" d="M0 0 L10 5 L0 10 z"/></marker><marker id="ptf-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="f-muted" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+  <g>
+    <line class="s-line w1" x1="30" y1="190" x2="266" y2="190"/>
+    <line class="s-line w1" x1="70" y1="266" x2="70" y2="12"/>
+    <circle class="f-ink" cx="70" cy="190" r="3"/>
+  </g>
+  <g data-step="1" data-caption="Each note becomes an arrow, its embedding. Here with 2 numbers; real ones have hundreds.">
+    <line class="s-good w2" x1="70" y1="190" x2="206" y2="88" marker-end="url(#ptf-arrow-good)"/>
+    <text class="t bold f-good" x="218" y="86" text-anchor="middle">A</text>
+    <line class="s-warn w2" x1="70" y1="190" x2="233.2" y2="237.6" marker-end="url(#ptf-arrow-warn)"/>
+    <text class="t bold f-warn" x="245.2" y="249.6" text-anchor="middle">B</text>
+    <text class="t-s f-good" x="16" y="290">A: Chlorophyll breaks down in autumn.</text>
+    <text class="t-s f-warn" x="16" y="310">B: Turn left at the yellow house.</text>
+  </g>
+  <g data-step="2" data-caption="The question is embedded with the same model and becomes an arrow too.">
+    <line class="s-accent w2 dash" x1="70" y1="190" x2="172" y2="54" marker-end="url(#ptf-arrow-accent)"/>
+    <text class="t bold f-accent" x="168" y="44" text-anchor="middle">q</text>
+    <text class="t-s f-accent" x="16" y="330">q: Why do leaves turn yellow?</text>
+  </g>
+  <g data-step="3" data-caption="Similarity is the angle: q and A point almost the same way (cosine 0.96), q and B do not (0.35), although B contains &quot;yellow&quot;.">
+    <path class="s-good w2 f-none" d="M130 145 A75 75 0 0 0 115 130"/>
+    <path class="s-warn w2 f-none" d="M161.2 216.6 A95 95 0 0 0 127 114"/>
+    <text class="t-s bold f-good" x="100" y="95" text-anchor="end">cos 0.96</text>
+    <text class="t-s bold f-warn" x="174" y="180">cos 0.35</text>
+  </g>
+</svg>
